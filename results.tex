@@ -3959,4 +3959,45 @@ Both violate Theorem~\ref{thm:sparse-extension-span}.
 The support calculation and small-degree order checks are implemented in
 \nolinkurl{scripts/check_exponent_spans.py}.
 
+\section{Eight exterior-power tests in degree 1229}
+\begin{theorem}\label{thm:1229-eight-tests}
+Let \(f\) be either \(X^{1229}+X^{77}+X^{50}+X^{27}+1\) or
+\(X^{1229}+X^{15}+X^6+X^2+1\). No product of one through eight of
+its roots equals one, even allowing repeated roots.
+\end{theorem}
+\begin{proof}
+Both irreducibility certificates give \(p=10543179280661916121033\)
+as a divisor of the order of any root \(r\). The roots are \(r^{2^i}\)
+for \(0\le i<1229\). Hence a product-one relation of length at most
+eight would give a nonempty sum of at most eight elements of
+\(S=\langle2\rangle\subset\mathbb F_p^\times\) equal to zero.
+Two equal powers of two can be replaced by the next power, reducing
+the number of terms while preserving the sum modulo \(p\). The
+subscripts are cyclic because \(2^{1229}=1\bmod p\), so it suffices
+to check subsets with distinct subscripts.
+
+The group \(S\) has order \(n=1229\). For each nonempty subset
+\(I\subset\mathbb Z/n\) of size at most four, put
+\(s_I=\sum_{i\in I}2^i\bmod p\) and \(t_I=s_I^n\bmod p\).
+Cyclic translation of \(I\) leaves \(t_I\) unchanged. The orbit
+has \(n\) elements since \(n\) is prime. In ranks one through four the
+respective orbit counts \(\binom{n}{k}/n\) are
+\[
+      1,\qquad 614,\qquad 251126,\qquad 76970119.
+\]
+The checker enumerates cyclic gap sequences whose sum is \(n\), keeping
+their lexicographically largest rotation. All \(77\,221\,860\) signatures
+are nonzero, and none occurs together with its negative.
+Splitting any zero sum of length two through eight into two nonempty
+halves of size at most four would give opposite half-sums. Their
+signatures are also opposite because \(n\) is odd. A single power of
+two is nonzero. This proves the stated exclusions using one prime
+factor of the order.
+\end{proof}
+The exact integer checker is \nolinkurl{scripts/check_1229_short_products.cpp}.
+The two Lean order-divisibility results are in
+\nolinkurl{GF2Sparse/Degree1229.lean} and \nolinkurl{GF2Sparse/Seroussi1229.lean}.
+For comparison, the exterior-power criterion for primitivity in degree
+1229 requires the tests through rank 614.
+
 \end{document}

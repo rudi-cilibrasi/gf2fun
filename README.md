@@ -58,6 +58,13 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+Both degree-1229 candidates pass the first eight exterior-power tests. One known prime divisor of their root orders suffices. The checker compares 77,221,860 exact residues and uses about 1.2 GiB of memory. [Proof](results.pdf#page=52) · [Integer checker](scripts/check_1229_short_products.cpp)
+
+~~~sh
+g++ -O3 -std=c++17 scripts/check_1229_short_products.cpp -lgmpxx -lgmp -o /tmp/gf2-check-1229-products
+/tmp/gf2-check-1229-products
+~~~
+
 The two degree-1229 candidate fields also admit a common polynomial coordinate. Let $r$ be the root of the selected candidate and $a=z+z^{-1}$ for an element $z$ of order 2459. To obtain the exact mask of $a$ in the power basis of $r$, run the command below. It checks $a\ne0$, $D_{2459}(a)=0$, and the degree-1229 period polynomial at $a$. Here $D_j(z+z^{-1})=z^j+z^{-j}$. The residues $\pm2^k$ for $0\le k<1229$ exhaust the nonzero residues modulo 2459, so $D_j(a)$ for each such residue is a known Frobenius power of $a$. Lean proves the signed Frobenius identity, the degree of every order-2459 period, and the subgroup step for an invertible coefficient. [Coordinate construction](scripts/period_coordinate.py) · [Lean proofs](GF2Sparse/GaussPeriod.lean)
 
 ~~~sh
