@@ -1480,6 +1480,14 @@ degrees are distinct and \(\gcd(n,u)=1\). The derivative is \(X^{n-1}\)
 and the constant term is 1, so the pentanomial is squarefree.
 For \(j\ge B_k\), \(M_k\mid j!\), which proves the sequence assertion.
 \end{proof}
+The Lean theorem \texttt{arbitrarily\_many\_pentanomial\_tests} proves
+the existence of such an exponent progression for every \(k\), together
+with the degree, five-term count, squarefreeness, exponent gcd and
+exclusion of all the short products. It takes a common Frobenius period
+of the finite set of possible roots. The theorem
+\texttt{factorial\_pentanomial\_tests} then checks the assertion for the
+single explicit sequence. The numerical period \(M_k\) above comes
+from bounding their degrees.
 
 For each fixed \(k\), the construction also supplies a positive-density
 set of degrees passing the first \(k\) tests. Fix one degree \(n\) in

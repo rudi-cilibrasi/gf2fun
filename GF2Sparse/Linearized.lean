@@ -82,7 +82,7 @@ theorem irreducible_trinomial_of_primitive_associate {s : ℕ} (hs : 1 < s)
   rwa [heq]
 
 /-- Recover the trinomial root from a root of the cubic sampling polynomial. -/
-private theorem recover_trinomial_root {u : ℕ} {z : K}
+theorem trinomial_root_of_cubic_sample {u : ℕ} {z : K}
     (hz : aeval z (sampledBlock 0 1 u 3) = 0) :
     ∃ r : K, r ^ 3 = z ∧ aeval r (trinomial (3 * u + 1) 1) = 0 := by
   have hmul : z * (z ^ u + 1) ^ 3 = 1 := by
@@ -127,7 +127,7 @@ theorem irreducible_sampled_of_trinomial {u : ℕ} (hu : 0 < u)
   have hroot : aeval (AdjoinRoot.root p) f = 0 := by
     rw [AdjoinRoot.aeval_eq]
     exact AdjoinRoot.mk_eq_zero.2 hdiv
-  obtain ⟨r, _, hr⟩ := recover_trinomial_root hroot
+  obtain ⟨r, _, hr⟩ := trinomial_root_of_cubic_sample hroot
   have hfix := FiniteField.pow_card r
   rw [card_adjoinRoot hp.ne_zero] at hfix
   have hd := (degree_dvd_iff_frobenius ht hr _).2 hfix
