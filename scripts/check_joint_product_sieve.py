@@ -65,6 +65,41 @@ def check_residues():
         print(f"q={q}: {counts['odd']} odd, {counts['even']} even, {counts['repeated']} repeated.")
 
 
+def check_gap_slices():
+    total = 0
+    for s, cutoff in ((3, 2), (21, 3)):
+        for residue in range(1, 8):
+            k = {1: 4, 7: 4, 3: 2, 5: 2, 4: 7*s+4, 2: 5*s+8, 6: 5*s+8}[residue]
+            t = X**(s+k) + (1+X**s)*(1+X**(s+2*k))
+            multiple = lcm(*(2**f.degree()-1 for f, _ in t.factor()[1]))
+            certified = 0
+            for w in range(1, 16, 2):
+                u = s*w
+                lower = 8*(s+k)*w + 1
+                upper = min(16*(s+k)*w, lower+384)
+                for n in range(lower+(residue-lower) % 8, upper, 8):
+                    v, g = n-(s+k)*w, n+k*w
+                    if v % 8 or gcd(n, w) != 1 or (residue == 4 and w % 8 != 1):
+                        continue
+                    if gcd(g//gcd(n, k), multiple) != 1:
+                        continue
+                    f = X**n + (1+X**u)*(1+X**v)
+                    factors = factor_degrees(f)
+                    if (len(factors) % 2 != 1 or any(e != 1 or d <= cutoff for d, e in factors)
+                            or gcd(n, gcd(u, v)) != 1 or f.gcd(f.reverse()) != 1
+                            or t.gcd(X.pow_mod(g, t)+1) != 1):
+                        raise ArithmeticError(f"joint gap conditions failed at {(n, s, k, w)}")
+                    certified += 1
+                    if certified == 3:
+                        break
+                if certified == 3:
+                    break
+            if certified != 3:
+                raise ValueError(f"missing construction samples at {(s, residue)}")
+            total += certified
+    print(f"Verified {total} simultaneous sieve examples across all seven degree classes and two cutoffs.")
+
+
 def check(n, s, w, even_case):
     u, v, g = s*w, n-(s+2)*w, n+2*w
     if not 0 < u < v < n-u or gcd(w, n) != 1:
@@ -132,11 +167,15 @@ def main(through):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--through", type=int, default=256, help="odd-degree sample limit")
-    parser.add_argument("--residues", action="store_true", help="classify all residues for four powers of two")
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument("--residues", action="store_true", help="classify all residues for four powers of two")
+    action.add_argument("--gap-slices", action="store_true", help="check the seven other classes at two cutoffs")
     args = parser.parse_args()
     if args.through < 5:
         parser.error("expected an odd-degree limit of at least five")
     if args.residues:
         check_residues()
+    elif args.gap_slices:
+        check_gap_slices()
     else:
         main(args.through)

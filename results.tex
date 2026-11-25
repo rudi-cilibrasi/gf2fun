@@ -6192,4 +6192,104 @@ At \(q=8,64\), respectively, the slice with \(w=1\) contains
 Lean verifies the full primitive orders of both polynomials in
 \nolinkurl{GF2Sparse/ReciprocalSieve.lean}.
 
+\section{A growing cutoff in the simultaneous sieve}\label{sec:growing-joint}
+
+\begin{theorem}\label{thm:growing-joint}
+Fix \(0<\epsilon<1\), and take natural logarithms. For every
+sufficiently large \(n\), at least \(n^{1-o(1)}\) distinct
+degree-\(n\) product pentanomials are squarefree, have an odd number
+of factors, have exponent gcd one, have no mutually inverse roots,
+and have no irreducible factor of degree at most
+\[
+ B=\left\lfloor(1-\epsilon)\log\log n\right\rfloor .
+\]
+In the seven degree classes \(8\nmid n\), the same lower bound holds
+with \(B=\left\lfloor\frac1{32}\sqrt{\log n/\log\log n}\right\rfloor\).
+\end{theorem}
+\begin{proof}
+We first describe all the congruences except the prime exclusions.
+In the seven classes take \(s=L=\mathop{\rm lcm}_{d\le B}(2^d-1)\).
+For large \(n\), \(3\mid s\) and \(s\) is odd. Put
+\(u=sw,\ v=n-(s+k)w,\ g=n+kw\). Choose an odd class of \(w\bmod8\)
+by the following table; where there are two possible lifts, choose one.
+\[
+\begin{array}{c|c|l}
+ n\bmod8 & k &\text{condition on }w\\\hline
+ 1,7 &4 &(s+4)w\equiv n\bmod8\\
+ 3,5 &2 &(s+2)w\equiv n\bmod8\\
+ 4   &7s+4 &w\equiv1\bmod8\\
+ 2,6 &5s+8 &sw\equiv-n/2\bmod4
+\end{array}
+\]
+Take \(n/(16(s+k))<w<n/(8(s+k))\) and require \((w,n)=1\).
+Then \(0<u<v<u+v<n,\ 2u<v,\ n-u>2u,\ 8\mid v\).
+Also \((s,k)=1,\ 3\nmid k\). The exponent gcd is one, and \(L\mid u\)
+excludes the small factors. Opposite tap parities give squarefreeness.
+For \(n\equiv1,7\bmod8\), \(u\equiv n\bmod4\).
+For \(n\equiv4\bmod8\), the exponents are all zero or \(u\bmod4\).
+Theorem~\ref{thm:two-residue-parity} gives the required parity in these
+three classes. For \(n\equiv2,6\bmod8\) use the derivative calculation
+in Theorem~\ref{thm:totient-reciprocal}, which requires only
+\(8\mid v,\ 2u<v,\ u\equiv-n/2\bmod4\).
+For \(n\equiv3,5\bmod8\), use the case \(k=2\) of
+Theorem~\ref{thm:joint-sieve}.
+
+At an inverse pair put \(t=x^w\). Then \(x^g=1\) and
+\[
+ T_{s,k}(t)=t^{s+k}+(1+t^s)(1+t^{s+2k})=0,
+\]
+by multiplying \(F(x)=0\) by \(t^{s+2k}\).
+Let \(M\) be the lcm of the orders of the roots of \(T_{s,k}\).
+An irreducible factor of degree \(d\) contributes a divisor of
+\(2^d-1\), hence \(\log M\le(2s+2k)\log2\).
+Write \(d_0=(n,k)\) and exclude \((g/d_0,M)>1\).
+This forces the order of \(t\) to divide \(d_0\), hence \(t^k=1\).
+But \(T_{s,k}(t)=1+t^s+t^{2s}\) would then make \(t^s\) have order
+three, impossible since \(3\nmid k\). At an odd prime of \(nM\),
+the conditions \((w,n)=(g/d_0,M)=1\) exclude at most two classes:
+the coefficients \(n/d_0,k/d_0\) are coprime.
+
+For \(8\mid n\) put \(a=\mathop{\rm lcm}(1,\ldots,B)\),
+\(q=2^a,\ s=q-1,\ k=2,\ R=q^2-1\); now \(L\mid s\).
+Use the same interval for \(w\) and the congruences of
+Theorem~\ref{thm:joint-sieve} at \(2\) and at primes dividing \(R\).
+These give one progression of modulus
+\(A=8R\prod_{p\mid q-1}p\le8q^3\). At the primes of \(A\) the
+construction already enforces coprimality with \(n\) and bounds the
+common part of \(g,M\) by \(q-1\). At the remaining primes of \(nM\)
+exclude at most two classes, as in that theorem, to impose
+\((w,n)=1\) and \((g,M)\mid q-1\). Lemma~\ref{lem:joint-even-disc}
+then gives factor parity and squarefreeness. For the seven other
+classes use \(A=8\).
+
+It remains to count on these progressions, uniformly in \(B\).
+Put \(U=\log\log n,\ z=\exp(\log n/(256U))\).
+For the larger cutoff in the seven classes,
+\(\log s\le B(B+1)(\log2)/2\), so \(s+k\le\sqrt z\) for large \(n\).
+For multiples of eight the prime number theorem gives
+\(\log a=(1+o(1))B\), hence \(\log q=O((\log n)^{1-\epsilon/2})\)
+and again \(s+k\le\sqrt z\). In both cases there are
+\(N\asymp n/(A(s+k))=n^{1-o(1)}\) consecutive progression indices.
+Each support recovers its index from its smaller tap.
+
+For each odd \(p\mid nM\) outside \(A\), let \(b_p\le2\) be the
+number of excluded index classes. For the primes through \(z\),
+Mertens' bounds give \(S=\sum b_p/p\le3U\) and
+\(\prod(1-b_p/p)\gg(\log z)^{-2}\).
+Indeed \((1-2/p)/(1-1/p)^2=1-1/(p-1)^2\) for \(p\ge3\).
+The prime number theorem and the prime reciprocal and product estimates
+are given in \href{https://doi.org/10.1215/ijm/1255631807}{Rosser and Schoenfeld}.
+Truncate inclusion--exclusion after the smallest odd \(j\ge32U\).
+This is a lower bound. The difference between its main density
+and the full product is at most
+\(\sum_{i>j}S^i/i!\ll(\log n)^{-10}\).
+Counting individual residue classes in an interval costs a total of
+at most \((3z)^{j+1}\le n^{1/4}\) in rounding errors, by the
+Chinese remainder theorem. Thus \(\gg N/(\log n)^2\) indices survive.
+The number of primes of \(nM\) above \(z\) is at most
+\(\log(nM)/\log z\ll(\log n+s+k)/\log z\ll z^{2/3}\).
+They remove \(O(z^{2/3}(N/z+1))=o(N/(\log n)^2)\) more indices.
+The remaining \(n^{1-o(1)}\) supports have all the asserted properties.
+\end{proof}
+
 \end{document}

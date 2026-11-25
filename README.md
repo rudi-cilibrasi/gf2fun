@@ -69,6 +69,8 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+The simultaneous sieve also works with a cutoff that grows with the degree. For every fixed $0<\epsilon<1$, at least $n^{1-o(1)}$ candidates in each sufficiently large degree avoid every factor through $(1-\epsilon)\log\log n$, have odd factor count, and pass the inverse-root test. When $8\nmid n$, the cutoff can reach $\frac1{32}\sqrt{\log n/\log\log n}$. The proof uses natural logarithms. [Proof and parameters](results.pdf#page=80) · [Verify the seven classes with --gap-slices](scripts/check_joint_product_sieve.py)
+
 For degrees divisible by eight, the simultaneous sieve has an exact factor-parity table. For $q=8$, its 63 exponent classes split into 21 with odd factor count, 21 with even count and 21 with repeated roots. Negating a squarefree class reverses its parity for every power of two $q\ge8$. The checker compares all 318 classes at $q=8,16$ with full factorizations. Lean proves the constructed examples in degrees 56 and 152 are primitive. [Parity formula](results.pdf#page=79) · [Lean certificates](GF2Sparse/ReciprocalSieve.lean) · [Reproduce with the --residues option](scripts/check_joint_product_sieve.py)
 
 The cyclic inverse construction gives 21 certified primitive pentanomials, including $X^{2203}+X^{2117}+X^{656}+X^{168}+1$. Lean checks that example. The Python checker verifies all 21 full powers and 375 prime-index powers with `--primitive-examples`. [Witnesses](data/cyclic-parity-primitive.csv) · [Lean certificate](GF2Sparse/ParityExamples.lean) · [Verification code](scripts/check_cyclic_trinomial_parity.py)
