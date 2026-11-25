@@ -36,6 +36,43 @@ theorem product_inverse_root_iff {K : Type*} [Field K] [Algebra (ZMod 2) K] [Cha
   · intro he
     rw [he, mul_one]
 
+/-- Reciprocal pairs on the slice n = v + (s+2)w give roots of a fixed polynomial. -/
+noncomputable def productSliceAux (s : ℕ) : BinaryPoly :=
+  X ^ (s+2) + (X ^ s + 1) * (1 + X ^ (s+4))
+
+theorem product_slice_aux_of_inverse_root {K : Type*} [Field K]
+    [Algebra (ZMod 2) K] [CharP K 2] {n s v w : ℕ} (hn : n = v + (s+2)*w)
+    {x : K} (hx : x ≠ 0) (hz : aeval x (productCandidate n (s*w) v) = 0)
+    (hi : aeval x⁻¹ (productCandidate n (s*w) v) = 0) :
+    aeval (x ^ w) (productSliceAux s) = 0 := by
+  have hd : n+n = (s*w+v) + (n+2*w) := by rw [hn]; ring
+  have hc := (product_inverse_root_iff hd hx hz).mp hi
+  let t := x ^ w
+  have hc₁ : x ^ n * t ^ 2 = 1 := by
+    simpa only [t, ← pow_mul, Nat.mul_comm w 2, ← pow_add] using hc
+  have hc₂ : x ^ v * t ^ (s+4) = 1 := by
+    change x ^ v * (x ^ w) ^ (s+4) = 1
+    rw [← pow_mul, ← pow_add, show v+w*(s+4) = n+2*w by rw [hn]; ring]
+    exact hc
+  have hr : x ^ n = (t ^ s + 1) * (x ^ v + 1) := by
+    simpa only [t, ← pow_mul, Nat.mul_comm w s] using eval_product_root hz
+  have hshift : t ^ (s+4) = t ^ 2 * t ^ (s+2) := by
+    rw [← pow_add, show 2+(s+2) = s+4 by omega]
+  have he : t ^ (s+2) = (t ^ s + 1) * (1 + t ^ (s+4)) := calc
+    _ = (x ^ n * t ^ 2) * t ^ (s+2) := by rw [hc₁, one_mul]
+    _ = x ^ n * t ^ (s+4) := by rw [hshift, mul_assoc]
+    _ = (t ^ s + 1) * (x ^ v * t ^ (s+4) + t ^ (s+4)) := by rw [hr]; ring
+    _ = _ := by rw [hc₂]
+  simpa only [productSliceAux, map_add, map_mul, map_pow, aeval_X, map_one] using
+    (CharTwo.add_eq_zero.2 he)
+
+theorem product_slice_aux_nonzero_of_period {K : Type*} [Field K]
+    [Algebra (ZMod 2) K] [CharP K 2] {s : ℕ} {t : K} (ht : t ≠ 0) (h : t ^ s = 1) :
+    aeval t (productSliceAux s) ≠ 0 := by
+  simp only [productSliceAux, map_add, map_mul, map_pow, aeval_X, map_one, h,
+    CharTwo.add_self_eq_zero, zero_mul, add_zero]
+  exact pow_ne_zero _ ht
+
 /-- A root and its inverse force x^(2n)=x^(u+v). If the gap is a
 dyadic multiple of a divisor of u, no such pair can occur. -/
 theorem product_no_inverse_root {K : Type*} [Field K] [Algebra (ZMod 2) K] [CharP K 2]

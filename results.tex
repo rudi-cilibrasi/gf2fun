@@ -5991,4 +5991,167 @@ See \nolinkurl{scripts/census_product_gaps.cpp} and
 \nolinkurl{scripts/check_open_product_census.py}.
 \end{proof}
 
+\section{Simultaneously imposing factor parity and excluding inverse pairs}\label{sec:joint-sieve}
+
+\begin{theorem}\label{thm:joint-sieve}
+Fix \(B\ge1\). For every sufficiently large \(n\), at least
+\(c_B\varphi(n)\) different degree-\(n\) pentanomials
+\(F=X^n+(1+X^u)(1+X^v)\) have all of the following properties.
+They are squarefree with an odd number of irreducible factors, have
+exponent gcd one, have no factor of degree at most \(B\), and have
+no pair of mutually inverse roots. For \(n\equiv1,2,4,6,7\bmod8\)
+the lower bound is \(c_B n\varphi(n)\).
+\end{theorem}
+\begin{proof}
+The last assertion is Theorem~\ref{thm:totient-reciprocal}.
+For the three remaining classes use an odd multiple \(s\) of
+\(L=\mathop{\rm lcm}_{1\le d\le B}(2^d-1)\). Take
+\[
+ \frac{n}{16(s+2)}<w<\frac{n}{8(s+2)},\qquad
+ (w,n)=1,\qquad u=sw,\qquad v=n-(s+2)w,\qquad g=n+2w .
+\]
+Here \(0<u<v<u+v<n,\ n-u>2u\); the support recovers \(w\).
+The exponent gcd is one since \((s,s+2)=1\).
+The condition \(L\mid u\) excludes all factors of degree at most \(B\).
+
+If an inverse pair occurs, its root \(x\) satisfies \(x^g=1\) by
+Theorem~\ref{thm:totient-reciprocal}. Put \(t=x^w\). Then
+\(x^nt^2=x^vt^{s+4}=1\), and multiplication of \(F(x)=0\)
+by \(t^{s+4}\) gives
+\[
+ T_s(t)=t^{s+2}+(1+t^s)(1+t^{s+4})=0 .
+\]
+In particular \(T_s(0)=T_s(1)=1\), and \(T_s(t)=t^2\) if \(t^s=1\).
+Let \(M_s\) be the least common multiple of the multiplicative
+orders of the roots of \(T_s\) in \(\overline{\F}\).
+It is finite, odd, and depends only on \(s\). The order of \(t\)
+would divide \((g,M_s)\).
+
+For \(n\equiv3,5\bmod8\) take \(s=L\) and impose
+\(w\equiv n/(s+2)\bmod8\). This makes \(v\) a multiple of eight.
+For each prime \(p\mid M_s\) choose a nonzero residue of \(w\bmod p\)
+different from \(-n/2\), which is possible even at \(p=3\).
+Then \((g,M_s)=1\), excluding inverse pairs. For the integer lift of
+\(F\) with unit coefficients, each root \(\alpha\) satisfies
+\[
+ \alpha F'(\alpha)\equiv
+ -(1+\alpha^v)n(1+e\alpha^u)\pmod8,\qquad e=(n-u)/n\equiv2\bmod4 .
+\]
+The norm of \(1+\alpha^v\) is one by evaluating \(F\) at the roots
+of \(X^v+1\). The norms of \(\alpha\) and of the minus sign are both
+\(-1\). Through degree \(2u\), the reciprocal of \(F\) has only the
+terms \(1,X^{2w},X^{(s+2)w}\) (omitting any above that degree).
+In \(-X(F^*)'/F^*\), the coefficient at \(u=sw\) is zero, as
+\(s\) is odd. At \(2u\) the odd multiple \((s+2)w\) cannot
+contribute, since it would have to occur an even number of times.
+The remaining term gives \(-2w\), as \(s\) is odd.
+Thus \(\sum\alpha^u=0,\ \sum\alpha^{2u}=-2w\) and
+\(\prod(1+e\alpha^u)\equiv1+e^2w\equiv5\bmod8\).
+The discriminant is
+\((-1)^{(n-1)/2}n^n\cdot5\equiv1\bmod8\).
+Stickelberger--Swan gives squarefreeness and odd factor count.
+
+For \(8\mid n\), choose a power \(q=2^a\ge8\) with \(L\mid q-1\),
+and set \(s=q-1,\ R=q^2-1,\ m=n-2qw=v-sw\).
+Take \(w\) odd with \(2qw\equiv n-1\bmod R\).
+Then \(m\equiv1\bmod R\), and a prime dividing both \(n\) and \(R\)
+does not divide \(w\). Since \(qg=(q+1)n-m\), no prime of \(q+1\)
+divides \(g\). For each \(p^e\Vert q-1\), lift the chosen residue of
+\(w\bmod p^e\) to one modulo \(p^{e+1}\) with \(p^{e+1}\nmid g\).
+For each prime \(p\mid M_s\) outside \(R\), again avoid \(0,-n/2\bmod p\).
+These congruences ensure \((g,M_s)\mid q-1=s\), so \(T_s(t)=t^2\)
+excludes inverse pairs. Lemma~\ref{lem:joint-even-disc} gives the
+required squarefreeness and parity in these degrees.
+
+In either construction the congruences select a class of \(w\)
+modulo a fixed integer \(A_B\), coprime to every prime dividing
+both \(A_B\) and \(n\). By inclusion--exclusion, the number coprime
+to \(n\) in the displayed interval of length \(h\) is
+\[
+ \frac{h}{A_B}\prod_{p\mid n,\ p\nmid A_B}(1-1/p)
+       +O(2^{\omega(n)})\gg_B\varphi(n).
+\]
+Here \(2^{\omega(n)}=O_\epsilon(n^\epsilon)\), by treating the
+finitely many primes \(p<2^{1/\epsilon}\) separately, and
+\(\varphi(n)\gg n/\log\log(3n)\).
+\end{proof}
+
+\begin{lemma}\label{lem:joint-even-disc}
+Suppose \(8\mid n,\ q=2^a\ge8,\ s=q-1\), and \(w\) is odd and
+coprime to \(n\). Let \(v=n-(s+2)w>sw>0\) and assume
+\(m=n-2qw\equiv1\bmod(q^2-1)\).
+Then \(X^n+(1+X^{sw})(1+X^v)\) is squarefree with an odd number
+of irreducible factors.
+\end{lemma}
+\begin{proof}
+Write \(C=Y^s+1,\ A=Y^{s+2}+C,\ H=Y^vA^w+C^w\).
+The original polynomial is \(X^v A(X^w)+C(X^w)\).
+The map \(x\mapsto y=x^w\) bijects its distinct geometric roots
+with those of \(H\), commuting with Frobenius.
+Indeed \(Y,A,C\) are pairwise coprime. At a root \(y\) of \(H\)
+set \(z=C(y)/A(y)\). Then \(y^v=z^w\);
+for \(iw+jv=1\), the unique inverse is \(x=y^iz^j\), since
+\(x^w=y,\ x^v=z\). Both polynomials have degree \(n\).
+
+Use the same integer expressions for \(A,C,H\). Modulo \(H\),
+\[
+ YAC H'\equiv-C^w D,\qquad D=vAC+wY(CA'-AC')
+ =nCY^{s+2}-wsY^{2q}+vC^2.
+\]
+On the roots of \(H\), the norms of \(Y,A,C\) are all one.
+In fact \(H(0)=1\), the resultant with \(C\) evaluates \(Y^n\)
+on the roots of \(C\), and \(\operatorname{Res}(A,C)=1\).
+Since \(n\) is divisible by eight and \(s\equiv-1\bmod8\),
+\(D\equiv-ws(Y^{2q}-C^2)\bmod8\). The unit \((-ws)^n\) and
+the discriminant sign are one modulo eight. Therefore
+\[
+ \operatorname{disc}(H)\equiv
+ \operatorname{Res}(Y^q-C,H)\operatorname{Res}(Y^q+C,H)\pmod8 .
+\]
+
+Both monic factors reduce to \(J=Y^q+Y^{q-1}+1\), whose roots
+\(y\) are simple. Their inverses satisfy \((1/y)^q=1/y+1\);
+thus \(y\in\mathbb F_{q^2}^\times,\ y\ne1,\ y^q=y/(1+y)\).
+In an unramified extension of \(\mathbb Z_2\) with residue field
+\(\mathbb F_{q^2}\), lift each \(y\) to the two roots
+\(r_\epsilon^q=\epsilon C(r_\epsilon)\), \(\epsilon=\pm1\).
+The lifts exist uniquely by the simple-root form of Hensel's lemma.
+\href{https://stacks.math.columbia.edu/tag/04GE}{The Stacks Project, Section 10.153}.
+At \(r=r_\epsilon\) the identity \(r^s(r-\epsilon)=\epsilon\)
+gives \(r+\epsilon=\epsilon r^{-s}(1+2r^s)\).
+Consequently
+\[
+ H(r)=\epsilon^w r^{qw}Z_\epsilon,\qquad
+ Z_\epsilon=1+r^m(1+2r^s)^w .
+\]
+The prefactors for each sign have product one since \(q\) is even
+and the product of the roots \(r\) is a sign.
+
+Writing \(r_-=r_++2d\), the equation \(Y^q+C=0\bmod4\)
+gives \(d=C(y)/y^{s-1}=y^2\bmod2\).
+Hence \(r_-^s-r_+^s\equiv2y^q\bmod4\), where a residue-field
+quantity multiplied by \(2\) denotes any lift modulo four.
+Since \(4\mid m\), \(r_-^m\equiv r_+^m\bmod8\).
+Since \(w\) is odd and \(y^m=y\), this yields
+\[
+ \frac{Z_-}{Z_+}\equiv 1+4\,\frac{y^{q+1}}{1+y}
+       =1+4y^{2q}\pmod8.
+\]
+The denominator is a unit. The product of all \(Z_+\) is an
+odd rational \(2\)-adic integer, whose square is one modulo eight.
+The coefficient of \(Y^{q-1}\) in \(J\) gives \(\sum_y y=1\).
+Multiplying the ratios now gives
+\(\operatorname{disc}(H)\equiv1+4\sum_y y^{2q}=5\bmod8\).
+Stickelberger--Swan and the root bijection give the conclusion.
+\end{proof}
+
+The auxiliary root identity and the evaluation at \(t^s=1\) are
+proved in \nolinkurl{GF2Sparse/ReciprocalSieve.lean}.
+The finite check in \nolinkurl{scripts/check_joint_product_sieve.py}
+compares the reciprocal criterion against the full polynomial gcd,
+the integer resultants against factor parity, and both sides of the
+root bijection against independent factorizations. At \(n=1229\)
+the three choices \((s,w)=(1,295),(17,15),(363,1)\) give irreducible
+members with all the order projections of Theorem~\ref{thm:open-product-orders}.
+
 \end{document}
