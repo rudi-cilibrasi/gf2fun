@@ -1,4 +1,5 @@
 import GF2Sparse.Table
+import GF2Sparse.OrderBound
 
 /-! A short certificate for a missing order factor. A nonzero residue y
 satisfying y^(2^d) = X*y exhibits X as a (2^d-1)-st power. -/
@@ -94,5 +95,67 @@ theorem order_dvd_of_frobeniusPowerCheck {d n f w fuel : ℕ} {js : List ℕ} (h
   rw [← hroot, ← pow_mul, Nat.mul_div_cancel' hd]
   have hfull := FiniteField.pow_card_sub_one_eq_one y hy
   simpa only [card_adjoinRoot hf.ne_zero, natDegree_decode, hn] using hfull
+
+private def witnessPower (n fuel : ℕ) (js : List ℕ) (w : ℕ) : ℕ → ℕ → ℕ
+  | 0, _ => 1
+  | k+1, e =>
+    let a := witnessPower n fuel js w k (e/2)
+    let sq := reduceHigh n js fuel (stretch 2 (a.log2.log2+1) a)
+    if e%2 = 0 then sq else reduceHigh n js fuel (maskProduct sq w)
+
+private theorem mk_witnessPower (n f fuel : ℕ) (js : List ℕ) (w : ℕ)
+    (hf : xorShifts js 1 = f) (k e : ℕ) (hb : e < 2^k) :
+    AdjoinRoot.mk (decode f) (decode (witnessPower n fuel js w k e)) =
+      AdjoinRoot.mk (decode f) (decode w)^e := by
+  induction k generalizing e with
+  | zero =>
+    have he : e = 0 := by simpa using hb
+    simp [he, witnessPower]
+  | succ k ih =>
+    have he : e/2 < 2^k := (Nat.div_lt_iff_lt_mul (by decide)).2 (by simpa [pow_succ] using hb)
+    let a := witnessPower n fuel js w k (e/2)
+    let sq := reduceHigh n js fuel (stretch 2 (a.log2.log2+1) a)
+    have hs : AdjoinRoot.mk (decode f) (decode sq) = AdjoinRoot.mk (decode f) (decode w)^(e/2*2) := by
+      have hsquare : decode (stretch 2 (a.log2.log2+1) a) = (decode a)^2 := by
+        simpa only [pow_one] using decode_stretch 1 (a.log2.log2+1) a (stretch_bound a)
+      rw [show sq = _ from rfl, mk_reduceHigh _ _ _ _ _ hf, hsquare, map_pow]
+      change (AdjoinRoot.mk (decode f) (decode (witnessPower n fuel js w k (e/2))))^2 = _
+      rw [ih _ he, pow_mul]
+    change AdjoinRoot.mk (decode f) (decode (if e%2 = 0 then sq else _)) = _
+    split
+    · rename_i h
+      rw [hs, show e/2*2=e by omega]
+    · rename_i h
+      rw [mk_reduceHigh _ _ _ _ _ hf, decode_maskProduct, map_mul, hs, ← pow_succ]
+      congr 1
+      omega
+
+/-- A mask for an m-th root of X suffices to check a missing order
+factor, even if the remaining cofactor of the group size is unfactored. -/
+def rootPowerCheck (m n f w fuel : ℕ) (js : List ℕ) : Bool :=
+  xorShifts js 1 == f && witnessPower n fuel js w (m.log2+1) m == 2
+
+theorem order_dvd_of_rootPowerCheck {m n f w fuel : ℕ} {js : List ℕ}
+    (hf : Irreducible (decode f)) (hn : f.log2 = n) (hc : (decode f).coeff 0 = 1)
+    (hm : 0 < m) (hd : m ∣ 2^n-1) (h : rootPowerCheck m n f w fuel js = true) :
+    orderOf (AdjoinRoot.root (decode f)) ∣ (2^n-1)/m := by
+  classical
+  letI : Fact (Irreducible (decode f)) := ⟨hf⟩
+  let e := (AdjoinRoot.powerBasisAux hf.ne_zero).equivFun.toEquiv
+  letI : Fintype (AdjoinRoot (decode f)) := Fintype.ofEquiv _ e.symm
+  simp only [rootPowerCheck, Bool.and_eq_true, beq_iff_eq] at h
+  have he := mk_witnessPower n f fuel js w h.1 (m.log2+1) m Nat.lt_log2_self
+  have htwo : decode 2 = (X : BinaryPoly) := by simpa only [pow_one] using decode_pow_two 1
+  rw [h.2, htwo, AdjoinRoot.mk_X] at he
+  let z := AdjoinRoot.mk (decode f) (decode w)
+  have hz : z ≠ 0 := by
+    intro hz
+    change AdjoinRoot.root (decode f) = z^m at he
+    rw [hz, zero_pow hm.ne'] at he
+    exact (root_unit hc).ne_zero he
+  apply orderOf_dvd_of_pow_eq_one
+  rw [he, ← pow_mul, Nat.mul_div_cancel' hd]
+  have full := FiniteField.pow_card_sub_one_eq_one z hz
+  simpa only [card_adjoinRoot hf.ne_zero, natDegree_decode, hn] using full
 
 end GF2Sparse

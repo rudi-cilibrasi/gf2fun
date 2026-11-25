@@ -13,6 +13,7 @@ import GF2Sparse.NormExamples
 import GF2Sparse.OreConjecture
 import GF2Sparse.OreExamples
 import GF2Sparse.OreFactorExamples
+import GF2Sparse.OreIndexFortySeven
 import GF2Sparse.OreIndexSeven
 import GF2Sparse.OreOrderCounts
 import GF2Sparse.OreNormObstructions
