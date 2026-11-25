@@ -7141,4 +7141,91 @@ In degree \(1229\) the retained classes give \((35,45),(21,43),
 and its root passes all available order projections. Full
 primitivity in this degree remains unresolved.
 
+\section{A bounded search in every degree}
+\label{sec:fixed-tap-even-cover}
+\begin{lemma}\label{lem:even-tap-tail-period}
+Fix odd taps \(0<u<v\), set \(s=u+v\), and put
+\(F_n=X^n+Q\) with \(Q=(1+X^u)(1+X^v)\). At even degrees
+\(n>s+2u\) its discriminant modulo eight depends only on
+\(n\bmod 4(v-u)\). In particular squarefreeness and, when
+squarefree, factor parity have this period.
+\end{lemma}
+\begin{proof}
+Fredricksen, Hales and Sweet proved eventual periodicity
+for \(X^n f+g\) by studying the discriminant modulo eight.
+Here the two odd taps give an explicit threshold and period.
+\href{https://doi.org/10.2307/2008235}{Fredricksen, Hales and Sweet,
+\emph{A Generalization of Swan's Theorem}}.
+
+Put \(G=nQ-XQ'\). In the quotient by the monic \(F_n\) this equals
+\(-XF_n'\), and the norm of \(-X\) is one since \(F_n(0)=1\).
+Hence the discriminant is
+\((-1)^{n(n-1)/2}\operatorname{Res}(F_n,G)\).
+Work modulo eight. For even \(n\), the binary reduction of \(G\)
+is \(X^u(1+X^{v-u})\), of degree \(v\). Write \(G=UH\) modulo
+eight with \(H\) monic of degree \(v\), \(U\equiv1\bmod2\),
+and \(\deg U\le u\). To construct the factors start with these
+reductions. At each of moduli two and four, divide the binary
+error \((G-UH)/2^j\bmod2\), \(j=1,2\), by \(H\bmod2\).
+Add \(2^j\) times its quotient to \(U\) and \(2^j\) times
+its remainder to \(H\). The degree bounds follow from \(\deg G\le s\).
+
+Write \(U=c+2V\), with \(c\) odd, \(V(0)=0\), using integer
+representatives. For \(0<i\le2u<n-s\) the power sums of the
+roots of \(F_n\) vanish over the integers by Newton's identities.
+The first and second power sums of the values of \(V\) therefore
+also vanish. So do their first two elementary symmetric functions.
+Expanding the norm of \(U\) gives \(c^n\equiv1\pmod8\).
+
+The two coprime monic factors \(X^u,1+X^{v-u}\) of the reduction
+of \(H\) lift to monic factors \(H_0,H_1\) modulo eight by Hensel
+lifting. In the quotient by \(H_0\) we have \(X^u\in(2)\),
+hence \(X^{3u}=0\). Here \(n>3u\), so the norm of \(F_n\) is
+the norm of \(Q\). In the quotient by \(H_1\),
+\(X^{v-u}\in1+(2)\), whence \(X^{4(v-u)}=1\). The norm of
+\(F_n\) in this second quotient thus depends only on its degree
+residue. Since \(n\) is even, interchanging the two resultant
+arguments introduces no sign. Finally \(4(v-u)\) is a multiple of
+eight, so \(G\), its chosen lifts and the discriminant sign are
+the same throughout the class. Stickelberger--Swan gives the last
+assertion.
+\end{proof}
+
+\begin{theorem}\label{thm:fixed-tap-all-cover}
+Every degree \(n\ge7\) admits a product pentanomial with
+\(0<u<v<u+v<n\) and \(u+v\le80\) that is squarefree, has
+exponent gcd one, has an odd number of irreducible factors,
+has no mutually inverse roots, and avoids every irreducible factor
+through degree six. Both taps can be chosen odd for every \(n\ge8\).
+\end{theorem}
+\begin{proof}
+Theorem~\ref{thm:fixed-tap-cover} covers the odd degrees from nine.
+For even degrees use the following list.
+\[
+\begin{array}{rrrr}
+(15,63)&(7,27)&(35,45)&(33,35)\\
+(21,49)&(13,31)&(31,45)&(3,75)\\
+(1,7)&(21,41)&(21,27)&(13,15)\\
+(5,29)&(13,37)&(31,43)&(31,33)\\
+(5,35)&(15,21)&(29,35)&(3,35)\\
+(11,47)&(15,51)&(9,29)&(5,7)
+\end{array}
+\]
+The largest \(3u+v\) in this list is \(150\), and each
+\(4(v-u)\) divides the same \(M=1249920\). Beyond this threshold,
+use Lemma~\ref{lem:even-tap-tail-period} and factor one
+representative in each even class modulo \(4(v-u)\) for each pair.
+The reciprocal test and the tests for degree at most six use the
+same fixed polynomials as in the odd-degree proof.
+The union covers all \(624960\) even classes modulo \(M\).
+The checker independently factors another representative one period
+later in every class with \texttt{--audit}.
+
+For degrees eight through \(150\), direct factorizations and
+reciprocal gcds suffice with the two lists and the additional pairs
+\((1,13),(1,5),(5,21)\). At degree seven use \((1,2)\).
+The combined calculation is in
+\nolinkurl{scripts/check_fixed_tap_cover.py}.
+\end{proof}
+
 \end{document}

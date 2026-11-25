@@ -1,4 +1,4 @@
-"""Verify a bounded list of odd taps passing four necessary tests in every odd degree from nine."""
+"""Verify bounded product taps passing the factor and reciprocal tests in every degree from seven."""
 
 import argparse
 from functools import cache
@@ -12,13 +12,18 @@ from check_odd_tap_parity import factor_parity
 X = nmod_poly([0, 1], 2)
 PERIOD = 1_249_920
 CUTOFF = 6
-TAPS = (
+ODD_TAPS = (
     (35, 45), (21, 27), (7, 63), (1, 9), (9, 63), (1, 7), (21, 49), (3, 7),
     (21, 41), (35, 37), (31, 33), (21, 43), (15, 49), (17, 45), (9, 21),
     (7, 55), (27, 33), (9, 23), (19, 37), (5, 7), (5, 9), (15, 55), (1, 3),
     (29, 51), (19, 45), (7, 41), (29, 35), (17, 47), (15, 21), (13, 27),
 )
-SHORT_EXCEPTIONS = {15: (1, 13), 25: (1, 5)}
+EVEN_TAPS = (
+    (15, 63), (7, 27), (35, 45), (33, 35), (21, 49), (13, 31), (31, 45), (3, 75),
+    (1, 7), (21, 41), (21, 27), (13, 15), (5, 29), (13, 37), (31, 43), (31, 33),
+    (5, 35), (15, 21), (29, 35), (3, 35), (11, 47), (15, 51), (9, 29), (5, 7),
+)
+SHORT_TAPS = ((1, 13), (1, 5), (5, 21))
 
 
 @cache
@@ -68,19 +73,22 @@ def direct(n, u, v):
             and f.gcd(f.reverse()) == 1)
 
 
-def certified_classes(u, v, fields, audit):
+def factored_parity(n, u, v):
+    factors = (X**n + (1+X**u)*(1+X**v)).factor()[1]
+    return None if any(m != 1 for _, m in factors) else len(factors) % 2
+
+
+def certified_classes(u, v, odd, fields, audit):
     h = (u+v)//2
-    period = lcm(8, 4*h)
+    period = lcm(8, 4*h) if odd else 4*(v-u)
+    threshold = 2*h if odd else 3*u+v
+    base = period*(threshold//period+1)
     accepted = 0
-    for r in range(1, period, 2):
-        n = period+r
-        predicted = factor_parity(n, u, v)
-        if audit:
-            f = X**n + (1+X**u)*(1+X**v)
-            factors = f.factor()[1]
-            actual = None if any(m != 1 for _, m in factors) else len(factors) % 2
-            if actual != predicted:
-                raise ArithmeticError(f"factor parity disagrees at {(n, u, v)}")
+    for r in range(int(odd), period, 2):
+        n = base+r
+        predicted = factor_parity(n, u, v) if odd else factored_parity(n, u, v)
+        if audit and factored_parity(n+period, u, v) != predicted:
+            raise ArithmeticError(f"factor parity disagrees one period later at {(n, u, v)}")
         if predicted and gcd(n, gcd(u, v)) == 1:
             accepted |= 1 << r
     accepted *= repeat(period)
@@ -102,26 +110,32 @@ def certified_classes(u, v, fields, audit):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--audit", action="store_true", help="factor every representative used for parity")
-    parser.add_argument("--degree", type=int, help="list tap pairs certified at a specified odd degree")
+    parser.add_argument("--audit", action="store_true", help="verify all parity representatives one period later")
+    parser.add_argument("--degree", type=int, help="list tap pairs certified at a specified degree")
     args = parser.parse_args()
-    if args.degree is not None and (args.degree < 9 or args.degree % 2 == 0):
-        parser.error("expected an odd degree of at least nine")
+    if args.degree is not None and args.degree < 7:
+        parser.error("expected a degree of at least seven")
     fields = small_fields()
-    classes = {(u, v): certified_classes(u, v, fields, args.audit) for u, v in TAPS}
-    covered = 0
-    for mask in classes.values():
-        covered |= mask
-    if covered != 2*repeat(2):
-        raise ArithmeticError("the selected taps leave an odd residue uncovered")
-    short = {}
-    for n in range(9, 81, 2):
-        options = [SHORT_EXCEPTIONS[n]] if n in SHORT_EXCEPTIONS else TAPS
-        short[n] = [(u, v) for u, v in options if direct(n, u, v)]
+    classes = {}
+    for odd, taps in ((True, ODD_TAPS), (False, EVEN_TAPS)):
+        covered = 0
+        for u, v in taps:
+            mask = certified_classes(u, v, odd, fields, args.audit)
+            classes[u, v] = classes.get((u, v), 0) | mask
+            covered |= mask
+        if covered != repeat(2) << int(odd):
+            raise ArithmeticError("the selected taps leave a degree class uncovered")
+        kind = "odd" if odd else "even"
+        print(f"{len(taps)} tap pairs cover all {covered.bit_count():,} {kind} residues modulo {PERIOD:,}.")
+    threshold = max(3*u+v for u, v in EVEN_TAPS)
+    short = {7: [(1, 2)]}
+    if not direct(7, 1, 2):
+        raise ArithmeticError("degree-seven factorization disagrees")
+    for n in range(8, threshold+1):
+        short[n] = [(u, v) for u, v in (*classes, *SHORT_TAPS) if direct(n, u, v)]
         if not short[n]:
             raise ArithmeticError(f"small degree {n} is uncovered")
-    print(f"{len(classes)} tap pairs cover all {covered.bit_count():,} odd residues modulo {PERIOD:,}. "
-          f"Direct factorizations cover all {len(short)} odd degrees from 9 through 79.")
+    print(f"Direct factorizations cover degrees 7 through {threshold}.")
     if args.degree is not None:
         n = args.degree
         choices = short[n] if n in short else [pair for pair, mask in classes.items() if (mask >> (n % PERIOD)) & 1]
