@@ -4311,4 +4311,99 @@ The \texttt{--wheel} option of
 \nolinkurl{scripts/check_period_relations.py} verifies the identities
 and the moment calculation. The requested exponents remain open.
 
+\section{Multiplicities of quotients and products of roots}
+\begin{theorem}\label{thm:two-block}
+Let \(f=X^mA(X^d)+B(X^d)\in\F[X]\) be squarefree of degree \(n\),
+with \(m,d>0\), coprime \(A,B\), and \(A(0)=B(0)=1\).
+Suppose its positive exponents have gcd one and its displayed blocks
+have disjoint supports. Write \(a=\deg A,\ b=\deg B\), and let \(R\)
+be its set of roots in an algebraic closure. For \(z\ne0,1\),
+\[
+ \#\{y\in R:zy\in R\}\le a+b.
+\]
+For a prescribed \(z\ne0,1\), at most \(\max(a,b)\) unordered pairs of
+roots, allowing repetitions, have product \(z\). The product bound also
+holds for \(z=1\) unless \(f\) is self-reciprocal.
+\end{theorem}
+\begin{proof}
+The support condition gives \(\gcd(m,d)=1\). At a root \(y\), both
+\(A(y^d)\) and \(B(y^d)\) are nonzero. If two roots have equal
+\(d\)-th powers, the equation gives equal \(m\)-th powers as well,
+so the roots agree. Thus \(y\mapsto y^d\) is injective on \(R\).
+
+For the quotient put \(c=z^d\) and
+\[
+ H(T)= B(cT)A(T)-z^m A(cT)B(T).
+\]
+Every root \(y\) with \(zy\in R\) gives \(H(y^d)=0\).
+If \(H=0\), the same equation gives \(f(zy)=0\) at every \(y\in R\).
+Scaling by \(z\) then permutes \(R\), so \(f(zX)\) is proportional
+to \(f(X)\) by squarefreeness. Their constant coefficients agree.
+It follows that \(z^e=1\) for each exponent \(e\) of \(f\), forcing
+\(z=1\). Thus \(H\ne0\), and its degree is at most \(a+b\).
+
+For the product use the Laurent polynomial
+\[
+ L(T)=B(T)B(c/T)-z^m A(T)A(c/T).
+\]
+It is invariant under \(T\mapsto c/T\) and has no powers of \(T\)
+outside \([-\max(a,b),\max(a,b)]\). In particular it is a polynomial
+of degree at most \(\max(a,b)\) in \(U=T+c/T\). Indeed the symmetric
+terms \(T^j+c^j/T^j\) obey the recurrence
+\(D_{j+1}=U D_j-cD_{j-1}\), starting with \(D_0=2,D_1=U\).
+An unordered pair \(\{y,w\}\) with \(yw=z\) gives a root
+\(U=y^d+w^d\). Its sum and the fixed product \(c\) determine
+\(\{y^d,w^d\}\) and hence the original pair.
+If \(L=0\), the root equation at every \(y\in R\) gives \(f(z/y)=0\).
+Consequently \(X^n f(z/X)=f(X)\), since both sides are monic and
+have the same distinct roots. Comparing exponents makes \(f\)
+self-reciprocal, and comparing its binary coefficients gives
+\(z^e=1\) on its support. Again \(z=1\).
+\end{proof}
+
+If all roots have order dividing \(h\), counting the \(n(n-1)\)
+ordered off-diagonal pairs gives
+\[
+             n(n-1)\le(a+b)(h-1).
+\]
+For an irreducible \(f\) this applies to the order of each root.
+More generally, suppose \(n=b_0k\), \(b_0>0\). If an off-diagonal
+quotient \(z\) lies in \(\mathbb F_{2^{b_0}}\), the \(k\) successive
+\(2^{b_0}\)-powers of its numerator and denominator give \(k\)
+different pairs with quotient \(z\). Hence \(k\le a+b\).
+Lean checks the polynomial elimination for quotients, the common
+exponent count, and the Frobenius multiplicity in
+\nolinkurl{GF2Sparse/TwoBlockOrder.lean}.
+
+For example, if a degree-15 irreducible has root order dividing
+\(7\cdot31\), take \(z=r^{31}\ne1\). This is the quotient \(r^{32}/r\)
+and belongs to \(\mathbb F_8\). A partition with \(a+b<5\) rules out
+this order. Since \(2^{15}-1=7\cdot31\cdot151\), it forces 151 into
+the root order. Enumerating all partitions gives this test for 22 of
+the 98 irreducible degree-15 pentanomials with positive exponent gcd
+one. Across all 5,312 such irreducible pentanomials through degree 32,
+direct enumeration in the group of the exact order verifies both
+multiplicity bounds. The checker is
+\nolinkurl{scripts/check_two_block_orders.py}.
+
+\begin{corollary}
+For every \(n\ge4\) there is an explicit squarefree pentanomial
+\[
+       f_n=X^n+X^{n-1}+X^2+X+1
+\]
+whose quotient-ring period \(h\) satisfies \(3(h-1)\ge n(n-1)\).
+Its gcd with its reciprocal is \(\Phi_5=X^4+X^3+X^2+X+1\)
+when \(n\equiv4\pmod5\), and is one otherwise.
+\end{corollary}
+\begin{proof}
+Use \(m=n-1,d=1,A=1+X,B=1+X+X^2\). In even degree the derivative
+is \(X^{n-2}+1\), whose roots give \(f_n=1\). In odd degree it is
+\(X^{n-1}+1\), whose roots give \(f_n=X^2\). Thus all \(n\) roots
+are simple and nonzero and the common exponent bound applies.
+For \(n>4\), adding \(f_n\) to its reciprocal gives
+\(X^2(1+X^{n-4})\). At a nonzero root of this difference, \(f_n\)
+equals \(\Phi_5\). This leaves exactly the primitive fifth roots
+when \(5\mid n-4\). In degree four \(f_4=\Phi_5\) directly.
+\end{proof}
+
 \end{document}
