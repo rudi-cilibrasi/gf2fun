@@ -943,6 +943,54 @@ coprimality equivalence and the progression obstruction in
 \texttt{GF2Sparse/ReciprocalSieve.lean}.
 \end{proof}
 
+\section{An exact third exterior-power test for trinomials}
+\begin{theorem}\label{thm:triple-orbits}
+Let \(T=X^n+X^a+1\) with \(0<a<n\) and \(\gcd(n,a)=1\). Put
+\[
+       D=n^2-na+a^2,\qquad G=\gcd(T,X^D-1),\qquad
+       \epsilon=\mathbf1_{\{a\bmod3,n\bmod3\}=\{1,2\}} .
+\]
+The roots of \(T\) contain exactly \(\epsilon\) unordered inverse
+pairs and \((\deg G-2\epsilon)/3\) unordered triples of distinct roots
+with product 1. These triples are pairwise disjoint. In particular
+\(G=1\) is the exact test for passing the first three exterior-power
+conditions whenever \(n\ge6\).
+\end{theorem}
+\begin{proof}
+The trinomial is squarefree. If just one of \(a,n\) is odd its
+derivative is a monomial, and if both are odd then \(T+XT'=1\).
+Suppose \(x,y,z\) are roots with \(xyz=1\). Put \(u=x^a,v=y^a,w=z^a\).
+Since \(x^n=1+u\), we have \(uvw=(1+u)(1+v)(1+w)=1\). Consequently
+\[
+             \bigl(v(1+u)+1\bigr)\bigl(w(1+u)+1\bigr)=0 .
+\]
+Indeed the left side is the sum of \((1+u)(1+v)(1+w)+1\) and
+\((1+u)(uvw+1)\). After exchanging \(y,z\) if necessary,
+\(y^a=x^{-n}\) and \(y^n=1+y^a=x^{a-n}\).
+Computing \(y^{an}\) in two ways gives \(x^D=1\).
+
+Conversely \(\gcd(a,D)=1\). Choose \(j\equiv-na^{-1}\pmod D\).
+Then \(jn\equiv a-n\) and \(j^2+j+1\equiv0\pmod D\).
+For a root \(x\) of \(G\), the element \(y=x^j\) satisfies
+\(y^a=x^{-n}\) and \(y^n=x^{a-n}=1+x^{-n}\), hence is again a root
+of \(G\). Since \(j^3\equiv1\pmod D\), this operation partitions the
+roots of \(G\) into orbits of size one or three. Each three-cycle has
+product 1, and the preceding argument determines that cycle uniquely
+from any of its members because powering by \(a\) permutes the
+\(D\)-th roots of unity. A fixed point has \(x^3=1\), and \(T(1)=1\).
+
+If \(x,1/x\) are both roots of \(T\), then
+\((1+x^a)(1+x^{-a})=1\), so \(x^a\) is a nontrivial cube root of
+unity. The same holds for \(x^n=1+x^a\), and \(\gcd(a,n)=1\)
+forces \(x^3=1\). The two nontrivial cube roots occur precisely
+when \(\epsilon=1\). In this case \(3\mid D\) and \(j\equiv1\bmod3\),
+so they give exactly the two fixed points. This proves the counts.
+\end{proof}
+For instance \(X^{16}+X^3+1\) has \(D=217\), and the gcd has degree
+three. Its one product-one triple is the root set of \(X^3+X^2+1\).
+The script \texttt{scripts/check\_trinomial\_triples.py} compares both
+counts against the nullities of the actual exterior-power matrices.
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is
