@@ -7228,4 +7228,120 @@ The combined calculation is in
 \nolinkurl{scripts/check_fixed_tap_cover.py}.
 \end{proof}
 
+\section{Consecutive degrees with primitive factors in every bounded support}
+\label{sec:primitive-factor-block}
+
+\begin{lemma}\label{lem:prime-field-generators}
+Let \(p\) be an odd prime, \(N=2^p-1\), and let \(R\in\F(X)\) be
+nonconstant of degree \(D\), the maximum of the degrees of its reduced
+numerator and denominator. In \(\mathbb F_{2^p}^{\times}\) at least
+\[
+ N\left(1-(D+1)\frac{1+\log p}{2p}\right)-2D
+\]
+elements \(x\) have both \(x\) and \(R(x)\) primitive.
+\end{lemma}
+\begin{proof}
+Every prime \(\ell\mid N\) has \(\ord_\ell(2)=p\), since order one
+would give \(\ell\mid1\). Hence \(2p\mid\ell-1\). In increasing
+order the \(i\)-th distinct such prime is at least \(2pi+1\), and
+there are fewer than \(p\) since their product is at most \(N<2^p\).
+Every nongenerator in the cyclic group of order \(N\) lies in a
+subgroup of prime index. Their union has relative size at most
+\[
+ \sum_{\ell\mid N,\ \ell\ {\rm prime}}\frac1\ell
+    \le \frac1{2p}\sum_{i=1}^p\frac1i\le\frac{1+\log p}{2p}.
+\]
+Every value of \(R\) has at most \(D\) preimages. Exclude nongenerators,
+preimages of nongenerators, and at most \(2D\) zeros and poles.
+\end{proof}
+For results on primitive pairs for rational functions over general
+finite fields see
+\href{https://arxiv.org/abs/1909.13074}{Cohen, H.~Sharma and R.~Sharma,
+\emph{Primitive values of rational functions at primitive elements of a finite field}}.
+
+\begin{theorem}\label{thm:primitive-factor-block}
+Fix positive integers \(A,H,K\), a cutoff \(B\), and a reduced residue
+class \(r\bmod M\). There is a reduced subprogression with the following
+property. For every sufficiently large \(n\) in it and every \(0\le j<H\),
+every odd-weight polynomial of degree \(m=n+j\) with constant term one
+and support in
+\[
+ [0,A]\ \cup\ [m-A,m]
+\]
+has at least \(K\) distinct proper primitive irreducible factors.
+Their degrees are primes greater than \(B\), and can be taken distinct
+across the whole collection of supports and offsets. The prescribed class contains arbitrarily large prime starts for such
+blocks.
+\end{theorem}
+\begin{proof}
+For \(m>2A\) write each polynomial uniquely as \(X^{m-A}P+Q\), where
+\(P\) is monic of degree \(A\), \(\deg Q\le A\), and \(Q(0)=1\).
+Odd weight gives \(P(1)+Q(1)=1\). Thus for each fixed \(j,P,Q\) the
+rational function \(R=X^{A-j}Q/P\) is nonconstant. Indeed a nonzero
+constant in \(\F\) would be one, giving \(P(1)=Q(1)\) after clearing
+the power of \(X\). Its degree is at most \(H+2A\).
+
+For each of the finitely many triples \((j,P,Q)\) choose \(K\) fresh
+prime degrees \(p>\max(B,A,M,2)\) large enough for
+Lemma~\ref{lem:prime-field-generators} to supply a generator
+\(x\in\mathbb F_{2^p}^{\times}\) for which \(R(x)\) also generates.
+The minimal polynomial of \(x\) has degree \(p\), since its order
+\(2^p-1\) exceeds the size of the multiplicative group of every proper
+subfield. In particular \(P(x)\ne0\). Write \(R(x)=x^b\). Then
+\(\gcd(b,2^p-1)=1\), and the congruence \(n\equiv b\bmod(2^p-1)\)
+forces \(x^{n+j-A}P(x)+Q(x)=0\) whenever \(n+j\ge A\).
+Its primitive minimal polynomial is the required factor.
+
+The moduli \(2^p-1\) for distinct prime \(p\) are pairwise coprime.
+They are also coprime to \(M\), since each of their prime divisors
+exceeds \(p>M\). The Chinese remainder theorem combines all the
+conditions with \(n\equiv r\bmod M\) into a reduced class.
+Beyond the largest selected \(p\), all the factors are proper.
+Dirichlet's theorem supplies the prime starts.
+\end{proof}
+
+\begin{corollary}\label{cor:primitive-factor-length}
+For fixed \(A,M,r\) and any \(H,K\) with \(HK\) sufficiently large,
+a prime start in Theorem~\ref{thm:primitive-factor-block} with \(B=6\)
+can be taken with
+\[
+ \log n\ll_{A,M}(HK)^2\log(2HK).
+\]
+In particular, infinitely many prime starts have blocks of length
+\(\gg_{A,M}\sqrt{\log n/\log\log n}\) with two such factors per
+polynomial. Infinitely many also have both the block length and the
+number of factors per polynomial at least
+\(c_{A,M}(\log n/\log\log n)^{1/4}\).
+\end{corollary}
+\begin{proof}
+Put \(T=HK\), choose \(U=C_A T\log(2T)\), and take prime degrees
+in \([U,2U]\). There are at most \(2^{2A}T\) choices to make, and
+the prime number theorem supplies that many primes for a large enough
+\(C_A\). With \(D\le H+2A\), the lower bound of the lemma is positive
+throughout this interval after increasing \(C_A\).
+The combined modulus \(W\) then has \(\log W\ll_{A,M} T^2\log(2T)\).
+For the representative \(1\le a<W\) of the reduced class, take the
+least prime \(n\equiv a+W\pmod{W^2}\). This class is reduced and
+\(n>W>2U\) for large \(T\). Linnik's theorem gives \(\log n\ll\log W\).
+Also \(W\ge2^U-1\), so \(\log\log n\gg\log(2T)\).
+Taking \(K=2\), or taking \(K=H\), proves the respective assertions.
+\href{https://arxiv.org/abs/0906.2749}{Xylouris, \emph{On Linnik's constant}}.
+\end{proof}
+
+For a numerical example take the two residue classes of degrees
+\(1229,1230\bmod1249920\) from Theorem~\ref{thm:fixed-tap-all-cover}.
+At a specific 269-digit prime \(n\equiv1229\bmod1249920\), all four
+retained pairs at \(n\) and all six retained pairs at \(n+1\) have two
+primitive factors each. The twenty factor degrees are the distinct
+primes from 7 through 83. Thus every retained candidate in these two
+degrees has odd factor count, avoids inverse pairs and factors through
+degree six, and has at least three irreducible factors. The certificate
+\nolinkurl{data/fixed-tap-primitive-factors.csv} gives the factor masks
+and exponents. A row with offset \(j\), factor degree \(p\) and exponent
+\(e\) prescribes \(n\equiv e-j\bmod(2^p-1)\). Together with the class
+of 1229 these determine \(0<a<W\) modulo \(W\). The prime start is
+\(a+75W\). The program \nolinkurl{scripts/check_fixed_tap_block.py}
+reconstructs the progression, proves primality of this start with
+FLINT and checks each divisibility at the full degree.
+
 \end{document}
