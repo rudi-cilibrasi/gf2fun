@@ -1,0 +1,553 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,microtype}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Partial results on primitive binary pentanomials}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newcommand{\F}{\mathbb F_2}
+\newcommand{\ord}{\operatorname{ord}}
+\title{Partial results on primitive binary pentanomials}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+\vspace{-2em}
+The question is whether every positive degree \(n\) admits a primitive polynomial
+in \(\F[X]\) with at most five nonzero coefficients. A primitive polynomial is
+monic and irreducible, and its root generates the group of order \(2^n-1\).
+For \(n>1\) its constant coefficient is 1, and evaluating at 1 shows that its
+weight is odd. Thus a witness in these degrees must be a trinomial or a
+pentanomial. Degree one has the witness \(X+1\). The all-degree existence
+question remains unresolved here. This exact assertion is Conjecture 4.3.5
+in Stephen D. Cohen's section
+\href{https://archive.ymsc.tsinghua.edu.cn/pacm_download/672/12637-dingjt-p2.pdf\#page=133}
+{\emph{Weights of primitive polynomials}}, which cites Golomb and
+Mullen--Shparlinski. The weaker irreducibility question is Conjecture 2.2.5 in the
+\href{https://people.math.carleton.ca/~dthomson/Research/pdfs/DThomson-HFFSect22.pdf}
+{chapter by David Thomson in the \emph{Handbook of Finite Fields}}.
+
+\section{A family with two free exponents}
+Put
+\[
+ F_{n,u,v}(X)=X^n+(X^u+1)(X^v+1)
+             =X^n+X^{u+v}+X^u+X^v+1 .
+\]
+Throughout this section \(u,v\) are distinct positive integers with \(u+v<n\).
+
+\begin{theorem}
+For every \(5\le n\le128\), some \(F_{n,u,v}\) is primitive.
+Consequently every \(1\le n\le128\) has a primitive polynomial of weight at most five.
+\end{theorem}
+\begin{proof}
+The explicit pairs and certificates are in \texttt{GF2Sparse/Witnesses.lean}.
+For example, \(F_{24,1,3}=X^{24}+X^4+X^3+X+1\).
+For each candidate \(f\), write \(r=X\bmod f\) and \(N=2^n-1\).
+The certificate checks \(r^N=1\) and \(r^{N/p}\ne1\) for every prime divisor
+\(p\) of \(N\). The first equality makes \(r\) a unit of order dividing \(N\).
+Every proper divisor of \(N\) divides \(N/p\) for some such \(p\).
+Thus the \(N\) distinct powers of \(r\) exhaust the nonzero elements of the
+\(2^n\)-element quotient. The quotient is a field and \(f\) is primitive.
+The Lean proof also checks each integer factorization and the primality of its
+factors. Direct certificates cover degrees 1 through 4.
+\end{proof}
+The public \href{https://people.math.carleton.ca/~daniel/hff/}{handbook tables}
+give minimum-weight primitive polynomials for degrees 2 through 640.
+The relation \(u+v\) between the interior exponents also appears in earlier
+work. Table 4.8 of the \emph{Handbook of Applied Cryptography} uses it for
+its pentanomial entries, giving a trinomial when one is available.
+Theorem 1 verifies a pentanomial of this shape throughout \(5\le n\le128\),
+including degrees admitting a primitive trinomial.
+\href{https://cacr.uwaterloo.ca/hac/about/chap4.pdf\#page=37}{Menezes, van Oorschot and Vanstone, chapter 4}.
+
+\begin{theorem}\label{thm:sieve}
+Let \(B\ge1\) and \(L=\mathop{\rm lcm}_{1\le d\le B}(2^d-1)\).
+For every \(n>L+2\), \(F_{n,L,2}\) has exactly five terms, is squarefree,
+and all its irreducible factors have degree greater than \(B\).
+\end{theorem}
+\begin{proof}
+The integer \(L\) is odd, so \(L\ne2\). If a nonzero \(\alpha\) has degree
+\(d\le B\) over \(\F\), then \(\alpha^{2^d-1}=1\). Hence
+\(F_{n,L,2}(\alpha)=\alpha^n\ne0\). The constant coefficient excludes zero.
+
+More generally \(F_{n,u,v}\) is squarefree when \(u\) is odd and \(v\) is even.
+At a root \(r\), both \(r\) and \(s=r^v+1\) are nonzero.
+For even \(n\), the derivative at \(r\) equals \(r^{u-1}s\).
+For odd \(n\), the identity \(F(r)+rF'(r)=s\) gives \(F'(r)\ne0\).
+\end{proof}
+
+\begin{theorem}\label{thm:order}
+For \(d=u+v\), the order of \(X\) in the units of \(\F[X]/F_{n,u,v}\) is at least
+\[
+ C(n,d)=\sum_{j=0}^{\lfloor(n-1)/d\rfloor}(n-dj)\ \ge\ \frac{n^2}{2d}.
+\]
+\end{theorem}
+\begin{proof}
+Put \(g=(X^u+1)(X^v+1)\). Since \(F(0)=1\), \(X\) is a unit in the quotient.
+The residue of \(X^{i+nj}\) is represented by \(X^ig^j\).
+If \(i+dj<n\), this representative has degree less than \(n\).
+Its least exponent is \(i\) and its largest is \(i+dj\), so it determines
+both \(i\) and \(j\). Distinct representatives of degree less than \(n\)
+give distinct residues. Counting the pairs gives the sum. It bounds below the
+area under \(\max(n-dx,0)\) for \(x\ge0\).
+\end{proof}
+In particular Theorem~\ref{thm:sieve} gives order at least
+\(n^2/(2(L+2))\) for every \(n>L+2\). The target order is \(2^n-1\).
+
+\paragraph{Factor parity.}
+Take \(B\ge3\). For all sufficiently large \(n\equiv1,4,6,7\bmod8\),
+\(F_{n,1,4L}\) is squarefree, avoids factors of degree at most \(B\),
+and has an \emph{odd} number of irreducible factors. The first two claims
+follow from the derivative and \(r^{4L}=1\) in the small fields. For parity,
+use Theorems 3.1 and 3.2 of Kim, Pak and Sin with even exponent \(4L\),
+divisible by four. Their size condition holds for \(n\ge8L+2\).
+For \(n\) a positive multiple of \(8L\), the same three conclusions hold
+for \(F_{n,1,2L}\). Apply Theorem 3.2 with leading degree \(m=n\)
+and even exponent \(h=2L\). Here \(L\ge21\),
+\(h\le\lfloor n/2\rfloor-1\), \(h\equiv2\bmod4\), \(h\ne6\), and
+\((2n+4)\bmod h=4\). None of the even-factor cases applies.
+Reducibility of this candidate would therefore require at least three factors,
+each of degree greater than \(B\). This deduction uses the published parity
+theorem. \href{https://arxiv.org/abs/1406.7597}{Kim, Pak and Sin, \emph{Swan-like reducibility for Type I pentanomials}}.
+
+\section{How many pentanomials survive a finite sieve?}
+\begin{theorem}\label{thm:many}
+Fix \(B\) and write \(L\) as in Theorem~\ref{thm:sieve}.
+For \(n>6LM\) there are at least \(LM^3\) distinct squarefree degree-\(n\)
+pentanomials whose irreducible factors all have degree greater than \(B\).
+In particular their number is \(\Omega_B(n^3)\) in every large degree.
+\end{theorem}
+\begin{proof}
+Use \(X^n+X^c+X^b+X^a+1\). Let \(\delta=1\) for even \(n\) and
+\(\delta=2\) for odd \(n\). Choose integers \(0\le i<M,\ 1\le j\le LM,\
+1\le k\le M\), and put
+\[
+  a=L(2i+\delta),\qquad b=2LM+2j,\qquad c=b+2Lk.
+\]
+Then \(0<a\le 2LM<b<c\le 6LM<n\), so the support determines \(a,b,c\),
+which in turn determine \(i,j,k\). Exactly one of \(n,a,b,c\) is odd.
+The derivative is a monomial, and the constant term is 1, proving
+squarefreeness. At every nonzero \(\alpha\) of degree at most \(B\),
+\(\alpha^a=1\) and \(\alpha^c=\alpha^b\), so the value is \(\alpha^n\ne0\).
+Take \(M=\lfloor(n-1)/(6L)\rfloor\) for the asymptotic claim.
+\end{proof}
+There are \(\binom{n-1}{3}\) degree-\(n\) pentanomials with constant
+coefficient 1. The lower limit of the fraction of these passing the
+squarefreeness and small-factor tests is at least \(1/(36L^2)\).
+The cutoff can grow with \(n\). For \(0<\varepsilon<1\), take the largest
+integer \(B\) with \(B(B+1)\le\varepsilon\log_2 n\). Then
+\(L^2\le\prod_{j=1}^B(2^j-1)^2\le n^\varepsilon\).
+In every sufficiently large degree there are therefore
+\(\gg n^{3-\varepsilon}\) squarefree pentanomials with no irreducible
+factor of degree at most this \(B\), which grows as
+\(\sqrt{\varepsilon\log_2 n}\).
+
+\section{Passing the factor-parity test in every large degree}
+\begin{theorem}\label{thm:parity}
+Fix \(B\ge1\), put \(L=\mathop{\rm lcm}_{1\le d\le B}(2^d-1)\), and let
+\(n>128L\). There are at least
+\[
+                      \frac{n^2}{6144L^2}
+\]
+distinct squarefree degree-\(n\) binary pentanomials with constant term 1,
+an odd number of irreducible factors, and no factor of degree from 1 to \(B\).
+The positive exponents of each have greatest common divisor 1, and the
+support is a Sidon set. Its fifteen unordered pair sums, including doubles,
+are all distinct.
+\end{theorem}
+\begin{proof}
+Every nonzero element of degree at most \(B\) has \(L\)-th power 1.
+In both constructions below two pairs of terms cancel at every such
+element, leaving the leading monomial. Each polynomial has exactly one
+odd exponent, so its derivative is a monomial. Its constant term 1
+then gives squarefreeness.
+
+\emph{Odd \(n\).} Choose a multiple \(h\) of \(L\) in \((n/4,n/3)\).
+Require \(h\) to be odd and choose its residue modulo 4 so that
+\[
+        4\mid n-3h \quad\Longleftrightarrow\quad n\equiv3,5\pmod8 .
+\]
+This selects one residue of \(h\) modulo \(4L\), since \(L\) is odd.
+Choose \(3n/4<c<n\) with \(c\equiv8\bmod 8L\), and take the integer lift
+\[
+              F(X)=1+X^8+X^{2h}+X^c+X^n .
+\]
+The cancelling pairs are \((0,2h)\) and \((8,c)\). The exponents \(8,n\)
+are coprime.
+
+Write \(\beta_i\) for the inverses of the complex roots of \(F\), with
+multiplicity, and \(P_j=\sum_i\beta_i^j\). They are algebraic units.
+Set \(k=n-2h\), \(w=n-3h\), so that \(k\) is odd, \(2k<n\), and
+\(0<w<h<c/2\). The product formula for the discriminant, with the
+derivative taken modulo 8, gives
+\[
+ \operatorname{disc}(F)\equiv(-1)^{n(n-1)/2}n^n
+ \left(1+\frac{2h}{n}P_k+
+       \left(\frac{2h}{n}\right)^2\frac{P_k^2-P_{2k}}2\right)\pmod8 .
+\]
+Here \(n\) is invertible modulo 8, and the half in the last term is the
+integer second elementary symmetric function of the \(\beta_i^k\).
+Indeed only \(nX^{n-1}\) and \(2hX^{2h-1}\) survive in \(F'\) modulo 8,
+and the product of all \((n-1)\)-st powers of the roots is 1.
+
+Put \(G(Y)=1+Y^4+Y^h+Y^{c/2}\). From
+\(\sum_{j\ge1}P_jX^j=-XF'(X)/F(X)\) and
+\(F(X)\equiv G(X^2)\pmod{X^n}\), one gets \(P_k=0\) and
+\[
+ \frac{P_{2k}}2=[Y^k]\frac{-YG'(Y)}{G(Y)}
+ \equiv [Y^{w}]\frac1{1+Y^4}=\mathbf 1_{4\mid w}\pmod2 .
+\]
+In the last step \(YG'\equiv Y^h\bmod2\), and \(w<h,c/2\).
+Thus the discriminant is \((-1)^{n(n-1)/2}n^n(1+4\mathbf 1_{4\mid w})\)
+modulo 8. Its first factor is 5 for \(n\equiv3,5\bmod8\) and 1 for
+\(n\equiv1,7\bmod8\). Our choice makes the discriminant 1 in all four
+cases. The Stickelberger--Swan theorem gives odd factor count for the
+binary reduction since \(n\) is odd.
+\href{https://doi.org/10.2140/pjm.1962.12.1099}{Swan, Theorem 1}.
+
+For the Sidon property, \(n\) is the sole odd exponent and is largest.
+An equality of two different unordered pair sums must therefore use
+only \(0,8,2h,c\). Among these four, \(2h>16\) and \(c>2h+8\).
+The only remaining possibilities are \(c=4h\) or \(c=4h-8\).
+The first exceeds \(n\) and the second is 4 modulo 8.
+
+\emph{Even \(n\).} Take \(a=4\) if \(n\equiv4\bmod8\), and \(a=2\)
+otherwise. Choose \(n/16<b<n/8\) with \(L\mid b\). Require
+\(b\equiv n/2\bmod4\) if \(n\equiv2\bmod4\), and \(b\equiv1\bmod4\)
+otherwise. Choose \(n/4<c<n/3\) with \(c\equiv a\bmod 2L\), and use
+\[
+                    1+X^a+X^b+X^c+X^n .
+\]
+The pairs \((0,b),(a,c)\) cancel. The odd exponent \(b\) is coprime
+to \(a\), a power of two. Set \(k=b-a,\ t=n-b,\ v=c-b\), and take the
+integer lift \(F\) with all five coefficients positive. For its complex
+roots \(\alpha_i\) put \(S_j=\sum_i\alpha_i^j\), also for negative \(j\).
+The needed power sums are
+\[
+\begin{gathered}
+ S_{-k}=0,\qquad S_t=-t,\qquad S_{2t}=t,\\
+ S_v=S_{2v}=S_{t-k}=S_{v-k}=S_{t+v}=0,\qquad
+ S_{-2k}=-2\quad\text{if }a=2 .
+\end{gathered}
+\]
+For positive indices use \(-X(F^*)'/F^*\), where
+\(F^*=1+X^{n-c}+X^t+X^{n-a}+X^n\).
+Since \(3(n-c)>2n\), at most two positive exponents of \(F^*\) can
+contribute to \(S_{2t}\). The only pair summing to \(2t\) is \((t,t)\),
+because \(2a<2b<c\). The indices \(v,2v,v-k\) lie strictly between
+0 and \(n-c\), \(t-k\) lies between \(n-c\) and \(t\), and
+\(n<t+v<2(n-c)\). This gives every listed positive-index value.
+For \(S_{-k}\), use \(-XF'/F\). The index \(k<b\) is odd and all exponents below
+\(b\) are even. When \(a=2\), the coefficient at \(2k<2b<c\) comes
+entirely from \(-2X^2/(1+X^2)\). A single use of \(X^b\) has odd
+degree and two uses would exceed \(2k\).
+
+Factor \(bX^{b-1}\) from the derivative evaluated at each root. This
+leaves \(1+(a/b)\alpha_i^{-k}+(c/b)\alpha_i^v+(n/b)\alpha_i^t\).
+All three coefficients are even modulo 8. In the product over \(i\)
+retain terms of total degree at most two. The displayed power sums
+make all mixed terms zero, using
+\(\sum_{i\ne j}\alpha_i^r\alpha_j^s=S_rS_s-S_{r+s}\).
+The terms in \(n/b\) give \(1-t(n/b)+\binom t2(n/b)^2
+\equiv(1-n/b)^t\bmod8\). The terms in \(c/b\) vanish, and the
+quadratic term in \(a/b\) gives \(4\mathbf1_{a=2}\).
+Since \(b^n\equiv1\bmod8\) and \(t\) is odd, this yields
+\[
+ \operatorname{disc}(F)\equiv
+ (-1)^{n/2}\bigl(1-n/b+4\mathbf1_{a=2}\bigr)\pmod8 .
+\]
+For \(n\equiv0,4\bmod8\) the respective choices \(a=2,4\) both give 5.
+For \(n\equiv2\bmod4\) we have \(n/b\equiv2\bmod8\) and \(a=2\),
+again giving 5. Stickelberger--Swan now gives an odd number of factors.
+The same parity conclusion follows independently from cases (1c) and
+(2d) of Theorem 6 of Ryul Kim and Yun Mi Kim, using \(c>2b\) and
+\(n>3c-2b\).
+\href{https://doi.org/10.1155/2014/482837}{Kim and Kim,
+\emph{The Reducibility of a Special Binary Pentanomial}}.
+
+Here \(2a<b,\ 2b<c,\ 2c<n\). At each step the next exponent exceeds
+every sum of two earlier exponents. The new sums are distinct from
+each other as well, which proves the Sidon assertion.
+
+\emph{Counting.} An open interval of length \(\ell\ge2s\) contains at least
+\(\ell/(2s)\) integers in any given residue class modulo \(s\).
+For odd \(n\) the two interval lengths are \(n/12,n/4\), and the steps
+are \(4L,8L\). For even \(n\) the lengths are \(n/16,n/12\), and the
+steps are \(4L,2L\). The two choices are independent and the ordered
+support recovers them. Both products of lower bounds are \(n^2/(6144L^2)\).
+\end{proof}
+A reducible candidate from Theorem~\ref{thm:parity} has at least three
+distinct factors, hence a factor of degree between \(B+1\) and
+\(\lfloor n/3\rfloor\). Taking \(B(B+1)\le\varepsilon\log_2 n\) as above
+gives at least \(n^{2-\varepsilon}/6144\) candidates with the stated
+parity and a growing cutoff. The discriminant argument and counting
+in this theorem are proved on paper. In particular, this family is
+disjoint from the family in Theorem 1, where \(\{0,u+v\}\) and
+\(\{u,v\}\) have equal sums.
+The two constructions in the proof give the explicit primitive examples
+\[
+ X^{200}+X^{56}+X^{17}+X^2+1,\qquad
+ X^{521}+X^{416}+X^{282}+X^8+1.
+\]
+Lean certifies both orders and both Sidon criteria in
+\path{GF2Sparse/ParityExamples.lean}.
+The script \path{scripts/check_parity_sieve.py} independently verifies
+one sample in each degree 129--384 at \(B=1\), 385--544 at \(B=2\), and
+2689--2696 at \(B=3\) by distinct-degree factorization.
+
+\section{Restrictions on the exponents}
+\begin{lemma}\label{lem:compression}
+Let \(m\ge1\), \(P=\mathop{\rm lcm}_{1\le d\le m}(2^d-1)\).
+Suppose moving each exponent of \(f\) by an integer multiple of \(P\) gives a
+polynomial \(g\) of degree \(m\) with constant coefficient 1. Terms with the
+same new exponent are added over \(\F\).
+Then \(f\) has an irreducible factor of degree at most \(m\).
+\end{lemma}
+\begin{proof}
+Choose an irreducible divisor \(p\) of \(g\) and a root \(\alpha\) of \(p\).
+It is nonzero and its order divides \(P\).
+Then \(f(\alpha)=g(\alpha)=0\), so \(p\mid f\).
+\end{proof}
+
+\paragraph{Width of the three interior terms.}
+Suppose \(n>B\) is divisible by \(L\) from Theorem~\ref{thm:sieve}. If
+\(0<a<b<c<n\) and \(c-a\le B\), take a root \(\alpha\) of an irreducible
+factor of \(1+X^{b-a}+X^{c-a}\). Then \(\alpha^n=1\) and
+\[
+ (X^n+1+X^a+X^b+X^c)(\alpha)=0.
+\]
+This gives a proper factor regardless of how far the three interior terms are
+shifted. In degrees divisible by \(8L\), trinomials are also ruled out by Swan's
+theorem. At degree 24 the least possible interior width is exactly three,
+attained by the example in Theorem 1.
+\href{https://msp.org/pjm/1962/12-3/pjm-v12-n3-p27-p.pdf}{Swan, \emph{Factorization of polynomials over finite fields}}.
+
+\begin{theorem}\label{thm:bands}
+Fix a finite set \(S\subset[0,1]\) containing 0 and 1 and a residue class
+\(r\bmod D\), where \(D\ge1\). There are a constant \(c_{S,D}>0\)
+and infinitely many degrees \(n\equiv r\bmod D\) such that every irreducible
+degree-\(n\) binary polynomial has a nonzero coefficient at an exponent \(e\)
+satisfying
+\[
+                 \min_{s\in S}|e-sn|>c_{S,D}\sqrt{\log n}.
+\]
+For rational \(S\) and a fixed error allowance \(B\), failure of the restriction
+\(\min_{s\in S}|e-sn|\le B\) for all terms occurs on an entire arithmetic progression.
+\end{theorem}
+\begin{proof}
+Let \(B\) range over the positive integers. Write \(k=|S\setminus\{0,1\}|\).
+Let \(\delta\) be the minimum of 1 and all distances of interior members of \(S\)
+to the two endpoints. Let \(m\) be the least integer at least \(2(B+1)/\delta\)
+in the chosen residue class, and take \(P\) as in Lemma~\ref{lem:compression}.
+There is a multiple \(D\le t\le DP^k\) of \(D\) and integers \(a_s\)
+with \(|ts-a_s|\le 1/P\) for every interior \(s\).
+Indeed, put the fractional parts of the vectors \((jDs)_s\), \(0\le j\le P^k\),
+in the \(P^k\) half-open cubes of side \(1/P\) in the unit cube. Subtract two
+indices in the same cube and multiply their difference by \(D\) to get \(t\).
+For \(k=0\) take \(t=D\). Put \(a_0=0,\ a_1=t\) and \(n=m+Pt\equiv r\bmod D\).
+
+Assume every nonzero term of a monic degree-\(n\) polynomial \(f\) with
+\(f(0)=1\) is within \(B\) of some \(sn\). For each such term choose one such
+\(s\), using 0 and 1 at the endpoints. Replace its exponent \(e\) by
+\(b=e-Pa_s\). For interior \(s\),
+\[
+ |b-sm|\le |e-sn|+P|ts-a_s|\le B+1,
+\]
+so \(0<b<m\). For \(s=0\) the low exponents are unchanged.
+For \(s=1\) the high exponents shift down by \(n-m\).
+Consequently 0 and \(m\) each occur exactly once after compression.
+Lemma~\ref{lem:compression} gives a divisor of degree at most \(m<n\).
+
+Now \(P\ge2^m-1\) and \(P\le\prod_{d=1}^m(2^d-1)\le2^{m(m+1)/2}\).
+Thus \(n\) is unbounded as \(B\) grows and \(\log n=O_{S,D}(B^2)\).
+An irreducible polynomial in these degrees must have an exponent farther than
+\(B\) from \(nS\), proving the stated bound. For rational \(S\), take \(t\)
+to be any positive multiple of \(D\) times a common denominator and \(a_s=ts\) exactly.
+\end{proof}
+The algebraic compression lemma and the rational-grid obstruction are formalized
+in Lean. The simultaneous approximation argument above gives the real-slope extension.
+
+\section{A larger order bound at powers of two}
+This application of Gao's iterate method gives information about the order of
+the very same candidates that pass the small-factor tests.
+\href{https://www.math.clemson.edu/~sgao/papers/Gao99.pdf}{Gao, \emph{Elements of provable high orders in finite fields}}.
+
+\begin{theorem}
+Fix \(B\ge1\) and \(L\) as in Theorem~\ref{thm:sieve}.
+Let \(n=2^t>L+2\), \(g=(X^L+1)(X^2+1)\), \(d=L+2\), and \(f=X^n+g\).
+For every positive integer \(s\) with \(s d^s\le n\),
+\[
+   \ord_{\F[X]/f}(X)\ \ge\ d^{s(s+1)/2}.
+\]
+The same bound holds for the order modulo any irreducible factor of degree
+\(m\) if \(s d^s\le m\).
+\end{theorem}
+\begin{proof}
+Write \(G_0=X\) and \(G_j=g^{\circ j}\). In the quotient, \(X^n=g(X)\).
+Raising to the \(n\)-th power commutes with evaluating any polynomial over
+\(\F\), which gives \(X^{n^j}=G_j(X)\) by induction.
+
+Each \(G_j\) has a root that is a root of none of \(G_0,\ldots,G_{j-1}\).
+Work in an algebraic closure. For \(j=0,1\) use 0 and 1.
+For \(j=2\) choose a nonzero root of \(g+1\). Such a root exists because
+\(g+1=X^{L+2}+X^L+X^2\) has distinct exponents and becomes a nonconstant
+polynomial with constant coefficient 1 on removing the lowest power of \(X\).
+This root maps to 1 and then to 0. Each further preimage of a point outside
+\(\{0,1\}\) stays outside that set, since \(g(0)=1\) and \(g(1)=0\).
+Taking one preimage at every step increases the first hitting time of 0 by one.
+It follows that products of the \(G_j\) with different exponent vectors are
+distinct. Cancel common powers and evaluate at such a root for the largest
+remaining index.
+
+Take products \(\prod_{j=0}^{s-1}G_j^{e_j}\) with \(0\le e_j<d^{s-j}\).
+Their degrees are strictly less than \(s d^s\), since \(\deg G_j=d^j\).
+All \(d^{s(s+1)/2}\) products remain distinct modulo \(f\), and all are
+powers of \(X\). The same argument works with any stated factor in place of \(f\).
+\end{proof}
+For fixed \(B\) this gives \(\log\ord(X)\gg_B(\log n)^2\) along powers of two,
+by taking \(s=\lfloor\tfrac12\log_d n\rfloor\) for sufficiently large \(n\).
+The explicit order inequality, including the version for factors, is formalized
+in Lean. The quotient ring may have zero divisors.
+One can also let the cutoff grow with the degree. For instance, take
+\(B=\lfloor(\log n)^{1/3}\rfloor\) at sufficiently large powers of two.
+The product bound for \(L\) gives \(\log d=O(B^2)\). With the same choice of \(s\),
+\(s d^s\le n\) and \(\log\ord(X)\gg(\log n)^2/\log d\gg(\log n)^{4/3}\).
+
+\section{Exact primitivity under substitution}
+\begin{lemma}\label{lem:sampling}
+Let \(F,T\) be monic binary polynomials of the same positive degree \(n\),
+and \(m\ge1\). If \(T(X)\mid F(X^m)\), then
+\[
+ F\text{ is primitive}\quad\Longleftrightarrow\quad
+ T\text{ is primitive and }\gcd(m,2^n-1)=1 .
+\]
+\end{lemma}
+\begin{proof}
+Write \(N=2^n-1\). A root of order \(N\) has degree at least \(n\),
+since a smaller field has fewer than \(N\) nonzero elements.
+If \(F\) is primitive, take any root \(\beta\) of \(T\).
+Its degree is at most \(n\) and \(\beta^m\) has order \(N\).
+Thus \(\beta\) has order exactly \(N\), \(\gcd(m,N)=1\), and \(T\) is
+its minimal polynomial. Conversely, if \(\beta\) is a primitive root
+of \(T\) and \(\gcd(m,N)=1\), then \(\beta^m\) is a root of \(F\)
+of order \(N\).
+\end{proof}
+
+\begin{theorem}\label{thm:progression}
+Let \(\mathcal P_n\) consist of the degree-\(n\) primitive binary
+pentanomials whose support contains four terms in arithmetic progression.
+For even \(n\), \(\mathcal P_n\) is empty. For odd \(n\ge5\), cubing
+roots gives a bijection from the degree-\(n\) primitive trinomials
+onto \(\mathcal P_n\).
+\end{theorem}
+\begin{proof}
+For \(u,m>0\) put
+\[
+ T=X^a+X^t(1+X^{mu}),\qquad F=X^a+X^t(1+X^u)^m .
+\]
+The difference-of-powers identity gives \(T\mid F(X^m)\). If
+\(a\ne t+mu\) both have degree \(\max(a,t+mu)\). For \(m=3\) the
+four block exponents of \(F\) are \(t,t+u,t+2u,t+3u\). Every member
+of \(\mathcal P_n\) has this form with \(a\) outside the block.
+Deleting the two inner terms gives a primitive trinomial by
+Lemma~\ref{lem:sampling}, and \(3\nmid 2^n-1\) forces \(n\) odd.
+
+Conversely, take a primitive trinomial with exponents \(0,k,n\).
+Two exponents agree modulo 3, since if all three residues occurred the
+trinomial would vanish at a nontrivial cube root of unity, of degree 2.
+Use the congruent pair as \(t,t+3u\) and the remaining exponent as \(a\).
+If \(a\) coincided with an inner exponent of the block, the endpoints
+would be \(0,n=3u\) and \(k\) would be \(u\) or \(2u\).
+Here \(u>1\), since \(n\ge5\). A polynomial \(g(X^u)\) with
+\(\deg g=d>0\) and \(u>1\) cannot be primitive. For any nonzero
+root \(\beta\), its order is at most \(u(2^d-1)<2^{ud}-1\),
+because \(\beta^u\) has degree at most \(d\).
+Thus the five terms are distinct. Odd \(n\) makes the resulting \(F\)
+primitive by the lemma. Cubing permutes the elements of order \(2^n-1\)
+and commutes with the binary Frobenius, so it also permutes their
+conjugacy classes. This proves uniqueness in both directions.
+\end{proof}
+For example, the primitive trinomial \(X^5+X^2+1\) gives
+\(X^5+X^4+X^3+X^2+1\).
+More generally \(m=1+2^j\) with \(j>0\) gives a four-term block
+at offsets \(0,u,2^j u,(2^j+1)u\). The same lemma shows that any
+genuine primitive pentanomial of this shape requires a primitive
+trinomial in the same degree. Kashiwagi and Uchimura introduced the
+forward sampling construction.
+\href{https://doi.org/10.9746/sicetr1965.18.747}{Kashiwagi and Uchimura,
+\emph{A Simple Method for Obtaining Primitive Pentanomials Over GF(2)}}.
+
+\begin{theorem}\label{thm:dilation}
+Let \(f\) be irreducible of degree \(n\) with constant coefficient 1,
+let \(\alpha\) be a root, and let \(m\mid N=2^n-1\).
+Every irreducible factor of \(f(X^m)\) has degree
+\(n\ord(\alpha^{N/m})\), and all factors are distinct. In particular,
+putting \(h=\ord(\alpha)\), the full substitution \(f(X^N)\) has
+exactly \(N/h\) factors of degree \(nh\).
+For any binary polynomial \(f\) of positive degree \(n\) with
+\(f(0)=1\), primitivity of \(f\) is equivalent to irreducibility of
+\(f(X^{2^n-1})\).
+\end{theorem}
+\begin{proof}
+Take a root \(\beta\) of \(f(X^m)\) and write \(\alpha=\beta^m\).
+Its conjugacy class has the same order data as any chosen root of \(f\).
+The \(n\)-fold Frobenius sends \(\beta\) to
+\(\beta\alpha^{N/m}\) and fixes \(\alpha\). A Frobenius power fixing
+\(\beta\) must also fix \(\alpha\), so its exponent must be a multiple
+of \(n\). The least positive such exponent is therefore
+\(n\ord(\alpha^{N/m})\). The polynomial \(f(X^m)\) divides
+\(X^{mN}-1\), which has simple roots since \(mN\) is odd.
+For \(m=N\), comparison with the total degree \(nN\) gives the factor
+count. A nontrivial factorization of \(f\) persists under the
+substitution, which covers reducible \(f\) in the equivalence.
+\end{proof}
+The general subject is classical.
+\href{https://doi.org/10.1112/jlms/s1-30.4.480}{Butler,
+\emph{The irreducible factors of \(f(x^m)\) over a finite field}}.
+The three results in this section, including the bijection, are
+formalized in \texttt{GF2Sparse/Dilation.lean} and
+\texttt{GF2Sparse/Progressions.lean}. Full substitution preserves
+weight and raises the degree to \(n(2^n-1)\).
+
+\paragraph{The remaining count.}
+For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
+An exact expression for the number of primitive witnesses is
+\[
+ n\,\#\{f\in\mathcal A:f\text{ is primitive}\}
+  =\sum_{e\mid N}\mu(e)\sum_{f\in\mathcal A}
+      \deg\gcd(f,X^{N/e}-1).
+\]
+Indeed, \(X^N-1\) has simple roots, precisely the nonzero elements of
+\(\mathbb F_{2^n}\). A root of order \(h\mid N\) has total coefficient
+\(\sum_{e\mid N/h}\mu(e)\), which is 1 when \(h=N\) and 0 otherwise.
+A root of order \(N\) has degree \(n\), so its minimal polynomial accounts
+for all \(n\) roots of that candidate. For the two-parameter family in
+Theorem 1, strict positivity of the right-hand side in every degree
+\(n\ge5\) would suffice. The local sieve and the order bounds leave this
+positivity question open.
+
+\paragraph{Counting a whole family with one product.}
+Let \(P=\prod_{f\in\mathcal A}f\) for a set of distinct degree-\(n\) candidates.
+Start with \(G=\gcd(P,X^N-1)\). For each distinct prime \(p\mid N\) replace
+\[
+                   G\ \longleftarrow\ G/\gcd(G,X^{N/p}-1).
+\]
+The initial \(G\) is squarefree. Each division removes precisely the
+remaining roots whose orders divide \(N/p\). The final polynomial is
+the product of the primitive members of \(\mathcal A\), since each
+surviving root has degree \(n\). Its degree divided by \(n\) therefore
+counts the witnesses, with no need to factor the individual candidates.
+
+This calculation detects a small exception for the Sidon support restriction.
+In degree 12 there are 14 normalized five-term Sidon supports.
+The initial gcd has degree 64, and the very first prime, \(p=3\), removes
+it completely. Thus none is primitive. In degrees 11 and 13 the same
+calculation gives respectively 2 primitive members out of 4, and 14 out of 28.
+The command \texttt{python3 scripts/check\_parity\_sieve.py --sidon-count 12}
+reproduces the degree-12 count. The unrestricted degree-12 claim already
+has a Lean witness in Theorem 1. A separate Lean proof of the restriction
+tests the exponents 4095 and 1365 on every admissible support in
+\texttt{GF2Sparse/ParityExamples.lean}.
+
+\end{document}
