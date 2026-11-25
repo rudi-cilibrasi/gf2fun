@@ -47,3 +47,4 @@ import GF2Sparse.SignedTriples
 import GF2Sparse.TranslatedInterval
 import GF2Sparse.TripleObstruction
 import GF2Sparse.TrinomialOrder
+import GF2Sparse.Trinomial1229
