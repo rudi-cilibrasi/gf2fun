@@ -47,14 +47,14 @@ ONE = monomial()
 ZERO = Laurent()
 
 
-def image_coefficients(u, v, w):
+def image_coefficients(u, v, w, *, zero=ZERO, one=ONE):
     """First three characteristic coefficients of multiplication by h modulo H."""
     def shift(column):
         a, b, c, d = column
         return d, a + w*d, b + v*d, c + u*d
 
-    power = (ONE, ZERO, ZERO, ZERO)
-    column = (ZERO, ZERO, ZERO, ZERO)
+    power = (one, zero, zero, zero)
+    column = (zero, zero, zero, zero)
     for exponent in range(6):
         if exponent in (0, 2, 3, 5):
             column = tuple(a + b for a, b in zip(column, power))
@@ -64,18 +64,18 @@ def image_coefficients(u, v, w):
         columns.append(shift(columns[-1]))
 
     def minors(size):
-        total = ZERO
+        total = zero
         for sites in combinations(range(4), size):
             for perm in permutations(sites):
-                total += prod((columns[i][j] for i, j in zip(sites, perm)), start=ONE)
+                total += prod((columns[i][j] for i, j in zip(sites, perm)), start=one)
         return total
 
     return tuple(minors(size) for size in (1, 2, 3))
 
 
-def defect(u, v, w):
-    t, a, b = u + v + w, u + v + ONE, v + w + ONE
-    return t*t*t * (a*a + a*b + b*b) + ONE
+def defect(u, v, w, *, one=ONE):
+    t, a, b = u + v + w, u + v + one, v + w + one
+    return t*t*t * (a*a + a*b + b*b) + one
 
 
 def evaluate_t(f, value):

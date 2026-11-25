@@ -1225,7 +1225,7 @@ Each displayed quintic is irreducible because its roots lie in
 Lean proves the period reduction for any fixed irreducible factor and
 the exact quintic criterion in \texttt{GF2Sparse/DyadicFactors.lean}.
 In particular rank five is the first failure in degrees 32, 64, 128
-and 1024. The fourth test for all powers of two remains open here.
+and 1024. Theorem~\ref{thm:all-quartets} proves the fourth test for every power of two.
 
 \section{Periodicity of the fourth test in dyadic degrees}
 \begin{theorem}\label{thm:quartic-period}
@@ -1299,6 +1299,83 @@ The checked cases and quintic factors above now give both progressions.
 This reduces the uniform fourth-test question to a finite intersection.
 A common zero of the three equations is only a candidate. Its four
 coordinates must also admit the same Frobenius power acting as \(h\).
+
+\section{Four tests in every degree divisible by eight}
+\begin{theorem}\label{thm:all-quartets}
+Put \(h=(1+X^2)(1+X^3)\) and \(F_{2^s}=X^{2^s}+h\).
+For every \(s\ge0\), no four roots of \(F_{2^s}\) have product 1,
+even with repetitions. Every positive multiple of eight therefore has
+a squarefree pentanomial passing the first four exterior-power tests.
+If \(s\ge3\) and \(s\equiv0,1,2\pmod5\), the first failed test of
+\(F_{2^s}(X^m)\) is exactly rank five for every odd \(m\ge1\).
+\end{theorem}
+\begin{proof}
+Keep the quartic \(H\), its coefficients \((u,v,w)\), and the parameters
+\(t,a,b,p,q\) from Theorem~\ref{thm:quartic-period}.
+For a product-one quartet of roots, the four equations
+\(E\circ\Psi^j=0\) hold for \(0\le j\le3\), since \(h\) acts on each
+coordinate as Frobenius to the power \(s\). We first eliminate two
+variables to show \(t^3=1\).
+
+Put \(A=t^2a\) and \(B=t^2b\). The initial equation becomes
+\(A^2=AB+B^2+t\), and the quartic coordinates are
+\[
+ (u,v,w)=t^{-2}(t^3+t^2+B,\ t^3+A+B,\ t^3+t^2+A).
+\]
+For \(j=1,2,3\), multiply \(E\circ\Psi^j\) by the power of \(t\) that
+clears its denominator and reduce by the monic relation for \(A^2\).
+Write the result as \(c_j+A d_j\) with \(c_j,d_j\in\F[t,B]\).
+If these three expressions vanish, then so do
+\[
+ N_j=c_j^2+B c_jd_j+(B^2+t)d_j^2,\qquad
+ K_{ij}=c_i d_j+c_j d_i.
+\]
+The first is the product with the conjugate under \(A\mapsto A+B\).
+Neither implication requires a division by \(d_j\) or by \(B\).
+
+Remove powers of \(t\), which is nonzero, before and after taking
+resultants in \(B\). The three polynomials
+\[
+ \operatorname{Res}_B(N_1,K_{12}),\quad
+ \operatorname{Res}_B(N_1,N_2),\quad
+ \operatorname{Res}_B(N_1,K_{13})
+\]
+have respective degrees 10735, 19190 and 52535. Their gcd is
+\((t+1)^4(t^3+1)\). Thus only \(t=1,\omega,\omega^2\) remain.
+
+To reproduce these gcds, \texttt{scripts/check\_dyadic\_quartets.py} obtains
+\(\Psi\) from the multiplication matrix and homogenizes its three
+coordinates and \(E\) to degree five at each step. All three resultants
+are computed over \(\F\).
+
+Now \(q=p^{-1}\). For each of the three possible \(t\), take the gcd
+of \(E\circ\Psi\) and \(E\circ\Psi^2\) as Laurent polynomials in \(p\).
+After normalizing to monic polynomials with least exponent zero these
+gcds are \((p+1)^2(p+\omega),\ p+\omega^2,\ p+\omega^2\), respectively.
+Substitution gives the four pairs of coefficient triples
+\[
+\begin{array}{cc|c|c}
+t&p&(u,v,w)&\Psi(u,v,w)\\\hline
+1&1&(0,0,1)&(1,0,0)\\
+1&\omega&(1,0,0)&(0,0,1)\\
+\omega&\omega^2&(\omega,\omega,\omega)&(\omega^2,\omega^2,\omega^2)\\
+\omega^2&\omega^2&(\omega^2,\omega^2,\omega^2)&(\omega,\omega,\omega)
+\end{array}
+\]
+The first two rows are impossible because Frobenius fixes binary
+coefficients. The last two quartics are reciprocal, so a root and
+its inverse would both belong to \(F_{2^s}\). This contradicts the
+triple exclusion of Theorem~\ref{thm:dyadic-triples}, whose proof
+of that exclusion also applies to \(s=0,1,2\).
+
+Powering a product-one quartet of roots of \(F_{2^s}(X^m)\) by \(m\)
+would give a forbidden quartet. The squarefreeness and term count
+follow from Theorem~\ref{thm:dyadic-triples} for odd \(m\) and \(s\ge3\).
+In the stated quintic classes, take the five distinct conjugates of a
+quintic factor. Choose any \(m\)-th root of each of the first four and
+take the inverse of their product as the fifth. The five images are
+the original conjugates, so these are five distinct roots with product 1.
+\end{proof}
 
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).

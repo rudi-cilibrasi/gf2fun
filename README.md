@@ -22,12 +22,13 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 - **Five terms in degrees near powers of two.** The same lower terms $X^5+X^3+X^2+1$ pass the first three tests in every degree $2^s+7$ and $2^s+9$. For eleven offsets $d$ in total, the exact criterion in degree $n=2^s+d>5$ is $n\not\equiv0,5\pmod7$. Lean verifies the full primitive order in degree $265=2^8+9$. [Proof and offsets](results.pdf#page=15) · [Degree-265 primitive witness](GF2Sparse/ShiftedExample.lean) · [Reproduce the classification](scripts/check_shifted_triples.py)
 - **Four exterior powers with one gcd.** Let $D$ be the squarefree polynomial whose roots are all pair products, including squares. The first four tests pass exactly when $D$ is coprime to its reciprocal. The algorithm only needs powers of $X$ modulo the original polynomial. The dyadic five-term construction passes rank four in degrees $8,16,32,64,128,256,512,1024$. Its first failure in degrees 32, 64, 128 and 1024 is rank five. [Proof and algorithm](results.pdf#page=16) · [Lean lemma on products with repetition](GF2Sparse/RootProducts.lean) · [Lean quintic factor criterion](GF2Sparse/DyadicFactors.lean) · [Reproduce the fourth test](scripts/check_pair_products.py)
 - **The fourth test is periodic in the dyadic exponent.** Every root in a product-one quartet of $F_{2^s}$ has degree at most 62,500. Consequently the fourth test depends only on $s$ modulo $\operatorname{lcm}(1,\ldots,62500)$. This gives infinite progressions of exponent-gcd-one pentanomials passing the first four tests and an infinite progression whose first failure is rank five. [Proof of periodicity](results.pdf#page=17) · [Exact finite-field calculation](scripts/check_quartic_period.py)
+- **Four tests in every multiple of eight.** No four roots of $F_{2^s}=X^{2^s}+X^5+X^3+X^2+1$ have product 1, even allowing repetitions. For $s\ge3$ and odd $m$, every $F_{2^s}(X^m)$ passes the first four tests. The first failure is exactly rank five when $s\equiv0,1,2\pmod5$. Three binary resultants leave just four quartics to rule out. [Proof in the note](results.pdf#page=18) · [Exact resultant calculation](scripts/check_dyadic_quartets.py)
 
 The Lean target for an all-degree proof is `GF2Sparse.Conjecture`. The gap is to force exact order $2^n-1$ for at least one candidate in each degree. That order implies irreducibility by exhausting all nonzero residues of the quotient. [Formal statement and order criterion](GF2Sparse/Basic.lean)
 
 ## Contributing
 
-For a proof attempt, one open subproblem is to find a squarefree pentanomial in every sufficiently large degree that passes the first three exterior-power tests. Every multiple of eight now has an explicit construction. A separate open question is whether $F_{2^s}$ passes the fourth test for every $s\ge3$. The periodicity proof reduces this to checking the Frobenius action on a finite set of quartics. In the remaining degrees the reciprocal-root sieve supplies the first two tests for all sufficiently large degrees. The third asks that no three distinct roots have product 1. Passing all ranks through half the degree for the same candidate proves it primitive. [Determinant criterion and sieve](results.pdf#page=11)
+For a proof attempt, one open subproblem is to find a squarefree pentanomial in every sufficiently large degree that passes the first three exterior-power tests. The dyadic construction supplies four tests in every multiple of eight. In the remaining degrees the reciprocal-root sieve supplies the first two tests for all sufficiently large degrees. The third asks that no three distinct roots have product 1. Passing all ranks through half the degree for the same candidate proves it primitive. [Determinant criterion and sieve](results.pdf#page=11)
 
 For a computational contribution, choose a degree interval beyond the checked-in range and run it on your own machine. With Python, SymPy and the repository's Lean toolchain installed, search degrees 257 through 264 and verify a completed table with
 
@@ -76,6 +77,12 @@ python3 scripts/check_parity_sieve.py --sidon-count 12
 ~~~
 
 In degree 12 this gives zero primitive pentanomials among the 14 such supports. Lean independently proves the obstruction. The ordinary five-term conjecture allows repeated pair sums. [Degree-12 proof](GF2Sparse/ParityExamples.lean)
+
+To reproduce the all-exponent quartet elimination in an isolated Python environment, run
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_dyadic_quartets.py
+~~~
 
 To compare the exterior-power test with direct order checks on all 4,095 monic binary polynomials of degrees 1 through 12 with constant term 1, run
 
