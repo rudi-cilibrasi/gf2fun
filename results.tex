@@ -1377,6 +1377,101 @@ take the inverse of their product as the fifth. The five images are
 the original conjugates, so these are five distinct roots with product 1.
 \end{proof}
 
+\section{Arbitrarily many tests for a single sequence of pentanomials}
+
+\begin{lemma}\label{lem:disjoint-fibres}
+Let \(K\) be algebraically closed and let \(g_0,\ldots,g_{k-1}\in K[X]\)
+be monic, nonconstant, with pairwise disjoint root sets. For prescribed
+\(\lambda_j\in K\) there are at most \(D=\prod_{j<k}\deg g_j\) monic
+degree-\(k\) polynomials \(H\) satisfying
+\[
+                 \prod_{g_j(a)=0}H(a)=\lambda_j\qquad(0\le j<k).
+\]
+The products include each root with its multiplicity. If the data are
+over \(\mathbb F_q\), each root of such an \(H\) has degree at most
+\(kD\) over \(\mathbb F_q\).
+\end{lemma}
+\begin{proof}
+Write \(H=X^k+\sum_{i<k}c_i X^i\). The \(j\)-th equation has degree
+\(\deg g_j\) in the \(k\) coefficients. At a common point at infinity
+the nonzero polynomial \(U=\sum_{i<k}c_i X^i\) would satisfy
+\(\prod_{g_j(a)=0}U(a)=0\) for every \(j\). Choosing one vanishing
+factor from each product would give \(k\) distinct roots of \(U\),
+although \(\deg U<k\). Thus the projective intersection misses the
+hyperplane at infinity and is finite, since every positive-dimensional
+projective closed set meets a hyperplane. The
+\href{https://pinakimondal.org/books/p1_to_16.pdf}{Bézout bound}
+gives at most \(D\) points. Frobenius over \(\mathbb F_q\) permutes
+the solutions. Each coefficient tuple therefore belongs to
+\(\mathbb F_{q^d}\) for some \(d\le D\). Adjoining a root raises the
+extension degree by at most \(k\).
+\end{proof}
+
+\begin{theorem}\label{thm:unbounded-ranks}
+For every \(k\ge1\) there are infinitely many squarefree binary
+pentanomials \(X^n+(X^u+1)(X^{2u}+1)\) with exponent gcd 1
+for which no product of between one and \(k\) roots equals 1,
+even with repetitions. Explicitly, put
+\[
+ B_k=2k\,2^{\binom{k-1}{2}},\qquad M_k=\operatorname{lcm}(1,\ldots,B_k).
+\]
+For any \(s\ge3\) with \(s\equiv1\pmod{M_k}\), take
+\[
+             n=2^s-1,\qquad u=(n-1)/3 .
+\]
+In particular the first failed exterior-power rank tends to infinity
+along the single sequence \(s=1+j!\), \(j\ge2\).
+\end{theorem}
+\begin{proof}
+Set \(L(X)=X^2+X\). Every root \(r\) of \(T_s=X^{2^s-1}+X+1\)
+is nonzero and satisfies \(r^{2^s}=L(r)\). Suppose first that \(k\)
+roots \(r_1,\ldots,r_k\) have product \(\zeta\in\mathbb F_4^\times\).
+The exponent \(s\) is odd. For each \(j\ge0\),
+\[
+    \prod_i L^{\circ j}(r_i)=\zeta^{2^{sj}}=\zeta^{2^j}.
+\]
+Let \(g_0=X\) and \(g_j=1+L^{\circ(j-1)}\) for \(1\le j<k\),
+where \(L^{\circ0}=X\). A root of \(g_j\) first reaches zero under
+iteration of \(L\) at step \(j\), because \(L(1)=0=L(0)\).
+The root sets are thus disjoint. The identity
+\(L^{\circ j}=L^{\circ(j-1)}g_j\) gives
+\[
+      \prod_i g_0(r_i)=\zeta,\qquad
+      \prod_i g_j(r_i)=\zeta^{2^j}/\zeta^{2^{j-1}}\quad(j\ge1).
+\]
+For \(H(X)=\prod_i(X+r_i)\), monicity and characteristic two give
+\(\prod_i g_j(r_i)=\prod_{g_j(a)=0}H(a)\). All right-hand-side
+targets are in \(\mathbb F_4\). The degrees of the \(g_j\) are 1
+for \(j=0\) and \(2^{j-1}\) for \(j\ge1\). Lemma~\ref{lem:disjoint-fibres}
+therefore gives \([\F(r_i):\F]\le B_k\) for each \(i\).
+This degree divides \(s-1\), so \(r_i^{2^s}=r_i^2\).
+Comparing with \(L(r_i)=r_i^2+r_i\) forces \(r_i=0\), a contradiction.
+For any length \(1\le l\le k\) the same argument applies, since
+\(M_l\mid M_k\).
+
+Now \(n=3u+1\), with \(u\) positive and even. Cubing sends roots of
+\(T_s\) bijectively to roots of \(P(Z)=1+Z(Z^u+1)^3\).
+Indeed \(r^n+r=1\) gives \(r((r^3)^u+1)=1\).
+Conversely, \(P(z)=0\) gives \(r=(z^u+1)^{-1}\) with \(r^3=z\)
+and \(r^n+r=1\). The reciprocal of \(P\) is
+\[
+       X^n+(X^u+1)^3=X^n+X^{3u}+X^{2u}+X^u+1 .
+\]
+A product-one relation among its roots would lift to a product
+in \(\mathbb F_4^\times\) among roots of \(T_s\). The displayed
+degrees are distinct and \(\gcd(n,u)=1\). The derivative is \(X^{n-1}\)
+and the constant term is 1, so the pentanomial is squarefree.
+For \(j\ge B_k\), \(M_k\mid j!\), which proves the sequence assertion.
+\end{proof}
+
+For each fixed \(k\), the construction also supplies a positive-density
+set of degrees passing the first \(k\) tests. Fix one degree \(n\) in
+Theorem~\ref{thm:unbounded-ranks} and substitute \(X^m\) for every
+positive odd \(m\). A forbidden product would descend by raising it to
+the \(m\)-th power. The resulting squarefree pentanomials have degrees
+\(n\bmod 2n\). The theorem leaves open how to pass all ranks through
+\(\lfloor n/2\rfloor\) in a prescribed degree \(n\).
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is
