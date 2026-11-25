@@ -5,17 +5,18 @@ import csv
 import json
 import subprocess
 import sys
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from functools import partial
 from math import prod
 from pathlib import Path
 
 from flint import fmpz, nmod_poly
 
 
-def search(row):
+def search(row, least_span=False):
     gp, n, factors = row
     script = Path(__file__).with_name("search_product_range.gp")
-    command = f"iferr(print(findproduct({n},{factors})), E, print(E); quit(1));\n"
+    command = f"iferr(print(findproduct({n},{factors},{int(least_span)})), E, print(E); quit(1));\n"
     result = subprocess.run([gp, "-fq", str(script)], input=command, text=True,
                             capture_output=True, check=False)
     if result.returncode or result.stderr:
@@ -37,6 +38,14 @@ def verify(n, u, v, factors):
             raise ValueError(f"index divisible by {p} in degree {n}")
 
 
+def verify_batch(rows, primes):
+    for row in rows:
+        verify(*row)
+    for p in primes:
+        if not fmpz(p).is_prime():
+            raise ValueError(f"composite order factor {p}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--factor-table", required=True, action="append", type=Path,
@@ -50,10 +59,14 @@ def main():
     action.add_argument("--search", action="store_true", help="write the PARI search results as CSV")
     action.add_argument("--verify", type=Path, metavar="CSV", help="check each degree and prove its factors prime")
     parser.add_argument("--gp", default="gp", help="PARI/GP executable for search")
-    parser.add_argument("--jobs", type=int, default=1, help="number of simultaneous PARI searches")
+    parser.add_argument("--least-span", action="store_true",
+                        help="search in increasing u+v, breaking ties by u")
+    parser.add_argument("--jobs", type=int, default=1, help="number of search or verification workers")
     args = parser.parse_args()
     if not 5 <= args.start <= args.end or min(args.step, args.jobs) < 1:
         parser.error("expected 5 <= start <= end and positive step and job counts")
+    if args.least_span and not args.search:
+        parser.error("--least-span applies to the search")
     table = {}
     for path in args.factor_table:
         with path.open() as source:
@@ -78,9 +91,11 @@ def main():
         writer = csv.writer(sys.stdout, lineterminator="\n")
         writer.writerow(("degree", "u", "v"))
         with ThreadPoolExecutor(args.jobs) as pool:
-            writer.writerows(pool.map(search, ((args.gp, n, factors[n]) for n in degrees)))
+            writer.writerows(pool.map(partial(search, least_span=args.least_span),
+                                      ((args.gp, n, factors[n]) for n in degrees)))
         return
 
+    entries = []
     with args.verify.open(newline="") as source:
         reader = csv.DictReader(source)
         if reader.fieldnames != ["degree", "u", "v"]:
@@ -88,11 +103,17 @@ def main():
         for n, row in zip(degrees, reader, strict=True):
             if int(row["degree"]) != n or None in row:
                 raise ValueError(f"expected a single row for degree {n} in ascending order")
-            verify(n, int(row["u"]), int(row["v"]), factors[n])
-    primes = {p for row in factors.values() for p in row}
-    for p in sorted(primes):
-        if not fmpz(p).is_prime():
-            raise ValueError(f"composite order factor {p}")
+            entries.append((n, int(row["u"]), int(row["v"]), factors[n]))
+    primes = sorted({p for row in factors.values() for p in row}, reverse=True)
+    workers = min(args.jobs, len(entries))
+    if workers == 1:
+        verify_batch(entries, primes)
+    else:
+        with ProcessPoolExecutor(workers) as pool:
+            checks = [pool.submit(verify_batch, entries[j::workers], primes[j::workers])
+                      for j in range(workers)]
+            for check in checks:
+                check.result()
     print(f"Verified {len(degrees)} primitive product pentanomials in the interval "
           f"{args.start} through {args.end} and {len(primes)} distinct prime factors.")
     if args.available:

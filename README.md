@@ -181,6 +181,8 @@ To check every row in the 1230–1280 table and print the five degrees skipped b
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --available --start 1230 --end 1280 --factor-table data/mersenne-1230-1280-factors.json --verify data/product-witnesses-1230-1280.csv
 ~~~
 
+For a new search, `--least-span` visits supports in increasing order of $u+v$ and breaks ties by $u$. An even `--start` with `--step 2` selects the even degrees. The `--jobs` option distributes both the PARI search and the independent FLINT verification across workers.
+
 To check both CSV files through degree 1228, run the first two commands. The first interval uses the pinned factor table downloaded above. The second includes its complete factorizations in the repository. The last command repeats the first search with PARI/GP.
 
 ~~~sh
