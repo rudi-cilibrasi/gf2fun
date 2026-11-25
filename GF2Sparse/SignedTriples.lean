@@ -30,21 +30,24 @@ private theorem periodic_iff (x : K) (k : ℕ) :
   rw [← isPeriodicPt_iff_minimalPeriod_dvd]
   exact (congrArg (fun v => v = x) (iterate_frobenius ..)).to_iff
 
+private theorem twisted_cycle {x : K} {h : ℕ} (hx : x ≠ 0) (hx1 : x ≠ 1)
+    (ht : F h x = phi x ∨ x = phi (F h x)) : F (3*h) x = x := by
+  rw [show 3*h = h+(h+h) by omega, iterateFrobenius_add_apply, iterateFrobenius_add_apply]
+  rcases ht with he | he
+  · change F h (F h (F h x)) = x
+    rw [he, phi_comm, he, phi_comm, phi_comm, he, phi_three hx hx1]
+  · have h3 := congrArg (fun v : K => F h (F h (F h v))) (phi_three hx hx1)
+    simp only [phi_comm] at h3
+    have h2 := (congrArg (F h) he).trans (phi_comm h _)
+    have h1 := (congrArg (F h) h2).trans (phi_comm h _)
+    exact h3.symm.trans (by rw [← h1, ← h2, ← he])
+
 /-- A Frobenius orbit fixed after m steps cannot contain a point related
 by phi at distance h when both integer conditions hold. -/
 private theorem twisted_period_impossible {x : K} {m h : ℕ} (hx : x ≠ 0) (hx1 : x ≠ 1)
     (hm : F m x = x) (ht : F h x = phi x ∨ x = phi (F h x))
     (hd : m.gcd (3*h) ∣ h) (ho : (m.gcd h).Coprime 2) : False := by
-  have hcycle : F (3*h) x = x := by
-    rw [show 3*h = h+(h+h) by omega, iterateFrobenius_add_apply, iterateFrobenius_add_apply]
-    rcases ht with he | he
-    · change F h (F h (F h x)) = x
-      rw [he, phi_comm, he, phi_comm, phi_comm, he, phi_three hx hx1]
-    · have h3 := congrArg (fun v : K => F h (F h (F h v))) (phi_three hx hx1)
-      simp only [phi_comm] at h3
-      have h2 := (congrArg (F h) he).trans (phi_comm h _)
-      have h1 := (congrArg (F h) h2).trans (phi_comm h _)
-      exact h3.symm.trans (by rw [← h1, ← h2, ← he])
+  have hcycle := twisted_cycle hx hx1 ht
   let d := minimalPeriod (frobenius K 2) x
   have hdm : d ∣ m := (periodic_iff x m).2 hm
   have hdh : d ∣ h := (Nat.dvd_gcd hdm ((periodic_iff x _).2 hcycle)).trans hd
@@ -118,20 +121,15 @@ def excludesTwistedPeriod (m h : ℕ) : Prop := m.gcd (3*h) ∣ h ∧ (m.gcd h).
 instance (m h : ℕ) : Decidable (excludesTwistedPeriod m h) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
-/-- A point in the degree-m field cannot satisfy the shifted product equation
-when the coprimality and divisibility tests exclude an order-three shift. -/
-theorem excludesTwistedPeriod.no_shifted_product {m i b : ℕ}
-    (he : excludesTwistedPeriod m (i.dist b)) {x : AlgebraicClosure (ZMod 2)}
-    (hx : x ≠ 0) (hx1 : x ≠ 1) (hm : x^(2^m) = x) :
-    x^(2^i)*(x^(2^b)+1) ≠ 1 := by
-  intro hp
+private theorem twist_of_shifted_product {i b : ℕ} {x : K}
+    (hp : x^(2^i)*(x^(2^b)+1) = 1) :
+    F (i.dist b) x = phi x ∨ x = phi (F (i.dist b) x) := by
   have hd : F b x + 1 ≠ 0 := by
     rintro hz
     change F i x * (F b x+1) = 1 at hp
     simp [hz] at hp
   have hrel : F i x = phi (F b x) := by
     simpa [phi] using (eq_div_iff hd).2 hp
-  apply twisted_period_impossible hx hx1 hm _ he.1 he.2
   rcases le_total i b with hle | hle
   · rw [Nat.dist_eq_sub_of_le hle]
     right
@@ -143,6 +141,22 @@ theorem excludesTwistedPeriod.no_shifted_product {m i b : ℕ}
     apply iterateFrobenius_inj K 2 b
     rw [← iterateFrobenius_add_apply, Nat.add_sub_of_le hle, phi_comm]
     exact hrel
+
+/-- A product equation relating two Frobenius shifts confines x to the
+field fixed after three times their distance. -/
+theorem shifted_product_frobenius_cycle {i b : ℕ} {x : AlgebraicClosure (ZMod 2)}
+    (hx : x ≠ 0) (hx1 : x ≠ 1) (hp : x^(2^i)*(x^(2^b)+1) = 1) :
+    x^(2^(3*i.dist b)) = x :=
+  twisted_cycle hx hx1 (twist_of_shifted_product hp)
+
+/-- A point in the degree-m field cannot satisfy the shifted product equation
+when the coprimality and divisibility tests exclude an order-three shift. -/
+theorem excludesTwistedPeriod.no_shifted_product {m i b : ℕ}
+    (he : excludesTwistedPeriod m (i.dist b)) {x : AlgebraicClosure (ZMod 2)}
+    (hx : x ≠ 0) (hx1 : x ≠ 1) (hm : x^(2^m) = x) :
+    x^(2^i)*(x^(2^b)+1) ≠ 1 := by
+  intro hp
+  exact twisted_period_impossible hx hx1 hm (twist_of_shifted_product hp) he.1 he.2
 
 /-- The two integer tests suffice for the signed degree 2^s-2^t-1. -/
 theorem signed_dyadic_no_root_triple {s t i n : ℕ} (hts : t ≤ s) (hn : n+2^t+1 = 2^s)

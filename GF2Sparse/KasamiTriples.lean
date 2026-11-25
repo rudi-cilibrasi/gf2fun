@@ -133,4 +133,55 @@ theorem kasami_coprime_six_no_root_triple {j m : ℕ} (hj : j.Coprime 6)
     NoRootTriple (trinomial (2^i+2^b*m) (2^i)) :=
   kasami_no_root_triple hm (excludesTwistedPeriod_of_coprime_six hj _)
 
+private theorem three_mul_le_pow {k : ℕ} (hk : 4 ≤ k) : 3*k ≤ 2^k := by
+  induction k, hk using Nat.le_induction with
+  | base => decide
+  | succ k h ih => rw [pow_succ]; omega
+
+/-- In every degree above nine, irreducibility of a trinomial with a dyadic
+inner exponent already rules out all product-one triples of roots. -/
+theorem irreducible_dyadic_tap_no_root_triple_of_nine_lt {n i : ℕ}
+    (hn : 9 < n) (ha : 2^i < n) (hf : Irreducible (trinomial n (2^i))) :
+    NoRootTriple (trinomial n (2^i)) := by
+  obtain ⟨b,m,hm,hgap⟩ := Nat.exists_eq_two_pow_mul_odd (Nat.sub_ne_zero_of_lt ha)
+  have hdeg : n=2^i+2^b*m := by omega
+  subst n
+  by_cases hm1 : 1 < m
+  · exact irreducible_dyadic_tap_no_root_triple hm hm1 hf
+  have hm' : m=1 := by obtain ⟨k,hk⟩ := hm; omega
+  subst m
+  simp only [mul_one] at *
+  intro x y z hx hy hz h
+  have hp : x^(2^i)*(x^(2^b)+1)=1 := by
+    have he := dyadic_tap_scaled_triple_iff x i b 1
+    simp only [mul_one, pow_one, add_pow_expChar_pow, one_pow] at he
+    exact (he.1 ⟨hx,y,z,hy,hz,h⟩).2
+  obtain ⟨hx0,hx1⟩ := triple_nontrivial hx h
+  have hd := trinomial_degree (Nat.two_pow_pos i) ha
+  by_cases he : i=b
+  · subst b
+    have hfix : x*(x+1)=1 := by
+      apply iterateFrobenius_inj K 2 i
+      simpa [iterateFrobenius_def, mul_pow, add_pow_expChar_pow] using hp
+    have h4 : x^(2^2)=x := by
+      change x^4=x
+      linear_combination (x^2-x)*hfix + (x^2-x)*CharTwo.two_eq_zero (R := K)
+    have hdiv := (degree_dvd_iff_frobenius hf hx 2).2 h4
+    rw [hd] at hdiv
+    have := Nat.le_of_dvd (by decide : 0 < 2) hdiv
+    omega
+  · have hdiv := (degree_dvd_iff_frobenius hf hx _).2 (shifted_product_frobenius_cycle hx0 hx1 hp)
+    rw [hd] at hdiv
+    have hdist : 0 < i.dist b := Nat.pos_of_ne_zero (fun hz => he (Nat.eq_of_dist_eq_zero hz))
+    have hle := Nat.le_of_dvd (by omega : 0 < 3*i.dist b) hdiv
+    rcases le_total i b with hlt | hlt
+    · rw [Nat.dist_eq_sub_of_le hlt] at hle
+      by_cases hb : 4 ≤ b
+      · have := three_mul_le_pow hb; have := Nat.two_pow_pos i; omega
+      · omega
+    · rw [Nat.dist_eq_sub_of_le_right hlt] at hle
+      by_cases hi : 4 ≤ i
+      · have := three_mul_le_pow hi; have := Nat.two_pow_pos b; omega
+      · omega
+
 end GF2Sparse
