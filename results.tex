@@ -5319,4 +5319,95 @@ from projected logarithms. The checker accepts the three interior taps
 and verifies the required order powers in the selected field.
 \end{proof}
 
+\section{Factor parity for two exponent classes modulo four}
+\label{sec:two-residue-parity}
+\begin{theorem}\label{thm:two-residue-parity}
+Let \(f=U(X^4)+X^s V(X^4)\) be monic of degree \(n>0\) over
+\(\mathbb F_2\), with \(s\in\{1,3\}\) and \(U(0)=1\).
+It is squarefree exactly when \(\gcd(U,V)=1\). In the squarefree
+case, the discriminant of its monic integer lift \(F\) with
+coefficients zero and one satisfies
+\[
+  \operatorname{disc}(F)\equiv
+  \begin{cases}
+     (-1)^{(n-1)/2}n & n\text{ odd},\\
+     1+n & 4\mid n
+  \end{cases}\pmod 8 .
+\]
+In particular \(f\) is reducible for \(n\equiv 0,3,5\pmod 8\),
+regardless of its number of terms.
+\end{theorem}
+\begin{proof}
+In characteristic two, \(f'=X^{s-1}V(X)^4\). Since \(f(0)=1\),
+its repeated roots are precisely the common roots of \(U\) and \(V\).
+Assume henceforth that \(f\) is squarefree, so \(V\ne0\). Use the
+same letters \(U,V\) for their integer lifts and write
+\[
+ F'=B+4D,\qquad B=sX^{s-1}V(X^4),\qquad
+ D=X^3\bigl(U'(X^4)+X^s V'(X^4)\bigr).
+\]
+Multiplication by \(B\) is invertible in
+\((\mathbb Z/8\mathbb Z)[X]/(F)\), since its reduction modulo two
+is invertible. The resultant is the determinant of multiplication
+in this monic quotient. The identity
+\(\det(I+4A)\equiv1+4\operatorname{tr}(A)\pmod8\) gives
+\[
+ \operatorname{Res}(F,F')\equiv\operatorname{Res}(F,B)(1+4S)
+ \pmod8,\qquad
+ S=\sum_{f(\alpha)=0}D(\alpha)/B(\alpha)\quad\text{in }\mathbb F_2 .
+\]
+The trace equals the sum over the distinct roots after extending
+scalars to an algebraic closure. Since \(s-1\) is even and \(F(0)=1\),
+\(\operatorname{Res}(F,X)^{s-1}=1\). At any root of \(V(X^4)\),
+\(F\) equals \(U(X^4)\), and \(\deg V(X^4)\) is even. Thus
+\(\operatorname{Res}(F,B)=s^n\operatorname{Res}(U,V)^4\).
+The fourth power of this odd resultant is one modulo eight.
+
+Put \(t=\alpha^4\). The root relation
+\(\alpha^s=U(t)/V(t)\) gives
+\[
+ D(\alpha)/B(\alpha)=t\bigl(U'(t)/U(t)+V'(t)/V(t)\bigr).
+\]
+Fourth powering permutes the roots of \(f\). On summing this
+logarithmic derivative, each root \(\gamma\) of \(UV\), counted
+with multiplicity, contributes
+\[
+ \sum_{f(\alpha)=0}\frac{\alpha}{\alpha-\gamma}
+      = n+\gamma f'(\gamma)/f(\gamma)\quad\text{in }\mathbb F_2 .
+\]
+If \(U(\gamma)=0\), then
+\(f(\gamma)=\gamma^s V(\gamma)^4=\gamma f'(\gamma)\ne0\).
+If \(V(\gamma)=0\), then \(f'(\gamma)=0\) and \(f(\gamma)\ne0\).
+Hence \(S=\deg V\bmod 2\) for odd \(n\), and \(S=\deg U\bmod 2\)
+for even \(n\). For odd degree \(n=4\deg V+s\), one gets
+\(s^n(1+4\deg V)\equiv n\pmod8\). For even degree \(n=4\deg U\),
+one gets \(s^n(1+4\deg U)\equiv1+n\pmod8\).
+The discriminant introduces the sign \((-1)^{n(n-1)/2}\).
+By the Stickelberger--Swan theorem, the number of irreducible factors
+has the same parity as \(n\) for discriminant one modulo eight,
+and the opposite parity for discriminant five.
+\href{https://doi.org/10.2140/pjm.1962.12.1099}{Swan, Theorem 1}.
+\end{proof}
+
+For comparison, Bluher proves the odd-degree parity rule for supports
+whose positive interior exponents are all odd and are either below
+\(n/3\) or congruent to \(n\) modulo four.
+\href{https://arxiv.org/abs/math/0406538}{Bluher, \emph{A Swan-like Theorem}}.
+An independent small-degree check computes the integer discriminant
+and factors the binary polynomial for every squarefree support in
+the two classes. See \nolinkurl{scripts/check_two_residue_parity.py}.
+
+\begin{corollary}
+In degree \(1229\), the \(\binom{614}{3}=38390964\) pentanomials whose
+three interior exponents are all zero or one modulo four are reducible.
+In particular, an irreducible pentanomial \(f\) in this degree cannot
+satisfy \(f(X^5)=H_0(X^{2^k})+XH_1(X^{2^k})\) for any \(k\ge2\).
+\end{corollary}
+\begin{proof}
+There are \(307\) interior exponents in each of the two classes.
+The theorem applies since \(1229\equiv5\pmod8\). The displayed
+identity would put each exponent \(5e\) in class zero or one
+modulo four. Since \(5\equiv1\pmod4\), this also holds for \(e\).
+\end{proof}
+
 \end{document}
