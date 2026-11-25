@@ -43,6 +43,7 @@ import GF2Sparse.ShiftedExample
 import GF2Sparse.ShiftedPeriods
 import GF2Sparse.Seroussi1229
 import GF2Sparse.ShortProducts
+import GF2Sparse.SubfieldProducts
 import GF2Sparse.SignedDegreeChoices
 import GF2Sparse.SignedTriples
 import GF2Sparse.TranslatedInterval

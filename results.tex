@@ -4406,4 +4406,106 @@ equals \(\Phi_5\). This leaves exactly the primitive fifth roots
 when \(5\mid n-4\). In degree four \(f_4=\Phi_5\) directly.
 \end{proof}
 
+\section{A prime divisor forced into every sparse order in degree 1243}
+\begin{theorem}\label{thm:1243-subfield-product}
+If \(f\) is an irreducible binary polynomial of degree \(1243=11\cdot113\)
+and weight at most five, the order of each root is divisible by a prime
+\(\ell\) with \(\ord_\ell(2)=1243\). Every such prime divides the
+remaining cofactor
+\[
+ C=\frac{2^{1243}-1}{(2^{11}-1)(2^{113}-1)}.
+\]
+In particular every such sparse root has order exceeding
+\(10677288697857\) by the certified divisor bound in the table of
+open degrees.
+\end{theorem}
+\begin{proof}
+We first give the support obstruction. Let \(u,v>1\) be coprime,
+\(n=uv\), and \(r=\alpha\beta\) with
+\(\alpha\in\mathbb F_{2^u}^{\times}\) and
+\(\beta\in\mathbb F_{2^v}^{\times}\). Suppose \(f\) is the degree-\(n\)
+minimal polynomial of \(r\), and write \(E\) for its support.
+The two fields are linearly disjoint over \(\F\). Choose binary bases
+in them and let the columns of \(U,V\) be the coordinates of
+\(\alpha^e,\beta^e\) respectively, for \(e\in E\).
+Products of the two bases are linearly independent. Expanding
+\(f(r)=0\) in those products gives \(UV^{\mathsf T}=0\), hence
+\[
+                    \operatorname{rank} U+\operatorname{rank} V\le |E|.
+\]
+Both ranks are at least two. For example, rank one for \(U\) would
+give \(\alpha^e=1\) on \(E\), since \(0\in E\). Then \(f(\beta)=0\)
+in a proper subfield. This already rules out a trinomial.
+For a pentanomial some side, say \(U\), has rank two. Its powers
+must occupy all three nonzero points of a binary plane. If only two
+occurred, their independence would make each of the two corresponding
+subsums vanish at \(r\). A proper nonempty subsum of \(f(r)\) cannot
+vanish, since either it or its complement has degree below \(n\).
+
+Write \(P=\ord(\alpha)\). Repetitions among the five exponents modulo
+\(P\) force \(P\le n\). Dividing the three plane points by one of them
+gives \(x,1+x\) in the subgroup of order \(P\), so
+\[
+       \gcd\bigl(X^P+1,(X+1)^P+1\bigr)\ne1.
+\]
+Now take \(u=11,v=113\). The only nonidentity divisors of \(2^{11}-1\)
+through 1243 are 23 and 89. For both, the displayed polynomial gcd is
+one. There is no nonidentity divisor of \(2^{113}-1\) through 1243.
+Thus neither side can have rank two. Lean checks the rank inequality,
+both polynomial B\'ezout identities and both finite divisor tests in
+\nolinkurl{GF2Sparse/SubfieldProducts.lean}.
+
+The two subfield group orders are coprime. Their product \(K\) is the
+order of the subgroup consisting of the products \(\alpha\beta\).
+The argument therefore excludes \(h\mid K\), where \(h=\ord(r)\).
+The integer check \(\gcd(K,C)=1\) supplies a prime \(\ell\mid h\)
+with \(\ell\mid C\). Its order for 2 divides 1243 and divides neither
+11 nor 113, so it equals 1243.
+\end{proof}
+
+\begin{lemma}\label{lem:plane-order-gaps}
+In the pentanomial case of the proof, write \(Q=\ord(\beta)\), where
+\(\alpha\) gives the rank-two side. If \(2P>n\), then \(Q\le n-P\).
+If \(n\) is odd and \(n/3<P\le n/2\), then \(Q\le 2(n-P)\).
+\end{lemma}
+\begin{proof}
+Group the five exponents by their three values of \(\alpha^e\).
+The three corresponding sums of the powers of \(\beta\) must be
+equal, since the three distinct plane points have exactly one
+nonzero binary relation. The common sum is nonzero since at least
+one group is a singleton. When \(2P>n\), the group sizes are
+\(2,2,1\). Both pairs have gap \(P\), so their sums have the form
+\(\beta^a(1+\beta^P)\) and \(\beta^b(1+\beta^P)\) with distinct
+\(a,b\) between 0 and \(n-P\). Hence \(Q\mid a-b\).
+
+For the second claim suppose \(Q>2(n-P)\ge n\).
+All the powers \(\beta^e\) are distinct on \(E\). This rules out
+sizes \(3,1,1\) and also rules out two equal pair gaps.
+The available gaps are \(P\) and \(2P\). Write the pairs as
+\((a,a+P)\), \((b,b+2P)\), and the singleton as \(c\).
+The equality of the two pair sums gives
+\(1+\beta^P=\beta^{a-b}\) after cancellation. The singleton sum
+then gives \(c\equiv2a-b\pmod Q\).
+Since \(a\le n-P,\ b\le n-2P,\ c\le n\),
+\(\lvert 2a-b-c\rvert\le2(n-P)<Q\), giving \(c=2a-b\).
+But \(\alpha^a+\alpha^b+\alpha^c=0\) would make
+\(\alpha^{a-b}\) a nontrivial cube root of unity in an odd-degree
+binary field.
+\end{proof}
+
+For distinct odd primes \(p<q\), apply the plane and gap tests in
+both orders to \(n=pq\). Excluding both sides forces a prime power
+\(\ell^e\mid h\) with \(\ord_{\ell^e}(2)=n\), since otherwise all
+prime-power components divide \(2^p-1\) or \(2^q-1\).
+If \(q\nmid2^p-1\), \(\ell\) itself can be chosen of full degree,
+by the prime-power lifting argument of
+Corollary~\ref{cor:trinomial-full-order-component}.
+For \(pq\le1280\) the tests force a full-degree prime power in
+97 of the 251 degrees, and a full-degree prime in 94 of them.
+For instance in degree 15 the lemma excludes \(P=7,Q=31\);
+every irreducible binary polynomial of weight at most five in that
+degree has root order divisible by 151.
+\nolinkurl{scripts/check_subfield_products.py} reproduces the counts
+with \texttt{--through 1280}.
+
 \end{document}
