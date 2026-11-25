@@ -10,6 +10,7 @@ import GF2Sparse.Linearized
 import GF2Sparse.Many
 import GF2Sparse.MersenneExamples
 import GF2Sparse.NormExamples
+import GF2Sparse.OreConjecture
 import GF2Sparse.OreExamples
 import GF2Sparse.OreFactorExamples
 import GF2Sparse.OreIndexSeven
@@ -25,4 +26,5 @@ import GF2Sparse.ShiftedPeriods
 import GF2Sparse.ShortProducts
 import GF2Sparse.SignedDegreeChoices
 import GF2Sparse.SignedTriples
+import GF2Sparse.TranslatedInterval
 import GF2Sparse.TripleObstruction
