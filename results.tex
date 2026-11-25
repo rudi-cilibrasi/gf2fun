@@ -2863,4 +2863,27 @@ root-product tests of lengths through 4094. For the other six seeds,
 each second lift has exactly seven irreducible factors, all of degree
 \((2^{4095}-1)/7\), by Theorem~\ref{thm:ore-largest-factor}.
 
+\section{Consecutive primitive product pentanomials through degree 1206}
+\begin{theorem}
+For every \(5\le n\le1206\) there are \(0<u<v\) with \(u+v<n\)
+such that \(X^n+(X^u+1)(X^v+1)\) is primitive.
+In degree 1206 one can take \(u=4\), \(v=45\).
+\end{theorem}
+\begin{proof}
+The exponents for every degree appear in
+\nolinkurl{data/product-witnesses-5-1206.csv}. The PARI/GP search
+tests irreducibility and computes the multiplicative order of the
+residue of \(X\) in each field. An independent FLINT computation
+checks the degrees and exponents in order, multiplies the supplied
+factors to \(2^n-1\) in each degree, and proves all 4275 distinct
+integer factors prime. For each polynomial it checks \(X^{2^n-1}=1\)
+in the quotient and \(X^{(2^n-1)/p}\ne1\) for each distinct prime
+factor \(p\). The quotient therefore has \(2^n-1\) distinct nonzero
+powers of \(X\), so it is a field generated multiplicatively on its
+nonzero elements by \(X\). Both computations can be repeated with
+\nolinkurl{scripts/check_product_range.py} and the pinned
+\href{https://github.com/postvakje/Reformatted-Cunningham-Project-tables/blob/dff2e282ff15399b16b4fb840a410aa2a37076b7/pmain422_table2-.json}
+{Cunningham table transcription}.
+\end{proof}
+
 \end{document}

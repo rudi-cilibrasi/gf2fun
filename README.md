@@ -7,6 +7,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 ## Results
 
 - **Primitive witnesses.** Lean proves the statement for every $1\le n\le400$. For every $5\le n\le400$ it verifies the shape $X^n+(X^u+1)(X^v+1)$, where $0<u<v$ and $u+v<n$. The degree-400 witness is $X^{400}+X^5+X^3+X^2+1$. The same exponent relation appears in the pentanomial entries of Table 4.8 of the *Handbook of Applied Cryptography*. Published minimum-weight tables cover degrees 2 through 640 with unrestricted interior exponents. [Lean degree coverage](GF2Sparse/Coverage.lean) · [Table 4.8 and its construction](https://cacr.uwaterloo.ca/hac/about/chap4.pdf#page=37) · [Minimum-weight tables](https://people.math.carleton.ca/~daniel/hff/)
+- **Consecutive computational witnesses through degree 1206.** PARI/GP finds a primitive product pentanomial in every degree from 5 through 1206. FLINT independently verifies all 1,202 full orders and proves the 4,275 distinct integer factors prime. The final row gives $X^{1206}+X^{49}+X^{45}+X^4+1$. [Witness table](data/product-witnesses-5-1206.csv) · [Independent checker](scripts/check_product_range.py)
 - **Twelve primitive pentanomials in degree 4095.** One is $X^{4095}+X^{255}+X^3+X+1$. FLINT and PARI/GP independently check every sparse primitive degree-12 seed. Twelve lifts have full root order and the other six have exact index seven. The factor list and the elliptic-curve primality certificate for its 425-digit prime are included. Lean also verifies the six seventh-power obstructions. [Exact orders and seed list](results.pdf#page=37) · [FLINT check](scripts/check_ore_lifts.py) · [PARI/GP check](scripts/check_ore_4095.gp) · [Lean obstructions](GF2Sparse/OreNormObstructions.lean)
 - **Full-order witnesses in degrees 1279 and 2203.** Lean certifies $X^{1279}+X^{57}+X^{34}+X^{23}+1$ and $X^{2203}+X^{197}+X^{135}+X^{62}+1$. Both belong to the same two-parameter family as the consecutive witnesses. The certificates verify the Lucas–Lehmer test for $2^n-1$ and the full multiplicative order of $X$. [Lean certificates](GF2Sparse/MersenneExamples.lean) · [Regenerate the certificates](scripts/make_mersenne_examples.py)
 - **Irreducible lifts of the same weight.** Replacing each exponent $i$ by $2^i-1$ takes a primitive degree-$s$ seed to an irreducible of degree $2^s-1$. Lean proves the converse and shows that every lifted polynomial passes all root-product tests of lengths below $s$. This supplies sparse irreducibles for every $1\le s\le400$, and the seed in degree 2203 gives an irreducible pentanomial of degree $2^{2203}-1$ passing 2202 tests. For these irreducible lifts of degree $n=2^s-1$ with $s\ge5$, the logarithm base two of the root order exceeds $\sqrt{n+1}-\tfrac12\log_2(n+1)$. In the degree-$2^{2203}-1$ example the order exceeds $2^{2^{1102}-1101}$. [Lean order bound](GF2Sparse/OreOrder.lean) · [General equivalence](GF2Sparse/OreLift.lean) · [Certified examples](GF2Sparse/OreExamples.lean)
@@ -95,6 +96,14 @@ python3 scripts/make_witnesses.py --factor-table /tmp/gf2-cunningham.json --star
 ~~~
 
 Lean verifies the certificates independently of the search. The root module imports all the results. [Certificate checker](GF2Sparse/Certificate.lean) · [Prime proofs and range coverage](GF2Sparse/Table.lean)
+
+To check the full CSV through degree 1206, use the pinned factor table downloaded above. To repeat the search as well, install PARI/GP and run the second command.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --factor-table /tmp/gf2-cunningham.json --end 1206 --verify data/product-witnesses-5-1206.csv
+uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --factor-table /tmp/gf2-cunningham.json --end 1206 --search --jobs 4 > /tmp/gf2-product-range.csv &&
+  cmp /tmp/gf2-product-range.csv data/product-witnesses-5-1206.csv
+~~~
 
 The Ore lift census and its two large full-order certificates use the same factor table.
 
