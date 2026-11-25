@@ -4256,4 +4256,59 @@ irreducibility in FLINT. For each surviving irreducible it verifies
 attains span 299.
 \end{proof}
 
+\section{A sieved order bound in degree 1229}
+\begin{theorem}
+Every prime divisor of the remaining cofactor \(C=(2^{1229}-1)/K\)
+exceeds \(B=818085338814611457\). The orders of both sparse candidate
+roots exceed \(2^{345}\), and \(C\) has at most 15 prime factors
+counted with multiplicity.
+\end{theorem}
+\begin{proof}
+If \(q\mid C\) is prime, then \(\ord_q(2)=1229\), so \(q=1+2458j\)
+for some positive integer \(j\). Also \(2^{615}\) is a square root
+of \(2\bmod q\). The supplementary law for the quadratic character of
+2 gives \(q\equiv1,7\pmod8\). Both congruence restrictions are
+formalized in \nolinkurl{GF2Sparse/MersenneDivisors.lean}.
+Since \(q>11\), one may also discard terms divisible by \(3,5,7,11\).
+
+The earlier two products cover \(1\le j\le S=2^{45}\).
+Put \(W=4620\). For an interval starting after index \(s\), take the
+offsets \(1\le a\le W\) for which \(1+2458(s+a)\) survives these
+tests. They repeat with period \(W\). There are
+\(2\cdot2\cdot4\cdot6\cdot10=960\) offsets by the Chinese remainder
+theorem. Define, in \((\mathbb Z/C\mathbb Z)[T]\),
+\[
+ H_0(T)=\prod_a(1+2458(s+WT+a)),\qquad
+ H_{t+1}(T)=H_t(2T)H_t(2T+1).
+\]
+With \(d_t=960\cdot2^t\), the product of \(H_t(i)\) over
+\(0\le i<d_t\) covers the surviving factors in \(W\cdot960\cdot4^t\)
+consecutive indices. Starting at \(S\), a Newton-difference computation
+with \(t=13\) gave the same residue as four adjacent Lagrange
+computations with \(t=12\). The factorials used as interpolation
+denominators are inverted modulo \(C\) during the calculation.
+The common residue and the four component residues appear in
+\nolinkurl{data/degree-1229-wheel-products.json}. Its gcd with \(C\)
+is one. The last index is \(332825605701632\), giving the stated \(B\).
+For either candidate the earlier field certificates give \(\ord(r)=Kt\)
+with \(1<t\mid C\). Thus \(\ord(r)>KB>2^{345}\), and \(B^{16}>C\)
+gives the factor count.
+\end{proof}
+
+An order certificate using logarithms can now use
+\(J=B+1,\ L=136,\ s=3\) in the character moment bound.
+The 3,380 inputs in \nolinkurl{data/degree-1229-period-wheel.csv}
+are a subset of the 3,399 earlier inputs. Substitution into the same
+triangular system yields 6,741 logarithms. Their degree counts give
+the strict inequality
+\[
+ \frac{7056358035716604230552019993095513480701329007797625}
+      {5749894762106514252019992342087836678847549407232}>1227.
+\]
+Consequently actual logarithms for those 3,380 inputs in either
+candidate field would prove that its sparse root is primitive.
+The \texttt{--wheel} option of
+\nolinkurl{scripts/check_period_relations.py} verifies the identities
+and the moment calculation. The requested exponents remain open.
+
 \end{document}

@@ -9,6 +9,7 @@ from functools import lru_cache
 from math import lcm
 from pathlib import Path
 
+from check_1229_wheel import EXTENDED_BOUND
 from check_factor_base import DATA, irreducible, irreducible_counts, modulus, moment_bound, polynomial
 from find_factor_base_logs import insert, recover
 from period_coordinate import CANDIDATES, DEGREE, coordinate, frobenius_indices, mask_of, period_polynomial
@@ -18,7 +19,10 @@ ORDER = (1 << DEGREE) - 1
 RELATIONS = DATA / "degree-1229-period-relations.jsonl"
 TARGETS = DATA / "degree-1229-period-targets.csv"
 COMPACT_TARGETS = DATA / "degree-1229-period-compact.csv"
+WHEEL_TARGETS = DATA / "degree-1229-period-wheel.csv"
 INDEX_FLOOR = 86483186594349058
+ORIGINAL_MOMENT = (INDEX_FLOOR, 129, 3)
+WHEEL_MOMENT = (EXTENDED_BOUND + 1, 136, 3)
 
 
 def small_irreducibles(limit=16):
@@ -151,9 +155,9 @@ def write_targets(targets):
     out.writerows((p, p.bit_length()-1) for p in sorted(targets))
 
 
-def read_compact_targets(masks, pivots):
+def read_compact_targets(masks, pivots, path=COMPACT_TARGETS):
     """Replay the alternative certificate using the same triangular identities."""
-    with COMPACT_TARGETS.open(newline="") as source:
+    with path.open(newline="") as source:
         rows = csv.reader(source)
         if next(rows, []) != ["mask", "degree"]:
             raise ValueError("expected a compact target table with columns mask,degree")
@@ -166,7 +170,7 @@ def read_compact_targets(masks, pivots):
     return targets, closure(pivots, targets)
 
 
-def verify_submissions(name, paths, pivots, masks):
+def verify_submissions(name, paths, pivots, masks, moment=ORIGINAL_MOMENT):
     f = modulus(DEGREE, CANDIDATES[name])
     r = polynomial(2)
     a = coordinate(f)
@@ -195,11 +199,15 @@ def verify_submissions(name, paths, pivots, masks):
             check_log(p, e)
     counts = Counter(p.bit_length()-1 for p in logs)
     print(f"{name}: {given} supplied and {len(logs)-given} derived logarithms checked.")
-    if moment_bound(counts, INDEX_FLOOR, 129, 3) > DEGREE-2:
+    if moment_bound(counts, *moment) > DEGREE-2:
         from batch_degree_1229 import verify_published
+        from check_1229_wheel import verify_extension
         from check_degree_1229 import check as check_order
         check_order(10**10, CANDIDATES[name])
-        if verify_published() + 1 != INDEX_FLOOR:
+        bound = verify_published()
+        if moment == WHEEL_MOMENT:
+            bound = verify_extension()
+        if bound + 1 != moment[0]:
             raise ArithmeticError("the index hypothesis failed")
         print(f"Full order proved for the {name} candidate.")
 
@@ -234,13 +242,15 @@ def example89():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--list-targets", action="store_true", help="emit the target CSV")
-    parser.add_argument("--compact", action="store_true", help="check the smaller alternative target list")
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument("--compact", action="store_true", help="check the 3,399-target list")
+    selection.add_argument("--wheel", action="store_true", help="use the sieved index bound and 3,380 targets")
     parser.add_argument("--example-89", action="store_true", help="replay the complete one-logarithm example")
     parser.add_argument("--candidate", choices=CANDIDATES, help="sparse modulus used for submitted exponents")
     parser.add_argument("--logs", nargs="+", type=Path, help="verify supplied powers of the sparse root")
     args = parser.parse_args()
     if args.example_89:
-        if args.list_targets or args.compact or args.logs or args.candidate:
+        if args.list_targets or args.compact or args.wheel or args.logs or args.candidate:
             parser.error("--example-89 is a standalone certificate")
         example89()
         sys.exit(0)
@@ -250,15 +260,20 @@ if __name__ == "__main__":
     pivots = read_relations(small)
     raw_count = len(pivots)
     masks = extend_dickson(small, pivots)
-    targets, covered = (read_compact_targets if args.compact else select_targets)(masks, pivots)
+    target_path = WHEEL_TARGETS if args.wheel else COMPACT_TARGETS if args.compact else TARGETS
+    moment = WHEEL_MOMENT if args.wheel else ORIGINAL_MOMENT
+    if target_path == TARGETS:
+        targets, covered = select_targets(masks, pivots)
+    else:
+        targets, covered = read_compact_targets(masks, pivots, target_path)
     counts = Counter(p.bit_length()-1 for p in covered)
-    score = moment_bound(counts, INDEX_FLOOR, 129, 3)
+    score = moment_bound(counts, *moment)
     if score <= DEGREE-2:
         raise ArithmeticError("covered degree counts fall short of the character bound")
     if args.list_targets:
         write_targets(targets)
     else:
-        with (COMPACT_TARGETS if args.compact else TARGETS).open(newline="") as source:
+        with target_path.open(newline="") as source:
             rows = list(csv.reader(source))
         if rows != [["mask", "degree"]] + [[str(p), str(p.bit_length()-1)] for p in sorted(targets)]:
             raise ArithmeticError("the published target list differs from reconstruction")
@@ -266,4 +281,4 @@ if __name__ == "__main__":
               f"{len(targets)} inputs imply {len(covered)} polynomial logarithms.")
         print(f"Their conditional moment score is {score} > {DEGREE-2}.")
         if args.logs:
-            verify_submissions(args.candidate, args.logs, pivots, masks)
+            verify_submissions(args.candidate, args.logs, pivots, masks, moment)
