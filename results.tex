@@ -2332,4 +2332,59 @@ likewise give arbitrarily high degrees with first failures exactly
 1279 and 2203, respectively, retaining the displayed lower terms in
 each case. Every translated polynomial contains its seed as a factor.
 
+\section{A weight-preserving irreducibility criterion}
+For a binary polynomial \(P(Y)=\sum_i p_iY^i\) of degree \(s>0\) with
+\(P(0)=1\), define
+\[
+       L_P(X)=\sum_i p_iX^{2^i},\qquad O_P(X)=L_P(X)/X.
+\]
+The construction is due to
+\href{https://doi.org/10.1090/S0002-9947-1934-1501740-7}{Ore,
+\emph{Contributions to the theory of finite fields}}.
+The support map \(i\mapsto 2^i-1\) is injective, so \(O_P\) has the
+same weight as \(P\) and degree \(2^s-1\).
+
+\begin{theorem}\label{thm:ore-equivalence}
+The seed \(P\) is primitive if and only if \(O_P\) is irreducible.
+In that case \(O_P\) passes every root-product test of positive
+length below \(s\), including repetitions.
+\end{theorem}
+\begin{proof}
+On the algebraic closure let \(F(z)=z^2\), so \(P(F)z=L_P(z)\).
+Suppose \(P\) is primitive. A root \(z\) of an irreducible factor
+of \(O_P\) of degree \(d\) is nonzero, with
+\(P(F)z=(F^d-1)z=0\). A B\'ezout identity would rule this out if
+\(P\) and \(Y^d-1\) were coprime. Hence \(P\mid Y^d-1\). Its root
+has order \(2^s-1\), so \(2^s-1\mid d\). The factor accounts for
+the entire degree of \(O_P\).
+
+Conversely suppose \(O_P\) is irreducible, and let \(e\) be the
+order of \(Y\) in the units of \(\F[Y]/P\). Then \(P\mid Y^e-1\),
+so every root of \(O_P\) is fixed by \(F^e\). Its degree \(2^s-1\)
+divides \(e\). The quotient has only \(2^s-1\) nonzero residues,
+so \(e=2^s-1\), proving primitivity.
+
+Finally \(L_P\) is additive, has derivative 1 and degree \(2^s\).
+Its roots form an \(s\)-dimensional binary vector space whose
+nonzero elements are precisely the roots of \(O_P\).
+Apply Theorem~\ref{thm:additive-orbit}.
+\end{proof}
+
+Thus the original conjecture is equivalent to the following restricted
+irreducibility problem. For every \(s>0\), find an irreducible
+binary polynomial of degree \(2^s-1\) with at most five terms,
+all of whose exponents have the form \(2^i-1\).
+Every irreducible of positive degree with such support and constant
+term 1 uniquely determines its seed. In degree one choose \(X+1\).
+
+The verified seeds supply these irreducibles for all \(1\le s\le320\)
+and for \(s=1024,1279,2203\). For instance, the five exponents
+\[
+    0,\quad 2^{62}-1,\quad 2^{135}-1,\quad 2^{197}-1,\quad 2^{2203}-1
+\]
+give an irreducible pentanomial passing the first 2202 tests.
+Lean verifies the equivalence, weight, degree and short-product
+claim in \nolinkurl{GF2Sparse/OreLift.lean} and the applications
+in \nolinkurl{GF2Sparse/OreExamples.lean}.
+
 \end{document}
