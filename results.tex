@@ -3337,4 +3337,124 @@ Primitivity of this candidate is equivalent to \(t=C\).
 \href{https://factordb.com/index.php?query=2%5E1229-1}{FactorDB entry for the group order}.
 \end{proof}
 
+\section{Certifying order from logarithms of low-degree polynomials}\label{sec:factor-base}
+
+Let \(f\) be irreducible of degree \(n>1\), \(r=X\bmod f\),
+\(G=(\F[X]/f)^\times\), and \(H=\langle r\rangle\). A list of
+identities \(P(r)=r^{e_P}\) for distinct monic irreducibles \(P\)
+can prove \(H=G\) without a factorization of \(2^n-1\).
+Write \(N_d\) for the number of verified polynomials of degree \(d\).
+
+\begin{lemma}\label{lem:smooth-ratios}
+Set \(S(t)=\prod_d(1-t^d)^{-N_d}=\sum_{j\ge0}s_jt^j\),
+\(1/S(t)=\sum_{j\ge0}v_jt^j\), and \(U_j=\sum_{i=0}^j s_i\).
+For \(a,b\ge0\) with \(a+b<n\),
+\[
+             |H|\ \ge\ \sum_{j=0}^{\min(a,b)}v_j U_{a-j}U_{b-j}.
+\]
+\end{lemma}
+\begin{proof}
+The numerator and denominator of a reduced fraction can contain
+arbitrary positive powers of any listed irreducible, on at most one
+side. Thus the bivariate generating function counting such pairs by
+their two degrees is \(S(x)S(y)/S(xy)\). Summation through degrees
+\((a,b)\) gives the displayed expression. Evaluation at \(r\) maps
+these fractions into \(H\). Equality of two values implies that \(f\)
+divides the difference of their cross products. This polynomial has
+degree below \(n\), so the cross products agree as polynomials. Unique
+factorization and monicity then give the same reduced fraction.
+\end{proof}
+
+\begin{theorem}\label{thm:factor-moments}
+Suppose every proper index \([G:H]\) allowed by the known order
+checks is at least \(J>1\). Fix \(1\le L<n\) and nonnegative real
+weights \(c_0,\ldots,c_L\) with \(\sum_i c_i^2>0\). Put
+\[
+ b_k=\sum_{d\mid k}dN_d,\qquad
+ W_k=\sum_{i=0}^{L-k}c_i c_{i+k},\qquad
+ Q=\frac{2}{W_0}\sum_{k=1}^L\frac{W_k}{2^{k/2}}
+           \left(1+b_k-\frac{2^k-b_k}{J-1}\right).
+\]
+If \(Q>n-2\), then \(r\) is primitive.
+\end{theorem}
+\begin{proof}
+Assume \(I=[G:H]\ge J\). Every nontrivial character \(\chi\) of
+\(G/H\) gives a primitive even Dirichlet character modulo \(f\).
+Primitivity follows because the modulus is irreducible, and evenness
+because \(\F^\times=\{1\}\). Its \(L\)-polynomial has the factor
+\(1-t\) and its other \(n-2\) inverse roots are
+\(\sqrt2\,z_j\) with \(|z_j|=1\), by Weil's theorem.
+Taking the logarithmic derivative of its Euler product gives
+\[
+ -2^{k/2}\sum_{j=1}^{n-2}z_j^k=1+
+       \sum_{d\mid k}d\sum_{\deg P=d}\chi(P(r)^{k/d}),
+\]
+where the inner sum is over monic irreducibles. See
+\href{https://doi.org/10.1090/S0025-5718-97-00835-1}{Wan, Math. Comp. 66 (1997), section 2}
+and \href{https://www.math.tau.ac.il/~rudnick/papers/KeatingRudnickIMRNfinal.pdf}{Keating and Rudnick, equations (3.34)--(3.38)}.
+
+For each \(k\le L\), the total weight on the right, excluding the
+initial 1, is \(\sum_{d\mid k}d\,{\#}\{P:\deg P=d\}=2^k\).
+Let \(A_k\) be the weight for which \(P(r)^{k/d}\in H\), so
+\(A_k\ge b_k\). Averaging over the \(I-1\) nontrivial characters of
+\(G/H\) gives \(A_k-(2^k-A_k)/(I-1)\) for the weighted character
+sum, by orthogonality. This is at least
+\(b_k-(2^k-b_k)/(J-1)\). On the other hand, for each character,
+\[
+  0\le \sum_j\left|\sum_{i=0}^L c_i z_j^i\right|^2
+    =(n-2)W_0+2\sum_{k=1}^L W_k\operatorname{Re}\sum_j z_j^k .
+\]
+Averaging this inequality and substituting the bound above gives
+\(Q\le n-2\), a contradiction.
+\end{proof}
+
+\begin{corollary}\label{cor:1229-logs}
+For the degree-1229 candidate in Section~\ref{sec:1229}, it suffices
+to exhibit logarithms to base \(r\) for all 4,720 monic irreducibles
+of degrees at most 15 and any 958 distinct monic irreducibles of
+degree 16.
+\end{corollary}
+\begin{proof}
+The index divides \(C\) by Section~\ref{sec:1229}. Its trial-divisor
+check permits \(J=10^{10}+1\). Take \(L=84\) and
+\[
+ c_i=(i+1)(85-i)
+ \begin{cases}5 & i\text{ even},\\ 7/\sqrt2 & i\text{ odd}.\end{cases}
+\]
+The counts through degree 15 follow recursively from
+\(\sum_{d\mid k}dN_d=2^k\) for \(1\le k\le15\). With \(N_{16}=958\),
+all terms in the formula for \(Q\) are rational and
+\[
+ Q=\frac{1047231447833227675158323933137367}{853445946949335252992000000000}
+      >1227.
+\]
+The checker recomputes this inequality using exact arithmetic.
+The required logarithms are open in this degree.
+\end{proof}
+
+In degree 47, take \(f=X^{47}+X^5+X^4+X+1\).
+The 71 logarithms in \nolinkurl{data/factor-base-47.csv} cover every
+irreducible of degree at most eight. With \(a=b=23\), the fraction
+count is \(802308157829\), so the index is at most 175.
+Direct trial division shows that \(2^{47}-1\) has no divisor from 2
+through 175. This gives an elementary full-order certificate. In degree
+61 take \(f=X^{61}+X^5+X^2+X+1\). The analogous 71 logarithms give
+\(Q>90\) with \(J=1024\), \(L=28\), and the same weights with
+\(85-i\) replaced by \(29-i\). Trial division through 1023 supplies
+the index floor. Both files are checked by
+\nolinkurl{scripts/check_factor_base.py}.
+
+The searches use polynomial relations as in
+\href{https://research.ibm.com/publications/fast-evaluation-of-logarithms-in-fields-of-characteristic-two}{Coppersmith, IEEE Trans. Inform. Theory 30 (1984)}.
+For \(f=X^n+g\), \(q\) a power of two, \(e=hq-n\), and \(U=X^h A+B\),
+one has in the field
+\[
+   X^{\max(-e,0)} U^q=X^{\max(e,0)}g A^q+X^{\max(-e,0)}B^q .
+\]
+Factoring \(U\) and the right side gives a relation between the
+irreducible factors. The search uses unit pivots modulo \(2^n-1\),
+fixes the logarithm of \(X\) to 1, and checks the resulting identities
+by direct modular exponentiation. Each logarithm can also be verified
+independently of the search.
+
 \end{document}
