@@ -1,6 +1,7 @@
 """Find Gauss period relations from factorizations and affine changes of root-of-unity exponents."""
 
 import argparse
+import csv
 import json
 import sys
 from collections import Counter
@@ -46,7 +47,7 @@ def support_pairs(p, span):
                     yield q, left, right
 
 
-def search(n, bound, target_degree, spans, seed):
+def search(n, bound, target_degree, spans, seed, fibres, supports):
     p = 2*n+1
     order = (1 << n)-1
     indices = frobenius_indices(n)
@@ -60,6 +61,8 @@ def search(n, bound, target_degree, spans, seed):
     @lru_cache(maxsize=262144)
     def norm_factors(word):
         # N(F) = F(z)F(z^-1), expressed in the variable z+z^-1.
+        while len(dickson) < word.bit_length():
+            dickson.append((dickson[-1] << 1) ^ dickson[-2])
         norm = word.bit_count() % 2
         for j in range(1, word.bit_length()):
             if (word & (word >> j)).bit_count() % 2:
@@ -82,7 +85,13 @@ def search(n, bound, target_degree, spans, seed):
         with seed.open() as source:
             for line in source:
                 add(json.loads(line), emit=False)
-    else:
+    if fibres:
+        from period_fibres import prime_fibres
+        for m, b, factors in prime_fibres(small):
+            if m % p:
+                add([[m % p, b, -1]] + [[1, q, e] for q, e in factors])
+        print(f"{len(pivots)} pivots after the prime Dickson fibres.", file=sys.stderr)
+    elif not seed and spans:
         for m in multipliers:
             if m % p == 0:
                 continue
@@ -90,6 +99,23 @@ def search(n, bound, target_degree, spans, seed):
                 fs = polynomial(b)(polynomial(dickson[m])).factor()[1]
                 if all(f.degree() <= bound for f, _ in fs):
                     add([[m % p, b, -1]] + [[1, mask_of(f), e] for f, e in fs])
+    if supports:
+        with supports.open(newline="") as source:
+            reader = csv.DictReader(source)
+            if reader.fieldnames != ["scale", "shift", "support"]:
+                raise ValueError("expected the columns scale,shift,support")
+            for row in reader:
+                q, b = int(row["scale"]), int(row["shift"])
+                exponents = list(map(int, row["support"].split()))
+                if q not in indices or not 0 <= b < p or not exponents or not all(0 <= i < p for i in exponents):
+                    raise ValueError("invalid affine support parameters")
+                if len(set(exponents)) != len(exponents):
+                    raise ValueError("repeated exponent in an affine support")
+                ls = norm_factors(sum(1 << i for i in exponents))
+                rs = norm_factors(sum(1 << ((q*i+b) % p) for i in exponents))
+                if ls is None or rs is None:
+                    raise ValueError("the specified support pair is not smooth")
+                add([[q, v, -e] for v, e in sorted(ls)] + [[1, v, e] for v, e in sorted(rs)])
     for span in spans:
         for q, left, right in support_pairs(p, span):
             ls = norm_factors(left)
@@ -109,10 +135,14 @@ if __name__ == "__main__":
     parser.add_argument("degree", type=int)
     parser.add_argument("--factor-degree", required=True, type=int)
     parser.add_argument("--target-degree", type=int, help="stop when these masks depend only on the period")
-    parser.add_argument("--spans", nargs="+", required=True, type=int)
+    parser.add_argument("--spans", nargs="+", type=int, default=(), help="support widths for the affine search")
+    parser.add_argument("--fibres", action="store_true", help="enumerate every smooth odd-prime Dickson substitution")
+    parser.add_argument("--supports", type=Path, help="factor norm relations from specified affine supports")
     parser.add_argument("--seed", type=Path, help="emit only rows independent of this JSONL file")
     args = parser.parse_args()
     wanted = args.factor_degree if args.target_degree is None else args.target_degree
     if not 1 <= wanted <= args.factor_degree < args.degree or not all(1 <= a < args.degree for a in args.spans):
         parser.error("expected positive factor degrees and support spans below the extension degree")
-    search(args.degree, args.factor_degree, wanted, args.spans, args.seed)
+    if not args.spans and not args.fibres and not args.supports:
+        parser.error("select --fibres, --supports, or at least one support span")
+    search(args.degree, args.factor_degree, wanted, args.spans, args.seed, args.fibres, args.supports)

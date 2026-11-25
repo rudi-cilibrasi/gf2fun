@@ -77,6 +77,13 @@ uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_period_relations.py --candidate seroussi --logs /path/to/period-logs.csv
 ~~~
 
+To regenerate all 2,345 degree-1229 rows, enumerate the smooth Dickson substitutions and factor three specified pairs of affine supports. [Dickson fibre enumeration](scripts/period_fibres.py) · [Affine support witnesses](data/degree-1229-period-supports.csv)
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/find_period_relations.py 1229 --factor-degree 16 --fibres --supports data/degree-1229-period-supports.csv > /tmp/gf2-period1229.jsonl
+cmp /tmp/gf2-period1229.jsonl data/degree-1229-period-relations.jsonl
+~~~
+
 The period method has a complete degree-89 example. One supplied exponent and 214 polynomial identities recover all 71 values through degree eight and prove full order for both the Gauss period and the sparse root. The first command checks it. The second regenerates the relations. The search can also extend the degree-1229 relation file with `--seed`. [Working relation search](scripts/find_period_relations.py) · [Degree-89 certificate](data/degree-89-period-relations.jsonl)
 
 ~~~sh

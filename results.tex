@@ -3573,15 +3573,15 @@ The checker verifies \(a\ne0\) for each modulus, so \(z\) has order
 exactly \(p\). The monic degree-\(n\) polynomial
 \(\Psi=\sqrt{D_p(T)/T}\) vanishes at \(a\). Indeed the \(n\) distinct
 sums \(z^i+z^{-i}\), with \(1\le i\le n\), are the nonzero roots
-of \(D_p\); the recurrence gives only odd powers in \(D_p\).
+of \(D_p\), and the recurrence gives only odd powers in \(D_p\).
 These account for its entire degree with multiplicity two, together
 with the simple root zero. The independent recurrence and evaluation of
 \(\Psi\) are in \nolinkurl{scripts/period_coordinate.py}.
 
 The relation file has one identity per line. A triple \((m,b,e)\)
 represents \(B_b(D_m(T))^e\), where \(B_b\) has coefficient mask
-\(b\). In each row the positive product equals the negative-exponent
-side with signs reversed, modulo \(\Psi\). The checker tests the
+\(b\). In each row the product over positive exponents equals the
+product over negative exponents taken with their absolute values, modulo \(\Psi\). The checker tests the
 polynomial equality directly and checks each \(B_b\) irreducible.
 For example, \(D_3(T)=T(T+1)^2\) gives
 \(a(a+1)^2=a^{2^{k(3)}}\).
@@ -3620,6 +3620,43 @@ and recovery of subgroup membership from a unit coefficient in
 \nolinkurl{GF2Sparse/GaussPeriod.lean}.
 \end{proof}
 
+
+Most of the listed relations have an elementary description in terms of
+roots of unity. For odd \(t>1\), let \(U_t(T)\) be the product of
+\(T-(y+y^{-1})\) over primitive \(t\)-th roots \(y\) up to inversion.
+Frobenius permutes these factors, so \(U_t\in\F[T]\). The same root
+and multiplicity calculation as for \(D_p\) gives
+\[
+ D_t(T)=T\prod_{e\mid t,\ e>1} U_e(T)^2.
+\]
+When \(p\nmid t\), multiplicative M\"obius inversion and the Frobenius
+identity give the explicit power
+\[
+ U_t(a)=a^{\,2^{-1}\sum_{d\mid t}\mu(t/d)2^{k(d)}}
+ \quad\text{with the exponent taken modulo }2^n-1 .
+\]
+The inverse of two exists modulo this odd number. In particular an
+irreducible \(U_t\) has a known logarithm to base \(a\). For \(t=3\),
+one has \(U_3(T)=T+1\) and \(2^{673}\equiv-3\pmod{2459}\), so
+\(a(a+1)^2=a^{2^{673}}\) in degree 1229.
+
+For enumeration, assign an irreducible \(P\) of degree \(d\) the order
+\(t\) of a root of \(Y^2+\beta Y+1\), where \(\beta\) is a root of \(P\).
+The \(2^d\)-th power fixes or inverts this root, so \(t\mid 2^d-1\)
+or \(t\mid 2^d+1\). For an odd prime \(m\), the factors of \(P(D_m)\)
+come from order \(mt\), and also from order \(t\) when \(m\nmid t\).
+Indeed these are precisely the orders \(s\) satisfying
+\(s/\gcd(s,m)=t\). All primitive \(s\)-th roots give traces of the same
+degree, the least \(j>0\) with \(2^j\equiv\pm1\pmod s\) for \(s>1\).
+For each possible preimage factor the program computes the minimal
+polynomial of its image, counts multiplicities, and checks the total
+degree. Over the nonzero traces the fibres are simple since the
+power map of odd degree is separable and \(y\mapsto y+y^{-1}\) is
+unramified away from \(y=1\). Over zero the factor \(T\) is simple
+and the other factors are double by the identity above.
+This regenerates 2,342 independent rows. Three affine support pairs
+in \nolinkurl{data/degree-1229-period-supports.csv} give the remaining
+three by the norm identity below.
 
 For a complete one-logarithm example, take \(n=89\), \(p=179\), and
 \(r\) a root of \(X^{89}+X^6+X^5+X^3+1\). The same trace construction
