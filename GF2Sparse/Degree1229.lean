@@ -196,13 +196,15 @@ theorem irreducible_candidate : Irreducible (productCandidate 1229 27 50) := by
     fin_cases x <;> simp only [productCandidate, eval_add, eval_pow, eval_X, eval_mul, eval_one] <;> decide +kernel
   · simpa only [hdeg] using fullPower
 
-theorem order_split :
-    ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧ orderOf (AdjoinRoot.root (productCandidate 1229 27 50)) = knownPart*t := by
-  rw [← decode_productMask]
+theorem order_split_of_powers {G : Type*} [Monoid G] (r : G)
+    (full : r^(2^1229-1) = 1) (extra : r^knownPart ≠ 1)
+    (proper : ∀ p ∈ ([36871, 46703, 10543179280661916121033, 9536289355314392579996071515160583098298616686033085857] : List ℕ),
+      r^(cofactor*(knownPart/p)) ≠ 1) :
+    ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧ orderOf r = knownPart*t := by
   have hnum : knownPart*cofactor = 2^1229-1 := by decide +kernel
-  have hknown : orderOf (root^cofactor) = knownPart := by
+  have hknown : orderOf (r^cofactor) = knownPart := by
     apply orderOf_eq_of_pow_and_pow_div_prime (by decide)
-    · rw [← pow_mul, Nat.mul_comm, hnum]; exact fullPower
+    · rw [← pow_mul, Nat.mul_comm, hnum]; exact full
     · intro q hq hdiv
       have hmem : q ∈ ([36871, 46703, 10543179280661916121033, 9536289355314392579996071515160583098298616686033085857] : List ℕ) := by
         apply mem_list_primes_of_dvd_prod hq.prime _ (by simpa only [knownPart] using hdiv)
@@ -213,13 +215,20 @@ theorem order_split :
         · exact p46703.property.prime
         · exact p10543179280661916121033.property.prime
         · exact p9536289355314392579996071515160583098298616686033085857.property.prime
-      simp only [List.mem_cons, List.not_mem_nil, or_false] at hmem
       rw [← pow_mul]
-      rcases hmem with rfl | rfl | rfl | rfl
-      · exact power36871
-      · exact power46703
-      · exact power10543179280661916121033
-      · exact power9536289355314392579996071515160583098298616686033085857
-  exact order_split_of_projection (by decide) (by decide +kernel) (hnum ▸ fullPower) hknown extraPower
+      exact proper q hmem
+  exact order_split_of_projection (by decide) (by decide +kernel) (hnum ▸ full) hknown extra
+
+theorem order_split :
+    ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧ orderOf (AdjoinRoot.root (productCandidate 1229 27 50)) = knownPart*t := by
+  rw [← decode_productMask]
+  apply order_split_of_powers root fullPower extraPower
+  intro p hp
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at hp
+  rcases hp with rfl | rfl | rfl | rfl
+  · exact power36871
+  · exact power46703
+  · exact power10543179280661916121033
+  · exact power9536289355314392579996071515160583098298616686033085857
 
 end GF2Sparse.Degree1229

@@ -52,10 +52,10 @@ def ratio_bound(n, counts):
     return sum(inverse[j] * prefix[a-j] * prefix[b-j] for j in range(a + 1))
 
 
-def moment_bound(counts, index_floor, length):
+def moment_bound(counts, index_floor, length, offset=1):
     """Exact rational lower bound for n-2 if the subgroup has index at least index_floor."""
     # The real weights are w[i] / sqrt(2) for odd i and w[i] for even i.
-    w = [(i + 1) * (length + 1 - i) * (7 if i % 2 else 5) for i in range(length + 1)]
+    w = [(i + offset) * (length + offset - i) * (7 if i % 2 else 5) for i in range(length + 1)]
     norm = sum(Fraction(v*v, 1 << (i % 2)) for i, v in enumerate(w))
     total = 0
     for k in range(1, length + 1):
@@ -92,15 +92,22 @@ def verify_logs(paths, n, f):
                 logs[mask] = exponent
     return logs
 
-def check(n, paths):
+def check(n, paths, extended_index=False, seroussi=False):
     taps, index_floor, length = CASES[n]
+    if seroussi:
+        taps = (2, 6, 15)
     f = modulus(n, taps)
+    offset = 1
     if n == 1229:
         from check_degree_1229 import check as check_partial_order
-        check_partial_order(index_floor - 1)
+        check_partial_order(index_floor - 1, taps)
         target = irreducible_counts(15)
         target[16] = 958
-        target_score = moment_bound(target, index_floor, length)
+        if extended_index:
+            from batch_degree_1229 import verify_published
+            index_floor = verify_published() + 1
+            length, offset, target[16] = 129, 3, 276
+        target_score = moment_bound(target, index_floor, length, offset)
         if target_score <= n - 2:
             raise ArithmeticError("the proposed degree-1229 target is insufficient")
         print(f"Degree 1229 target: {sum(target.values())} polynomial values, "
@@ -113,7 +120,7 @@ def check(n, paths):
     counts = Counter(mask.bit_length() - 1 for mask in logs)
     size = ratio_bound(n, counts)
     index_ceiling = ((1 << n) - 1) // size
-    score = moment_bound(counts, index_floor, length)
+    score = moment_bound(counts, index_floor, length, offset)
     print(f"Verified polynomial logarithms in degree {n}: {len(logs)}.")
     print(f"Distinct reduced fractions: {size}. Index at most {index_ceiling}.")
     print(f"Character sum: {score}. A proper subgroup requires it to be at most {n-2}.")
@@ -126,9 +133,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("degree", type=int, choices=sorted(CASES))
     parser.add_argument("--logs", nargs="+", action="extend", type=Path, help="one or more logarithm CSVs")
+    parser.add_argument("--extended-index", action="store_true", help="replay the larger degree-1229 divisor bound")
+    parser.add_argument("--seroussi", action="store_true", help="use the degree-1229 taps 2, 6, 15")
     args = parser.parse_args()
+    if (args.extended_index or args.seroussi) and args.degree != 1229:
+        parser.error("the alternate modulus and extended index apply to degree 1229")
     paths = args.logs or []
     if not paths and args.degree != 1229:
         paths = [DATA / f"factor-base-{args.degree}.csv"]
-    if not check(args.degree, paths) and args.logs is None and args.degree != 1229:
+    if not check(args.degree, paths, args.extended_index, args.seroussi) and args.logs is None and args.degree != 1229:
         raise SystemExit("the published certificate is incomplete")

@@ -13,13 +13,13 @@ GROUP = (1 << N) - 1
 COFACTOR, REMAINDER = divmod(GROUP, KNOWN)
 
 
-def check(bound):
+def check(bound, taps=(U, V, U+V)):
     if REMAINDER or gcd(KNOWN, COFACTOR) != 1 or not all(fmpz(p).is_prime() for p in PRIMES):
         raise ValueError("incorrect known factors")
     if fmpz(COFACTOR).is_prime():
         raise ValueError("the unresolved factor is prime")
     x = nmod_poly([0, 1], 2)
-    f = x**N + x**(U+V) + x**V + x**U + 1
+    f = x**N + sum((x**i for i in taps), x**0)
     if x.pow_mod(GROUP, f) != 1 or any(x.pow_mod(GROUP//d, f) == 1 for d in (*PRIMES, COFACTOR)):
         raise ValueError("failed a polynomial order test")
     for candidate in range(2*N+1, bound+1, 2*N):
@@ -55,13 +55,15 @@ theorem irreducible_candidate : Irreducible (productCandidate 1229 27 50) := by
     fin_cases x <;> simp only [productCandidate, eval_add, eval_pow, eval_X, eval_mul, eval_one] <;> decide +kernel
   · simpa only [hdeg] using fullPower
 
-theorem order_split :
-    ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧ orderOf (AdjoinRoot.root (productCandidate 1229 27 50)) = knownPart*t := by
-  rw [← decode_productMask]
+theorem order_split_of_powers {G : Type*} [Monoid G] (r : G)
+    (full : r^(2^1229-1) = 1) (extra : r^knownPart ≠ 1)
+    (proper : ∀ p ∈ ([""" + ", ".join(str(p) for p in PRIMES) + """] : List ℕ),
+      r^(cofactor*(knownPart/p)) ≠ 1) :
+    ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧ orderOf r = knownPart*t := by
   have hnum : knownPart*cofactor = 2^1229-1 := by decide +kernel
-  have hknown : orderOf (root^cofactor) = knownPart := by
+  have hknown : orderOf (r^cofactor) = knownPart := by
     apply orderOf_eq_of_pow_and_pow_div_prime (by decide)
-    · rw [← pow_mul, Nat.mul_comm, hnum]; exact fullPower
+    · rw [← pow_mul, Nat.mul_comm, hnum]; exact full
     · intro q hq hdiv
       have hmem : q ∈ ([""" + ", ".join(str(p) for p in PRIMES) + """] : List ℕ) := by
         apply mem_list_primes_of_dvd_prod hq.prime _ (by simpa only [knownPart] using hdiv)
@@ -69,18 +71,27 @@ theorem order_split :
         simp only [List.mem_cons, List.not_mem_nil, or_false] at hp
         rcases hp with """ + " | ".join("rfl" for _ in PRIMES) + """
 """+ "\n".join(f"        · exact p{p}.property.prime" for p in PRIMES) + """
-      simp only [List.mem_cons, List.not_mem_nil, or_false] at hmem
       rw [← pow_mul]
-      rcases hmem with """ + " | ".join("rfl" for _ in PRIMES) + """
-"""+ "\n".join(f"      · exact power{p}" for p in PRIMES) + """
-  exact order_split_of_projection (by decide) (by decide +kernel) (hnum ▸ fullPower) hknown extraPower
+      exact proper q hmem
+  exact order_split_of_projection (by decide) (by decide +kernel) (hnum ▸ full) hknown extra
+
+theorem order_split :
+    ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧ orderOf (AdjoinRoot.root (productCandidate 1229 27 50)) = knownPart*t := by
+  rw [← decode_productMask]
+  apply order_split_of_powers root fullPower extraPower
+  intro p hp
+  simp only [List.mem_cons, List.not_mem_nil, or_false] at hp
+  rcases hp with """ + " | ".join("rfl" for _ in PRIMES) + """
+"""+ "\n".join(f"  · exact power{p}" for p in PRIMES) + """
 
 end GF2Sparse.Degree1229""")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--emit-lean", action="store_true")
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument("--emit-lean", action="store_true")
+    action.add_argument("--seroussi", action="store_true", help="check the published taps 2, 6, 15")
     parser.add_argument("--bound", type=int, default=10**10)
     args = parser.parse_args()
     if args.bound <= 0:
@@ -88,4 +99,4 @@ if __name__ == "__main__":
     if args.emit_lean:
         emit()
     else:
-        check(args.bound)
+        check(args.bound, (2, 6, 15) if args.seroussi else (U, V, U+V))

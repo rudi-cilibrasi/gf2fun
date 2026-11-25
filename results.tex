@@ -3314,7 +3314,7 @@ Let \(f=X^{1229}+X^{77}+X^{50}+X^{27}+1\), \(r=X\bmod f\), and
 and \(9536289355314392579996071515160583098298616686033085857\).
 Set \(C=M/K\). Then \(f\) is irreducible and
 \(\ord(r)=Kt\) for some \(t>1\) dividing \(C\).
-A separate trial-divisor calculation gives \(\ord(r)>2^{319}\).
+A blocked product over the possible prime divisors gives \(\ord(r)>2^{342}\).
 \end{theorem}
 \begin{proof}
 The three polynomial checks are \(r^M=1\), \(r^{M/p}\ne1\) for each
@@ -3332,9 +3332,32 @@ The cofactor \(C\) has 284 decimal digits and is coprime to \(K\).
 Each of its prime divisors \(q\) is odd and satisfies
 \(\ord_q(2)=1229\), since this order divides the prime 1229
 and cannot be one. Hence \(q\equiv1\pmod{2458}\).
-The integer check in \nolinkurl{scripts/check_degree_1229.py} divides
+The smaller integer check in \nolinkurl{scripts/check_degree_1229.py} divides
 \(C\) by every integer in this class from 2459 through \(10^{10}\).
-None divides, so \(t>10^{10}\), giving the stated lower bound.
+None divides, so \(t>10^{10}\), giving the intermediate bound \(\ord(r)>2^{319}\).
+A longer calculation groups \(2^{45}\) progression terms into two
+blocks. It verifies that each product is coprime to \(C\), excluding
+every prime divisor through \(1+2458\cdot2^{45}=86483186594349057\).
+This gives \(\ord(r)>2^{342}\).
+
+For a block beginning after index \(s\), set
+\[
+  F_d(z)=\prod_{j=1}^d(1+2458(s+dz+j))\pmod C .
+\]
+The polynomial has degree at most \(d\).
+Starting with the two samples of \(F_1\) at 0 and 1, extend
+\(F_d(0),\ldots,F_d(d)\) through argument \(4d+1\). Then
+\(F_{2d}(i)=F_d(2i)F_d(2i+1)\) yields its first \(2d+1\)
+samples. At \(d=2^{22}\), multiplying the samples indexed from 0 to
+\(d-1\) gives the product of \(d^2\) consecutive progression
+terms. All factorials in the interpolation are invertible modulo
+\(C\) by the smaller trial bound. The first block uses Newton forward
+differences and the second uses Lagrange interpolation, with
+\(s=0\) and \(s=2^{44}\) respectively. A separate direct polynomial
+multipoint evaluation also reproduces the prefix with \(d=2^{19}\).
+The exact residues and the replay are in
+\nolinkurl{data/degree-1229-progression-products.json} and
+\nolinkurl{scripts/batch_degree_1229.py}.
 FLINT also independently verifies the polynomial powers.
 Primitivity of this candidate is equivalent to \(t=C\).
 \href{https://factordb.com/index.php?query=2%5E1229-1}{FactorDB entry for the group order}.
@@ -3415,7 +3438,9 @@ Averaging this inequality and substituting the bound above gives
 For the degree-1229 candidate in Section~\ref{sec:1229}, it suffices
 to exhibit logarithms to base \(r\) for all 4,720 monic irreducibles
 of degrees at most 15 and any 958 distinct monic irreducibles of
-degree 16.
+degree 16 using the smaller trial bound. With the blocked divisor
+bound, any 276 distinct irreducibles of degree 16 suffice alongside
+the same 4,720 lower-degree polynomials.
 \end{corollary}
 \begin{proof}
 The index divides \(C\) by Section~\ref{sec:1229}. Its trial-divisor
@@ -3432,7 +3457,18 @@ all terms in the formula for \(Q\) are rational and
       >1227.
 \]
 The checker recomputes this inequality using exact arithmetic.
-The required logarithms are open in this degree.
+For the stronger bound use \(J=86483186594349058\), \(L=129\), and
+\(c_i=(i+3)(132-i)\) times \(5\) or \(7/\sqrt2\) according to the same
+parity rule. Taking \(N_{16}=276\) gives
+\[
+ Q=\frac{8571276094140014222922852893802751553811749843}
+         {6985037386615355643755855125475680768229376}>1227.
+\]
+Seroussi's listed polynomial \(X^{1229}+X^{15}+X^6+X^2+1\) also
+satisfies the full power and the four known prime-factor checks, so
+both sufficient sets apply to its root. These are two separate fields
+in the computation, each represented by its own modulus. The required
+logarithms for the 4,996-value test remain open for both candidates.
 \end{proof}
 
 In degree 47, take \(f=X^{47}+X^5+X^4+X+1\).
