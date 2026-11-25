@@ -18,6 +18,25 @@ except ImportError:
     fmpz = None
 
 
+# Complete p-1 factorizations for the slow Lucas proof steps in degrees 373 and 379.
+# FactorDB supplied the large factors. Both the generator and the Lean certificates check them.
+LUCAS_FACTORS = {
+    752440346497356983142327449546457327748644897934114291899411428982990336039662496766303354959577078458241: (
+        2, 2, 2, 2, 2, 2, 2, 3, 5, 373,
+        11648456912957035141403401,
+        129671235879539588972164430609587651,
+        695584613242994303996782694406793633639,
+    ),
+    6809649408891001685768937590233308625949604176033855796938978177320539702698633946720428389517879894953: (
+        2, 2, 2, 3, 3, 3, 379,
+        253707067869887,
+        19484948733429892067,
+        36688762204826664130649919705443,
+        458634687734059988877722086847819,
+    ),
+}
+
+
 @cache
 def prime_factors(number):
     if fmpz is not None:
@@ -190,7 +209,12 @@ def prime_certificates(primes):
         if p < 1024:
             proofs[p] = f"⟨{p}, by norm_num1⟩"
             return
-        factors = prime_factors(p - 1)
+        if p in LUCAS_FACTORS:
+            factors = LUCAS_FACTORS[p]
+            if prod(factors) != p - 1 or not all(isprime(q) for q in set(factors)):
+                raise ValueError(f"invalid Lucas factorization for {p}")
+        else:
+            factors = prime_factors(p - 1)
         for q in factors:
             certify(q)
         a = next(a for a in count(2) if all(pow(a, (p - 1) // q, p) != 1 for q in set(factors)))
