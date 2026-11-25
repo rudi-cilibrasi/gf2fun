@@ -737,6 +737,30 @@ The small primitive examples have respective supports
 \{0,5,8,9,12\},\{0,3,6,17,20\}\).
 \end{proof}
 
+\begin{theorem}\label{thm:lift-order}
+Let \(H\in\F[X]\) be irreducible of degree \(m\), put \(q=2^m\), and
+let \(t=[X^{m-1}]H\). Then \(H(X^2+X)\) is irreducible if and only
+if \(t=1\). In that case, for any root \(x\) of the lift,
+\[
+ H(X^2+X)\text{ is primitive}
+ \ \Longleftrightarrow\ H\text{ is primitive and }\ord(x^{q-1})=q+1 .
+\]
+If \(q+1\) is prime and \(H\) is primitive, the single coefficient
+\(t=1\) suffices for the lift to be primitive.
+\end{theorem}
+\begin{proof}
+Writing \(\beta=x^2+x\), the sum of the \(m\) Frobenius conjugates
+of \(\beta\) telescopes to \(x^q+x=t\). Since \(\beta\) has degree
+\(m\), the degree of \(x\) is either \(m\) or \(2m\), and it is \(m\)
+exactly when \(x^q=x\). This proves the irreducibility assertion.
+When \(t=1\), \(x^{q+1}=x(x+1)=\beta\). The order of \(x\) divides
+\((q-1)(q+1)\), and \(q-1,q+1\) are coprime. Thus \(x\) has full
+order precisely when \(x^{q+1}\) and \(x^{q-1}\) have orders
+\(q-1\) and \(q+1\), respectively. If \(q+1\) is prime, the latter
+order is automatic since \(x^q=x+1\ne x\). The trace and order
+criteria are formalized in \texttt{GF2Sparse/QuadraticLift.lean}.
+\end{proof}
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is
