@@ -100,4 +100,26 @@ theorem mem_of_unit_pivot {G : Type*} [Monoid G] (H : Submonoid G)
     (hc.of_dvd_right (orderOf_dvd_of_pow_eq_one hM))
   exact hj ▸ H.pow_mem h j
 
+/-- A power coprime to the subgroup index detects membership in a normal subgroup. -/
+theorem mem_of_pow_coprime_index {G : Type*} [Group G] (H : Subgroup G) [H.Normal]
+    {x : G} {k : ℕ} (hk : k.Coprime H.index) (hx : x ^ k ∈ H) : x ∈ H := by
+  apply (QuotientGroup.eq_one_iff x).mp
+  apply orderOf_eq_one_iff.mp
+  apply Nat.eq_one_of_dvd_coprimes hk _ (orderOf_dvd_natCard _)
+  apply orderOf_dvd_of_pow_eq_one
+  exact (QuotientGroup.mk_pow H x k).symm.trans ((QuotientGroup.eq_one_iff _).mpr hx)
+
+/-- A logarithm after raising to the known part of the order proves membership
+in the original cyclic subgroup. -/
+theorem mem_zpowers_of_projected_log {G : Type*} [CommGroup G] {r x : G} {k c e : ℕ}
+    (hk : 0 < k) (hkc : k.Coprime c) (hcard : Nat.card G = k * c)
+    (hr : k ∣ orderOf r) (hx : x ^ k = (r ^ k) ^ e) : x ∈ Subgroup.zpowers r := by
+  let H := Subgroup.zpowers r
+  obtain ⟨t, ht⟩ := hr
+  have hsize : Nat.card H = k * t := (Nat.card_zpowers r).trans ht
+  have hid : t * H.index = c := Nat.eq_of_mul_eq_mul_left hk (by
+    rw [← Nat.mul_assoc, ← hsize, H.card_mul_index, hcard])
+  apply mem_of_pow_coprime_index H (hkc.of_dvd_right (hid ▸ dvd_mul_left _ _))
+  exact hx ▸ H.pow_mem (H.pow_mem (Subgroup.mem_zpowers r) k) e
+
 end GF2Sparse

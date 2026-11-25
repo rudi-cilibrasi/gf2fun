@@ -10,6 +10,7 @@ from math import lcm
 from pathlib import Path
 
 from check_1229_wheel import EXTENDED_BOUND
+from check_degree_1229 import COFACTOR, KNOWN
 from check_factor_base import DATA, irreducible, irreducible_counts, modulus, moment_bound, polynomial
 from find_factor_base_logs import insert, recover
 from period_coordinate import CANDIDATES, DEGREE, coordinate, frobenius_indices, mask_of, period_polynomial
@@ -170,16 +171,20 @@ def read_compact_targets(masks, pivots, path=COMPACT_TARGETS):
     return targets, closure(pivots, targets)
 
 
-def verify_submissions(name, paths, pivots, masks, moment=ORIGINAL_MOMENT):
+def verify_submissions(name, paths, pivots, masks, moment=ORIGINAL_MOMENT, projected=False):
     f = modulus(DEGREE, CANDIDATES[name])
     r = polynomial(2)
     a = coordinate(f)
+    group_exponent = COFACTOR if projected else ORDER
+    projection = KNOWN if projected else 1
+    base = r.pow_mod(projection, f)
     logs = {}
 
     def check_log(p, e):
-        if p not in masks or not 0 <= e < ORDER:
+        if p not in masks or not 0 <= e < group_exponent:
             raise ValueError(f"out-of-range mask or exponent for {p}")
-        if r.pow_mod(e, f) != polynomial(p).compose_mod(a, f):
+        value = polynomial(p).compose_mod(a, f)
+        if base.pow_mod(e, f) != value.pow_mod(projection, f):
             raise ValueError(f"incorrect {name} period-coordinate logarithm for mask {p}")
         logs[p] = e
 
@@ -195,10 +200,11 @@ def verify_submissions(name, paths, pivots, masks, moment=ORIGINAL_MOMENT):
     given = len(logs)
     for p, row in sorted(pivots.items()):
         if p not in logs and row.keys()-{p} <= logs.keys():
-            e = -sum(c * logs[q] for q, c in row.items() if q != p) % ORDER
+            e = -sum(c * logs[q] for q, c in row.items() if q != p) % group_exponent
             check_log(p, e)
     counts = Counter(p.bit_length()-1 for p in logs)
-    print(f"{name}: {given} supplied and {len(logs)-given} derived logarithms checked.")
+    kind = "projected logarithms" if projected else "logarithms"
+    print(f"{name}: {given} supplied and {len(logs)-given} derived {kind} checked.")
     if moment_bound(counts, *moment) > DEGREE-2:
         from batch_degree_1229 import verify_published
         from check_1229_wheel import verify_extension
@@ -248,14 +254,17 @@ if __name__ == "__main__":
     parser.add_argument("--example-89", action="store_true", help="replay the complete one-logarithm example")
     parser.add_argument("--candidate", choices=CANDIDATES, help="sparse modulus used for submitted exponents")
     parser.add_argument("--logs", nargs="+", type=Path, help="verify supplied powers of the sparse root")
+    parser.add_argument("--projected", action="store_true", help="verify logarithms after raising both sides to the known part of the order")
     args = parser.parse_args()
     if args.example_89:
-        if args.list_targets or args.compact or args.wheel or args.logs or args.candidate:
+        if args.list_targets or args.compact or args.wheel or args.logs or args.candidate or args.projected:
             parser.error("--example-89 is a standalone certificate")
         example89()
         sys.exit(0)
     if bool(args.logs) != bool(args.candidate) or (args.list_targets and args.logs):
         parser.error("log submissions require a candidate and at least one CSV")
+    if args.projected and not args.logs:
+        parser.error("--projected requires --logs and --candidate")
     small = small_irreducibles()
     pivots = read_relations(small)
     raw_count = len(pivots)
@@ -281,4 +290,4 @@ if __name__ == "__main__":
               f"{len(targets)} inputs imply {len(covered)} polynomial logarithms.")
         print(f"Their conditional moment score is {score} > {DEGREE-2}.")
         if args.logs:
-            verify_submissions(args.candidate, args.logs, pivots, masks, moment)
+            verify_submissions(args.candidate, args.logs, pivots, masks, moment, args.projected)
