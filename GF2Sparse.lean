@@ -2,6 +2,7 @@ import GF2Sparse.ConjugateProducts
 import GF2Sparse.Coverage
 import GF2Sparse.DyadicExample1024
 import GF2Sparse.DyadicFactors
+import GF2Sparse.FibreBound
 import GF2Sparse.Grid
 import GF2Sparse.IterateOrder
 import GF2Sparse.Linearized

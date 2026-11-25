@@ -1417,6 +1417,12 @@ the solutions. Each coefficient tuple therefore belongs to
 \(\mathbb F_{q^d}\) for some \(d\le D\). Adjoining a root raises the
 extension degree by at most \(k\).
 \end{proof}
+Lean checks the sharp bound on the number of polynomials in
+\texttt{GF2Sparse/FibreBound.lean}. Its proof picks an evaluation
+point \(x\) separating any finite collection of solutions. Interpolation
+gives a single linear operator on the \(D\) prefix products for which
+each solution contributes a nonzero eigenvector with eigenvalue \(H(x)\).
+Distinct eigenvalues give linearly independent vectors.
 
 \begin{theorem}\label{thm:unbounded-ranks}
 For every \(k\ge1\) there are infinitely many squarefree binary
