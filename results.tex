@@ -1203,7 +1203,10 @@ Berlekamp--Massey computes the minimal recurrence of that coordinate
 from \(2\binom n2\) terms. Its degree is at most \(\binom n2\).
 Taking the lcm strictly increases the proposed annihilator, which
 always divides \(P_f\). A successful test on the entire vector therefore
-certifies equality. The script checks the resulting gcd tests against
+certifies equality. See
+\href{https://doi.org/10.1109/TIT.1969.1054260}{Massey, \emph{Shift-register
+synthesis and BCH decoding}}, for the scalar recurrence algorithm.
+The script checks the resulting gcd tests against
 the exterior-power matrices for all 2,730 squarefree constant-one
 polynomials of positive degrees through 12.
 
@@ -1219,6 +1222,8 @@ the fifth power of Frobenius fixes \(\mathbb F_{32}\). For residues
 \]
 Each displayed quintic is irreducible because its roots lie in
 \(\mathbb F_{32}\setminus\F\). Their five conjugates have product 1.
+Lean proves the period reduction for any fixed irreducible factor and
+the exact quintic criterion in \texttt{GF2Sparse/DyadicFactors.lean}.
 In particular rank five is the first failure in degrees 32, 64, 128
 and 1024. The fourth test for all powers of two remains open here.
 
