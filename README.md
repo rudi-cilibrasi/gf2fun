@@ -69,6 +69,8 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+For every sufficiently large odd $n$ and fixed cutoff $B$, there are at least $c_B n\varphi(n)$ two-odd-tap supports that pass the squarefreeness, inverse-pair and small-factor tests in both degrees $n$ and $n+2(u+v)$. Exactly one of those degrees has an odd factor count for that support. As a consequence, a positive proportion of odd degrees have at least $c_B n^2$ supports passing all four tests together. Lean verifies the cyclic coprimality test for squarefreeness. [Proof](results.pdf#page=90) · [Lean criterion](GF2Sparse/ReciprocalSieve.lean) · [Paired-degree checker](scripts/check_odd_tap_parity.py)
+
 In odd degree $n$, a single inverse modulo $Y^{(u+v)/2}+1$ determines whether $X^n+(1+X^u)(1+X^v)$ is squarefree and, if so, the parity of its factor count when both taps are odd. If $(u+v)/2$ is odd, raising the degree by $2(u+v)$ reverses that parity. Together with the even-tap formulas, this covers every product support in odd degree. The checker agrees with direct factorization on all 21,327 two-odd-tap supports through degree 128. [Proof](results.pdf#page=88) · [Cyclic inverse checker](scripts/check_odd_tap_parity.py)
 
 At degree 1229, 51,671 of the 376,382 product pentanomials are squarefree with an odd factor count. Of these, 25,406 also avoid inverse pairs and factors through degree five. The two-odd-tap family supplies 44,187 and 21,961 of these counts, respectively, and contains 393 of the 449 irreducibles. Independent full factorizations agree with the parity predictions on every support. [Six-degree counts](results.pdf#page=90) · [Irreducible supports](data/open-product-irreducibles.csv)

@@ -5,6 +5,7 @@ import csv
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
+from math import gcd, lcm
 from pathlib import Path
 
 from flint import fmpz_poly, nmod_poly
@@ -80,6 +81,45 @@ def census(n, pool, factor, integer, joint):
     return counts, irreducibles
 
 
+def paired_span(h, n, period, cutoff, factor):
+    fields = [X**(2**k) + X for k in range(1, cutoff+1)]
+    counts = Counter()
+    for u in range(period, h, 2*period):
+        v = 2*h-u
+        degrees = (n, n+4*h)
+        parities = [factor_parity(j, u, v) for j in degrees]
+        if parities == [None, None]:
+            continue
+        if set(parities) != {0, 1}:
+            raise ArithmeticError(f"degree shift failed at {(n, u, v)}")
+        polynomials = [X**j + (1+X**u)*(1+X**v) for j in degrees]
+        for f in polynomials:
+            if f.gcd(f.derivative()) != 1 or any(f.gcd(field) != 1 for field in fields):
+                raise ArithmeticError(f"squarefree or factor-degree test failed at {(n, u, v)}")
+        if any(f.gcd(f.reverse()) != 1 for f in polynomials):
+            continue
+        side = parities.index(1)
+        counts[side] += 1
+        if factor:
+            for f, parity in zip(polynomials, parities):
+                factors = f.factor()[1]
+                if any(e != 1 for _, e in factors) or len(factors) % 2 != parity:
+                    raise ArithmeticError(f"paired factorization disagrees at {(n, u, v)}")
+                if len(factors) == 1:
+                    counts["irreducible", side] += 1
+    return counts
+
+
+def paired_spans(n, cutoff, factor, pool):
+    period = lcm(3, *(2**k-1 for k in range(1, cutoff+1)))
+    spans = (h for h in range(n//8+1, (n+5)//6) if (h-n) % 4 == 2 and gcd(n, h) == 1)
+    work = partial(paired_span, n=n, period=period, cutoff=cutoff, factor=factor)
+    totals = Counter()
+    for counts in (pool.map(work, spans) if pool else map(work, spans)):
+        totals.update(counts)
+    return totals
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
@@ -87,15 +127,26 @@ if __name__ == "__main__":
     mode.add_argument("--degree", type=int, help="classify all two-odd-tap supports in one odd degree")
     parser.add_argument("--factor", action="store_true", help="independently factor every support in the selected degree")
     parser.add_argument("--joint", action="store_true", help="count survivors also avoiding inverse pairs and small factors")
+    parser.add_argument("--pairs", type=int, metavar="CUTOFF",
+                        help="check paired degrees n and n+4h with this small-factor cutoff")
     parser.add_argument("--jobs", type=int, default=1)
     args = parser.parse_args()
     if args.jobs < 1 or args.through < 7 or (args.degree is not None and (args.degree < 7 or args.degree % 2 == 0)):
         parser.error("expected positive jobs and degrees of at least seven, with --degree odd")
-    if (args.factor or args.joint) and args.degree is None:
-        parser.error("--factor and --joint require --degree")
+    if (args.factor or args.joint or args.pairs is not None) and args.degree is None:
+        parser.error("--factor, --joint and --pairs require --degree")
+    if args.pairs is not None and (args.pairs < 1 or args.joint):
+        parser.error("--pairs requires a positive cutoff and already includes the joint tests")
     with ProcessPoolExecutor(args.jobs) as pool:
         workers = pool if args.jobs > 1 else None
-        if args.degree is None:
+        if args.pairs is not None:
+            counts = paired_spans(args.degree, args.pairs, args.factor, workers)
+            print(f"{counts[0]+counts[1]:,} pairs pass the joint tests. Odd factor count occurs "
+                  f"at the lower degree in {counts[0]:,} and at the upper degree in {counts[1]:,}.")
+            if args.factor:
+                print(f'Irreducibles at the lower and upper degree: '
+                      f'{counts["irreducible", 0]:,} and {counts["irreducible", 1]:,}.')
+        elif args.degree is None:
             total = sum(sum(census(n, workers, True, n <= 48, False)[0].values())
                         for n in range(7, args.through+1, 2))
             print(f"Verified {total:,} two-odd-tap supports through degree {args.through}.")

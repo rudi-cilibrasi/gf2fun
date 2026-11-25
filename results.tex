@@ -6961,4 +6961,125 @@ degree-five tests. The checker \nolinkurl{scripts/check_odd_tap_parity.py}
 uses binary polynomial arithmetic for the prediction. Its small-degree
 mode also checks the integer discriminants through degree \(48\).
 
+\section{Two odd taps in paired degrees}
+\label{sec:paired-odd-degrees}
+\begin{theorem}\label{thm:paired-odd-degrees}
+Fix \(B\ge1\). For every sufficiently large odd \(n\), there are
+\(\gg_B n\varphi(n)\) different pairs of odd taps \(0<u<v\) with
+\(n/8<h=(u+v)/2<n/6\) and \(h\) odd, such that the two pentanomials
+\[
+  X^j+(1+X^u)(1+X^v),\qquad j=n,\ n+4h ,
+\]
+are squarefree, have exponent gcd one, have no mutually inverse
+roots and have no irreducible factor of degree at most \(B\).
+Exactly one of the two has an odd number of irreducible factors.
+Consequently for every sufficiently large \(N\), at least \(c_B N\)
+odd degrees \(j\in[N,4N]\) each have at least \(c_B j^2\) two-odd-tap
+pentanomials satisfying all these conditions, including odd factor count.
+\end{theorem}
+\begin{proof}
+Let \(L=\mathop{\rm lcm}(3,2^1-1,\ldots,2^B-1)\), put
+\(e=\gcd(n,3)\), and consider the three integers
+\[
+ m_0=h,\qquad m_1=(n-h)/2,\qquad m_2=(n+3h)/(2e).
+\]
+We first find \(\gg_B\varphi(n)\) choices of \(h\) coprime to \(n\)
+in the indicated interval, with all three integers odd and
+\(D(m_i)<\eta=1/(1000L)\). Here \(D(m)\) is the sum of
+\(1/\ord_d(2)\) over divisors \(d>1\) used in
+Lemma~\ref{lem:many-gap-moduli}.
+
+Choose a fixed \(R\ge5\) so large that the tail for \(d>R\) of
+Romanoff's series \(\sum_{d>1,\ d\ {\rm odd}}1/(d\ord_d(2))\)
+is less than \(\eta/12\). Choose \(h\equiv n+2\pmod4\). For each
+prime \(5\le p\le R\) avoid the at most three residue classes of
+\(h\) for which one of the \(m_i\) vanishes modulo \(p\).
+At three, if \(3\nmid n\) avoid \(0,n\bmod3\), and if \(3\mid n\)
+avoid \(0,-n/3\bmod3\). The Chinese remainder theorem thus gives
+a class modulo the fixed \(M=4\prod_{3\le p\le R}p\), with the
+product over primes, in which all \(m_i\) are coprime to \(M\).
+
+For \(I=(n/8,n/6)\) set
+\[
+ A=\frac{|I|}{M}\prod_{p\mid n,\ p\nmid M}(1-1/p)\gg_R\varphi(n).
+\]
+In this class there are \(A+O(\tau(n))\) values of \(h\in I\)
+coprime to \(n\), by inclusion-exclusion. Each \(m_i\) is then
+coprime to \(n\). For \(d\le n^{1/3}\) coprime to \(Mn\),
+the additional condition \(d\mid m_i\) fixes one class modulo \(d\).
+It leaves \(A/d+O(\tau(n))\) choices by the same count.
+All divisors \(d>1\) of an \(m_i\) exceed \(R\). Thus the contribution
+of these smaller divisors to \(\sum_h D(m_i)\) is at most
+\(A\eta/12+O(n^{1/3}\tau(n))\).
+
+For larger divisors, each positive \(m_i<n\) occurs at most once as
+\(h\) varies. Dropping the congruences costs at most
+\[
+ n\sum_{d>n^{1/3},\ d\ {\rm odd}}\frac1{d\ord_d(2)}
+       \ll n\frac{\log\log n}{\log n}=o(A).
+\]
+Indeed \(\ord_d(2)\ge\log_2(d+1)\), and the proof of
+Lemma~\ref{lem:many-gap-moduli} bounds
+\(\sum_{\ord_d(2)\le t}1/d\ll\log(2t)\). Summing over dyadic
+order ranges gives the displayed tail bound. We also used
+\(\varphi(n)\gg n/\log\log(3n)\) and \(\tau(n)=n^{o(1)}\).
+Summing over the three forms and applying Markov's inequality
+retains \(\gg_B\varphi(n)\) values of \(h\) with the claimed bounds.
+
+For each retained \(h\), start with the odd multiples of \(L\) in
+\(0<u<h\), and set \(v=2h-u\). Both degrees \(j\) are coprime
+to \(2h\), which forces exponent gcd one. For any nonzero element
+of degree at most \(B\), the \(u\)-th power is one, and the value of
+either polynomial reduces to its nonzero leading power.
+
+A repeated root satisfies \(x^h=1\) and
+\(x^u+x^{-u}=x^n\) by Theorem~\ref{thm:odd-tap-parity}. On this
+group the two degrees agree. For a root \(x\) of exact order
+\(d>1\), this quadratic condition on \(x^u\) excludes at most
+two classes of \(u\bmod d\), the same for all conjugates of \(x\).
+There are \(\varphi(d)/\ord_d(2)\) conjugacy classes, so at most
+\(2hD(h)\) taps in the interval are lost.
+
+An inverse pair in degree \(j\) has \(x^{2(j-h)}=1\) by
+Theorem~\ref{thm:totient-reciprocal}. The odd modulus for these
+roots is \(g=m_1\) at \(j=n\) and \(g=e m_2\) at \(j=n+4h\),
+since \(j-h=2g\) and \(g\) is odd. At such a root put
+\(y=x^j=x^h\), \(z=x^{u-j}\). Its equation becomes
+\(z+z^{-1}=1+y+y^{-1}\), again excluding at most two classes
+per orbit. Both moduli exceed \(h\), so a count over a complete
+period bounds the loss. Order three is already excluded by
+\(3\mid u\), and \(x=1\) is never a root. If \(e=3\), then
+\(3\nmid m_2\), and the orders other than one and three dividing
+\(3m_2\) are \(d\) or \(3d\) with \(1<d\mid m_2\). Their sum
+of reciprocal orders of two is at most \(2D(m_2)\).
+The total loss for repeated roots and inverse pairs is therefore
+at most \(2h\eta+2m_1\eta+4e m_2\eta<5n\eta\).
+The initial number of taps is at least \(h/(2L)-1>n/(16L)-1\).
+This leaves \(\gg_B n\) choices for each \(h\).
+Corollary~\ref{cor:odd-tap-period} now gives the opposite parities.
+
+Sum over odd \(n\in[N,2N]\). The sum of \(n\varphi(n)\) on this
+interval is \(\gg N^3\), for example by restricting the usual
+M\"obius expansion of \(\varphi(n)/n\) to odd integers.
+Each resulting odd-factor polynomial in degree \(j\in[N,4N]\)
+comes from at most two pairs, since its taps determine \(h\) and
+the initial degree is \(j\) or \(j-4h\). Each degree has at most
+\(O(N^2)\) tap pairs. The total \(\gg_B N^3\) forces the stated
+number of degrees with a quadratic count.
+\end{proof}
+
+At \(n=1229\) and \(B=3\), direct tests in this interval give
+\(45\) pairs passing the squarefreeness, reciprocal and small-factor
+conditions on both sides. Full factorizations put the odd count
+at the lower degree in \(25\) pairs and at the upper degree in
+\(20\). The upper polynomials with \((j,u,v)=(1929,105,245)\)
+and \((1961,105,261)\) are irreducible. At \(n=1239\), divisible
+by three, \(29\) pairs pass, with \(12\) lower and \(17\) upper
+odd counts. At \(n=100003\) and \(B=5\), there are \(2041\)
+pairs, with \(997\) lower and \(1044\) upper odd counts by the
+cyclic inverse test. Use \texttt{--degree 1229 --pairs 3 --factor} in
+\nolinkurl{scripts/check_odd_tap_parity.py}. Lean checks the cyclic
+coprimality criterion for squarefreeness in
+\nolinkurl{GF2Sparse/ReciprocalSieve.lean}.
+
 \end{document}
