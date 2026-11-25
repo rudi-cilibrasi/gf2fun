@@ -3,6 +3,7 @@ import GF2Sparse.Coverage
 import GF2Sparse.DyadicFactors
 import GF2Sparse.Grid
 import GF2Sparse.IterateOrder
+import GF2Sparse.Linearized
 import GF2Sparse.Many
 import GF2Sparse.NormExamples
 import GF2Sparse.ParityExamples
