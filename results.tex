@@ -4105,4 +4105,40 @@ Thus \(k(k-1)+1\le D\), which gives the bound. This counting inequality
 is also formalized as \texttt{trinomial\_triple\_root\_count\_bound}.
 \end{proof}
 
+\section{Every degree-1229 witness must have five terms}
+\begin{theorem}\label{thm:1229-no-trinomial}
+Every degree-1229 binary trinomial with constant term one is reducible.
+Every primitive polynomial of weight at most five in that degree must
+therefore have exactly five terms. Its support cannot contain a
+four-term arithmetic progression.
+\end{theorem}
+\begin{proof}
+For each \(1\le a\le614\) the table
+\nolinkurl{data/degree-1229-trinomial-factors.csv} gives a proper
+factor of \(X^{1229}+X^a+1\). Reversing the factor gives a proper
+factor for tap \(1229-a\). Binary polynomial division verifies all
+1,228 divisibilities. The largest degree of a listed factor is 568.
+An irreducible of degree greater than one has constant term one and
+odd weight since it does not vanish at 0 or 1. A four-term progression
+in an irreducible pentanomial would give an irreducible trinomial of
+the same degree by the proof of Theorem~\ref{thm:progression-triples}.
+\end{proof}
+
+The same exclusion covers 1,866 distinct product pentanomials. For
+\(j,u\ge1\) and \((1+2^j)u<1229\), take
+\[
+        F=X^{1229}+(1+X^u)^{1+2^j}
+\]
+and its reciprocal. Its endpoint trinomial is
+\(T=X^{1229}+X^{(1+2^j)u}+1\), and \(T\mid F(X^{1+2^j})\).
+If \(F\) were irreducible, the \((1+2^j)\)-th power of any root of
+\(T\) would have degree 1229. This forces \(T\) to be irreducible.
+The smaller interior exponent \(u\) and the ratio of the two smaller
+interior exponents determine \(j,u\). The reflected supports give a
+disjoint collection since simultaneous lower and upper sum relations
+would make 1229 twice the middle interior exponent. The total is
+\(2\sum_{j=1}^{10}\lfloor1228/(1+2^j)\rfloor=1866\).
+The special case \(j=1\) accounts for all 818 four-term progressions,
+since three does not divide 1229.
+
 \end{document}

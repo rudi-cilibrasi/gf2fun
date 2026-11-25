@@ -59,6 +59,8 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+In degree 1229, every primitive witness of weight at most five must have exactly five terms. Proper factors exclude all 1,228 trinomials and, by power sampling, 1,866 pentanomial supports including every four-term arithmetic progression. The `--trinomials` option of the degree-1229 checker replays the complete exclusion. [Factor table](data/degree-1229-trinomial-factors.csv) · [Proof](results.pdf#page=53)
+
 Both degree-1229 candidates pass the first nine exterior-power tests. One known prime divisor of their root orders suffices. The checker compares 77,221,860 exact residues for ranks one through eight, then tests all 3,662,491,560 five-term windows needed for rank nine. The full run took 142 seconds with 16 threads and about 1.7 GiB of memory. [Proof](results.pdf#page=52) · [Integer checker](scripts/check_1229_short_products.cpp)
 
 ~~~sh

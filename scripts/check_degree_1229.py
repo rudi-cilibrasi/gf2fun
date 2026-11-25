@@ -1,16 +1,40 @@
 """Check the known and unresolved parts of the degree-1229 root order, or emit its Lean certificate."""
 
 import argparse
+import csv
 from math import gcd, prod
+from pathlib import Path
 
 from flint import fmpz, nmod_poly
-from make_witnesses import emit_modular_power, prime_certificates
+from make_witnesses import emit_modular_power, prime_certificates, remainder
 
 N, U, V = 1229, 27, 50
 PRIMES = (36871, 46703, 10543179280661916121033, 9536289355314392579996071515160583098298616686033085857)
 KNOWN = prod(PRIMES)
 GROUP = (1 << N) - 1
 COFACTOR, REMAINDER = divmod(GROUP, KNOWN)
+
+
+def check_trinomials():
+    path = Path(__file__).resolve().parents[1] / "data" / "degree-1229-trinomial-factors.csv"
+    checked = set()
+    with path.open(newline="") as source:
+        reader = csv.DictReader(source)
+        if reader.fieldnames != ["tap", "factor_mask"]:
+            raise ValueError("incorrect trinomial factor header")
+        for expected, row in enumerate(reader, 1):
+            a, g = int(row["tap"]), int(row["factor_mask"])
+            if a != expected or a > N // 2 or g <= 1 or g % 2 == 0:
+                raise ValueError(f"invalid tap or factor at row {expected}")
+            reverse = int(f"{g:b}"[::-1], 2)
+            for tap, factor in ((a, g), (N-a, reverse)):
+                f = (1 << N) | (1 << tap) | 1
+                if not 0 < factor.bit_length()-1 < N or remainder(f, factor):
+                    raise ArithmeticError(f"failed proper factor at tap {tap}")
+                checked.add(tap)
+    if checked != set(range(1, N)):
+        raise ArithmeticError("incomplete trinomial factor table")
+    print(f"Verified a proper polynomial factor for all {len(checked)} trinomials of degree {N}.")
 
 
 def check(bound, taps=(U, V, U+V)):
@@ -92,11 +116,14 @@ if __name__ == "__main__":
     action = parser.add_mutually_exclusive_group()
     action.add_argument("--emit-lean", action="store_true")
     action.add_argument("--seroussi", action="store_true", help="check the published taps 2, 6, 15")
+    action.add_argument("--trinomials", action="store_true", help="verify the complete trinomial exclusion")
     parser.add_argument("--bound", type=int, default=10**10)
     args = parser.parse_args()
     if args.bound <= 0:
         parser.error("the trial bound must be positive")
     if args.emit_lean:
         emit()
+    elif args.trinomials:
+        check_trinomials()
     else:
         check(args.bound, (2, 6, 15) if args.seroussi else (U, V, U+V))
