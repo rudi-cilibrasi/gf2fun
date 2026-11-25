@@ -597,7 +597,8 @@ and differs from the degree-four cyclotomic polynomial for order 5.
 For \(s\ge3\) every root of \(T^Q+T+1\) satisfies
 \(z^Q=z+1\) and \(z^{Q^2}=z\), so has degree at most \(2s<Q\).
 The outer polynomial and its composition with any nonconstant \(h\)
-are then reducible.
+are then reducible. The endpoint identity and this obstruction are
+formalized in \texttt{GF2Sparse/FrobeniusPairs.lean}.
 
 For \(s=2\), Theorem~\ref{thm:composition-norm} tests irreducibility
 in one exponentiation whenever \(m=3^a5^b\) with \(a,b\ge0\).
@@ -610,8 +611,20 @@ binary coefficient masks \(\mathtt{6DA4},\mathtt{C6A9E},\mathtt{19BC8}\)
 in hexadecimal, so the example is primitive.
 For general \(m\), the congruence still supplies the full 3-part and
 5-part of the order of \(X\) whenever \(f\) is irreducible.
-This reduces the order checks for a candidate. Existence of a passing
-pentanomial in each degree is the outstanding step.
+The relative-degree hypothesis matters even for five distinct terms
+with exponent gcd 1. Take \(h=X^{46}+X\). Then
+\[
+ f=h^4+h+1=X^{184}+X^{46}+X^4+X+1.
+\]
+Modular powering gives \(X^{(2^{184}-1)/15}\equiv h\pmod f\) and
+\(X^{2^{92}}\equiv X\pmod f\). Each irreducible factor has degree
+dividing 92 and divisible by 4, so its degree is 4 or 92.
+Every \(z\in\mathbb F_{16}\) satisfies \(z^{46}=z\), since
+\(46=3\cdot15+1\). Thus \(h(z)=0\) and \(f(z)=1\), excluding
+degree 4. The polynomial is squarefree, so it has exactly two
+degree-92 factors. Both examples are checked in
+\texttt{GF2Sparse/NormExamples.lean}.
+Existence of a passing primitive pentanomial in each degree remains open.
 
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).

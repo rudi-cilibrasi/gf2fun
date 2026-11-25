@@ -11,15 +11,6 @@ open Polynomial
 
 set_option maxRecDepth 8192
 
-private def fiveTermMask (n c b a : ℕ) : ℕ :=
-  2 ^ n ^^^ 2 ^ c ^^^ 2 ^ b ^^^ 2 ^ a ^^^ 1
-
-private theorem certify_five_terms (n c b a : ℕ) (ps : List ℕ)
-    (hp : ∀ p ∈ ps, Nat.Prime p) (h : check n (fiveTermMask n c b a) ps = true) :
-    Primitive (X ^ n + X ^ c + X ^ b + X ^ a + 1) := by
-  simpa only [fiveTermMask, decode_xor, decode_pow_two, decode_one] using
-    (check_sound hp h).2.2
-
 private theorem prime_3173389601 : Nat.Prime 3173389601 := by
   let two : ProvenPrime := ⟨2, by decide⟩
   let five : ProvenPrime := ⟨5, by decide⟩

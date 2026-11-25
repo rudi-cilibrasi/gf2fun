@@ -76,6 +76,18 @@ theorem decode_pow_two (k : ℕ) : decode (2 ^ k) = X ^ k := by
   ext i
   simp [Nat.testBit_two_pow, coeff_X_pow, eq_comm]
 
+def fiveTermMask (n c b a : ℕ) : ℕ := 2 ^ n ^^^ 2 ^ c ^^^ 2 ^ b ^^^ 2 ^ a ^^^ 1
+
+theorem decode_fiveTermMask (n c b a : ℕ) :
+    decode (fiveTermMask n c b a) = X ^ n + X ^ c + X ^ b + X ^ a + 1 := by
+  simp only [fiveTermMask, decode_xor, decode_pow_two, decode_one]
+
+theorem certify_five_terms (n c b a : ℕ) (ps : List ℕ)
+    (hp : ∀ p ∈ ps, Nat.Prime p) (h : check n (fiveTermMask n c b a) ps = true) :
+    Primitive (X ^ n + X ^ c + X ^ b + X ^ a + 1) := by
+  rw [← decode_fiveTermMask]
+  exact (check_sound hp h).2.2
+
 theorem decode_productMask (n u v : ℕ) : decode (productMask n u v) = productCandidate n u v := by
   simp only [productMask, decode_xor, decode_pow_two, decode_one, productCandidate]
   rw [pow_add]

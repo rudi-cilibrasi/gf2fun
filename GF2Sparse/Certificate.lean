@@ -238,6 +238,13 @@ private theorem residue_xPow (n f e : ℕ) :
     residue f (xPow n f e) = AdjoinRoot.root (decode f) ^ e :=
   residue_powBits n f _ e Nat.lt_log2_self
 
+/-- A computed residue proves a polynomial congruence for the indicated power of X. -/
+theorem dvd_X_pow_sub_decode {n f e r : ℕ} (he : xPow n f e = r) :
+    decode f ∣ X ^ e - decode r := by
+  apply AdjoinRoot.mk_eq_zero.1
+  rw [map_sub, map_pow, AdjoinRoot.mk_X, sub_eq_zero]
+  simpa only [residue, he] using (residue_xPow n f e).symm
+
 /-- Distinct reduced bit strings are distinct elements of the quotient. -/
 private theorem residue_ne_one {f r : ℕ} (hf : f ≠ 0) (hr : r ≠ 1)
     (hsmall : r < 2 ^ f.log2) (hn : 0 < f.log2) : residue f r ≠ 1 := by

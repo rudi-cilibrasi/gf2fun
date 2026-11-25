@@ -16,6 +16,10 @@ def normExponent (q m : ℕ) : ℕ := ∑ j ∈ Finset.range m, q ^ j
 theorem normExponent_mul {q : ℕ} (hq : 1 ≤ q) (m : ℕ) :
     normExponent q m * (q - 1) = q ^ m - 1 := geom_sum_mul_of_one_le hq m
 
+theorem normExponent_eq_div {q : ℕ} (hq : 1 < q) (m : ℕ) :
+    normExponent q m = (q ^ m - 1) / (q - 1) := by
+  rw [← normExponent_mul hq.le, Nat.mul_div_cancel _ (Nat.sub_pos_of_lt hq)]
+
 private theorem comp_degree_pos {H h : BinaryPoly} (hH : Irreducible H) (hm : 0 < h.natDegree) :
     0 < (H.comp h).natDegree := by
   rw [natDegree_comp]
