@@ -1,4 +1,4 @@
-"""Audit the ordinary-trinomial test for odd-degree product pentanomials."""
+"""Audit factor parity of odd-degree product pentanomials with at least one even tap."""
 
 import argparse
 import csv
@@ -15,15 +15,21 @@ Y = fmpz_poly([0, 1])
 DATA = Path(__file__).resolve().parents[1] / "data"
 
 
+def inverse_coefficient(a, b, degree):
+    # Count carry-free pairs i,j with a*i+b*j=degree.
+    flip = False
+    for j in range(degree//b+1):
+        i, rem = divmod(degree-b*j, a)
+        if rem == 0 and i & j == 0:
+            flip = not flip
+    return flip
+
+
 def predicted_odd(n, u, v):
     a, b = (n-u-v)//2, (n-u)//2
     flip = False
     if b % 2:
-        # The coefficient counts carry-free pairs i,j with a*i+b*j=u.
-        for j in range(u//b+1):
-            i, remainder = divmod(u-b*j, a)
-            if remainder == 0 and i & j == 0:
-                flip = not flip
+        flip = inverse_coefficient(a, b, u)
         if 2*u < n:
             short = (u % a == 0) != (u >= b and (u-b) % (2*a) == 0)
             if short != flip:
@@ -32,6 +38,12 @@ def predicted_odd(n, u, v):
 
 
 def even_taps(n, u, sector):
+    if u % 2 == 0:
+        return range(u+2, n-u, 2)
+    if sector in ("opposite", "even-tap"):
+        return range(2, n-u, 2)
+    if sector == "two-larger":
+        return range(2, min(u, n-u), 4)
     multiples_of_four = range(4, n-u, 4)
     if sector == "four":
         return multiples_of_four
@@ -45,15 +57,31 @@ def even_taps(n, u, sector):
 
 
 def sector_odd(n, u, v):
+    if u % 2 == 0:
+        a, b = u//2, v//2
+        flip = sum((n % a == 0, (n-v) % a == 0, n % b == 0, (n-u) % b == 0)) % 2
+        return (n % 8 in (1, 7)) != bool(flip)
     if v % 4 == 0:
         return predicted_odd(n, u, v)
-    if not u < v:
-        raise ValueError("the even tap must exceed the odd tap in this sector")
     a, b, r = (n-u-v)//2, (n-u)//2, v//2
     divisors = sum((n-j*u) % r == 0 for j in range(4))
-    if b % 2 == 0:
-        divisors += (u % a == 0) + int(u >= a+b and (u-a-b) % (2*a) == 0)
-    return (n % 8 in (1, 7)) != bool(divisors % 2)
+    c = a if b % 2 == 0 else b+2*r
+    k = u-c
+    bit = (k >= 0 and k % (2*r) == 0) ^ (k >= a and (k-a) % r == 0)
+    bit ^= inverse_coefficient(a, b, k-2*a)
+    if u < v:
+        short = b % 2 == 0 and ((u % a == 0) ^ (u >= a+b and (u-a-b) % (2*a) == 0))
+        if short != bit:
+            raise ArithmeticError(f"smaller-tap formula disagrees at {(n, u, v)}")
+    return (n % 8 in (1, 7)) != (bit ^ bool(divisors % 2))
+
+
+def first_taps(n, sector):
+    if sector == "both-even":
+        return range(2, n//2+1, 2)
+    if sector == "even-tap":
+        return range(1, n-2)
+    return range(1, n-2, 2)
 
 
 def audit_tap(u, n, factor, integer, sector):
@@ -63,8 +91,8 @@ def audit_tap(u, n, factor, integer, sector):
         odd = sector_odd(n, u, v)
         total += 1
         odd_count += odd
-        small_total += u < v
-        small_odd += u < v and odd
+        small_total += u % 2 == 1 and u < v
+        small_odd += u % 2 == 1 and u < v and odd
         if factor:
             f = X**n + (1+X**u)*(1+X**v)
             factors = f.factor()[1]
@@ -81,8 +109,8 @@ def audit_tap(u, n, factor, integer, sector):
 
 def census(n, factor, integer, pool, sector):
     check = partial(audit_tap, n=n, factor=factor, integer=integer, sector=sector)
-    odd_taps = range(1, n-2, 2)
-    rows = pool.map(check, odd_taps, chunksize=1) if pool else map(check, odd_taps)
+    taps = first_taps(n, sector)
+    rows = pool.map(check, taps, chunksize=1) if pool else map(check, taps)
     counts = [0, 0, 0, 0]
     hits = set()
     for *totals, irreducibles in rows:
@@ -101,7 +129,9 @@ def published_supports(n, sector):
             four = (u % 2 and v % 4 == 0) or (v % 2 and u % 4 == 0)
             smaller = u % 2 == 1 and v % 2 == 0
             selected = {"four": four, "smaller": smaller, "two-smaller": smaller and v % 4 == 2,
-                        "union": four or smaller}
+                        "union": four or smaller, "opposite": (u+v) % 2,
+                        "two-larger": u % 4 == 2 and v % 2 == 1,
+                        "both-even": u % 2 == 0 and v % 2 == 0, "even-tap": u*v % 2 == 0}
             if selected[sector]:
                 result.add((u, v))
         return result
@@ -115,7 +145,7 @@ def joint_counts(n, sector):
         sieve = (sieve//sieve.gcd(field))*field
         cutoffs.append(sieve)
     counts = [[0, 0] for _ in cutoffs]
-    for u in range(1, n-2, 2):
+    for u in first_taps(n, sector):
         for v in even_taps(n, u, sector):
             if not sector_odd(n, u, v):
                 continue
@@ -134,8 +164,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--through", type=int, default=80, help="check all odd degrees up to this limit")
     parser.add_argument("--degree", type=int, choices=[1229, 1231, 1237, 1243, 1249, 1259])
-    parser.add_argument("--sector", choices=["four", "smaller", "two-smaller", "union"], default="four",
-                        help="the multiple-of-four sector, the odd-smaller sector, its added part, or their union")
+    parser.add_argument("--sector", choices=["four", "smaller", "two-smaller", "union",
+                        "two-larger", "opposite", "both-even", "even-tap"], default="four",
+                        help="select a parity sector; even-tap includes every support with an even tap")
     parser.add_argument("--factor", action="store_true", help="factor every support in the selected large degree")
     parser.add_argument("--joint", action="store_true", help="count the joint survivors at cutoffs one through five")
     parser.add_argument("--jobs", type=int, default=1)
@@ -157,7 +188,7 @@ if __name__ == "__main__":
             if args.factor and hits != published:
                 raise ArithmeticError("direct factorization and published support list disagree")
             for u, v in published:
-                if u % 2 == 0:
+                if u % 2 == 0 and v % 2 == 1:
                     u, v = v, u
                 if not sector_odd(n, u, v):
                     raise ArithmeticError("published irreducible has incorrect predicted parity")

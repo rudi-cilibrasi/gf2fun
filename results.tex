@@ -6574,4 +6574,151 @@ Among the \(2384\), exactly \(1176\) also avoid inverse pairs and
 all factors through degree five. The checker compares the union with
 full binary factorizations using \texttt{--sector union --factor}.
 
+\section{Every product support with an even tap in odd degree}\label{sec:all-even-taps}
+
+\begin{theorem}\label{thm:all-even-taps}
+Let \(n\) be odd. Every \(F=X^n+(1+X^u)(1+X^v)\) with distinct
+positive taps, \(u+v<n\), and at least one tap even is squarefree.
+Write its discriminant modulo eight as \((-1)^{(n-1)/2}n(1+4E)\).
+The following rules determine \(E\) modulo two.
+\begin{itemize}
+\item If \(u\) is odd and \(4\mid v\), use
+Theorem~\ref{thm:product-parity-sector}.
+\item If \(u\) is odd and \(v=2r\) with \(r\) odd, take
+\(b=(n-u)/2,\ a=b-r,\ R=1+Y^a+Y^b\). Set \(c=a\) for even \(b\)
+and \(c=b+2r\) for odd \(b\). For \(k=u-c\),
+\[
+ E=[k\ge0,\ 2r\mid k]+[k\ge a,\ r\mid k-a]
+      +[Y^{k-2a}]\,R^{-1}+\sum_{j=0}^3[r\mid n-ju].
+\]
+A coefficient with negative index is zero. Either tap may be larger.
+\item If \(u=2a,\ v=2b\) are both even, then
+\[
+ E=[a\mid n]+[a\mid n-v]+[b\mid n]+[b\mid n-u].
+\]
+\end{itemize}
+In every degree \(n\equiv3,5\bmod8\), among the
+\(\Theta(n^2)\) product supports with at least one even tap, exactly
+\(n^{1+o(1)}\) have an odd number of irreducible factors. The upper
+bound is \(O(\sigma(n)(\log(2n))^2+n\tau(n))\).
+\end{theorem}
+\begin{proof}
+For opposite parities use the notation and traces of
+Theorem~\ref{thm:odd-smaller-tap}. Only the polynomial parts at
+infinity in that calculation change when \(u\ge v\), together with
+the constant terms of the sums over \(\beta^v=-1\).
+Every positive odd power sum with index at most \(u\) is zero since
+both odd exponents of \(F^*\) exceed \(u\). Thus the polynomial
+part of \(C/V\) adds nothing and \(\operatorname{Tr} Z\equiv0\bmod4\)
+as before. The mixed trace also vanishes modulo two by the same
+interpolation argument.
+
+For \(\operatorname{Tr} Z^2\), write \(Z^2=C^2(1+X^{-v})^{-2}\)
+as a Laurent series at infinity. After discarding the positive odd
+power sums, its polynomial part contributes
+\[
+ \sum_{0\le jv\le 2u}(-1)^j(j+1)P_{2u-jv}+n ,
+\]
+where the last \(n\) comes from the constant term in \(C^2\).
+The remaining terms come from the same finite-pole residues as in
+Theorem~\ref{thm:odd-smaller-tap}. These are
+\[
+  -(n/v)\sum_\beta c_\beta^2-(2n/v^2)\sum_\beta c_\beta c_{1,\beta}
+       +2(v-n)S_3/v+(4/v)T_3+S_4 ,
+ \quad c_\beta=1+\beta^u,\quad c_{1,\beta}=u\beta^u .
+\]
+If \(r\nmid u\), the first two sums are \(v,0\) respectively, cancelling
+the displayed \(n\). If \(r\mid u\), write \(\ell=u/r\), which is odd.
+The sums become \(0,-uv\); their contribution together with \(n\) is
+\((\ell+1)n\). This cancels the term with \(j=\ell,\ P_0=n\).
+Using \(P_{2i}/2\equiv[Y^i]YR'/R\bmod2\) for \(0<i\le u\)
+and the preceding computation of \(S_3,S_4\) gives
+\[
+ \operatorname{Tr}Z^2/2\equiv
+ [Y^u]\frac{YR'}{R(1+Y^{2r})}
+       +\sum_{j=0}^3[r\mid n-ju]\pmod2.
+\]
+The factor \(1/(1+Y^{2r})\) selects the even \(j\) in the sum, since
+\(j+1\) is then odd.
+
+The other pure quadratic term contributes \([2\nmid b][Y^u]YR'/R\).
+The parities of \(a,b\) are opposite. Combining the two coefficient
+terms therefore gives \([Y^{u-c}]\big((1+Y^r)^2 R\big)^{-1}\), with \(c\) as in
+the statement. In \(\F[[Y]]\), writing \(D=1+Y^r\) gives
+\[
+ \frac1{D^2(1+Y^aD)}
+  =\frac1{D^2}+\frac{Y^a}{D}+\frac{Y^{2a}}{1+Y^aD}.
+\]
+Here \(1+Y^aD=R\), proving the asserted formula.
+
+For both taps even, \(F'=X^{n-1}\) modulo two gives squarefreeness.
+At a root of the integer lift put \(A_h=\alpha^h/(1+\alpha^h)\)
+for \(h=u,v\). Then
+\[
+ \alpha F'(\alpha)=n\alpha^n(1-(u/n)A_u-(v/n)A_v).
+\]
+For \(h\) either tap and \(l\) the other, define \(D_h=1+X^h\) and
+\(G_\beta=1+\beta^l\) for \(\beta^h=-1\).
+The simple and double pole calculations with numerator one give
+\begin{align*}
+ \operatorname{Tr}(1/D_h)&=n-\sum_\beta\beta^{-n}G_\beta=n,\\
+ \operatorname{Tr}(1/D_h^2)&=n-(2n/h)\sum_\beta\beta^{-n}G_\beta
+ +(2/h)\sum_\beta l\beta^{l-n}
+ +\sum_\beta\beta^{-2n}G_\beta^2
+ =n+\sum_\beta\beta^{-2n}G_\beta^2 .
+\end{align*}
+The sums with odd exponents vanish. Hence \(\operatorname{Tr}A_h=0\)
+and \(\operatorname{Tr} A_h^2=\sum_\beta\beta^{-2n}G_\beta^2\).
+With \(h=2d\), its half modulo two is
+\((d\bmod2)([d\mid n]+[d\mid n-l])\).
+Both right-hand arguments are odd, so an even \(d\) contributes zero.
+The mixed trace modulo two is \(\sum_\alpha\alpha^{-(n-u-v)}=0\):
+in the inverse-root power sums \(-XF'/F\bmod2\) all terms below
+degree \(n\) vanish. Expanding the norm through quadratic order now
+gives exactly the four divisibility tests.
+
+For the count, in the second case the two periodic indicators
+require \(r\mid3u-n\) or \(r\mid2u-n\). Indeed \(2a=n-u-2r\)
+and \(c\equiv a\bmod r\). The four explicit divisors cost
+\(O(n\tau(n)+n\log n)\) possibilities: allow all \(u\) for \(r\mid n\)
+and sum \(\tau(|n-ju|)\) for \(j>0\), treating \(ju=n\) separately.
+A nonzero coefficient of \(R^{-1}\) requires
+\(u-c-2a=ia+jb,\ i,j\ge0\).
+For even \(b\) this gives \(n=(i+3)a+(j+2)b\), and for odd \(b\)
+it gives \(n=ia+(j+5)b\).
+The additive divisor estimate in Corollary~\ref{cor:product-sector-size}
+bounds these pairs by \(O(\sigma(n)(\log(2n))^2)\).
+For two even taps the four tests cost \(O(n\tau(n)+n\log n)\) by
+the same divisor counts. The case \(4\mid v,\ u\) odd is covered by
+that corollary. Finally \(\tau(n)=n^{o(1)}\):
+for any fixed \(\delta>0\), use \(e+1\le p^{\delta e}\) at large
+primes and absorb a constant for each of the finitely many smaller
+ones. Also \(\sigma(n)\le n(1+\log n)\).
+The lower bound \(\gg n\log n\) already holds for \(4\mid v\) by
+the same corollary. Stickelberger--Swan completes the count.
+\end{proof}
+
+At degree \(1229\), the opposite-parity sector contains \(188191\)
+supports, \(6055\) with odd factor count and \(43\) irreducibles.
+Two even taps give \(93942\) supports, \(1429\) with odd factor count
+and \(13\) irreducibles. Thus \(274649\) of the \(282133\) supports
+with an even tap are ruled out by parity alone. Of the \(449\)
+irreducibles in the full product census, the other \(393\) have two
+odd taps. The option \texttt{--sector even-tap} reproduces these
+parity counts; \texttt{--factor} independently factors each support.
+
+
+The complete six-degree check gives the following totals. The last
+column comes from the independently audited irreducibility census.
+\[
+\begin{array}{r|r|r|r}
+ n&\text{supports with an even tap}&\text{odd factor count}&\text{irreducible}\\\hline
+ 1229&282133&7484&56\\1231&283054&275526&2237\\
+ 1237&285825&7548&63\\1243&288610&9515&77\\
+ 1249&291408&283749&2210\\1259&296102&7752&56
+\end{array}
+\]
+At degree \(1229\), \(3445\) of the \(7484\) also avoid inverse
+pairs and every factor through degree five.
+
 \end{document}
