@@ -4522,4 +4522,60 @@ degree has root order divisible by 151.
 \nolinkurl{scripts/check_subfield_products.py} reproduces the counts
 with \texttt{--through 1280}.
 
+\section{How many independent subfields can supply one sparse root?}
+\begin{theorem}\label{thm:four-subfields}
+Let \(n=n_1n_2n_3n_4\), where the four integers \(n_i>1\) are pairwise
+coprime. No root of an irreducible binary polynomial of degree \(n\)
+and weight at most five belongs to
+\[
+ \mathbb F_{2^{n_1}}^\times\mathbb F_{2^{n_2}}^\times
+ \mathbb F_{2^{n_3}}^\times\mathbb F_{2^{n_4}}^\times .
+\]
+For weight at most three, the same exclusion holds with just two
+pairwise coprime degrees greater than one.
+\end{theorem}
+\begin{proof}
+Suppose \(r=r_1r_2r_3r_4\) were such a root, with \(r_i\) in the
+specified subfields. Group the first two fields together and the
+last two together. For the support \(E\) of the minimal polynomial,
+the rank inequality in Theorem~\ref{thm:1243-subfield-product}
+shows that on one side the products of the powers have binary span
+of dimension at most two. Rank one is impossible as in that proof.
+At rank two all three nonzero points must occur since a proper
+subsum cannot vanish. Work on that side, say the first.
+
+In the tensor product of the first two fields the points are pure
+tensors \(r_1^e\otimes r_2^e\), since multiplication is injective
+by linear disjointness. Two distinct nonzero pure tensors with
+a pure sum share one coordinate over \(\F\). Indeed if \(a,a'\)
+and \(b,b'\) are both independent pairs, the tensor
+\(a\otimes b+a'\otimes b'\) has matrix rank two in bases extending
+these pairs. Applying this to two points and their sum shows that
+one coordinate is common to all three points. A nonzero pure tensor
+over \(\F\) has a unique pair of nonzero factors. Since \(0\in E\),
+the common coordinate is 1. Omitting that field factor from \(r\)
+therefore preserves every power on \(E\). This gives a root of the
+same degree-\(n\) polynomial in a proper subfield, a contradiction.
+For two fields and weight at most three, both coordinate ranks
+must be at least two, contradicting a rank sum of at most three.
+\end{proof}
+
+This gives an order restriction using only the factorization of \(n\).
+For \(h=\ord(r)\), make a graph on the primes dividing \(n\).
+Join two vertices when they both divide \(\ord_{\ell^a}(2)\) for
+some prime-power component \(\ell^a\) of \(h\). The graph has at most
+three connected components for a pentanomial and is connected for a
+trinomial. Indeed \(\ord_h(2)=n\) is the lcm of the component orders.
+If there were four connected components, group the vertices into
+four nonempty unions of components and assign to each its full prime
+powers in \(n\). The resulting \(n_i\) are pairwise coprime, and each
+\(\ell^a\) divides some \(2^{n_i}-1\). The unique cyclic subgroup
+of order \(h\) therefore lies in the indicated product. The same
+argument with two groups proves connectedness for trinomials.
+
+In degree \(210=2\cdot3\cdot5\cdot7\), for example, every irreducible
+binary polynomial of weight at most five has root order outside the
+divisors of \(3\cdot7\cdot31\cdot127=82677\), although
+\(\ord_{82677}(2)=210\).
+
 \end{document}
