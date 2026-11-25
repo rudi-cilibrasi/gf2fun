@@ -37,13 +37,13 @@ Put
 Throughout this section \(u,v\) are distinct positive integers with \(u+v<n\).
 
 \begin{theorem}
-For every \(5\le n\le416\), some \(F_{n,u,v}\) is primitive.
-Consequently every \(1\le n\le416\) has a primitive polynomial of weight at most five.
+For every \(5\le n\le432\), some \(F_{n,u,v}\) is primitive.
+Consequently every \(1\le n\le432\) has a primitive polynomial of weight at most five.
 \end{theorem}
 \begin{proof}
 The witness tables are imported by \texttt{GF2Sparse/Coverage.lean}.
 For example, \(F_{24,1,3}=X^{24}+X^4+X^3+X+1\) and
-\(F_{416,14,25}=X^{416}+X^{39}+X^{25}+X^{14}+1\).
+\(F_{432,6,115}=X^{432}+X^{121}+X^{115}+X^6+1\).
 For each candidate \(f\), write \(r=X\bmod f\) and \(N=2^n-1\).
 The certificate checks \(r^N=1\) and \(r^{N/p}\ne1\) for every prime divisor
 \(p\) of \(N\). The first equality makes \(r\) a unit of order dividing \(N\).
@@ -58,7 +58,7 @@ give minimum-weight primitive polynomials for degrees 2 through 640.
 The relation \(u+v\) between the interior exponents also appears in earlier
 work. Table 4.8 of the \emph{Handbook of Applied Cryptography} uses it for
 its pentanomial entries, giving a trinomial when one is available.
-Theorem 1 verifies a pentanomial of this shape throughout \(5\le n\le416\),
+Theorem 1 verifies a pentanomial of this shape throughout \(5\le n\le432\),
 including degrees admitting a primitive trinomial.
 \href{https://cacr.uwaterloo.ca/hac/about/chap4.pdf\#page=37}{Menezes, van Oorschot and Vanstone, chapter 4}.
 
@@ -2324,10 +2324,10 @@ Divisibility of the leading exponent by each such prime is then unchanged,
 as is parity. The seed has exponent gcd one by the substitution obstruction.
 \end{proof}
 
-With the 396 product pentanomials in Theorem~1, this gives arbitrarily
-high intervals of 396 consecutive degrees. At degree \(T+j\), for
-\(5\le j\le416\), the first failure is exactly rank \(j\).
-Lean checks the common shifts, the retained factors and all 396 first
+With the 428 product pentanomials in Theorem~1, this gives arbitrarily
+high intervals of 428 consecutive degrees. At degree \(T+j\), for
+\(5\le j\le432\), the first failure is exactly rank \(j\).
+Lean checks the common shifts, the retained factors and all 428 first
 failure lengths in \nolinkurl{GF2Sparse/TranslatedInterval.lean}.
 The two primitive pentanomials of Theorem~\ref{thm:mersenne-examples}
 likewise give arbitrarily high degrees with first failures exactly
@@ -2380,7 +2380,7 @@ Such a polynomial uniquely determines its seed. Lean verifies the
 equivalence for the original all-degree statement in
 \nolinkurl{GF2Sparse/OreConjecture.lean}.
 
-The Lean-certified seeds cover \(1\le s\le416\) and the five further degrees
+The Lean-certified seeds cover \(1\le s\le432\) and the five further degrees
 511, 1023, 1024, 1279 and 2203. Theorem~\ref{thm:ore4095} adds twelve
 seeds in degree 4095. For instance, the five exponents
 \[
