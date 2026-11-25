@@ -35,6 +35,31 @@ theorem ore_norm_of_seed_remainders {p : BinaryPoly} {z : K} (hz : aeval z (oreL
   rw [← pow_mul]
   exact ore_conjugate_of_seed_remainder hz (h j (Finset.mem_range.1 hj))
 
+/-- If the ambient group size is A*B, raising to the norm exponent A
+retains exactly the part of the multiplicative index visible in size B. -/
+theorem norm_index_eq_gcd {M : Type*} [Monoid M] (x : M) {A B : ℕ}
+    (hA : 0 < A) (hB : 0 < B) (hd : orderOf x ∣ A*B) :
+    B / orderOf (x^A) = ((A*B)/orderOf x).gcd B := by
+  let h := orderOf x
+  let I := A*B/h
+  have hh : 0 < h := Nat.pos_of_dvd_of_pos hd (Nat.mul_pos hA hB)
+  have hI : I*h = A*B := Nat.div_mul_cancel hd
+  have hg : I.gcd B * h = h.gcd A * B := calc
+    _ = (I*h).gcd (B*h) := (Nat.gcd_mul_right _ _ _).symm
+    _ = (A*B).gcd (h*B) := by rw [hI, Nat.mul_comm B h]
+    _ = _ := by rw [Nat.gcd_mul_right, Nat.gcd_comm A h]
+  have hm : orderOf (x^A) * I.gcd B = B := by
+    rw [orderOf_pow' x hA.ne']
+    change (h/h.gcd A) * I.gcd B = B
+    apply Nat.eq_of_mul_eq_mul_left (Nat.gcd_pos_of_pos_left A hh)
+    rw [← Nat.mul_assoc, Nat.mul_div_cancel' (Nat.gcd_dvd_left h A), Nat.mul_comm h]
+    exact hg
+  have hp : 0 < orderOf (x^A) :=
+    Nat.pos_of_dvd_of_pos ((orderOf_pow_dvd (x := x) A).trans hd) (Nat.mul_pos hA hB)
+  calc
+    B / orderOf (x^A) = (orderOf (x^A) * I.gcd B) / orderOf (x^A) := congrArg (· / _) hm.symm
+    _ = _ := Nat.mul_div_cancel_left _ hp
+
 private theorem spectral_shift {t : ℕ} {z : K} {a c : Fin t → K}
     (hz : ∀ k : ℕ, z^(2^k) = ∑ i, c i * (a i)^k) (p : BinaryPoly) (k : ℕ) :
     aeval (frobeniusAlgHom (ZMod 2) K).toLinearMap p (z^(2^k)) =
