@@ -2157,7 +2157,9 @@ agree. If a parity change is needed and \(H\le s/2\), one of
 \(H=s\) or \(H=s-t\). In the first case \(s\) is odd and \(i=t\)
 already has the required parity whenever \(s-t\) is even. In the
 second case \(s-t\) is odd and \(i=0\) works whenever \(s\) is even.
-Finally \(2^i<n\), since \(t\le s-2\).
+Finally \(2^i<n\), since \(t\le s-2\). Lean verifies the sufficient
+integer tests and the example \(s=1000,t=500,i=1\) in
+\nolinkurl{GF2Sparse/SignedTriples.lean}.
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:signed-digits}]

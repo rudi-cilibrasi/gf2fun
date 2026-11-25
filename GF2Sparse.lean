@@ -17,4 +17,5 @@ import GF2Sparse.ReciprocalSieve
 import GF2Sparse.RootProducts
 import GF2Sparse.ShiftedExample
 import GF2Sparse.ShortProducts
+import GF2Sparse.SignedTriples
 import GF2Sparse.TripleObstruction
