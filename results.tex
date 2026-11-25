@@ -2479,6 +2479,44 @@ s&2&3&4&5&6&7&8&9&10\\\hline
 \]
 \end{proof}
 
+\begin{theorem}\label{thm:ore-reciprocal-orders}
+Let \(P(Y)=\sum_{i=0}^s p_iY^i\) be binary with \(s>0\) and
+\(p_0=p_s=1\), and put \(P^*(Y)=Y^sP(1/Y)\).
+The roots of \(O_P\) and \(O_{P^*}\) generate the same multiplicative
+subgroup of the algebraic closure. If \(P\) is primitive, a root of
+either lift has the same exact order.
+\end{theorem}
+\begin{proof}
+Choose any root \(z\) of \(O_{P^*}\). Its constant term gives
+\(z\ne0\). Put \(b_{-1}=0\) and
+\(b_j=z(b_{j-1}^2+p_j)\) for \(0\le j<s\). Expanding gives
+\[
+ b_{s-1}=\sum_{i=1}^s p_{s-i}z^{2^i-1}=1,
+\]
+by the equation for \(z\). The polynomial
+\(H(X)=\sum_{j=0}^{s-1}b_jX^{2^j}\) therefore is monic.
+Comparing the coefficient of each \(X^{2^j}\) gives
+\[
+ H(X)^2+z^{-1}H(X)=\sum_{i=0}^s p_iX^{2^i}=X O_P(X).
+\]
+Consequently \(H(X)/X\) is a monic divisor of \(O_P\) of degree
+\(2^{s-1}-1\) and has constant coefficient \(b_0=z\).
+In characteristic two this coefficient is the product of its roots.
+They are distinct because \(X O_P\) has derivative 1. Thus each
+root of the reciprocal lift is a product of \(2^{s-1}-1\) distinct
+roots of the original lift. Interchange \(P\) and \(P^*\) to obtain equality
+of the subgroups. For primitive \(P\), its reciprocal is primitive
+since its roots are the inverses of the original roots. Both lifts
+are irreducible by Theorem~\ref{thm:ore-equivalence}. In each lift
+all roots are Frobenius powers of any one of them, so any one
+generates the entire subgroup.
+\end{proof}
+
+In particular the two exceptions in Theorem~\ref{thm:primitive-lifts}
+are one reciprocal pair. The reciprocals of its degree-9 and degree-10
+seeds give two further primitive trinomials, \(X^{511}+X^{31}+1\)
+and \(X^{1023}+X^{127}+1\), with the same full orders as their partners.
+
 \begin{theorem}\label{thm:ore-largest-factor}
 For any positive-degree binary polynomial \(P\) with constant term 1,
 write \(e=\ord_{\F[Y]/P}(Y)\). Every irreducible factor of \(O_P\)
