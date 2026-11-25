@@ -2230,4 +2230,24 @@ Theorem~\ref{thm:three-bits} cover \(4\mid n\).
 For \(m>1\), the exponents of the substituted polynomial have a common
 divisor \(m\), so this reduction concerns the three root-product tests.
 
+\section{Full-order examples in degrees 1279 and 2203}
+\begin{theorem}\label{thm:mersenne-examples}
+Two members of the product family are primitive, namely
+\[
+ X^{1279}+X^{57}+X^{34}+X^{23}+1,\qquad
+ X^{2203}+X^{197}+X^{135}+X^{62}+1 .
+\]
+\end{theorem}
+\begin{proof}
+For each degree \(n\), the Lucas--Lehmer test verifies that
+\(M=2^n-1\) is prime. In the quotient by the displayed polynomial,
+binary polynomial arithmetic gives \(X^M=1\). The class of \(X\)
+differs from 1 since the modulus has degree greater than one.
+Its order therefore equals \(M\), and the order criterion gives
+irreducibility and primitivity. The two calculations use 20 and 35
+blocks of 64 exponent bits respectively. Every block and both
+Lucas--Lehmer tests are checked by the Lean kernel.
+\nolinkurl{GF2Sparse/MersenneExamples.lean}.
+\end{proof}
+
 \end{document}

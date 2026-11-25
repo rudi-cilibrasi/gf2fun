@@ -8,6 +8,7 @@ import GF2Sparse.Grid
 import GF2Sparse.IterateOrder
 import GF2Sparse.Linearized
 import GF2Sparse.Many
+import GF2Sparse.MersenneExamples
 import GF2Sparse.NormExamples
 import GF2Sparse.ParityExamples
 import GF2Sparse.PrimeGrid
