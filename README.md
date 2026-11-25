@@ -123,6 +123,13 @@ Contributors can also work entirely in the subgroup of order $C=(2^{1229}-1)/K$.
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_period_relations.py --wheel --candidate seroussi --projected --logs my-projected-logs.csv
 ~~~
 
+For a relation search, both candidate roots are available in two other power bases. With $q=1024$ and $y=x^q$, the field generator satisfies $x=(y^5+y^2+1)/(y^3+y)$. Norm circles and trace lines give 120 independent relations among binary polynomial values of degrees dividing 20. The $q=256$ model gives 21 relations in degrees dividing 16. The commands reconstruct the roots and export the $q=1024$ rows as pairs of polynomial masks and signed exponents. [Field moduli and sparse roots](data/degree-1229-frobenius-models.json) · [Relation parameters](data/degree-1229-circle-pivots.csv) · [Derivation and criterion for primitivity](results.pdf#page=66)
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_frobenius_models.py
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_circle_relations.py --q 1024 --relations > /tmp/gf2-circle-1024.jsonl
+~~~
+
 ~~~sh
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_period_relations.py --wheel
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_period_relations.py --wheel --candidate seroussi --logs /path/to/period-logs.csv
