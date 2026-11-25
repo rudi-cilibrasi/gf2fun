@@ -5111,4 +5111,119 @@ Section~\ref{sec:period-logs}. These relations are homogeneous.
 Membership certificates connecting their values to \(r\) are still
 needed to establish full order.
 
+\section{A three-term progression forced by two subfields}
+\begin{theorem}\label{thm:semiprime-gap}
+Let \(p<q\) be odd primes, \(n=pq\), and \(4q\le9p\). Suppose an
+irreducible binary polynomial of degree \(n\) and weight at most five
+has a root in \(\mathbb F_{2^p}^\times\mathbb F_{2^q}^\times\).
+Then \(3p<2q\), and its support consists of
+\[
+      t,\ t+P,\ t+2P,\ u,\ u+Q
+\]
+in some order, where
+\[
+  P\mid 2^p-1,\quad 3p^2/4\le P\le n/2,\qquad
+  Q\mid 2^q-1,\quad 3q^2/8\le Q\le n .
+\]
+The polynomials \(X^P+1\) and \((X+1)^P+1\) have a common root.
+In particular, an irreducible pentanomial of degree \(pq\) with no such progression has a prime-power
+root-order component of multiplicative degree \(pq\).
+\end{theorem}
+\begin{proof}
+By Theorem~\ref{thm:close-semiprimes} it suffices to take \(3p<2q\).
+Use its rank argument and notation for a hypothetical product
+\(\alpha\beta\). Write \(i,j\) for the respective field degrees,
+and \(P,Q\) for the component orders. On the rank-two side, the
+three distinct powers of \(\alpha\) are \(1,z,1+z\). Hence
+\(P\ge3i^2/4>n/3\) by Lemma~\ref{lem:plane-size}, since
+\(4j<9i\). Also \(z^P=(1+z)^P=1\). The sums of the \(\beta\)-powers
+in the three exponent classes modulo \(P\) are equal and nonzero.
+
+First consider class sizes \(2,2,1\). Each pair gap is \(P\) or
+\(2P\). From its equality with the singleton sum, \(1+\beta^P\)
+or its square belongs to the subgroup of order \(Q\). Squaring is
+an automorphism of this odd-order subgroup and of the ambient field.
+The element \(\beta^P\) has degree \(j\) since \(\gcd(P,Q)=1\),
+giving \(Q\ge3j^2/4\). If the gaps are equal, the difference between
+the pair starts is a nonzero multiple of \(Q\) of magnitude at most
+\(n-P\). This contradicts \(P+Q\ge3(i^2+j^2)/4>n\).
+
+For unequal gaps write the pairs as \((a,a+P),(b,b+2P)\) and the
+singleton as \(c\). The two equations for \(\beta\) give
+\[
+   \beta^{c-a}=1+\beta^P,\qquad
+   \beta^{c-b}=(1+\beta^P)^2,\qquad Q\mid b+c-2a.
+\]
+The last integer has magnitude at most \(2(n-P)\), since
+\(a\le n-P,\ b\le n-2P,\ c\le n\).
+Also \(2P+Q\ge3(2i^2+j^2)/4>2ij\), since
+\(2i^2+j^2-8ij/3=(j-4i/3)^2+2i^2/9\).
+Thus \(b+c=2a\). At the root \(r=\alpha\beta\), division of its
+five-term equation by \(r^c\) now gives \(1+w+w^2=0\) with
+\(w=r^{a-c}(1+r^P)\). This would put an element of order three in
+\(\mathbb F_{2^n}\), impossible for odd \(n\).
+
+The remaining class sizes are \(3,1,1\). Since \(3P>n\), the
+triple is \(t,t+P,t+2P\). This forces \(2P\le n\) and \(i=p\),
+as \(i=q\) would give \(2P\ge3q^2/2>n\). The singleton exponents
+agree modulo \(Q\). Also the triple sum shows that \(1+y+y^2\)
+lies in the same subgroup as \(y=\beta^P\), of degree \(q\).
+Take the band of lattice points in Lemma~\ref{lem:plane-size} for
+\(d=q\). At least half of its points \((a,b)\) have the same parity
+\(\epsilon\) of \(b\). On these points the products
+\[
+                y^a(1+y+y^2)^{(b-\epsilon)/2}
+\]
+are distinct. After cancelling common powers, the maximum degree on
+the two sides is \(\max(|\Delta a|,|\Delta b|,|\Delta a+\Delta b|)<q\).
+A collision would give a polynomial identity. Multiplicity at zero
+fixes the exponent of \(Y\), then the degree fixes the exponent of
+\(1+Y+Y^2\). Hence \(Q\ge3q^2/8>n/2\), since \(2q>3p\).
+The nonzero singleton gap must therefore be exactly \(Q\).
+The root order \(h\) satisfies \(\operatorname{ord}_{h}(2)=pq\).
+If every prime power in \(h\) has smaller multiplicative degree,
+each component belongs to one of the two proper subfields.
+\end{proof}
+
+\begin{theorem}\label{thm:10000-semiprimes}
+For all \(380093\) pairs of odd primes \(p<q\le10000\) with
+\(4q\le9p\), every irreducible binary polynomial of degree \(pq\)
+and weight at most five has a prime-power root-order component of
+multiplicative degree \(pq\). A prime is forced except at the 61
+pairs with \(q=2p+1\equiv7\pmod8\). Each of these 61 pairs has an
+explicit sparse irreducible for which every root-order prime already
+divides \(2^p-1\).
+\end{theorem}
+\begin{proof}
+Theorem~\ref{thm:close-semiprimes} covers \(2q\le3p\).
+For the \(156576\) additional pairs, enumerate the order intervals in
+Theorem~\ref{thm:semiprime-gap}. Every prime divisor of \(2^p-1\) has
+multiplicative degree \(p\), and so is 1 modulo \(2p\). The same
+congruence holds for \(P\), and similarly \(Q\equiv1\pmod{2q}\).
+Testing \(2^p\bmod P\) and \(2^q\bmod Q\) leaves only 36 quadruples
+\((p,q,P,Q)\), with 13 distinct \(P\). For every one of these \(P\),
+direct computation gives \(\gcd(X^P+1,(X+1)^P+1)=1\).
+Lucas's theorem gives the coefficient of \(X^j\) in \((X+1)^P\)
+from the binary digits of \(j,P\).
+
+The prime under a full-degree prime power has degree \(pq\), except
+possibly if it is \(q\) and has degree \(p\).
+Here \(2p\mid q-1\) forces \(q=2p+1\). Euler's criterion for 2 then
+gives \(\operatorname{ord}_q(2)=p\) exactly when \(q\equiv7\pmod8\).
+For each such pair take the degree-\(p\) sparse polynomial \(g\) in
+\nolinkurl{data/semiprime-gap-seeds.csv}, using taps from
+\href{https://shiftleft.com/mirrors/www.hpl.hp.com/techreports/98/HPL-98-135.pdf}
+{Seroussi's table}. Its irreducibility and
+\(\alpha^{(2^p-1)/q}\ne1\) for a root \(\alpha\) are checked directly.
+Then \(g(X^q)\) is the required witness. Indeed if \(\beta^q=\alpha\),
+then \(\beta\notin\mathbb F_{2^p}\) by the power test. The quotient
+\(\beta^{2^p}/\beta\) is a nonidentity \(q\)-th root of unity in
+\(\mathbb F_{2^p}\), giving a Frobenius orbit of length \(q\) over
+that field. Since \(\mathbb F_2(\beta)\) contains \(\alpha\), the
+absolute degree is \(pq\). Moreover \(q\mid\ord(\alpha)\) and
+\(\ord(\beta)=q\ord(\alpha)\), so every prime divisor divides
+\(2^p-1\). The complete census and all seed power tests are in
+\nolinkurl{scripts/check_semiprime_gap.cpp}.
+\end{proof}
+
 \end{document}
