@@ -577,6 +577,9 @@ Together the checks force \(x\) to have order \(N\).
 Its powers then exhaust the \(N\) nonzero elements of the quotient,
 so the quotient is a field and \(f\) is primitive.
 \end{proof}
+Lean verifies Theorem~\ref{thm:composition-norm} and
+Corollary~\ref{cor:composition-order} in
+\texttt{GF2Sparse/CompositionNorm.lean}.
 
 The test applies to five-term polynomials with two pairs of exponents
 related by powers of two. For \(s,i,j,a,b>0\) put \(Q=2^s\) and

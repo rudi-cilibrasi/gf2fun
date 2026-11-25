@@ -2,6 +2,7 @@ import GF2Sparse.Roots
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.FieldTheory.Separable
 
 /-! The relative norm of the root of an irreducible composition H(h). -/
 
@@ -14,6 +15,11 @@ def normExponent (q m : ℕ) : ℕ := ∑ j ∈ Finset.range m, q ^ j
 
 theorem normExponent_mul {q : ℕ} (hq : 1 ≤ q) (m : ℕ) :
     normExponent q m * (q - 1) = q ^ m - 1 := geom_sum_mul_of_one_le hq m
+
+private theorem comp_degree_pos {H h : BinaryPoly} (hH : Irreducible H) (hm : 0 < h.natDegree) :
+    0 < (H.comp h).natDegree := by
+  rw [natDegree_comp]
+  exact Nat.mul_pos hH.natDegree_pos hm
 
 /-- Every irreducible factor of H(h) contains a root of H in its residue field. -/
 theorem outer_degree_dvd_factor {H h p : BinaryPoly} (hH : Irreducible H)
@@ -138,9 +144,7 @@ theorem primitive_comp_iff_norm_and_prime_checks {H h : BinaryPoly} (hH : Primit
   let D := normExponent q h.natDegree
   let N := q ^ h.natDegree - 1
   let x := AdjoinRoot.root f
-  have hn : 0 < f.natDegree := by
-    rw [show f = H.comp h from rfl, natDegree_comp]
-    exact Nat.mul_pos hH.2.1.natDegree_pos hm
+  have hn : 0 < f.natDegree := comp_degree_pos hH.2.1 hm
   have hsize : 2 ^ f.natDegree - 1 = N := by simp only [f, natDegree_comp, pow_mul, N, q]
   have hN : 0 < N := hsize ▸ Nat.sub_pos_of_lt (Nat.one_lt_two_pow hn.ne')
   have hq : 1 < q := Nat.one_lt_two_pow hH.2.1.natDegree_pos.ne'
@@ -165,5 +169,121 @@ theorem primitive_comp_iff_norm_and_prime_checks {H h : BinaryPoly} (hH : Primit
         rw [← hDR, Nat.mul_div_assoc _ hbase, pow_mul, he]
         exact pow_ne_one_div_prime ho hR hp hbase
       · exact hrest p hp hd hbase
+
+private theorem normExponent_add (q t u : ℕ) :
+    normExponent q (t + u) = normExponent q t + q ^ t * normExponent q u := by
+  simp only [normExponent, Finset.sum_range_add, pow_add, Finset.mul_sum]
+
+private theorem repeat_norm {M : Type*} [Monoid M] {x : M} {q t : ℕ}
+    (hfix : x ^ (q ^ t) = x) (k : ℕ) :
+    x ^ normExponent q (t * k) = (x ^ normExponent q t) ^ k := by
+  induction k with
+  | zero => simp [normExponent]
+  | succ k ih =>
+    rw [Nat.mul_succ, Nat.add_comm (t * k) t, normExponent_add, pow_add,
+      pow_mul, hfix, ih, pow_succ']
+
+/-- Under the norm congruence, a factor of relative degree t has relative
+index k coprime to the order of the outer field's multiplicative group. -/
+theorem factor_degree_of_norm_congruence {H h p : BinaryPoly} (hH : Primitive H)
+    (hm : 0 < h.natDegree) (hp : Irreducible p) (hd : p ∣ H.comp h)
+    (hnorm : H.comp h ∣ X ^ normExponent (2 ^ H.natDegree) h.natDegree - h) :
+    ∃ t k : ℕ, p.natDegree = H.natDegree * t ∧ h.natDegree = t * k ∧
+      k.Coprime (2 ^ H.natDegree - 1) := by
+  let r := H.natDegree
+  let m := h.natDegree
+  let q := 2 ^ r
+  let R := q - 1
+  let x := AdjoinRoot.root p
+  letI : Fact (Irreducible p) := ⟨hp⟩
+  have hr : 0 < r := hH.2.1.natDegree_pos
+  have hq : 1 < q := Nat.one_lt_two_pow hr.ne'
+  have hR : 0 < R := Nat.sub_pos_of_lt hq
+  have hN : 0 < q ^ m - 1 := Nat.sub_pos_of_lt (one_lt_pow₀ hq hm.ne')
+  have hfull : x ^ (q ^ m - 1) = 1 := root_pow_of_norm hH hd hnorm
+  have hx0 : x ≠ 0 := by
+    intro hx
+    exact zero_ne_one ((zero_pow hN.ne').symm.trans (hx ▸ hfull))
+  have hx : aeval x p = 0 := (AdjoinRoot.aeval_eq _).trans AdjoinRoot.mk_self
+  have hfixed : x ^ (q ^ m) = x := by
+    calc
+      x ^ (q ^ m) = x ^ ((q ^ m - 1) + 1) := by rw [Nat.sub_add_cancel (by omega)]
+      _ = x := by rw [pow_succ, hfull, one_mul]
+  obtain ⟨t, ht⟩ := outer_degree_dvd_factor hH.2.1 hp hd
+  have htm : t ∣ m := by
+    apply Nat.dvd_of_mul_dvd_mul_left hr
+    rw [← ht]
+    apply (degree_dvd_iff_frobenius hp hx _).2
+    simpa only [pow_mul] using hfixed
+  obtain ⟨k, hk⟩ := htm
+  refine ⟨t, k, ht, hk, ?_⟩
+  have hk0 : k ≠ 0 := by
+    rintro rfl
+    simp [m] at hk
+    omega
+  have hxt : x ^ (q ^ t) = x := by
+    have he := (degree_dvd_iff_frobenius hp hx _).1 (dvd_refl p.natDegree)
+    simpa only [ht, pow_mul] using he
+  let y := x ^ normExponent q t
+  have hy : y ^ R = 1 := by
+    change (x ^ normExponent q t) ^ (q - 1) = 1
+    rw [← pow_mul, normExponent_mul hq.le]
+    apply mul_right_cancel₀ hx0
+    rw [one_mul, ← pow_succ, Nat.sub_add_cancel (Nat.one_le_pow _ _ hq.le), hxt]
+  have hyk : y ^ k = aeval x h := by
+    rw [show y ^ k = x ^ normExponent q (t * k) from (repeat_norm hxt k).symm, ← hk]
+    exact norm_at_factor hd hnorm
+  have hok : orderOf (y ^ k) = R := (congrArg orderOf hyk).trans (inner_order_at_factor hH hd)
+  have hoy : orderOf y = R := Nat.dvd_antisymm (orderOf_dvd_of_pow_eq_one hy)
+    (hok ▸ orderOf_pow_dvd (x := y) k)
+  have he := orderOf_pow' y hk0
+  rw [hok, hoy] at he
+  apply Nat.Coprime.symm
+  change R.gcd k = 1
+  have hg := Nat.gcd_pos_of_pos_left k hR
+  by_contra! h
+  exact (Nat.div_lt_self hR (by omega : 1 < R.gcd k)).ne he.symm
+
+/-- If every prime of the relative degree divides the order of the outer
+field's multiplicative group, a single modular power decides irreducibility. -/
+theorem irreducible_comp_iff_norm_of_smooth {H h : BinaryPoly} (hH : Primitive H)
+    (hm : 0 < h.natDegree) (hc : h.coeff 0 = 0)
+    (hs : ∀ p : ℕ, p.Prime → p ∣ h.natDegree → p ∣ 2 ^ H.natDegree - 1) :
+    Irreducible (H.comp h) ↔ H.comp h ∣ X ^ normExponent (2 ^ H.natDegree) h.natDegree - h := by
+  refine ⟨norm_congruence_of_irreducible_comp hH.2.1 hm hc, fun hnorm => ?_⟩
+  let f := H.comp h
+  have hn : 0 < f.natDegree := comp_degree_pos hH.2.1 hm
+  have hf : f.Monic := binary_monic (fun he => by simp [he] at hn)
+  obtain ⟨p, hp, hd⟩ := WfDvdMonoid.exists_irreducible_factor (not_isUnit_of_natDegree_pos f hn)
+    hf.ne_zero
+  obtain ⟨t, k, ht, hk, hcop⟩ := factor_degree_of_norm_congruence hH hm hp hd hnorm
+  have hk1 : k = 1 := by
+    by_contra he
+    obtain ⟨l, hl, hlk⟩ := Nat.exists_prime_and_dvd he
+    have hld : l ∣ h.natDegree := hk ▸ hlk.trans (dvd_mul_left _ _)
+    exact hl.ne_one (Nat.eq_one_of_dvd_coprimes hcop hlk (hs l hl hld))
+  have heq : f = p := eq_of_monic_of_dvd_of_natDegree_le (binary_monic hp.ne_zero) hf hd
+    (by simp only [f, natDegree_comp, ht, hk, hk1, mul_one, le_refl])
+  change Irreducible f
+  rwa [heq]
+
+/-- The norm congruence rules out repeated factors for every relative degree. -/
+theorem squarefree_comp_of_norm {H h : BinaryPoly} (hH : Primitive H) (hm : 0 < h.natDegree)
+    (hnorm : H.comp h ∣ X ^ normExponent (2 ^ H.natDegree) h.natDegree - h) :
+    Squarefree (H.comp h) := by
+  let f := H.comp h
+  let n := f.natDegree
+  have hn : 0 < n := comp_degree_pos hH.2.1 hm
+  letI := AdjoinRoot.nontrivial f (degree_ne_of_natDegree_ne hn.ne')
+  have hd : f ∣ X ^ (2 ^ n - 1) - 1 := AdjoinRoot.mk_eq_zero.1 (by
+    simp only [map_sub, map_pow, AdjoinRoot.mk_X, map_one, sub_eq_zero, n, f, natDegree_comp, pow_mul]
+    exact root_pow_of_norm hH (dvd_refl f) hnorm)
+  have hodd : Odd (2 ^ n - 1) := by
+    obtain ⟨j, hj⟩ := Nat.exists_eq_succ_of_ne_zero hn.ne'
+    rw [hj, pow_succ]
+    exact ⟨2 ^ j - 1, by have := Nat.two_pow_pos j; omega⟩
+  have hs := separable_X_pow_sub_C' 2 (2 ^ n - 1) (1 : ZMod 2) hodd.not_two_dvd_nat one_ne_zero
+  rw [map_one] at hs
+  exact (hs.of_dvd hd).squarefree
 
 end GF2Sparse
