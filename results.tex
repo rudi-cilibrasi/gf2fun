@@ -5557,4 +5557,69 @@ open degree. The sample checker factors its test polynomials over
 \(\mathbb F_2\) and verifies all factor degrees and support conditions.
 See \nolinkurl{scripts/check_parity_families.py}.
 
+\section{A single coefficient determines factor parity}
+\label{sec:cyclic-parity}
+\begin{theorem}\label{thm:cyclic-parity}
+Let \(F=E(X^2)+X^u+X^v\) be a monic integer polynomial of degree
+\(n\), with coefficients zero and one and constant term one. Assume
+every exponent of \(E(X^2)\) is divisible by eight, \(u<v\) are
+odd, and \(g=(v-u)/2\) is odd. The binary reduction \(f\) is
+squarefree exactly when \(E\) is invertible in
+\(R_g=\mathbb F_2[Y]/(Y^g-1)\). In that case write \(H=E^{-1}\)
+in \(R_g\), represented in degrees \(0,\ldots,g-1\). Then
+\[
+ \operatorname{disc}(F)\equiv
+ (-1)^{n(n-1)/2}v^n(1+4H_j)\pmod8,\qquad
+ 2j\equiv-u\pmod g ,
+\]
+where \(H_j\in\{0,1\}\) is its coefficient at \(j\).
+\end{theorem}
+\begin{proof}
+The derivative in characteristic two is
+\(X^{u-1}(1+X^{2g})\). At a nonzero root of the derivative the
+two odd powers cancel. The map \(X\mapsto X^2\) permutes the
+\(g\)-th roots of unity, which proves the squarefreeness criterion.
+
+For the integer discriminant compute resultants over
+\(\mathbb Z_{(2)}\) modulo eight. Here
+\(F'\equiv vX^{u-1}(X^{2g}+u/v)\). The norm of \(X^{u-1}\)
+is one since \(u-1\) is even. The binomial degree \(2g\) is also
+even, so swapping resultant arguments introduces no sign. Put
+\(\theta=-u/v\). Pairing \(\beta,-\beta\) above each
+\(y=\beta^2\) with \(y^g=\theta\) gives
+\[
+ \operatorname{Res}(F,F')\equiv
+ v^n\prod_{y^g=\theta}\bigl(E(y)^2-(1+\theta)^2y^u\bigr)\pmod8.
+\]
+In the squarefree case the norm of \(E(y)\) is odd, so its square
+is one modulo eight. Since \(1+\theta=2g/v\), the remaining product
+is \(1+4T\bmod8\), where
+\[
+ T=\sum_{y^g=1} y^u H(y)^2
+   =\left(\sum_{y^g=1} y^{-j}H(y)\right)^2=H_j\quad\text{in }\mathbb F_2 .
+\]
+For the last equality, summing \(y^k\) over the \(g\)-th roots gives
+one if \(g\mid k\) and zero otherwise. Multiplying the resultant by
+the discriminant sign finishes the proof.
+\end{proof}
+
+In degrees \(n\equiv3,5\pmod8\) with \(v=n\), and also in degrees
+\(8\mid n\), the factor count of a squarefree \(f\) is odd exactly
+when \(H_j=1\), by Stickelberger--Swan. The checker computes the
+inverse by the Euclidean algorithm and compares with integer
+discriminants and binary factorizations. Its default run checks
+all \(9216\) supports through degree \(48\) covered by the theorem.
+See \nolinkurl{scripts/check_cyclic_trinomial_parity.py}.
+
+In degree \(1229\) take two positive even exponents divisible by
+eight and let \(g\) run over the odd primes below \(1229/2\), with
+\(v=1229,\ u=1229-2g\). Among the \(1290708\) supports, \(9689\)
+have a repeated factor, \(642101\) are squarefree with even factor
+count, and \(638918\) have odd factor count. For example, the taps
+\(88,376,1155\) give \(g=37,\ E=1+Y^3+Y^7\) in \(R_{37}\).
+The inverse has binary mask \(\mathtt{1648113175}\) in hexadecimal
+and its coefficient at \(j=33\) is one. This pentanomial is irreducible
+and passes all five order tests in Theorem~\ref{thm:1229-all-orders}.
+The mode \texttt{--census-1229} reproduces all parity counts.
+
 \end{document}

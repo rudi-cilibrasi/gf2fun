@@ -69,6 +69,8 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+For pentanomials with two odd exponents and all even exponents divisible by eight, a single coefficient of a cyclic polynomial inverse gives the factor parity whenever the half-gap between the odd exponents is odd. At degree 1229 this identifies 638,918 squarefree candidates with odd factor count among 1,290,708 supports with prime half-gap. The interior taps 88, 376 and 1155 give an irreducible candidate that passes all five order tests. [Discriminant proof](results.pdf#page=72) · [Parity and census checker](scripts/check_cyclic_trinomial_parity.py)
+
 An exponent test rules out 38,390,964 pentanomials at degree 1229. If the three interior exponents are all 0 or 1 modulo four, the polynomial is reducible. More generally, a binary polynomial with constant term one supported in classes $\{0,s\}$ modulo four, with $s$ odd, is reducible in every degree congruent to 0, 3 or 5 modulo eight. [Proof](results.pdf#page=69) · [Discriminant and factorization check](scripts/check_two_residue_parity.py)
 
 In degree 1229, every primitive witness of weight at most five must have exactly five terms. Proper factors exclude all 1,228 trinomials and, by power sampling, 1,866 pentanomial supports including every four-term arithmetic progression. The `--trinomials` option of the degree-1229 checker replays the complete exclusion. [Factor table](data/degree-1229-trinomial-factors.csv) · [Lean exclusion](GF2Sparse/Trinomial1229.lean) · [Proof](results.pdf#page=53)
