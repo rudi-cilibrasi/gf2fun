@@ -2667,8 +2667,8 @@ field multiplications in total.
 
 If \(I_r\) is the multiplicative index of \(r\) in \(K^\times\), the
 index of \(\nu\) in \(\mathbb F_{2^m}^\times\) is
-\(\gcd(I_r,2^m-1)\). Indeed the norm takes a generator to a generator;
-writing \(r\) as a power of it gives the identity. In seed degree
+\(\gcd(I_r,2^m-1)\). Indeed the norm takes a generator to a generator.
+Writing \(r\) as a power of it gives the identity. In seed degree
 eight, for instance, the norm with \(b=4\) has degree 17. Since
 \(2^{17}-1=131071\) is prime, this forces the full factor 131071
 into the order of every lifted root.
@@ -2705,5 +2705,99 @@ size of the residue field. Checking this equality for \(w\) requires
 one binary polynomial congruence per seed. The seed remainder formula,
 subspace product algorithm and Vandermonde criterion for an expansion
 are verified in \nolinkurl{GF2Sparse/OreNorms.lean}.
+
+
+\section{Subspace products and a normal basis in the lifted field}\label{sec:ore-basis}
+
+Retain \(E,K,L,\theta,r,n\) from Section~\ref{sec:ore-norms}.
+For a nonzero binary subspace \(W\subseteq E\) define
+\[
+ z_W=\prod_{u\in W\setminus\{0\}}L(u).
+\]
+Every factor is a conjugate of \(r\), so \(z_W\in\langle r\rangle\).
+
+\begin{theorem}\label{thm:ore-wedge}
+There is a binary linear isomorphism
+\[
+ \bigoplus_{b=1}^s\bigwedge\nolimits^b_{\F} E\ \longrightarrow K
+\]
+taking the wedge of any basis of \(W\) to \(z_W\).
+It intertwines the exterior powers of multiplication by \(\theta\)
+with the Frobenius on \(K\). In particular, distinct nonzero subspaces,
+including subspaces of different dimensions, have distinct products.
+\end{theorem}
+\begin{proof}
+For a list \(v_1,\ldots,v_b\), take the Moore determinant on
+\(L(v_1),\ldots,L(v_b)\). It is alternating and binary multilinear,
+so it defines a map on the \(b\)-th exterior power. The Moore product
+identity in Theorem~\ref{thm:ore-norm-spectrum} gives \(z_W\) on a basis.
+The equality \(L(\theta u)=F(L(u))\) gives equivariance.
+
+Choose a binary basis \(\gamma_1,\ldots,\gamma_s\) of \(E\) and write
+\(T_{ij}=\gamma_j^{2^i}\) for \(0\le i<s\).
+The Moore determinant gives \(\det T\ne0\).
+For each nonempty column subset \(J\), write \(w_J\) for the image
+of its basis wedge. Repeating the Cauchy--Binet expansion gives
+\[
+ w_J^{2^k}=\sum_{|I|=|J|} d_I\,\det(T_{I,J})\,(\theta^{e_I})^k,
+ \quad
+ d_I=\det\bigl((\theta^{2^i})^\ell\bigr)_{0\le\ell<|I|,\ i\in I}
+      \prod_{i\in I}c_i\ne0 .
+\]
+Over all nonempty \(I\), the exponents \(e_I\) take every value from
+1 to \(n\) exactly once. Suppose \(\sum_J a_J w_J=0\), \(a_J\in\F\).
+Apply the first \(n\) Frobenius powers and invert the Vandermonde
+matrix at these \(n\) distinct nodes. For each \(I\) this gives
+\(\sum_{|J|=|I|}\det(T_{I,J})a_J=0\). At fixed size \(b\) the matrix
+of these minors is the matrix of \(\bigwedge^b T\), whose inverse is
+\(\bigwedge^b(T^{-1})\). All \(a_J\) vanish. Since the \(n\) vectors
+\(w_J\) lie in the degree-\(n\) field \(K\), they form a binary basis.
+
+All changes of binary basis have determinant one. A nonzero decomposable
+wedge \(v_1\wedge\cdots\wedge v_b\) determines its supporting space as
+the set of \(v\) whose wedge with it vanishes. Thus the wedges attached
+to distinct \(b\)-spaces are distinct. Wedges of different dimensions belong to
+different summands.
+\end{proof}
+
+Writing \({s\brack b}_2\) for the number of binary \(b\)-subspaces
+of \(E\), we obtain
+\[
+ \ord(r)\ \ge\ \sum_{b=1}^s {s\brack b}_2 .
+\]
+The field degree of \(z_W\) has a separate exact formula. The set
+\(\{\alpha\in E:\alpha W\subseteq W\}\) is a finite subring of a
+field containing 1, hence a field \(\mathbb F_{2^a}\). Its nonzero
+elements are precisely the scalar stabilizer of \(W\), so
+\(a\mid\gcd(s,\dim W)\). Now \(F^k z_W=z_{\theta^kW}\), and the
+product map is injective. The field degree is the orbit size
+\(n/(2^a-1)\). In particular every subspace of dimension coprime
+to \(s\) gives a product of full field degree. The stabilizer
+description for scalar orbits of subspaces is also given by
+\href{https://arxiv.org/abs/1403.1218}{Gluesing-Luerssen, Morrison
+and Troha, \emph{Cyclic orbit codes and stabilizer subfields}}.
+
+\begin{corollary}\label{cor:ore-normal-flag}
+For \(1\le b\le s\), take \(W_b=\langle1,\theta,\ldots,\theta^{b-1}\rangle_{\F}\).
+The conjugates of \(z_{W_b}\) span a space of dimension \(\binom{s}{b}\).
+The element \(\eta=\sum_{b=1}^s z_{W_b}\) generates a normal basis
+of the full lifted field \(K/\F\).
+\end{corollary}
+\begin{proof}
+With \(\gamma_j=\theta^{j-1}\), every minor on the first \(b\) columns
+of \(T\) is a Vandermonde determinant at \(b\) distinct conjugates
+of \(\theta\). All nodes with \(|I|=b\) therefore have nonzero
+coefficients in the expansion of \(z_{W_b}\). The annihilator
+argument of Theorem~\ref{thm:ore-norm-spectrum} gives the rank.
+In the sum \(\eta\), each of the \(n\) nodes occurs exactly once.
+Consequently its Frobenius annihilator is \(Y^n-1\), and its first
+\(n\) conjugates are linearly independent.
+\end{proof}
+
+The input basis for this construction is \(r,r^2,\ldots,r^{2^{s-1}}\).
+The successive partial products in one subspace elimination give
+all \(z_{W_b}\), at a cost of at most \(s(s+1)/2\) multiplications
+in \(K\). The script \nolinkurl{scripts/check_ore_bases.py} checks the
+ranks and normality by direct binary elimination in the lifted field.
 
 \end{document}
