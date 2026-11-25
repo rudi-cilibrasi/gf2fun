@@ -1,4 +1,4 @@
-"""Find product pentanomials with PARI/GP or verify a consecutive CSV with FLINT."""
+"""Find product pentanomials with PARI/GP or verify a witness CSV with FLINT."""
 
 import argparse
 import csv
@@ -39,21 +39,36 @@ def verify(n, u, v, factors):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--factor-table", required=True, type=Path)
+    parser.add_argument("--factor-table", required=True, action="append", type=Path,
+                        help="Cunningham table or degree-to-factor map, repeatable for supplements")
     parser.add_argument("--start", type=int, default=5)
     parser.add_argument("--end", type=int, required=True)
+    parser.add_argument("--step", type=int, default=1, help="step between degrees, starting at --start")
+    parser.add_argument("--available", action="store_true",
+                        help="use precisely the degrees in the interval present in the factor table")
     action = parser.add_mutually_exclusive_group(required=True)
     action.add_argument("--search", action="store_true", help="write the PARI search results as CSV")
     action.add_argument("--verify", type=Path, metavar="CSV", help="check each degree and prove its factors prime")
     parser.add_argument("--gp", default="gp", help="PARI/GP executable for search")
     parser.add_argument("--jobs", type=int, default=1, help="number of simultaneous PARI searches")
     args = parser.parse_args()
-    if not 5 <= args.start <= args.end or args.jobs < 1:
-        parser.error("expected 5 <= start <= end and at least one job")
-    with args.factor_table.open() as source:
-        table = json.load(source)
-    table = table.get("table2-_data", table)
-    degrees = range(args.start, args.end + 1)
+    if not 5 <= args.start <= args.end or min(args.step, args.jobs) < 1:
+        parser.error("expected 5 <= start <= end and positive step and job counts")
+    table = {}
+    for path in args.factor_table:
+        with path.open() as source:
+            part = json.load(source)
+        part = part.get("table2-_data", part)
+        for n in table.keys() & part.keys():
+            if sorted(table[n]) != sorted(part[n]):
+                raise ValueError(f"conflicting order factors in degree {n}")
+        table.update(part)
+    interval = range(args.start, args.end + 1, args.step)
+    degrees = interval
+    if args.available:
+        degrees = [n for n in degrees if str(n) in table]
+        if not degrees:
+            parser.error("the factor table contains no degrees in the selected interval")
     factors = {n: table[str(n)] for n in degrees}
     for n, row in factors.items():
         if any(type(p) is not int or p < 2 for p in row) or prod(row) != 2**n - 1:
@@ -78,8 +93,12 @@ def main():
     for p in sorted(primes):
         if not fmpz(p).is_prime():
             raise ValueError(f"composite order factor {p}")
-    print(f"Verified {len(degrees)} primitive product pentanomials, degrees "
-          f"{args.start} through {args.end}, and {len(primes)} distinct prime factors.")
+    print(f"Verified {len(degrees)} primitive product pentanomials in the interval "
+          f"{args.start} through {args.end} and {len(primes)} distinct prime factors.")
+    if args.available:
+        missing = sorted(set(interval) - set(degrees))
+        if missing:
+            print("Degrees absent from the factor table: " + ", ".join(map(str, missing)) + ".")
 
 
 if __name__ == "__main__":

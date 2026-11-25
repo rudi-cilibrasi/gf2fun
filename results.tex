@@ -4162,4 +4162,29 @@ verifies the polynomial identities, deduces the degree counts from the
 listed inputs, and checks the strict inequality. An actual order
 certificate requires exponents in one candidate field.
 
+\section{Six open degrees through 1280}
+\begin{theorem}\label{thm:1280-coverage}
+Every positive degree at most 1280 outside
+\(\{1229,1231,1237,1243,1249,1259\}\) has a primitive binary polynomial
+of weight at most five. At every covered degree from 5 onward, it has
+the form \(X^n+(1+X^u)(1+X^v)\) with \(0<u<v<u+v<n\).
+\end{theorem}
+\begin{proof}
+The consecutive certificates cover degrees through 1228. The table
+\nolinkurl{data/product-witnesses-1230-1280.csv} supplies the remaining
+46 witnesses. In degree 1280 it gives \(u=6,v=49\).
+For each row the group-order factors in
+\nolinkurl{data/mersenne-1230-1280-factors.json} multiply to \(2^n-1\).
+PARI/GP found the witnesses and FLINT independently verified
+\(X^{2^n-1}=1\) in each quotient and
+\(X^{(2^n-1)/q}\ne1\) for every prime factor \(q\).
+FLINT also proved primality for all 673 distinct integer factors.
+The factorizations come from the pinned Cunningham transcription
+and FactorDB records for
+\href{https://factordb.com/index.php?id=1000000000000001253}{1253},
+\href{https://factordb.com/index.php?id=1000000000000001255}{1255},
+\href{https://factordb.com/index.php?id=1000000000000001265}{1265}, and
+\href{https://factordb.com/index.php?id=1000000000000001277}{1277}.
+\end{proof}
+
 \end{document}
