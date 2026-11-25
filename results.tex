@@ -4841,4 +4841,133 @@ Theorem~\ref{thm:trinomial-exceptions} gives the irreducible
 of root order \(3\cdot7^{j+1}\) in the product of the subfields
 of degrees 2 and \(3m\).
 
+\section{Splitting the small field orders between two exponents}
+Write \(M_d=2^d-1\) and \(L_B=\operatorname{lcm}_{1\le d\le B}M_d\).
+Let \(T_B\) be the least possible \(\max(A,C)\) over positive integers
+such that for every \(1\le d\le B\), either \(M_d\mid A\) or \(M_d\mid C\).
+\begin{theorem}\label{thm:balanced-sieve}
+As \(B\to\infty\),
+\[
+          \log_2 T_B\sim\tfrac12\log_2 L_B
+                         \sim\frac{3}{2\pi^2}B^2 .
+\]
+For each fixed \(0<\eta<1\), every sufficiently large degree \(n\)
+has a squarefree product pentanomial with all irreducible factors of
+degree greater than
+\[
+       B=\left\lfloor\pi\sqrt{\frac{2\eta}{3}\log_2 n}\right\rfloor .
+\]
+The order of \(X\) in the same polynomial quotient is at least
+\(n^{2-\eta-o(1)}\).
+\end{theorem}
+\begin{proof}
+Put \(w_j=\log_2\Phi_j(2)\), where \(\Phi_j\) is the cyclotomic
+polynomial, and \(S(B)=\sum_{j\le B}w_j\). We use
+\[
+       \prod_{j\le B}\Phi_j(2)=L_B,\qquad
+       S(B)=\frac3{\pi^2}B^2+O(B\log(2B)).
+\]
+For the identity, fix an odd prime \(\ell\) of multiplicative degree
+\(e=\ord_\ell(2)\). The valuation of \(M_d\) vanishes unless
+\(e\mid d\), and \(v_\ell(M_{et})=v_\ell(M_e)+v_\ell(t)\) by
+lifting the exponent. In \(M_d=\prod_{j\mid d}\Phi_j(2)\) these
+valuations are supplied by the indices \(e,e\ell,e\ell^2,\ldots\),
+with contributions \(v_\ell(M_e),1,1,\ldots\). The sum up to \(B\)
+is exactly the largest valuation among the \(M_d\) up to \(B\).
+The asymptotic is the classical least-common-multiple estimate for
+\(2^d-1\). It also follows by M\"obius inversion, which gives
+\(w_j=\varphi(j)+O(1)\) uniformly since
+\(\sum_{a\ge1}|\log_2(1-2^{-a})|<\infty\), followed by
+\(\sum_{j\le B}\varphi(j)=3B^2/\pi^2+O(B\log(2B))\).
+\href{https://cs.uwaterloo.ca/journals/JIS/VOL24/Sanna/sanna7.pdf}
+{Sanna, \emph{On the Least Common Multiple of Shifted Powers}}.
+
+Every admissible pair satisfies \(L_B\mid AC\), giving the lower
+bound \(\log_2 T_B\ge S(B)/2\). For the upper bound fix a prime \(P\).
+Group the indices \(d\le B\) by the integer left after removing all
+prime factors less than \(P\), with multiplicity. If \(j\mid d\)
+and \(j>B/P\), then \(d/j<P\), so \(j\) and \(d\) belong to
+the same group. Assign to each group the sum of its \(w_j\) for
+\(j>B/P\). The largest group weight is \(o_P(B^2)\). A fixed
+remaining integer allows at most \((1+\log_2 B)^{\pi(P)}\) choices of
+the removed prime powers, and \(w_j=O(B)\).
+
+Assign each whole group to whichever of two sums is smaller.
+The difference of the final sums is bounded by the largest group
+weight. On each side take the lcm of the \(M_d\) assigned there.
+Every cyclotomic factor index needed on that side is either at most
+\(B/P\) or belongs to one of its assigned groups. Hence the larger
+logarithm is at most
+\[
+     S(B/P)+\tfrac12\bigl(S(B)-S(B/P)\bigr)+o_P(B^2).
+\]
+After division by \(S(B)\), the upper limit is at most
+\((1+P^{-2})/2\) for each fixed \(P\). Letting \(P\) increase proves
+the first assertion.
+
+The constructed \(A,C\) are odd. Use \(u=A,\ v=2C\) and
+\(F=X^n+(1+X^u)(1+X^v)\). For the indicated \(B\) one may take
+odd \(A,C\) with \(u+v\le n^{\eta+o(1)}<n\), since replacing
+any admissible integer by its odd part preserves coverage.
+The polynomial has five terms and is squarefree by the derivative
+argument of Theorem~\ref{thm:sieve}. At a nonzero element of degree
+\(d\le B\) one binomial vanishes, giving \(F(x)=x^n\ne0\).
+The constant term excludes zero. Theorem~\ref{thm:order} yields
+the stated order bound. The optimality assertion for \(T_B\)
+concerns covers in which each entire field order divides one exponent.
+\end{proof}
+
+For \(B=5\), the odd orders \(1,3,7,15,31\) divide either 105 or 62.
+In every \(n\ge168\) this gives \(X^n+X^{167}+X^{105}+X^{62}+1\),
+with no factor of degree at most five and quotient order at least
+\(n^2/334\). Lean verifies the two-exponent sieve, its simultaneous
+order bound and this example in \nolinkurl{GF2Sparse/BalancedSieve.lean}.
+The integer construction in \nolinkurl{scripts/balance_factor_sieve.py}
+checks every requested divisibility. For \(B=512\) it gives a first
+admissible degree of 40,072 bits. The threshold \(L_B+3\) of
+Theorem~\ref{thm:sieve} has 79,858 bits.
+
+
+\begin{theorem}\label{thm:balanced-gcd}
+Let \(B\ge4\), let \(n\) be a multiple of \(L_{\lfloor B/2\rfloor}\),
+and suppose the positive exponents \(u,v\) cover all the \(M_d\)
+through \(B\) with \(\gcd(n,u,v)=1\). Then one of \(u,v\) is
+divisible by
+\[
+       H_B= L_B\bigg/\!\prod_{B/2<p\le B,\ p\ {\rm prime}}(2^p-1),
+       \qquad \log H_B\sim\log L_B .
+\]
+Thus, for each fixed \(1/4<\gamma<1\), there are degrees
+\(n\sim L_B^\gamma\) as \(B\to\infty\) in which every product
+pentanomial satisfying this whole-field cover has exponent gcd
+greater than one.
+\end{theorem}
+\begin{proof}
+Assign degree 2 to an exponent divisible by \(M_2\). Every prime
+\(p\le B/2\) is on the same side. Indeed \(2p\le B\), and its field
+order is a multiple of both \(M_2\) and \(M_p\). Each of those two
+integers exceeds one and divides \(n\), so it cannot divide both
+exponents. Every composite degree \(d\le B\) shares \(M_p\) with some
+prime divisor \(p\le B/2\) of \(d\), forcing it onto the same side
+as well. The lcm of the field orders on this side is a multiple of
+\(H_B\), since for each omitted prime \(p>B/2\) the integer \(M_p\)
+is coprime to all the other \(M_d\). Here we used
+\(\gcd(M_p,M_d)=M_{\gcd(p,d)}\).
+The omitted logarithmic weight is at most \(B\pi(B)=o(B^2)\).
+Finally \(L_{\lfloor B/2\rfloor}=L_B^{1/4+o(1)}\), so the least
+multiple of it above \(L_B^\gamma\) is asymptotic to \(L_B^\gamma\)
+and eventually smaller than \(H_B\). Both interior exponents of a
+degree-\(n\) product pentanomial are less than \(n\). For
+\(1/2<\gamma<1\), Theorem~\ref{thm:balanced-sieve} supplies covers
+that fit in these degrees, so the common-divisor obstruction applies
+to actual pentanomials.
+\end{proof}
+
+A primitive polynomial must have exponent gcd one by the substitution
+bound in Section~\ref{sec:four-ap}. Thus the last theorem identifies
+degrees where a proof of primitivity needs a different way of excluding
+small factors at this cutoff. In prime degree, every product
+pentanomial with \(0<u,v<n\) already has \(\gcd(n,u,v)=1\), so
+Theorem~\ref{thm:balanced-sieve} retains this necessary condition.
+
 \end{document}
