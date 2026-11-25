@@ -910,6 +910,38 @@ Distinct choices of \(w\) have distinct smallest interior exponents
 \(u=Lw\), proving the count.
 \end{proof}
 
+\begin{corollary}\label{cor:reciprocal-obstruction}
+For fixed \(L,P\) in Theorem~\ref{thm:reciprocal-sieve}, put
+\(G(Y)=Y^{2(P+L)}+Y^L+1\). For every admissible \(w\),
+\[
+ \deg\gcd(F_{n,u,v}(X),X^n-1)=\deg\gcd(G(Y),Y^n-1).
+\]
+In particular, every finite list of fixed choices of \(L,P\) has an
+infinite progression of degrees in which every one of its candidates
+is reducible.
+\end{corollary}
+\begin{proof}
+In \(R=\F[X]/(X^n-1)\) one has
+\[
+          X^{(2P+L)w}F_{n,u,v}(X)=G(X^w),
+\]
+since \((2P+L)w+v=2n\). The power multiplying \(F_{n,u,v}\) is a
+unit, and \(X\mapsto X^w\) is an automorphism of \(R\) because
+\(\gcd(w,n)=1\). Hence \(R/(F_{n,u,v})\) and \(R/(G)\) have the same
+dimension over \(\F\), giving the displayed equality even when
+\(X^n-1\) has repeated roots.
+
+Choose one root of \(G\) for each fixed choice of parameters.
+Their orders are finite, since \(G(0)=1\). For every degree \(n\)
+divisible by all these orders, the gcd is nonconstant for every
+candidate. An irreducible degree-\(n\) candidate dividing the monic
+degree-\(n\) polynomial \(X^n-1\) would equal it, whereas
+\(F_{n,u,v}(1)=1\). For instance \(L=1,P=2\) gives \(G=Y^6+Y+1\)
+of root order 63, ruling out all multiples of 63. Lean checks the
+coprimality equivalence and the progression obstruction in
+\texttt{GF2Sparse/ReciprocalSieve.lean}.
+\end{proof}
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is

@@ -1,4 +1,5 @@
 import GF2Sparse.Table
+import GF2Sparse.Roots
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-! Product pentanomials with no pair of mutually inverse roots. -/
@@ -202,6 +203,90 @@ theorem reciprocalSieve_separable_iff {n v P L w t : ℕ}
     · rw [if_neg he] at hdeg
       have hsum : w * L + v = t * 2 := by omega
       exact common_root_odd (Nat.not_even_iff_odd.1 he) hu hv hdeg hsum hx
+
+/-- On the n-th roots of unity, the entire family restricts, up to multiplication
+by a unit and the substitution Y = X^w, to this fixed polynomial. -/
+noncomputable def reciprocalSieveObstruction (P L : ℕ) : BinaryPoly :=
+  X ^ (2 * (P + L)) + X ^ L + 1
+
+theorem reciprocalSieve_coprime_roots_of_unity_iff {n v P L w : ℕ}
+    (hn : 0 < n) (hu : 0 < w * L) (hv : 0 < v) (hc : w.Coprime n)
+    (hgap : w * L + v + 2 * (w * P) = n + n) :
+    IsCoprime (productCandidate n (w * L) v) (X ^ n - 1) ↔
+    IsCoprime (reciprocalSieveObstruction P L) (X ^ n - 1) := by
+  let K := AlgebraicClosure (ZMod 2)
+  apply coprime_iff_aux (K := K) hn hc
+  · simp [eval_product, zero_pow hn.ne', zero_pow hu.ne', zero_pow hv.ne']
+  · intro x hx
+    have hz : aeval x (X ^ n - 1 : BinaryPoly) = 0 ↔ x ^ n = 1 := by simp [sub_eq_zero]
+    rw [hz, and_comm]
+    apply and_congr_right
+    intro hxn
+    let β := x ^ w
+    let a := β ^ L
+    let b := β ^ (2 * P + L)
+    have hb : b ≠ 0 := pow_ne_zero _ (pow_ne_zero _ hx)
+    have hsum : w * (2 * P + L) + v = n + n := by
+      rw [Nat.mul_add, Nat.mul_left_comm w 2 P]
+      omega
+    have hby : b * x ^ v = 1 := by
+      change (x ^ w) ^ (2 * P + L) * x ^ v = 1
+      rw [← pow_mul, ← pow_add, hsum, pow_add, hxn, one_mul]
+    have hG : aeval β (reciprocalSieveObstruction P L) = a * b + a + 1 := by
+      simp only [reciprocalSieveObstruction, map_add, map_pow, aeval_X, map_one]
+      rw [show 2 * (P + L) = L + (2 * P + L) by omega, pow_add β L (2 * P + L)]
+    have hprod : b * aeval x (productCandidate n (w * L) v) =
+        aeval β (reciprocalSieveObstruction P L) := by
+      rw [eval_product, hxn, pow_mul, hG]
+      calc
+        _ = b + (a + 1) * (b * x ^ v) + (a + 1) * b := by dsimp [a, β]; ring
+        _ = _ := by rw [hby, mul_one]; linear_combination CharTwo.add_self_eq_zero b
+    change _ ↔ aeval β _ = 0
+    rw [← hprod, mul_eq_zero]
+    simp [hb]
+
+private theorem natDegree_sieveObstruction {P L : ℕ} (hL : 0 < L) :
+    (reciprocalSieveObstruction P L).natDegree = 2 * (P + L) := by
+  have htail : (X ^ L + 1 : BinaryPoly).natDegree = L := by
+    rw [natDegree_add_eq_left_of_natDegree_lt, natDegree_X_pow]
+    simpa using hL
+  rw [reciprocalSieveObstruction, add_assoc, natDegree_add_eq_left_of_natDegree_lt, natDegree_X_pow]
+  rw [htail, natDegree_X_pow]
+  omega
+
+/-- For fixed L and P a common period forces reducibility for every admissible
+w coprime to the degree, however large that degree is. -/
+theorem reciprocalSieve_reducible_on_multiples {n v P L w : ℕ} (hL : 0 < L)
+    (hu : 0 < w * L) (huv : w * L < v) (htop : w * L + v < n) (hc : w.Coprime n)
+    (hgap : w * L + v + 2 * (w * P) = n + n) (hperiod : period (2 * (P + L)) ∣ n) :
+    ¬ Irreducible (productCandidate n (w * L) v) := by
+  let G := reciprocalSieveObstruction P L
+  have hdeg : G.natDegree = 2 * (P + L) := natDegree_sieveObstruction hL
+  have hpos : 0 < G.natDegree := by omega
+  obtain ⟨p, hp, hpg⟩ := WfDvdMonoid.exists_irreducible_factor (not_isUnit_of_natDegree_pos G hpos)
+    (show G ≠ 0 by intro h; simp [h] at hpos)
+  have hpd : p.natDegree ≤ 2 * (P + L) :=
+    (natDegree_le_of_dvd hpg (fun h => by simp [h] at hpos)).trans hdeg.le
+  have hgc : G.coeff 0 = 1 := by
+    simp [G, reciprocalSieveObstruction, coeff_X_pow, hL.ne, hL.ne']
+  have hr := root_pow_period hp hpd (root_ne_zero_of_factor hp hpg hgc)
+  have hpn : p ∣ (X ^ n - 1 : BinaryPoly) := AdjoinRoot.mk_eq_zero.1 (by
+    obtain ⟨k, hk⟩ := hperiod
+    simp only [map_sub, map_pow, AdjoinRoot.mk_X, map_one, hk, pow_mul, hr, one_pow, sub_self])
+  intro hi
+  have hn : 0 < n := by omega
+  have hv := hu.trans huv
+  have hcop : IsCoprime (productCandidate n (w * L) v) (X ^ n - 1) := hi.coprime_iff_not_dvd.2 (by
+    intro hd
+    have hn' : (X ^ n - 1 : BinaryPoly).natDegree = n := by
+      simpa using (natDegree_X_pow_sub_C (r := (1 : ZMod 2)) (n := n))
+    have hmon : (X ^ n - 1 : BinaryPoly).Monic := by simpa using monic_X_pow_sub_C (1 : ZMod 2) hn.ne'
+    have he := eq_of_monic_of_dvd_of_natDegree_le (binary_monic hi.ne_zero) hmon hd
+      (le_of_eq (hn'.trans (product_shape hu hv huv.ne htop).1.symm))
+    have he1 := congrArg (eval (1 : ZMod 2)) he
+    simp [productCandidate, CharTwo.add_self_eq_zero] at he1)
+  have hbad := (reciprocalSieve_coprime_roots_of_unity_iff hn hu hv hc hgap).1 hcop
+  exact hp.not_isUnit (hbad.isUnit_of_dvd' hpg hpn)
 
 /-- The B = 3 construction with L = 21, P = 32 and w = 1 is primitive
 in degree 55. -/
