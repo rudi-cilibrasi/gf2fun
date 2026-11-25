@@ -157,7 +157,11 @@ def emit_block_witness(n, row, bits):
         print(",\n".join(f"    0x{a:x}" for a in blocks) + "] (by decide +kernel)")
         if p != 1:
             print("    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)")
-    print(f"\ntheorem primitiveProduct_{n}_{u}_{v} : Primitive (productCandidate {n} {u} {v}) := by")
+    if n > 256:
+        print(f"\nset_option exponentiation.threshold {n} in")
+    else:
+        print()
+    print(f"theorem primitiveProduct_{n}_{u}_{v} : Primitive (productCandidate {n} {u} {v}) := by")
     print("  rw [← decode_productMask]")
     print(f"  exact primitive_of_certified_powers (n := {n}) (by decide) (by decide +kernel) power1 [")
     print(",\n".join(f"    ⟨p{p}, power{p}⟩" for p in factors) + "] (by decide +kernel)")

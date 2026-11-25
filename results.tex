@@ -1538,6 +1538,27 @@ Since \(t-1\mid s-1\), this gives \(x^{2^s}=x^2\), whereas
 squarefreeness throughout the progression.
 \end{proof}
 
+\begin{corollary}\label{cor:first-failure-1024}
+The pentanomial \(X^{1024}+X^{85}+X^{51}+X^{34}+1\) is primitive.
+For infinitely many \(s>10\), the squarefree, exponent-gcd-one
+pentanomial \(X^{2^s}+X^{85}+X^{51}+X^{34}+1\) passes all tests
+through rank 1023 and fails at rank 1024.
+\end{corollary}
+\begin{proof}
+The file \texttt{GF2Sparse/DyadicExample1024.lean} verifies the order
+\(2^{1024}-1\) and its sixteen distinct prime divisors. Every
+nonempty proper subset of the binary conjugates of a primitive root
+has product different from 1. A selection with repetitions reduces to
+a nonempty subset by repeatedly replacing two equal roots by their square.
+Each replacement shortens the selection and preserves its product.
+Apply Theorem~\ref{thm:all-rank-period} with \(u=34,\ v=51,\ k=1023\).
+Take \(s\equiv10\) modulo its period and modulo 1024. The latter
+congruence keeps all 1024 distinct seed roots in the polynomial.
+Their product is 1 by the constant coefficient. For these \(s\) the
+exponents have gcd 1 and the derivative is \(X^{50}(X^{34}+1)\).
+At a root, \(X\) and \(X^{34}+1\) are both nonzero.
+\end{proof}
+
 \section{Using the ordinary Frobenius polynomial}
 
 Write \(P_s(Y)=Y^s+Y+1\) and \(T_s(X)=X^{2^s-1}+X+1\).
