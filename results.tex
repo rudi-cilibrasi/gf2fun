@@ -600,6 +600,18 @@ The outer polynomial and its composition with any nonconstant \(h\)
 are then reducible. The endpoint identity and this obstruction are
 formalized in \texttt{GF2Sparse/FrobeniusPairs.lean}.
 
+Even relative degree \(m\) requires a longer chain for primitivity at
+weight five. If \(i=j=1\), then \(h=X^m+X^a\) with \(0<a<m\).
+A primitive composition makes \(h(X)-\beta\) a primitive trinomial
+over \(\mathbb F_q\), of even base-field degree \(r=2\) or 4.
+Vishne's Corollary 5.2 gives \(m=2\). The two outer polynomials
+then give \(X^4+X+1\) and
+\((X^4+X^3+1)(X^4+X^3+X^2+X+1)\).
+With chain lengths 1 and 2, \(h=X^4+X^3+X\) gives the primitive
+\(X^{16}+X^{12}+X^3+X+1\).
+\href{https://u.math.biu.ac.il/~vishneu/publications/trinomials.pdf}
+{Vishne, \emph{Factorization of Trinomials over Galois Fields of Characteristic 2}}.
+
 For \(s=2\), Theorem~\ref{thm:composition-norm} tests irreducibility
 in one exponentiation whenever \(m=3^a5^b\) with \(a,b\ge0\).
 For example, \(h=X^5+X^4+X\) gives
@@ -622,7 +634,7 @@ dividing 92 and divisible by 4, so its degree is 4 or 92.
 Every \(z\in\mathbb F_{16}\) satisfies \(z^{46}=z\), since
 \(46=3\cdot15+1\). Thus \(h(z)=0\) and \(f(z)=1\), excluding
 degree 4. The polynomial is squarefree, so it has exactly two
-degree-92 factors. Both examples are checked in
+degree-92 factors. The examples in degrees 16, 20 and 184 are checked in
 \texttt{GF2Sparse/NormExamples.lean}.
 Existence of a passing primitive pentanomial in each degree remains open.
 

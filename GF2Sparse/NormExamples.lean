@@ -17,6 +17,23 @@ private theorem norm_power_184 :
 private theorem frobenius_power_184 :
     xPow 184 (fiveTermMask 184 46 4 1) (2 ^ 92) = 2 := by decide +kernel
 
+/-- Unequal chain lengths allow a primitive pentanomial of even relative degree four. -/
+theorem quartic_example_16 :
+    let h : BinaryPoly := X ^ 4 + X ^ 3 + X
+    let f : BinaryPoly := X ^ 16 + X ^ 12 + X ^ 3 + X + 1
+    (frobeniusOuter 2).comp h = f ∧ Primitive f := by
+  dsimp only
+  constructor
+  · simp only [frobeniusOuter, add_comp, pow_comp, X_comp, one_comp, add_pow_expChar_pow, ← pow_mul]
+    calc
+      _ = (X ^ 4 + X ^ 4 : BinaryPoly) + (X ^ 16 + X ^ 12 + X ^ 3 + X + 1) := by ring
+      _ = _ := by rw [CharTwo.add_self_eq_zero, zero_add]
+  · have he := certify_five_terms 16 12 3 1 [3, 5, 17, 257] (by
+      intro p hp
+      simp at hp
+      rcases hp with rfl | rfl | rfl | rfl <;> decide) (by decide +kernel)
+    simpa only [pow_one] using he
+
 /-- The degree-20 pentanomial passes the smooth relative-degree test and is primitive. -/
 theorem norm_example_20 :
     let h : BinaryPoly := X ^ 5 + X ^ 4 + X
