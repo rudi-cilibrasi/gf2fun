@@ -11,6 +11,7 @@ import GF2Sparse.Many
 import GF2Sparse.MersenneExamples
 import GF2Sparse.NormExamples
 import GF2Sparse.OreExamples
+import GF2Sparse.OreFactorExamples
 import GF2Sparse.OreIndexSeven
 import GF2Sparse.OrePrimitiveExamples
 import GF2Sparse.ParityExamples

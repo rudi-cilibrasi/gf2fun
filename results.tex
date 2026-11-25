@@ -2476,4 +2476,35 @@ s&2&3&4&5&6&7&8&9&10\\\hline
 \]
 \end{proof}
 
+\begin{theorem}\label{thm:ore-largest-factor}
+For any positive-degree binary polynomial \(P\) with constant term 1,
+write \(e=\ord_{\F[Y]/P}(Y)\). Every irreducible factor of \(O_P\)
+has degree dividing \(e\), and some factor has degree exactly \(e\).
+If \(P\) is irreducible, all factors have degree \(e\) and their
+number is \((2^{\deg P}-1)/e\). All factors are distinct.
+\end{theorem}
+\begin{proof}
+The divisibility \(P\mid Y^e-1\) gives \(F^e z=z\) on
+\(\ker P(F)\), so every factor degree divides \(e\).
+The exact-additive-order count in Theorem~\ref{thm:ore-order}
+gives a nonzero \(z\) with annihilator \((P)\).
+For this point, \(F^d z=z\) holds precisely when \(P\mid Y^d-1\),
+equivalently when \(e\mid d\). The orbit therefore has length \(e\).
+When \(P\) is irreducible every nonzero point of the kernel has
+annihilator \((P)\), so every orbit has this length. The derivative
+of \(L_P\) is 1. Comparing degrees gives the factor count.
+Lean verifies attainment, divisibility, separability and the count
+in \nolinkurl{GF2Sparse/OreFactors.lean}.
+\end{proof}
+
+In particular, for each \(c\in\{7,32767\}\), the pentanomial
+\[
+       X^{2^{63}-1}+X^{2^{31}-1}+X^c+X+1
+\]
+has exactly seven different irreducible factors, each of degree
+\(1\,317\,624\,576\,693\,539\,401\). These are the second lifts of the
+two exceptional seeds in Theorem~\ref{thm:primitive-lifts}. The index
+lost by the first lift becomes exactly the number of factors of the
+second. \nolinkurl{GF2Sparse/OreFactorExamples.lean}.
+
 \end{document}
