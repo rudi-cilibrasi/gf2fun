@@ -37,13 +37,13 @@ Put
 Throughout this section \(u,v\) are distinct positive integers with \(u+v<n\).
 
 \begin{theorem}
-For every \(5\le n\le432\), some \(F_{n,u,v}\) is primitive.
-Consequently every \(1\le n\le432\) has a primitive polynomial of weight at most five.
+For every \(5\le n\le512\), some \(F_{n,u,v}\) is primitive.
+Consequently every \(1\le n\le512\) has a primitive polynomial of weight at most five.
 \end{theorem}
 \begin{proof}
 The witness tables are imported by \texttt{GF2Sparse/Coverage.lean}.
 For example, \(F_{24,1,3}=X^{24}+X^4+X^3+X+1\) and
-\(F_{432,6,115}=X^{432}+X^{121}+X^{115}+X^6+1\).
+\(F_{512,26,147}=X^{512}+X^{173}+X^{147}+X^{26}+1\).
 For each candidate \(f\), write \(r=X\bmod f\) and \(N=2^n-1\).
 The certificate checks \(r^N=1\) and \(r^{N/p}\ne1\) for every prime divisor
 \(p\) of \(N\). The first equality makes \(r\) a unit of order dividing \(N\).
@@ -51,14 +51,17 @@ Every proper divisor of \(N\) divides \(N/p\) for some such \(p\).
 Thus the \(N\) distinct powers of \(r\) exhaust the nonzero elements of the
 \(2^n\)-element quotient. The quotient is a field and \(f\) is primitive.
 The Lean proof also checks each integer factorization and the primality of its
-factors. Direct certificates cover degrees 1 through 4.
+factors. In degrees 433 through 512 the packed squaring circuit
+from Section~\ref{sec:packed} processes the binary digits of each
+exponent, multiplying the square by \(X\) exactly when the digit
+is one. Direct certificates cover degrees 1 through 4.
 \end{proof}
 The public \href{https://people.math.carleton.ca/~daniel/hff/}{handbook tables}
 give minimum-weight primitive polynomials for degrees 2 through 640.
 The relation \(u+v\) between the interior exponents also appears in earlier
 work. Table 4.8 of the \emph{Handbook of Applied Cryptography} uses it for
 its pentanomial entries, giving a trinomial when one is available.
-Theorem 1 verifies a pentanomial of this shape throughout \(5\le n\le432\),
+Theorem 1 verifies a pentanomial of this shape throughout \(5\le n\le512\),
 including degrees admitting a primitive trinomial.
 \href{https://cacr.uwaterloo.ca/hac/about/chap4.pdf\#page=37}{Menezes, van Oorschot and Vanstone, chapter 4}.
 
@@ -2324,10 +2327,10 @@ Divisibility of the leading exponent by each such prime is then unchanged,
 as is parity. The seed has exponent gcd one by the substitution obstruction.
 \end{proof}
 
-With the 428 product pentanomials in Theorem~1, this gives arbitrarily
-high intervals of 428 consecutive degrees. At degree \(T+j\), for
-\(5\le j\le432\), the first failure is exactly rank \(j\).
-Lean checks the common shifts, the retained factors and all 428 first
+With the 508 product pentanomials in Theorem~1, this gives arbitrarily
+high intervals of 508 consecutive degrees. At degree \(T+j\), for
+\(5\le j\le512\), the first failure is exactly rank \(j\).
+Lean checks the common shifts, the retained factors and all 508 first
 failure lengths in \nolinkurl{GF2Sparse/TranslatedInterval.lean}.
 The two primitive pentanomials of Theorem~\ref{thm:mersenne-examples}
 likewise give arbitrarily high degrees with first failures exactly
@@ -2380,7 +2383,7 @@ Such a polynomial uniquely determines its seed. Lean verifies the
 equivalence for the original all-degree statement in
 \nolinkurl{GF2Sparse/OreConjecture.lean}.
 
-The Lean-certified seeds cover \(1\le s\le432\), degrees
+The Lean-certified seeds cover \(1\le s\le512\), degrees
 511, 1023, 1024, 1279 and 2203, and the eight degrees of Theorem~\ref{thm:packed}. Theorem~\ref{thm:ore4095} adds twelve
 seeds in degree 4095. For instance, the five exponents
 \[
