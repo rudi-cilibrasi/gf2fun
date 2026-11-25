@@ -17,6 +17,7 @@ from period_coordinate import CANDIDATES, DEGREE, coordinate, frobenius_indices,
 ORDER = (1 << DEGREE) - 1
 RELATIONS = DATA / "degree-1229-period-relations.jsonl"
 TARGETS = DATA / "degree-1229-period-targets.csv"
+COMPACT_TARGETS = DATA / "degree-1229-period-compact.csv"
 INDEX_FLOOR = 86483186594349058
 
 
@@ -150,6 +151,21 @@ def write_targets(targets):
     out.writerows((p, p.bit_length()-1) for p in sorted(targets))
 
 
+def read_compact_targets(masks, pivots):
+    """Replay the alternative certificate using the same triangular identities."""
+    with COMPACT_TARGETS.open(newline="") as source:
+        rows = csv.reader(source)
+        if next(rows, []) != ["mask", "degree"]:
+            raise ValueError("expected a compact target table with columns mask,degree")
+        targets = set()
+        for mask, degree in rows:
+            p = int(mask)
+            if p not in masks or p in pivots or p in targets or int(degree) != p.bit_length()-1:
+                raise ValueError(f"invalid or repeated compact target {p}")
+            targets.add(p)
+    return targets, closure(pivots, targets)
+
+
 def verify_submissions(name, paths, pivots, masks):
     f = modulus(DEGREE, CANDIDATES[name])
     r = polynomial(2)
@@ -218,12 +234,13 @@ def example89():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--list-targets", action="store_true", help="emit the target CSV")
+    parser.add_argument("--compact", action="store_true", help="check the smaller alternative target list")
     parser.add_argument("--example-89", action="store_true", help="replay the complete one-logarithm example")
     parser.add_argument("--candidate", choices=CANDIDATES, help="sparse modulus used for submitted exponents")
     parser.add_argument("--logs", nargs="+", type=Path, help="verify supplied powers of the sparse root")
     args = parser.parse_args()
     if args.example_89:
-        if args.list_targets or args.logs or args.candidate:
+        if args.list_targets or args.compact or args.logs or args.candidate:
             parser.error("--example-89 is a standalone certificate")
         example89()
         sys.exit(0)
@@ -233,7 +250,7 @@ if __name__ == "__main__":
     pivots = read_relations(small)
     raw_count = len(pivots)
     masks = extend_dickson(small, pivots)
-    targets, covered = select_targets(masks, pivots)
+    targets, covered = (read_compact_targets if args.compact else select_targets)(masks, pivots)
     counts = Counter(p.bit_length()-1 for p in covered)
     score = moment_bound(counts, INDEX_FLOOR, 129, 3)
     if score <= DEGREE-2:
@@ -241,7 +258,7 @@ if __name__ == "__main__":
     if args.list_targets:
         write_targets(targets)
     else:
-        with TARGETS.open(newline="") as source:
+        with (COMPACT_TARGETS if args.compact else TARGETS).open(newline="") as source:
             rows = list(csv.reader(source))
         if rows != [["mask", "degree"]] + [[str(p), str(p.bit_length()-1)] for p in sorted(targets)]:
             raise ArithmeticError("the published target list differs from reconstruction")

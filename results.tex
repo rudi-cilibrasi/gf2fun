@@ -4141,4 +4141,23 @@ would make 1229 twice the middle interior exponent. The total is
 The special case \(j=1\) accounts for all 818 four-term progressions,
 since three does not divide 1229.
 
+\paragraph{A smaller logarithm certificate in degree 1229.}
+For either of the two sparse candidates, the 3,399 masks in
+\nolinkurl{data/degree-1229-period-compact.csv} suffice for full order
+if their evaluations at the Gauss period are powers of the sparse root.
+Among the inputs, 1,000 have degree 16. Substitution in the same
+unit-pivot relations as for the 3,531-row certificate gives
+6,779 distinct irreducible values. In particular it gives 2,033
+degree-16 values and 1,091 degree-15 values. With the existing
+index floor, weights and length 129, Theorem~\ref{thm:factor-moments}
+gives the exact lower bound
+\[
+ Q=\frac{94296906348646859953176869422246375788766137707}
+          {76835411252768912081314406380232488450523136}>1227.
+\]
+The \texttt{--compact} option of \nolinkurl{scripts/check_period_relations.py}
+verifies the polynomial identities, deduces the degree counts from the
+listed inputs, and checks the strict inequality. An actual order
+certificate requires exponents in one candidate field.
+
 \end{document}
