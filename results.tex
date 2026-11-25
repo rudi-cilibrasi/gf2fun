@@ -5712,4 +5712,130 @@ exponents, then \((\lambda,j)\) from the displayed residues. There
 are \(\gg g^2\) supports per prime \(g\), proving the bound.
 \end{proof}
 
+\section{A totient bound in every degree}
+\label{sec:totient-density}
+Put \(\delta=\log_2 3\). For odd \(g\) define
+\[
+ S(g)=\sum_{p\mid g}p^{1-\delta},\qquad
+ D(g)=\sum_{\substack{d\mid g\\d>1}}\frac1{\ord_d(2)} ,
+\]
+where \(p\) ranges over primes.
+
+\begin{lemma}\label{lem:many-gap-moduli}
+Fix \(b>1,\ C>0,\ \eta>0\) and \(r\in\{1,3\}\). Uniformly for
+integers \(1\le Q\le X^C\), there are
+\(\gg_{b,C,\eta} X\varphi(Q)/Q\) odd squarefree
+\(g\in[X,bX]\) coprime to \(Q\) with \(g\equiv r\pmod4\) and
+\(S(g),D(g)<\eta\), for all sufficiently large \(X\).
+\end{lemma}
+\begin{proof}
+We use the convergence of Romanoff's series
+\(\sum_{d>1,\ d\ {\rm odd}}1/(d\ord_d(2))\).
+Indeed, if \(\ord_d(2)\le t\), every prime of \(d\) divides
+\(M=\prod_{k\le t}(2^k-1)\). Summing reciprocal weights over integers
+supported on these primes gives \(M/\varphi(M)\ll\log\log(3M)\ll\log(2t)\).
+Summing over dyadic ranges of orders gives convergence.
+\href{https://doi.org/10.1007/BF01449161}{Romanoff, \emph{Über einige Sätze der additiven Zahlentheorie}}.
+The totient estimate is also given by
+\href{https://doi.org/10.1215/ijm/1255631807}{Rosser and Schoenfeld, Theorem 15}.
+
+Choose \(R\) so large that the tails beyond \(R\) of this series
+and of \(\sum_p p^{-\delta}\) are each below \(\eta/32\).
+Form squarefree integers \(m\) from primes
+\(R<p\le X^{1/200}\) with \(p\nmid 2Q\), giving \(m\) weight \(1/m\).
+The total weight is
+\[
+ \prod_{\substack{R<p\le X^{1/200}\\p\nmid 2Q}}(1+1/p)
+ \gg_R \frac{\varphi(Q)}Q\log X .
+\]
+For the lower bound, \(\prod_{p\le y}(1-1/p)^{-1}\ge\sum_{j\le y}1/j\)
+and \(\prod_p(1-p^{-2})>0\). Removing the primes of \(Q\) costs at
+most the factor \(Q/\varphi(Q)\).
+
+In the normalized weights, each prime occurs independently with
+probability \(1/(p+1)\). Consequently the means of \(S(m)\) and
+\(D(m)\) are at most the corresponding two tails, since
+\(\Pr(d\mid m)\le1/d\) for squarefree \(d\). Also
+\(\mathbb E\log m\le\sum_{p\le X^{1/200}}\log(p)/p
+\le(\log X)/100\) for large \(X\), by the prime number theorem.
+Markov's inequality leaves at least half the weight on
+\(m\le X^{1/4}\) with \(S(m),D(m)<\eta/2\).
+
+For each such \(m\) put \(P=X/m\). Choose a prime \(p\in[P,bP]\)
+with \(p\equiv r m^{-1}\pmod4,\ p\nmid Q,\ \ord_p(2)>P^{1/3}\).
+There are \(\gg_b P/\log P\) choices by the prime number theorem
+in the two reduced classes modulo four. The primes of order at most
+\(P^{1/3}\) in this interval divide \(\prod_{k\le P^{1/3}}(2^k-1)\),
+so at most \(O(P^{2/3}/\log P)\) are lost. The primes of \(Q\)
+cost \(O_C(\log X)\). Since \(P\ge X^{3/4}\), \(p\) is the largest
+prime of \(g=mp\). These products are distinct and
+\[
+ S(g)-S(m)=p^{1-\delta},\qquad
+ D(g)-D(m)\le \frac{\#\{d:d\mid m\}}{\ord_p(2)}
+             \le \frac{2\sqrt m}{P^{1/3}} .
+\]
+Both differences tend uniformly to zero. Summing
+\(\gg_b X/(m\log X)\) over the retained weight proves the claim.
+\end{proof}
+
+\begin{lemma}\label{lem:composite-inverse-weight}
+For sufficiently large odd \(g\) with \(S(g),D(g)<1/4096\), at least
+\(g^2/512\) pairs \((\lambda,j)\bmod g\) have
+\(G_\lambda=1+Y+Y^\lambda\) invertible in \(R_g\),
+\(\gcd(j,g)=1\), and \([Y^j]G_\lambda^{-1}=1\).
+\end{lemma}
+\begin{proof}
+Take the digit set \(T\) of Lemma~\ref{lem:prime-inverse-weight},
+this time with \(g/96<m=3^s\le g/32\). A difference \((i,k)\)
+between two distinct points collides at at most \(\gcd(g,i,k)\)
+slopes. The congruence \(i+\lambda k=0\bmod g\), when solvable,
+has exactly \(\gcd(g,k)\) solutions and this gcd divides \(i\).
+Use \(\gcd(g,i,k)=\sum_{d\mid g,i,k}\varphi(d)\).
+For a fixed point, at most \(3m/d^\delta\) points agree in both
+coordinates modulo \(d\le2^s\). Indeed each occupied dyadic square
+of side \(2^{\lfloor\log_2 d\rfloor}\) contains at most one such
+point, and the leading digits give exactly
+\(3^{s-\lfloor\log_2 d\rfloor}\) occupied squares. For
+\(d\ge2^s\) there are no distinct pairs to count.
+The total number of ordered collisions over all slopes is therefore at most
+\[
+ 3m^2\sum_{d\mid g}\frac{\varphi(d)}{d^\delta}
+ \le 3m^2\prod_{p\mid g}(1-p^{1-\delta})^{-1}
+ \le 3m^2 e^{2S(g)}<6m^2.
+\]
+For each \(d\mid g,\ d>1\), the \(\varphi(d)/\ord_d(2)\)
+Frobenius orbits of \(d\)-th roots of exact order \(d\) each exclude
+at most one class of \(\lambda\bmod d\). Hence at most \(gD(g)\)
+slopes give nonunits. Removing their projected supports costs at most
+\(gmD(g)\). The sum of projection weights over the remaining
+slopes is at least \(gm-6m^2-gmD(g)>3gm/4\).
+Their inverse weights sum to at least \(gm/4\) by the same three-term
+multiplication as before. Since \(1-\varphi(g)/g\le\sum_{p\mid g}1/p
+\le S(g)\), restricting to unit indices costs at most \(g^2 S(g)\).
+This leaves more than \(g^2/512\).
+\end{proof}
+
+\begin{theorem}\label{thm:totient-parity}
+For each fixed \(B\ge1\), in every sufficiently large degree \(n\)
+there are \(\gg_B n^2\varphi(n)\) squarefree binary pentanomials
+with an odd number of irreducible factors, all of degrees greater
+than \(B\), exponent gcd one and fifteen distinct unordered pair sums.
+In particular the count is \(\gg_B n^3/\log\log(3n)\) uniformly,
+and is \(\gg_B n^3\) in prime degrees.
+\end{theorem}
+\begin{proof}
+Keep the constructions and intervals of Theorem~\ref{thm:prime-gap-density}.
+Apply Lemma~\ref{lem:many-gap-moduli} with \(b=2,\ Q=nL,\ \eta=1/4096\)
+and \(X=\lfloor n/(10000L)\rfloor\). This gives
+\(\gg_B\varphi(n)\) moduli coprime to \(nL\), since
+\(\varphi(nL)/(nL)\ge(\varphi(n)/n)(\varphi(L)/L)\).
+Each contributes \(\gg_B n^2\) supports by
+Lemma~\ref{lem:composite-inverse-weight}. The CRT lift uses the
+inverses of \(2,n,j\), all coprime to \(g\). Thus the
+squarefreeness, parity, small-factor, gcd and pair-sum proofs carry
+over in each of the three classes. The other five already have cubic
+counts by Theorem~\ref{thm:parity-counts}. The uniform consequence
+uses \(n/\varphi(n)\ll\log\log(3n)\).
+\end{proof}
+
 \end{document}
