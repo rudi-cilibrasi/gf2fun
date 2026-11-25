@@ -25,6 +25,7 @@ def check(bound):
     for candidate in range(2*N+1, bound+1, 2*N):
         if COFACTOR % candidate == 0:
             raise ValueError(f"found a new divisor {candidate}")
+    print(f"The unresolved cofactor is {COFACTOR}.")
     print(f"The root order is {KNOWN} times a divisor of the {len(str(COFACTOR))}-digit cofactor.")
     print(f"Every prime of that cofactor exceeds {bound}. The root order exceeds 2^{(KNOWN*bound).bit_length()-1}.")
 

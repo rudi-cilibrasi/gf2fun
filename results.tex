@@ -2380,8 +2380,8 @@ Such a polynomial uniquely determines its seed. Lean verifies the
 equivalence for the original all-degree statement in
 \nolinkurl{GF2Sparse/OreConjecture.lean}.
 
-The Lean-certified seeds cover \(1\le s\le432\) and the five further degrees
-511, 1023, 1024, 1279 and 2203. Theorem~\ref{thm:ore4095} adds twelve
+The Lean-certified seeds cover \(1\le s\le432\), degrees
+511, 1023, 1024, 1279 and 2203, and the eight degrees of Theorem~\ref{thm:packed}. Theorem~\ref{thm:ore4095} adds twelve
 seeds in degree 4095. For instance, the five exponents
 \[
     0,\quad 2^{62}-1,\quad 2^{135}-1,\quad 2^{197}-1,\quad 2^{2203}-1
@@ -3247,5 +3247,94 @@ the degree-nine bound and the three families' sufficiency conditions in
 calculation in \nolinkurl{scripts/check_dyadic_tap.py} checks every one
 of the 5,120 coprime dyadic taps through degree 1024, including
 314 instances of the three count formulas.
+
+\section{Packed squaring certificates at larger prime group orders}\label{sec:packed}
+\begin{theorem}\label{thm:packed}
+Each row below specifies a primitive binary polynomial. The exponents
+of the leading and constant terms are \(n\) and zero, respectively.
+\[
+\begin{array}{r|l@{\qquad}r|l}
+ n & \text{interior exponents} & n & \text{interior exponents}\\ \hline
+ 2281 & 2,39,41 & 9689  & 8,19,27\\
+ 3217 & 41,84,125 & 9941  & 10,12,29\\
+ 4253 & 210,263,473 & 11213 & 70,83,153\\
+ 4423 & 17,26,43 & 44497 & 8575
+\end{array}
+\]
+\end{theorem}
+\begin{proof}
+In each degree the Lucas--Lehmer recurrence certifies that \(2^n-1\)
+is prime. It therefore suffices to verify \(X^{2^n-1}=1\) in the
+quotient, since the residue of \(X\) differs from 1 in degree greater
+than one. Its powers then exhaust the nonzero residues, as in Theorem~1.
+
+For the polynomial computation, encode \(\sum_i a_iX^i\) by its
+binary coefficient word. Squaring sends bit \(i\) to bit \(2i\).
+Let \(w=2^k\ge n\). Starting with shift \(s=w/2\) and halving down
+to one, apply the operation
+\[
+    v\longmapsto \bigl(v\mathbin{\mathrm{xor}}(v\ll s)\bigr)
+             \mathbin{\mathrm{and}}\frac{2^{2w}-1}{2^s+1}.
+\]
+The checker evaluates this circuit once on each of the \(n\) input
+monomials and tests the output position. Every stage is linear over
+\(\F\), including intersection with a fixed bit mask. Thus equality on
+these monomials proves the squaring identity on every input of width
+\(n\). In each exponent step, multiplying the square by \(X\) and
+reducing modulo the sparse polynomial appends a one-bit. Starting
+from 1, the \(n\)-th step gives the exponent \(2^n-1\). The larger
+certificates split both this computation and Lucas--Lehmer into
+blocks with explicit intermediate residues. Lean checks every block
+and proves that adjoining blocks gives the claimed final value.
+\nolinkurl{GF2Sparse/PackedSquare.lean} contains the proof.
+
+The PARI search found the six rows with interior exponents \(u,v,u+v\).
+The support in degree 9941 is from Seroussi's table of low-weight
+irreducibles. The trinomial in degree 44497 is credited to Kurita
+and Matsumoto in Table~1 of Brent, Larvala and Zimmermann.
+The Lean files check the full orders of both published examples.
+\href{https://shiftleft.com/mirrors/www.hpl.hp.com/techreports/98/HPL-98-135.pdf}{Seroussi, HPL-98-135 (1998)}.
+\href{https://maths-people.anu.edu.au/~brent/pd/rpb199.pdf}{Brent, Larvala and Zimmermann, Math. Comp. 72, 1443--1452}.
+\end{proof}
+For instance, the Ore lift of the last row is an irreducible trinomial
+of degree \(2^{44497}-1\), and it passes all root-product tests of
+lengths through 44496. The degree-11213 row similarly gives an
+irreducible pentanomial of degree \(2^{11213}-1\).
+
+\section{An exact known part of the degree-1229 order}\label{sec:1229}
+\begin{theorem}
+Let \(f=X^{1229}+X^{77}+X^{50}+X^{27}+1\), \(r=X\bmod f\), and
+\(M=2^{1229}-1\). Let \(K\) be the product of
+\[
+  36871,\qquad 46703,\qquad 10543179280661916121033,
+\]
+and \(9536289355314392579996071515160583098298616686033085857\).
+Set \(C=M/K\). Then \(f\) is irreducible and
+\(\ord(r)=Kt\) for some \(t>1\) dividing \(C\).
+A separate trial-divisor calculation gives \(\ord(r)>2^{319}\).
+\end{theorem}
+\begin{proof}
+The three polynomial checks are \(r^M=1\), \(r^{M/p}\ne1\) for each
+of the four listed primes \(p\), and \(r^K\ne1\). They imply
+\(f\mid X^{2^{1229}}-X\). Every irreducible factor therefore has
+degree dividing 1229. This degree is prime, and \(f(0)=f(1)=1\)
+rules out a linear factor. Thus \(f\) is irreducible. The first two
+checks show that \(r^C\) has exact order \(K\), so \(K\mid\ord(r)\).
+Writing \(\ord(r)=Kt\), we have \(t\mid C\) from the full power
+and \(t>1\) from the last check. Lean certifies these assertions
+and the primality of the four factors in
+\nolinkurl{GF2Sparse/Degree1229.lean}.
+
+The cofactor \(C\) has 284 decimal digits and is coprime to \(K\).
+Each of its prime divisors \(q\) is odd and satisfies
+\(\ord_q(2)=1229\), since this order divides the prime 1229
+and cannot be one. Hence \(q\equiv1\pmod{2458}\).
+The integer check in \nolinkurl{scripts/check_degree_1229.py} divides
+\(C\) by every integer in this class from 2459 through \(10^{10}\).
+None divides, so \(t>10^{10}\), giving the stated lower bound.
+FLINT also independently verifies the polynomial powers.
+Primitivity of this candidate is equivalent to \(t=C\).
+\href{https://factordb.com/index.php?query=2%5E1229-1}{FactorDB entry for the group order}.
+\end{proof}
 
 \end{document}
