@@ -5859,4 +5859,136 @@ Lucas--Lehmer proof that \(2^{2203}-1\) is prime and checks the
 full power in the polynomial quotient.
 See \nolinkurl{GF2Sparse/ParityExamples.lean}.
 
+\section{A quadratic-scale supply passing the first two exterior powers}
+\label{sec:totient-reciprocal}
+\begin{theorem}\label{thm:totient-reciprocal}
+For each fixed \(B\ge1\) and every sufficiently large \(n\), at
+least \(c_B n\varphi(n)\) different pentanomials
+\[
+ F=X^n+(1+X^u)(1+X^v),\qquad 0<u<v<u+v<n ,
+\]
+are squarefree, have exponent gcd one and have no irreducible
+factor of degree at most \(B\). They have no mutually inverse roots,
+so they pass the first two exterior-power tests. For
+\(n\equiv1,2,4,6,7\pmod8\), the same polynomials also have an odd number
+of irreducible factors.
+\end{theorem}
+\begin{proof}
+Write \(g=2n-u-v\), \(F^*=X^nF(1/X)\). The exact identity
+\[
+ F^*=1+X^g+X^{n-u-v}F
+\]
+reduces the inverse-pair test to \(\gcd(F,X^g+1)=1\).
+Suppose \(g\) is odd and coprime to \(n\).
+For \(x^g=1\) put \(y=x^n,\ z=x^{u-n}=y^\lambda\), where
+\(\lambda=(u-n)/n\bmod g\). Then \(x^u=yz,\ x^v=y/z\), and
+dividing \(F(x)=0\) by \(y\) gives
+\[
+ z+z^{-1}=1+y+y^{-1}.
+\]
+The element \(y=1\) gives no solution. For \(y\) of exact order
+\(d>1\) the quadratic equation determines at most two \(z\)'s,
+and hence at most two classes of \(\lambda\bmod d\). The same
+classes apply to every Frobenius conjugate of \(y\).
+As \(u\bmod g\) runs through all classes, so does \(\lambda\).
+Thus the number of excluded classes of \(u\bmod g\) is at most
+\[
+ \sum_{1<d\mid g}\frac{\varphi(d)}{\ord_d(2)}\frac{2g}{d}
+ \le 2gD(g).
+\]
+
+Put \(L=\mathop{\rm lcm}_{k\le B,\ k\ge1}(2^k-1)\).
+Use Lemma~\ref{lem:many-gap-moduli} with \(X=5n/4,\ b=6/5\),
+\(Q=2nL\), and \(\eta=1/(2000L)\). Choose the class of
+\(g\bmod4\) equal to \(n\) for odd \(n\), equal to \(n/2\)
+for \(n\equiv2\pmod4\), and equal to one for \(4\mid n\).
+There are \(\gg_B\varphi(n)\) available
+\(g\)'s. For each take \(n/16<u<n/8\), \(L\mid u\) and
+\(u\equiv 2n-g\pmod8\). Then \(u\) is odd and
+\(v=2n-g-u\) is a positive multiple of eight with \(u<v<u+v<n\).
+There are at least \(n/(256L)\) choices for large \(n\), all
+in different classes modulo \(g\). At most \(3n/(2000L)\) fail
+the reciprocal test. The surviving \(u\)'s and the corresponding
+\(g\)'s are recovered from the support.
+
+The cancellation \(x^u=1\) at every nonzero element of degree
+at most \(B\) leaves \(F(x)=x^n\ne0\). Opposite tap parities
+give squarefreeness as in Theorem~\ref{thm:sieve}. The exponent gcd divides
+\(\gcd(n,g)=1\). For \(n\equiv1,7\pmod8\), all five exponents are
+zero or \(n\) modulo four. For \(n\equiv4\pmod8\) they are zero
+or \(u\) modulo four. Theorem~\ref{thm:two-residue-parity} gives
+odd factor count in each of these cases.
+
+For \(n\equiv2\pmod4\), take the integer lift with all five
+coefficients positive. At a root \(\alpha\) the relation
+\(\alpha^n=-(1+\alpha^u)(1+\alpha^v)\) gives
+\[
+ \alpha F'(\alpha)\equiv
+  -(1+\alpha^v)(n-u)\alpha^u
+  \left(1+\frac{n}{n-u}\alpha^{-u}\right)\pmod8 .
+\]
+The norm of \(1+\alpha^v\) is one, by evaluating \(F\) at the
+roots of \(X^v+1\), where it equals \(X^n\). The remaining
+prefactors have norm one modulo eight since \(n\) is even.
+As \(2u<v\), the only nonconstant term of \(F\) through degree
+\(2u\) is \(X^u\). Its inverse-root power sums at \(u,2u\)
+are therefore \(-u,u\). Writing \(t=n/(n-u)\), the last
+product is \(1-ut+\binom{u}{2}t^2\equiv(1-t)^u\equiv1-t\pmod8\).
+Here \(u\equiv-g\equiv-n/2\pmod4\) gives \(t\equiv6\pmod8\).
+The discriminant sign is negative, so the discriminant is five
+modulo eight, giving odd factor count. The power criterion for
+an inverse root is formalized in \nolinkurl{GF2Sparse/ReciprocalSieve.lean}.
+\end{proof}
+
+\begin{theorem}\label{thm:open-product-orders}
+Among all \(2304082\) supports \(X^n+(1+X^u)(1+X^v)\) with
+\(0<u<v<u+v<n\) in the six open degrees through \(1280\),
+there are \(7126\) irreducible polynomials. Every one has a root
+order divisible by a prime of the remaining cofactor of \(2^n-1\).
+Exactly \(7100\) also have the full known prime-power part of the group
+order. All \(26\) exceptions occur at \(n=1243\).
+\end{theorem}
+\begin{proof}
+For each degree use its existing decomposition \(2^n-1=KC\) with
+\(\gcd(K,C)=1\). The table lists all product supports, the irreducibles,
+those passing every order projection, and a lower bound \(h>2^b\)
+on the order of every irreducible root.
+\[
+\begin{array}{r|r|r|r|r}
+n&\text{supports}&\text{irreducible}&\text{all projections}&b\\\hline
+1229&376382&449&449&345\\
+1231&377610&2634&2634&184\\
+1237&381306&514&514&273\\
+1243&385020&490&464&170\\
+1249&388752&2590&2590&209\\
+1259&395012&449&449&276
+\end{array}
+\]
+Writing \(k=(n-1)/2\), the number of pairs \(u<v,\ u+v<n\)
+is \(k(k-1)\). For each pair NTL computes the gcd with the reciprocal,
+checks it against the gcd with \(X^{2n-u-v}+1\), and tests
+squarefreeness. An irreducible in odd degree \(n>1\) is coprime to
+its reciprocal. Otherwise inversion would permute its single
+Frobenius orbit, acting as a power of the odd-order Frobenius cycle,
+and an involution on that cycle must be the identity. Its roots would
+then all be one. NTL tests irreducibility on the squarefree survivors.
+
+For every irreducible and each prime \(q\mid K\) compute
+\(X^{(2^n-1)/q}\bmod F\), as well as \(X^K\bmod F\).
+No irreducible gives one for the latter. At degree \(1243\), seventeen
+miss only \(23\), eight miss only \(89\), and one misses both.
+All other prime-index tests pass. The lower bounds use the cofactor
+prime exclusions already established for each degree multiplied
+by the known prime powers present in every root order in that row.
+
+The support list is \nolinkurl{data/open-product-irreducibles.csv}.
+An independent FLINT replay checks every listed polynomial \(F\),
+first proving \(X^{2^n-1}=1\bmod F\) and excluding factors with
+degrees dividing \(n/p\) for each prime \(p\mid n\), then verifying
+each order projection. The degree-\(1229\) support list also agrees
+with the unrestricted census of Theorem~\ref{thm:1229-all-orders}.
+See \nolinkurl{scripts/census_product_gaps.cpp} and
+\nolinkurl{scripts/check_open_product_census.py}.
+\end{proof}
+
 \end{document}

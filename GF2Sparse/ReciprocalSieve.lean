@@ -14,6 +14,28 @@ private theorem eval_product_root {K : Type*} [Field K] [Algebra (ZMod 2) K] [Ch
   apply CharTwo.add_eq_zero.1
   simpa only [productCandidate, map_add, map_mul, map_pow, aeval_X, map_one] using hz
 
+/-- On a product-pentanomial root, reciprocity is exactly a power condition. -/
+theorem product_inverse_root_iff {K : Type*} [Field K] [Algebra (ZMod 2) K] [CharP K 2]
+    {n u v g : ℕ} (hgap : n + n = (u + v) + g)
+    {x : K} (hx : x ≠ 0) (hz : aeval x (productCandidate n u v) = 0) :
+    aeval x⁻¹ (productCandidate n u v) = 0 ↔ x ^ g = 1 := by
+  have h := eval_product_root hz
+  have hi : aeval x⁻¹ (productCandidate n u v) = 0 ↔
+      x ^ u * x ^ v = x ^ n * ((x ^ u + 1) * (x ^ v + 1)) := by
+    simp only [productCandidate, map_add, map_mul, map_pow, aeval_X, map_one,
+      CharTwo.add_eq_zero, inv_pow]
+    constructor <;> intro hi
+    · field_simp [hx] at hi
+      linear_combination hi
+    · field_simp [hx]
+      linear_combination hi
+  rw [hi, ← h, ← pow_add x u v, ← pow_add x n n, hgap, pow_add x (u+v) g]
+  constructor
+  · intro he
+    exact (mul_left_cancel₀ (pow_ne_zero (u+v) hx) (he.symm.trans (mul_one _).symm))
+  · intro he
+    rw [he, mul_one]
+
 /-- A root and its inverse force x^(2n)=x^(u+v). If the gap is a
 dyadic multiple of a divisor of u, no such pair can occur. -/
 theorem product_no_inverse_root {K : Type*} [Field K] [Algebra (ZMod 2) K] [CharP K 2]
@@ -22,17 +44,7 @@ theorem product_no_inverse_root {K : Type*} [Field K] [Algebra (ZMod 2) K] [Char
     aeval x⁻¹ (productCandidate n u v) ≠ 0 := by
   intro hi
   have h := eval_product_root hz
-  have hi' := eval_product_root hi
-  simp only [inv_pow] at hi'
-  have hprod : x ^ n * ((x ^ u + 1) * (x ^ v + 1)) = x ^ u * x ^ v := by
-    field_simp [hx] at hi'
-    linear_combination -hi'
-  have he : x ^ (u + v) * x ^ (w * 2 ^ s) = x ^ (u + v) * 1 := by
-    calc
-      _ = x ^ (n + n) := by rw [← pow_add, hgap]
-      _ = x ^ n * ((x ^ u + 1) * (x ^ v + 1)) := by rw [pow_add, ← h]
-      _ = _ := by rw [hprod, pow_add, mul_one]
-  have he' := mul_left_cancel₀ (pow_ne_zero (u + v) hx) he
+  have he' := (product_inverse_root_iff hgap hx hz).mp hi
   rw [pow_mul] at he'
   have hw : x ^ w = 1 := by
     apply (iterateFrobenius_inj K 2 s)
