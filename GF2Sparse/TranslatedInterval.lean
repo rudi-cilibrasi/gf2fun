@@ -51,4 +51,7 @@ theorem translated_product_interval_upto_512 : TranslatedProductInterval 512 :=
 theorem translated_product_interval_upto_528 : TranslatedProductInterval 528 :=
   translated_product_interval_of_coverage primitiveProduct_upto_528
 
+theorem translated_product_interval_upto_544 : TranslatedProductInterval 544 :=
+  translated_product_interval_of_coverage primitiveProduct_upto_544
+
 end GF2Sparse
