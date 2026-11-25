@@ -28,6 +28,11 @@ theorem oreLift_upto_400 {s : ℕ} (hs : 0 < s) (hle : s ≤ 400) :
       Irreducible f ∧ NoShortRootProducts (s-1) f :=
   (sparsePrimitive_upto_400 s hs hle).oreLift
 
+theorem oreLift_upto_416 {s : ℕ} (hs : 0 < s) (hle : s ≤ 416) :
+    ∃ f : BinaryPoly, f.natDegree = 2^s-1 ∧ f.support.card ≤ 5 ∧
+      Irreducible f ∧ NoShortRootProducts (s-1) f :=
+  (sparsePrimitive_upto_416 s hs hle).oreLift
+
 theorem oreLift_of_primitive_product {s u v : ℕ} (hu : 0 < u) (hv : 0 < v) (huv : u ≠ v)
     (hlt : u+v < s) (hp : Primitive (productCandidate s u v)) :
     let f := oreLift (productCandidate s u v)
