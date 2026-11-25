@@ -1,19 +1,29 @@
 """Search for sparse primitive polynomials and emit Lean-checkable witnesses.
 
-Usage: python3 scripts/make_witnesses.py 64 > GF2Sparse/Witnesses.lean
+Usage: python3 scripts/make_witnesses.py [--start FIRST] LAST
 SymPy is used only during discovery. Lean checks the resulting certificates.
 """
 
 import argparse
 from functools import cache
 from itertools import count
+from math import prod
 
-from sympy import factorint
+from sympy import divisors, factorint
 
 
 @cache
 def prime_factors(number):
     return tuple(sorted(int(p) for p, e in factorint(number).items() for _ in range(e)))
+
+
+@cache
+def cyclotomic_at_two(n):
+    return ((1 << n) - 1) // prod(cyclotomic_at_two(d) for d in divisors(n) if d < n)
+
+
+def mersenne_factors(n):
+    return tuple(sorted(p for d in divisors(n) for p in prime_factors(cyclotomic_at_two(d))))
 
 
 def remainder(value, modulus):
@@ -77,10 +87,10 @@ def candidates(n):
                 yield ends | (1 << top) | (1 << u) | (1 << v), (u, v)
 
 
-def emit(limit):
+def emit(limit, start=1):
     rows = []
-    for n in range(1, limit + 1):
-        factors = prime_factors((1 << n) - 1)
+    for n in range(start, limit + 1):
+        factors = mersenne_factors(n)
         for mask, shape in candidates(n):
             if primitive(n, mask, factors):
                 rows.append((mask, shape, factors))
@@ -116,21 +126,27 @@ def emit(limit):
     print("set_option maxRecDepth 8192\n")
     for p, proof in proofs.items():
         print(f"private def p{p} : ProvenPrime := {proof}")
-    print("\nprivate def smallRows : List Row := [")
-    for i, (mask, _, factors) in enumerate(rows[:4], start=1):
-        suffix = "," if i < 4 else "]"
-        print(f"  (0x{mask:x}, {factor_refs(factors)}){suffix} -- degree {i}")
+    if start == 1:
+        print("\nprivate def smallRows : List Row := [")
+        for i, (mask, _, factors) in enumerate(rows[:4], start=1):
+            suffix = "," if i < 4 else "]"
+            print(f"  (0x{mask:x}, {factor_refs(factors)}){suffix} -- degree {i}")
     print()
-    for i, (_, (u, v), factors) in enumerate(rows[4:], start=5):
+    first = max(5, start)
+    for i, (_, (u, v), factors) in enumerate(rows[first - start:], start=first):
         print(f"private def row{i} := productEntry {i} {u} {v} {factor_refs(factors)} (by decide +kernel)")
     print("\nprivate def productRows : List {k : ℕ // HasPrimitiveProduct k} := [")
-    for i in range(5, limit + 1, 10):
+    for i in range(first, limit + 1, 10):
         stop = min(i + 10, limit + 1)
         suffix = "," if stop <= limit else "]"
         print("  " + ", ".join(f"row{j}" for j in range(i, stop)) + suffix)
-    print(f"\ntheorem primitiveProduct_upto_{limit} (n : ℕ) (hn : 5 ≤ n) (hmax : n ≤ {limit}) :")
+    name = f"upto_{limit}" if start == 1 else f"{start}_to_{limit}"
+    print(f"\ntheorem primitiveProduct_{name} (n : ℕ) (hn : {first} ≤ n) (hmax : n ≤ {limit}) :")
     print("    HasPrimitiveProduct n :=")
-    print(f"  covers_range productRows 5 {limit - 4} (by decide +kernel) n hn (by omega)")
+    print(f"  covers_range productRows {first} {limit - first + 1} (by decide +kernel) n hn (by omega)")
+    if start > 1:
+        print("\nend GF2Sparse")
+        return
     print(f"\ntheorem sparsePrimitive_upto_{limit} (n : ℕ) (hn : 0 < n) (hmax : n ≤ {limit}) :")
     print("    HasSparsePrimitive n := by")
     print("  by_cases h : n < 5")
@@ -141,7 +157,10 @@ def emit(limit):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("limit", type=int)
+    parser.add_argument("--start", type=int, default=1, help="first degree of a separate certificate table")
     args = parser.parse_args()
     if args.limit < 5:
         parser.error("the product-family table starts in degree 5")
-    emit(args.limit)
+    if args.start != 1 and not 5 <= args.start <= args.limit:
+        parser.error("start must be 1 or between 5 and the final degree")
+    emit(args.limit, args.start)

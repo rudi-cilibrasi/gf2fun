@@ -37,12 +37,13 @@ Put
 Throughout this section \(u,v\) are distinct positive integers with \(u+v<n\).
 
 \begin{theorem}
-For every \(5\le n\le128\), some \(F_{n,u,v}\) is primitive.
-Consequently every \(1\le n\le128\) has a primitive polynomial of weight at most five.
+For every \(5\le n\le192\), some \(F_{n,u,v}\) is primitive.
+Consequently every \(1\le n\le192\) has a primitive polynomial of weight at most five.
 \end{theorem}
 \begin{proof}
-The explicit pairs and certificates are in \texttt{GF2Sparse/Witnesses.lean}.
-For example, \(F_{24,1,3}=X^{24}+X^4+X^3+X+1\).
+The witness tables are imported by \texttt{GF2Sparse/Coverage.lean}.
+For example, \(F_{24,1,3}=X^{24}+X^4+X^3+X+1\) and
+\(F_{192,6,37}=X^{192}+X^{43}+X^{37}+X^6+1\).
 For each candidate \(f\), write \(r=X\bmod f\) and \(N=2^n-1\).
 The certificate checks \(r^N=1\) and \(r^{N/p}\ne1\) for every prime divisor
 \(p\) of \(N\). The first equality makes \(r\) a unit of order dividing \(N\).
@@ -57,7 +58,7 @@ give minimum-weight primitive polynomials for degrees 2 through 640.
 The relation \(u+v\) between the interior exponents also appears in earlier
 work. Table 4.8 of the \emph{Handbook of Applied Cryptography} uses it for
 its pentanomial entries, giving a trinomial when one is available.
-Theorem 1 verifies a pentanomial of this shape throughout \(5\le n\le128\),
+Theorem 1 verifies a pentanomial of this shape throughout \(5\le n\le192\),
 including degrees admitting a primitive trinomial.
 \href{https://cacr.uwaterloo.ca/hac/about/chap4.pdf\#page=37}{Menezes, van Oorschot and Vanstone, chapter 4}.
 
