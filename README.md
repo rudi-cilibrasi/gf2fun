@@ -54,6 +54,12 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+The two degree-1229 candidate fields also admit a common polynomial coordinate. Let $r$ be the root of the selected candidate and $a=z+z^{-1}$ for an element $z$ of order 2459. To obtain the exact mask of $a$ in the power basis of $r$, run the command below. It checks $a\ne0$, $D_{2459}(a)=0$, and the degree-1229 period polynomial at $a$. Here $D_j(z+z^{-1})=z^j+z^{-j}$. The residues $\pm2^k$ for $0\le k<1229$ exhaust the nonzero residues modulo 2459, so $D_j(a)$ for each such residue is a known Frobenius power of $a$. [Coordinate construction](scripts/period_coordinate.py)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/period_coordinate.py
+~~~
+
 For a proof attempt, one open subproblem is to find a squarefree pentanomial in every sufficiently large degree that passes the first three exterior-power tests. The dyadic construction supplies four tests in every multiple of eight. The reciprocal-root sieve supplies the first two tests for all sufficiently large degrees. The third asks that no three distinct roots have product 1. Passing all ranks through half the prescribed degree on the same candidate proves it primitive. One explicit sequence of reducible pentanomials passes arbitrarily many tests. At degree 511 its polynomial has exactly seven factors of degree 73, and all factors in its degree-$2^{513}-1$ example have degree 262657. [Determinant criterion and sieve](results.pdf#page=11) · [Splitting-field obstruction](results.pdf#page=22) · [Lean factor degrees](GF2Sparse/ShortProducts.lean)
 
 For the all-degree three-test problem it suffices to handle $p$ and $2p$ for each prime $p\ge5$. A squarefree, constant-one witness in either seed degree gives one in each odd multiple by substituting $X^m$ for $X$. Seeds 6 and 9 handle the remaining powers of three and their doubles, and the existing construction covers multiples of four. The signed-power theorem supplies some of these prime and twice-prime degrees. [Reduction and signed-degree proof](results.pdf#page=29)
