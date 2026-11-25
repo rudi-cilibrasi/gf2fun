@@ -510,7 +510,107 @@ formalized in \texttt{GF2Sparse/Dilation.lean} and
 \texttt{GF2Sparse/Progressions.lean}. Full substitution preserves
 weight and raises the degree to \(n(2^n-1)\).
 
-\paragraph{The remaining count.}
+\section{A norm test for compositions}
+Let \(H\in\F[T]\) be primitive of degree \(r\), and let \(h\in\F[X]\)
+be monic of degree \(m>0\) with \(h(0)=0\). Write
+\[
+ f=H(h),\qquad q=2^r,\quad R=q-1,\quad N=q^m-1,\qquad
+ D_t=1+q+\cdots+q^{t-1}\quad(t\ge1).
+\]
+The polynomial \(f\) has degree \(n=rm\). The following test uses
+the norm from \(\mathbb F_{q^m}\) to \(\mathbb F_q\).
+
+\begin{theorem}\label{thm:composition-norm}
+Every irreducible factor of \(f\) has degree divisible by \(r\).
+If \(f\) is irreducible then
+\begin{equation}\label{eq:composition-norm}
+                         X^{D_m}\equiv h(X)\pmod f .
+\end{equation}
+Conversely, if \eqref{eq:composition-norm} holds, then \(f\) is
+squarefree and each of its irreducible factors has degree \(rt\) with
+\(t\mid m\) and \(\gcd(m/t,R)=1\). In particular, if every prime
+dividing \(m\) divides \(R\), this one congruence is equivalent to
+irreducibility.
+\end{theorem}
+\begin{proof}
+If \(\alpha\) is a root of any irreducible factor, then
+\(\beta=h(\alpha)\) is a root of \(H\). Thus
+\(\F(\beta)=\mathbb F_q\subseteq\F(\alpha)\), proving the first
+assertion, and \(\beta\) has order \(R\).
+If \(f\) is irreducible, the extension
+\(\mathbb F_q(\alpha)/\mathbb F_q\) has degree \(m\).
+Its monic minimal polynomial for \(\alpha\) is \(h(X)-\beta\), of
+degree \(m\). The product of the conjugates is its constant term in
+characteristic two. Hence
+\(\alpha^{D_m}=\prod_{i=0}^{m-1}\alpha^{q^i}=\beta\), as required.
+
+Suppose now that \eqref{eq:composition-norm} holds.
+Since \(H(T)\mid T^R-1\), we have \(h^R\equiv1\pmod f\).
+Raising the congruence to the \(R\)-th power gives \(f\mid X^N-1\).
+This polynomial has simple roots, all in \(\mathbb F_{q^m}\).
+Consequently \([\mathbb F_q(\alpha):\mathbb F_q]=t\) divides \(m\).
+Write \(m=tk\). The norm \(y=\alpha^{D_t}\) lies in
+\(\mathbb F_q^\times\). The \(m\) Frobenius factors in
+\(\alpha^{D_m}\) repeat this block of \(t\) factors \(k\) times,
+so \(y^k=\beta\). A \(k\)-th power in a cyclic group of order \(R\)
+can have order \(R\) only if \(\gcd(k,R)=1\).
+Under the stated prime-divisor hypothesis this forces \(k=1\).
+Any irreducible factor then has the full degree \(rm\).
+\end{proof}
+
+\begin{corollary}\label{cor:composition-order}
+For arbitrary \(m\), the composition \(f\) is primitive if and only if
+\eqref{eq:composition-norm} holds and
+\[
+ X^{N/\ell}\not\equiv1\pmod f
+ \quad\text{for every prime }\ell\mid N\text{ with }\ell\nmid R .
+\]
+\end{corollary}
+\begin{proof}
+Primitivity implies both conditions. Conversely, let \(x\) be the
+residue of \(X\) modulo \(f\). Evaluation at \(h(x)\) embeds
+\(\F[T]/(H)\) into \(\F[X]/(f)\), since it is a unital map from
+a field to a nonzero ring. Hence \(h(x)\) has order \(R\).
+The congruence gives \(x^N=1\); for every prime \(\ell\mid R\)
+it also gives \(x^{N/\ell}=h(x)^{R/\ell}\ne1\).
+Together the checks force \(x\) to have order \(N\).
+Its powers then exhaust the \(N\) nonzero elements of the quotient,
+so the quotient is a field and \(f\) is primitive.
+\end{proof}
+
+The test applies to five-term polynomials with two pairs of exponents
+related by powers of two. For \(s,i,j,a,b>0\) put \(Q=2^s\) and
+\[
+ h(X)=\sum_{u=0}^{i-1}X^{aQ^u}+\sum_{v=0}^{j-1}X^{bQ^v}.
+\]
+Cancellation in \(h^Q+h\) gives
+\[
+ (T^Q+T+1)\big|_{T=h(X)}=1+X^a+X^{aQ^i}+X^b+X^{bQ^j}.
+\]
+Four distinct positive exponents give weight five. The outer
+polynomials for \(s=1,2\) are primitive of degrees 2 and 4.
+Indeed, \(T^4+T+1\) is 1 on \(\mathbb F_4\), hence irreducible,
+and differs from the degree-four cyclotomic polynomial for order 5.
+For \(s\ge3\) every root of \(T^Q+T+1\) satisfies
+\(z^Q=z+1\) and \(z^{Q^2}=z\), so has degree at most \(2s<Q\).
+The outer polynomial and its composition with any nonconstant \(h\)
+are then reducible.
+
+For \(s=2\), Theorem~\ref{thm:composition-norm} tests irreducibility
+in one exponentiation whenever \(m=3^a5^b\) with \(a,b\ge0\).
+For example, \(h=X^5+X^4+X\) gives
+\(f=X^{20}+X^{16}+X^5+X+1\).
+Here \(X^{69905}\equiv h\pmod f\) and
+\(2^{20}-1=3\cdot5^2\cdot11\cdot31\cdot41\). The remaining
+three powers \(X^{N/11},X^{N/31},X^{N/41}\) have respective
+binary coefficient masks \(\mathtt{6DA4},\mathtt{C6A9E},\mathtt{19BC8}\)
+in hexadecimal, so the example is primitive.
+For general \(m\), the congruence still supplies the full 3-part and
+5-part of the order of \(X\) whenever \(f\) is irreducible.
+This reduces the order checks for a candidate. Existence of a passing
+pentanomial in each degree is the outstanding step.
+
+\section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is
 \[
