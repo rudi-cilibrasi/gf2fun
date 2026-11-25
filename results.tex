@@ -37,13 +37,13 @@ Put
 Throughout this section \(u,v\) are distinct positive integers with \(u+v<n\).
 
 \begin{theorem}
-For every \(5\le n\le544\), some \(F_{n,u,v}\) is primitive.
-Consequently every \(1\le n\le544\) has a primitive polynomial of weight at most five.
+For every \(5\le n\le640\), some \(F_{n,u,v}\) is primitive.
+Consequently every \(1\le n\le640\) has a primitive polynomial of weight at most five.
 \end{theorem}
 \begin{proof}
 The witness tables are imported by \texttt{GF2Sparse/Coverage.lean}.
 For example, \(F_{24,1,3}=X^{24}+X^4+X^3+X+1\) and
-\(F_{544,34,65}=X^{544}+X^{99}+X^{65}+X^{34}+1\).
+\(F_{640,2,15}=X^{640}+X^{17}+X^{15}+X^2+1\).
 For each candidate \(f\), write \(r=X\bmod f\) and \(N=2^n-1\).
 The certificate checks \(r^N=1\) and \(r^{N/p}\ne1\) for every prime divisor
 \(p\) of \(N\). The first equality makes \(r\) a unit of order dividing \(N\).
@@ -51,7 +51,7 @@ Every proper divisor of \(N\) divides \(N/p\) for some such \(p\).
 Thus the \(N\) distinct powers of \(r\) exhaust the nonzero elements of the
 \(2^n\)-element quotient. The quotient is a field and \(f\) is primitive.
 The Lean proof also checks each integer factorization and the primality of its
-factors. In degrees 433 through 544 the packed squaring circuit
+factors. In degrees 433 through 640 the packed squaring circuit
 from Section~\ref{sec:packed} processes the binary digits of each
 exponent, multiplying the square by \(X\) exactly when the digit
 is one. Direct certificates cover degrees 1 through 4.
@@ -61,7 +61,7 @@ give minimum-weight primitive polynomials for degrees 2 through 640.
 The relation \(u+v\) between the interior exponents also appears in earlier
 work. Table 4.8 of the \emph{Handbook of Applied Cryptography} uses it for
 its pentanomial entries, giving a trinomial when one is available.
-Theorem 1 verifies a pentanomial of this shape throughout \(5\le n\le544\),
+Theorem 1 verifies a pentanomial of this shape throughout \(5\le n\le640\),
 including degrees admitting a primitive trinomial.
 \href{https://cacr.uwaterloo.ca/hac/about/chap4.pdf\#page=37}{Menezes, van Oorschot and Vanstone, chapter 4}.
 
@@ -2327,10 +2327,10 @@ Divisibility of the leading exponent by each such prime is then unchanged,
 as is parity. The seed has exponent gcd one by the substitution obstruction.
 \end{proof}
 
-With the 524 product pentanomials in Theorem~1, this gives arbitrarily
-high intervals of 540 consecutive degrees. At degree \(T+j\), for
-\(5\le j\le544\), the first failure is exactly rank \(j\).
-Lean checks the common shifts, the retained factors and all 524 first
+With the 636 product pentanomials in Theorem~1, this gives arbitrarily
+high intervals of 636 consecutive degrees. At degree \(T+j\), for
+\(5\le j\le640\), the first failure is exactly rank \(j\).
+Lean checks the common shifts, the retained factors and all 636 first
 failure lengths in \nolinkurl{GF2Sparse/TranslatedInterval.lean}.
 The two primitive pentanomials of Theorem~\ref{thm:mersenne-examples}
 likewise give arbitrarily high degrees with first failures exactly
@@ -2383,8 +2383,8 @@ Such a polynomial uniquely determines its seed. Lean verifies the
 equivalence for the original all-degree statement in
 \nolinkurl{GF2Sparse/OreConjecture.lean}.
 
-The Lean-certified seeds cover \(1\le s\le544\), degrees
-511, 1023, 1024, 1279 and 2203, and the eight degrees of Theorem~\ref{thm:packed}. Theorem~\ref{thm:ore4095} adds twelve
+The Lean-certified seeds cover \(1\le s\le640\), degrees
+1023, 1024, 1279 and 2203, and the eight degrees of Theorem~\ref{thm:packed}. Theorem~\ref{thm:ore4095} adds twelve
 seeds in degree 4095. For instance, the five exponents
 \[
     0,\quad 2^{62}-1,\quad 2^{135}-1,\quad 2^{197}-1,\quad 2^{2203}-1
@@ -4669,6 +4669,176 @@ order. Its primes all divide \(2^p-1\).
 \end{proof}
 
 The exclusion of the proper-subfield product in every degree \(pq\)
-with \(p,q\) distinct odd primes remains open beyond this census.
+with \(p,q\) distinct odd primes holds for close primes of any size by the next theorem.
+The general case remains open.
+
+
+\section{A full-degree prime in an infinite family of semiprime degrees}
+\begin{lemma}\label{lem:plane-size}
+Let a multiplicative subgroup of a finite binary field contain \(x\) and
+\(1+x\), where \([\F(x):\F]=d\ge2\). Its order is at least
+\(\lceil 3d^2/4\rceil\).
+\end{lemma}
+\begin{proof}
+Put \(k=\lfloor d/2\rfloor\). Consider the elements \(x^i(1+x)^j\) for
+\[
+        0\le i,j<d,\qquad k\le i+j<k+d .
+\]
+Suppose two of these agree. Cancel the common powers of \(x\) and
+\(1+x\). On each side the remaining polynomial in \(x\) has degree
+less than \(d\). Indeed for differences \(a=i-i'\), \(b=j-j'\), the
+larger remaining degree is \(\max(|a|,|b|,|a+b|)\). All three
+differences lie strictly between \(-d\) and \(d\).
+The polynomials must therefore agree identically. Their multiplicities
+at 0 and 1 give \(i=i'\) and \(j=j'\).
+The row at \(i\) contains \(d-|i-k|\) points. Summing gives
+\(3k^2\) when \(d=2k\) and \(3k(k+1)+1\) when \(d=2k+1\). Lean verifies the injection, the count and the order
+bound in \nolinkurl{GF2Sparse/PlaneOrder.lean}.
+\end{proof}
+
+\begin{theorem}\label{thm:close-semiprimes}
+Let \(p<q\) be odd primes with \(2q\le3p\), and let \(f\) be any
+irreducible binary polynomial of degree \(n=pq\) and weight at most
+five. Every root has order divisible by a prime \(\ell\) with
+\(\ord_\ell(2)=pq\).
+\end{theorem}
+\begin{proof}
+Suppose a root belongs to the product of the subfields of degrees
+\(p,q\). The rank argument in Theorem~\ref{thm:1243-subfield-product}
+rules out a trinomial. In the remaining case write the root as
+\(\alpha\beta\), where the five powers of \(\alpha\) on the support span
+a binary plane. Denote the two field degrees in this order by \(u,v\),
+and the two multiplicative orders by \(P,Q\). Both components are
+nonidentity. The plane contains 1 since the constant term is 1,
+and its two other nonzero points are \(x,1+x\). Both occur among
+the five powers. The field degree of \(x\) is \(u\) since \(u\)
+is prime. Lemma~\ref{lem:plane-size} gives
+\[
+            P\ge\lceil 3u^2/4\rceil>uv/2=n/2 .
+\]
+Indeed \(2v\le3u\), and \(n\) is odd.
+No exponent class modulo \(P\) can occur three times on \([0,n]\).
+The two repeated classes are pairs \((a,a+P)\) and \((b,b+P)\),
+and the third class is a singleton \(c\). Their \(\beta\)-sums agree,
+so \(\beta^a(1+\beta^P)=\beta^b(1+\beta^P)=\beta^c\).
+The sums are nonzero. This gives \(Q\mid a-b\) and hence
+\(Q\le n-P\). It also puts \(\beta^P,1+\beta^P\) in the subgroup
+of order \(Q\). The orders \(P,Q\) are coprime since the two field
+degrees are coprime. Thus \(\beta^P\) has field degree \(v\).
+Applying the lemma again yields the contradiction
+\[
+          n\ge P+Q\ge 3(u^2+v^2)/4\ge 3uv/2 .
+\]
+This excludes the product of the two proper subfields. Some prime
+power dividing the root order must have multiplicative degree \(pq\).
+To see that its prime already has that degree, recall that the order
+of 2 modulo \(\ell^a\) divided by its order modulo \(\ell\) is a
+power of \(\ell\). The only possible exception would be \(\ell=q\)
+with \(\ord_q(2)=p\), or \(\ell=p\) with \(\ord_p(2)=q\).
+The latter exceeds \(p-1\). The former requires \(2p\mid q-1\)
+since \(p\) is odd, whereas \(q\le3p/2\).
+\end{proof}
+
+Infinitely many consecutive primes satisfy the ratio condition.
+Otherwise the tail of the series of reciprocal primes would be
+bounded by a geometric series, contrary to its divergence. For
+example, in degree \(1009\cdot1013=1022117\) the theorem forces
+a prime \(\ell\equiv1\pmod{2044234}\) into every such root order.
+Existence of a sparse irreducible in each of these degrees remains a
+separate open question.
+
+\section{Excluding products from three independent subfields}
+\begin{theorem}\label{thm:three-subfields}
+Let \(n=d_1d_2d_3\), with the \(d_i>1\) pairwise coprime.
+No root of an irreducible binary polynomial of degree \(n\) and
+weight at most five belongs to
+\(\mathbb F_{2^{d_1}}^\times\mathbb F_{2^{d_2}}^\times
+\mathbb F_{2^{d_3}}^\times\).
+Consequently the graph on the prime divisors of \(n\) defined after
+Theorem~\ref{thm:four-subfields} has at most two connected components.
+\end{theorem}
+\begin{proof}
+Suppose \(r=\alpha_1\alpha_2\alpha_3\) is such a root with support
+\(E\). First reduce to exponents of gcd one. Set \(g=\gcd(E)\) and
+write \(f(X)=F(X^g)\). Then \(F\) is irreducible and \(r^g\) has
+degree \(n/g\). Let \(b_i\) be the field degree of \(\alpha_i^g\).
+Each \(b_i\mid d_i\), and \(b_i>1\). Indeed, if \(\alpha_i^g=1\), omitting
+\(\alpha_i\) from \(r\) preserves every power on \(E\), giving a
+root of \(f\) in a proper subfield. The projection of \(r^g\) onto
+each component \(\alpha_i^g\) is a power of \(r^g\), by the Chinese
+remainder theorem on their pairwise coprime multiplicative orders.
+Hence \(n/g=\prod_i b_i\). Replacing \(f,r,d_i\) by
+\(F,r^g,b_i\) gives the asserted reduction.
+
+The multiplication map on the tensor product of the three fields is
+injective, since their degrees are pairwise coprime. As before no
+proper nonempty subsum of \(f(r)\) vanishes. Grouping any two fields
+together excludes weight three. For weight five, consider the five
+two-coordinate tensors \(\alpha_j^e\otimes\alpha_k^e\) for \(e\in E\).
+They span dimension at least three. Otherwise they would have to
+occupy all three nonzero points of a plane. One point would put a
+component in a proper subfield, and two independent points would
+give a vanishing proper subsum. Two distinct pure tensors with pure
+sum share one coordinate, as in the proof of
+Theorem~\ref{thm:four-subfields}. Their sum shares that coordinate
+as well. Since \(0\in E\), the shared value is 1, again allowing a
+component to be omitted. The rank-sum inequality now bounds the
+single-coordinate rank by two. Thus in every coordinate the five
+powers occupy precisely the three nonzero points \(1,x_i,1+x_i\)
+of a plane. They generate \(\alpha_i\) multiplicatively because
+\(\gcd(E)=1\). In particular \(x_i\) has degree \(d_i\).
+Lemma~\ref{lem:plane-size} gives \(P_i=\ord(\alpha_i)\ge3d_i^2/4\).
+
+Take \(d_3\) largest and group the five terms by their values in
+this coordinate. The three class sums in the tensor product of the
+first two fields are equal to a singleton, hence to a nonzero pure
+tensor. If the class sizes are \(2,2,1\), the two tensors in a pair
+have pure sum, so they share a first or second coordinate. If the
+sizes are \(3,1,1\), suppose the members of the triple share
+neither first nor second coordinates in pairs. Their first
+coordinates must be \(a,b,a+b\) and the matching second coordinates
+\(c,d,c+d\), since these are exactly the three plane points on each
+side. Their sum is \(a\otimes d+b\otimes c\), of rank two, a
+contradiction. In both cases two different support exponents agree
+in coordinates 3 and \(j\) for some \(j\in\{1,2\}\).
+Their nonzero difference is a multiple of \(P_3P_j\), so
+\(P_3P_j\le n\). For the remaining index \(k\) we have
+\(d_3d_j\ge2d_k\), and hence
+\[
+     P_3P_j\ge\frac9{16}(d_3d_j)^2
+              \ge\frac98 d_3d_jd_k>n .
+\]
+The graph conclusion follows by grouping any three nonempty unions
+of connected components as in Theorem~\ref{thm:four-subfields}.
+\end{proof}
+
+
+For general circuits of five pure tensors, the bound of three
+nonconstant coordinates also follows from Corollary 21 of
+\href{https://doi.org/10.1017/fms.2023.20}{Lovitz and Petrov,
+\emph{A generalization of Kruskal's theorem on tensor decomposition}}.
+The size estimate in Lemma~\ref{lem:plane-size} uses that the
+coordinates here are field powers of the support exponents.
+
+Two independent subfields can supply a pentanomial root in infinitely
+many degrees. More generally take any irreducible trinomial
+\(T=X^d+X^a+1\) of odd degree \(d\ge3\), a root \(z\), and a
+primitive cube root \(\zeta\). The degree of \(\zeta z\) is \(2d\)
+and its order is \(3\ord(z)\), by coprimality of the two subfield
+orders. Its minimal polynomial is \(T(\zeta X)T(\zeta^2 X)\).
+The exponents \(0,a,d\) occupy exactly two residue classes modulo 3.
+If they occupied all three, \(T(\zeta)=0\). If all were multiples
+of three, \(\zeta z\) would already be a root of \(T\), despite
+its degree \(2d\). In the product the three doubles survive, and
+a cross term survives exactly when its two exponents differ modulo 3.
+There are two such pairs. The five resulting exponents are distinct
+since \(2a\ne d\). For example, put \(m=7^j\) with \(j\ge0\).
+Applying this construction to the trinomial of degree \(3m\) in
+Theorem~\ref{thm:trinomial-exceptions} gives the irreducible
+\[
+                   X^{6m}+X^{4m}+X^{2m}+X^m+1
+\]
+of root order \(3\cdot7^{j+1}\) in the product of the subfields
+of degrees 2 and \(3m\).
 
 \end{document}
