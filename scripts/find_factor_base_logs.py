@@ -19,25 +19,27 @@ def frobenius(mask, q):
     return sum(1 << (i*q) for i in range(mask.bit_length()) if mask & (1 << i))
 
 
-def insert(row, pivots, order):
-    """Keep unit pivots modulo the group size. The column for X is the known log 1."""
+def insert(row, pivots, order, *, fixed_x=True):
+    """Insert a unit pivot. With fixed_x, the column for X has known logarithm 1."""
     row = {p: c % order for p, c in row.items() if c % order}
     while row:
         p = max(row)
         c = row[p]
-        if p == 2:
+        if fixed_x and p == 2:
             raise ValueError(f"the relations give the proper order multiple {c} for X")
         if p not in pivots:
             if integer_gcd(c, order) == 1:
                 inv = pow(c, -1, order)
                 pivots[p] = {k: (t * inv) % order for k, t in row.items()}
-            return
+                return True
+            return False
         for k, t in pivots[p].items():
             value = (row.get(k, 0) - c*t) % order
             if value:
                 row[k] = value
             else:
                 row.pop(k, None)
+    return False
 
 
 def recover(pivots, order):

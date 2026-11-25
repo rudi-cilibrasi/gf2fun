@@ -3527,4 +3527,77 @@ fixes the logarithm of \(X\) to 1, and checks the resulting identities
 by direct modular exponentiation. Each logarithm can also be verified
 independently of the search.
 
+
+\section{Frobenius relations in a Gauss period coordinate}\label{sec:period-logs}
+
+Let \(K=\mathbb F_{2^n}\), let \(r\in K^\times\) be the root whose
+order is sought, and let \(a\in K\) have degree \(n\) over \(\F\).
+Theorem~\ref{thm:factor-moments} also applies to verified values
+\(P(a)\in\langle r\rangle\). Indeed, take the Dirichlet characters
+modulo the minimal polynomial of \(a\) and evaluate the residue class
+of \(T\) at \(a\). The quotient group and the character average in the
+proof are still those of \(K^\times/\langle r\rangle\).
+
+Suppose \(p=2n+1\) is prime and the residues \(\pm 2^k\), \(0\le k<n\),
+exhaust \((\mathbb Z/p)^\times\). For \(p\nmid m\) let \(k(m)\) be the
+unique index with \(m\equiv\pm 2^{k(m)}\pmod p\). Let \(z\) have order
+\(p\) in the algebraic closure and take \(a=z+z^{-1}\). This is the
+type-II Gauss period studied by
+\href{https://www.math.clemson.edu/~sgao/papers/GV95.pdf}{Gao and Vanstone}.
+The degree of \(a\) is \(n\), since its \(2^j\)-th power equals \(a\)
+exactly when \(z^{2^j}\) is a root of \(Y^2+aY+1\), equivalently when
+\(2^j\equiv\pm1\pmod p\). Define \(D_0=0, D_1=T\), and
+\(D_{m+2}=TD_{m+1}+D_m\) in \(\F[T]\). The identity
+\(D_m(y+y^{-1})=y^m+y^{-m}\) follows by induction. In particular
+\[
+        P(D_m(a))=P(a)^{2^{k(m)}}\qquad(P\in\F[T],\ p\nmid m).
+\]
+
+\begin{corollary}\label{cor:period-targets}
+For either of the two sparse degree-1229 moduli in
+Corollary~\ref{cor:1229-logs}, it suffices to supply exponents for the 3,635 masks
+listed in \nolinkurl{data/degree-1229-period-targets.csv}.
+Each is an exponent to base \(r\) for \(P(a)\) in the chosen field.
+\end{corollary}
+\begin{proof}
+Here \(p=2459\). Enumerating the signed powers of two verifies the
+residue hypothesis. To specify \(a\) in the sparse power basis,
+let \(u=r\) and let \(t^2+t+1=0\). Since \(n\) is odd, the quadratic
+conjugate of \(t\) over \(K\) is \(t+1\). Thus
+\(w=(u+t+1)/(u+t)\) has norm one and
+\(w+w^{-1}=(u^2+u+1)^{-1}\). Set
+\[
+ z=w^{(2^n+1)/p},\qquad a=D_{(2^n+1)/p}\big((u^2+u+1)^{-1}\big).
+\]
+The checker verifies \(a\ne0\) for each modulus, so \(z\) has order
+exactly \(p\). The monic degree-\(n\) polynomial
+\(\Psi=\sqrt{D_p(T)/T}\) vanishes at \(a\). Indeed the \(n\) distinct
+sums \(z^i+z^{-i}\), with \(1\le i\le n\), are the nonzero roots
+of \(D_p\); the recurrence gives only odd powers in \(D_p\).
+These account for its entire degree with multiplicity two, together
+with the simple root zero. The independent recurrence and evaluation of
+\(\Psi\) are in \nolinkurl{scripts/period_coordinate.py}.
+
+The relation file has one identity per line. A triple \((m,b,e)\)
+represents \(B_b(D_m(T))^e\), where \(B_b\) has coefficient mask
+\(b\). In each row the positive product equals the negative-exponent
+side with signs reversed, modulo \(\Psi\). The checker tests the
+polynomial equality directly and checks each \(B_b\) irreducible.
+For example, \(D_3(T)=T(T+1)^2\) gives
+\(a(a+1)^2=a^{2^{k(3)}}\).
+
+A verified row gives the multiplicative relation with the exponent
+of \(B_b(a)\) equal to \(\sum_m e_{m,b}2^{k(m)}\). Exponents can be
+reduced modulo \(M=2^n-1\) since each factor is nonzero in \(K\).
+Subtracting a multiple of a row corresponds to dividing by a power
+of its product. Scaling a row by a unit modulo \(M\) preserves its
+solution set. These operations give 2,343 unit pivots in order of
+decreasing polynomial mask. Triangular substitution from the listed
+3,410 lower-degree inputs and 225 degree-16 inputs recovers all 4,720
+irreducibles through degree 15 and 276 distinct irreducibles of
+degree 16. The exact rational calculation in
+Corollary~\ref{cor:1229-logs} then proves full order. The relation and
+target replay is \nolinkurl{scripts/check_period_relations.py}.
+\end{proof}
+
 \end{document}
