@@ -50,6 +50,23 @@ theorem root_ne_zero_of_factor {p g : BinaryPoly} (hp : Irreducible p)
   rw [← AdjoinRoot.aeval_eq, heq, ← coeff_zero_eq_aeval_zero', hconst, map_one] at hg
   exact one_ne_zero hg
 
+/-- An individual factor survives exponent shifts by a multiple of its root order. -/
+theorem factor_dvd_of_congruent_exponents {ι : Type*} (s : Finset ι) (a b : ι → ℕ)
+    {L : ℕ} (hmod : ∀ i ∈ s, a i ≡ b i [MOD L]) {p g : BinaryPoly}
+    (hpg : p ∣ g) (hg : g = ∑ i ∈ s, X ^ b i) (hpow : AdjoinRoot.root p ^ L = 1) :
+    p ∣ ∑ i ∈ s, X ^ a i := by
+  apply AdjoinRoot.mk_eq_zero.1
+  have hres (i) (hi : i ∈ s) : AdjoinRoot.root p ^ a i = AdjoinRoot.root p ^ b i := by
+    have hm := Nat.ModEq.of_dvd (orderOf_dvd_of_pow_eq_one hpow) (hmod i hi)
+    calc
+      _ = _ := (pow_mod_orderOf (AdjoinRoot.root p) (a i)).symm
+      _ = _ := congrArg (fun e => AdjoinRoot.root p ^ e) hm
+      _ = _ := pow_mod_orderOf _ _
+  have hz := AdjoinRoot.mk_eq_zero.2 hpg
+  rw [hg, map_sum] at hz
+  simpa only [map_sum, map_pow, AdjoinRoot.mk_X,
+    Finset.sum_congr rfl hres] using hz
+
 /-- Compressing each exponent modulo the common period preserves any
 nonzero root of degree at most B. Collisions in either sum are allowed. -/
 theorem factor_of_congruent_exponents {ι : Type*} (s : Finset ι) (a b : ι → ℕ)
@@ -61,18 +78,9 @@ theorem factor_of_congruent_exponents {ι : Type*} (s : Finset ι) (a b : ι →
   obtain ⟨p, hp, hpg⟩ := WfDvdMonoid.exists_irreducible_factor
     (not_isUnit_of_natDegree_pos g hpos) hg0
   have hdeg := (natDegree_le_of_dvd hpg hg0).trans hB
-  refine ⟨p, hp, hdeg, AdjoinRoot.mk_eq_zero.1 ?_⟩
+  refine ⟨p, hp, hdeg, ?_⟩
   have hpow := root_pow_period hp hdeg (root_ne_zero_of_factor hp hpg hconst)
-  have hres (i) (hi : i ∈ s) : AdjoinRoot.root p ^ a i = AdjoinRoot.root p ^ b i := by
-    have hm := Nat.ModEq.of_dvd (orderOf_dvd_of_pow_eq_one hpow) (hmod i hi)
-    calc
-      _ = _ := (pow_mod_orderOf (AdjoinRoot.root p) (a i)).symm
-      _ = _ := congrArg (fun e => AdjoinRoot.root p ^ e) hm
-      _ = _ := pow_mod_orderOf _ _
-  have hz := AdjoinRoot.mk_eq_zero.2 hpg
-  rw [hg, map_sum] at hz
-  simpa only [map_sum, map_pow, AdjoinRoot.mk_X,
-    Finset.sum_congr rfl hres] using hz
+  exact factor_dvd_of_congruent_exponents s a b hmod hpg hg hpow
 
 /-- Along an arithmetic progression every affine formula for the exponents
 repeats the residues of its base polynomial. The same progression works

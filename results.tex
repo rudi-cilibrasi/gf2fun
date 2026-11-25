@@ -1981,4 +1981,104 @@ identity of Section~\ref{sec:four-ap}. The three selected roots lie in
 a group of order coprime to three, so their cubes stay distinct and
 their product is still 1.
 
+\section{Restrictions on the support in prime degrees}
+\begin{lemma}\label{lem:prime-period}
+For an odd prime \(p\) put
+\[
+ L_p=\mathop{\rm lcm}_{1\le d\le p,\ p\nmid 2^d-1}(2^d-1).
+\]
+Every monic degree-\(p\) binary polynomial with constant term 1 has an
+irreducible factor whose nonzero roots have order dividing \(L_p\).
+Moreover \(\gcd(p,L_p)=1\).
+\end{lemma}
+\begin{proof}
+Let \(h=\ord_p(2)\). Then \(h>1\) and \(h\mid p-1\), so \(h\nmid p\).
+The factor degrees, counted with multiplicity, sum to \(p\). Some
+irreducible factor therefore has degree \(d\) with \(h\nmid d\).
+Its roots belong to \(\mathbb F_{2^d}^{\times}\) and \(p\nmid 2^d-1\).
+This gives the desired factor. The coprimality follows from the definition.
+\end{proof}
+
+\begin{theorem}\label{thm:prime-grid}
+Fix a finite set of rational slopes \(S\subset[0,1]\), a width \(B\ge0\)
+and a reduced class \(r\bmod M\). There are an odd prime \(p\) and a
+reduced arithmetic progression inside the prescribed class such that,
+at every degree \(n>p\) in that progression, every degree-\(n\) binary
+polynomial with constant term 1 supported within distance \(B\) of
+\(nS\) has an irreducible factor of degree at most \(p\).
+In particular the obstruction holds in arbitrarily large prime degrees,
+for every number of terms.
+\end{theorem}
+\begin{proof}
+Include 0 and 1 in \(S\) and take a common denominator \(D\).
+Choose a prime \(p\equiv r\pmod M\) larger than \(MD\), 2 and
+\(D(B+1)\). Write \(K=MDL_p\). The class \(p\bmod K\) is reduced by
+Lemma~\ref{lem:prime-period}. For \(n=p+kK\), move each exponent near
+\(sn\) to \(e-s(n-p)\), choosing \(s=0,1\) at the endpoints. The shift
+is an integral multiple of \(L_p\). At an interior slope the new
+exponent is within \(B\) of \(sp\), so lies strictly between 0 and \(p\).
+The same strict inequalities hold for an interior exponent assigned
+to an endpoint, since \(p>B\).
+The compressed polynomial has degree \(p\) and constant term 1, even
+if some interior terms cancel. At a root of the factor in
+Lemma~\ref{lem:prime-period}, the original and compressed exponents
+give identical powers. Thus the factor divides the original polynomial.
+Dirichlet's theorem supplies the primes. Lean verifies the rational-grid
+claim in \nolinkurl{GF2Sparse/PrimeGrid.lean}.
+\end{proof}
+
+For instance \(p=5\) gives \(L_p=651\). At the prime degree 1307,
+every polynomial with the two endpoints and any subset of
+\[
+               1,\ 2,\ 652,\ 653,\ 654,\ 655,\ 1305,\ 1306
+\]
+as interior exponents has a factor of degree at most five. These are
+exactly the interior exponents within two of \(0,n/2,n\).
+The same degree bound holds at every \(n>5\) congruent to 5 modulo 1302
+for the corresponding three bands.
+
+\begin{corollary}\label{cor:prime-grid-width}
+For rational \(S\) and any prescribed reduced class there are infinitely
+many prime degrees \(n\) where every irreducible degree-\(n\) binary
+polynomial has an exponent at distance at least
+\(c_{S,M}\sqrt{\log n}\) from \(nS\), for some \(c_{S,M}>0\).
+\end{corollary}
+\begin{proof}
+Take unbounded seed primes \(p\) as above and width \(B=p/(2D)\).
+Use the least prime \(n\) in the class \(p+K\bmod pK\).
+This class is reduced since \(\gcd(p,K)=1\). For large \(p\) its least
+positive representative is \(p+K\), so \(n>p\) and \(n\equiv p\pmod K\).
+Linnik's theorem gives \(n\ll(pK)^C\) for an absolute \(C\).
+Since \(L_p\le\prod_{d\le p}(2^d-1)\le2^{p(p+1)/2}\), we have
+\(\log n=O_{D,M}(p^2)\). Theorem~\ref{thm:prime-grid}'s compression
+at this seed proves the claim. For the least-prime bound see
+\href{https://arxiv.org/abs/0906.2749}{Xylouris, \emph{On Linnik's constant}}.
+\end{proof}
+
+\paragraph{Real slopes and fixed widths.}
+For every finite \(S\subset[0,1]\) and fixed \(B\), the bounded-factor
+conclusion holds on a set of primes of positive lower relative density
+in every reduced class. To see this, choose
+\(1,\theta_1,\ldots,\theta_d\) as a rational basis of the span of
+\(1\) and \(S\), and \(D\) clearing all denominators of these coordinates.
+Choose the prime \(p\) as above, also large enough that the distance of
+each interior \(sp\) from either endpoint exceeds \(B+1\).
+For primes \(n\equiv p\pmod K\), put \(k=(n-p)/K\).
+The vectors \((k\theta_i)_{1\le i\le d}\) are equidistributed modulo 1.
+Indeed, for a nonzero integer vector \(h\), the corresponding
+linear phase in \(n\) has irrational coefficient
+\((h\cdot\theta)/K\). Apply Vinogradov's theorem on primes in a
+fixed reduced progression and the Weyl criterion. Thus a positive
+proportion of these primes have all \(k\theta_i\) sufficiently close
+to integers that every \(s(n-p)/L_p=MDks\) is within \(1/L_p\)
+of an integer \(a_s\). If \(d=0\), all these quantities are integers
+already. Move each exponent to \(e-L_p a_s\), using the exact
+shifts at 0 and 1. At an interior slope its distance from \(sp\) is
+at most \(B+1\). The same compression now supplies the factor. The
+prime number theorem in arithmetic progressions gives positive
+relative density of the selected progression inside the prescribed one.
+\href{https://www.mathnet.ru/eng/im3453}{I.~Vinogradov,
+\emph{Distribution of the fractional parts of a polynomial when the
+argument runs over primes in an arithmetical progression}}.
+
 \end{document}

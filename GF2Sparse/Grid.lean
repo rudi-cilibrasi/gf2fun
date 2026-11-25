@@ -12,12 +12,13 @@ private def exponent {ι : Type*} (n : ℕ) (e : ι → ℕ) : Option (Option ι
   | some none => 0
   | some (some i) => e i
 
-/-- Keep the two endpoints and compress all interior exponents to the open
-interval (0,m), preserving their residues. The resulting degree-m polynomial
-supplies a factor of the original one. -/
-theorem factor_of_compressed_interior {ι : Type*} [Fintype ι] {m n : ℕ}
+/-- Compress the interior terms modulo any period that supplies a nonzero
+root of every compressed polynomial of degree m and constant coefficient one. -/
+theorem factor_of_compressed_interior_with_period {ι : Type*} [Fintype ι] {m n L : ℕ}
     (hm : 0 < m) (a b : ι → ℕ) (hb : ∀ i, 0 < b i ∧ b i < m)
-    (hend : n ≡ m [MOD period m]) (hint : ∀ i, a i ≡ b i [MOD period m]) :
+    (hend : n ≡ m [MOD L]) (hint : ∀ i, a i ≡ b i [MOD L])
+    (chooseFactor : ∀ g : BinaryPoly, g.natDegree = m → g.coeff 0 = 1 →
+      ∃ p : BinaryPoly, Irreducible p ∧ p ∣ g ∧ AdjoinRoot.root p ^ L = 1) :
     ∃ p : BinaryPoly, Irreducible p ∧ p.natDegree ≤ m ∧
       p ∣ X ^ n + (1 + ∑ i, X ^ a i) := by
   classical
@@ -35,14 +36,33 @@ theorem factor_of_compressed_interior {ι : Type*} [Fintype ι] {m n : ℕ}
   have hconst : g.coeff 0 = 1 := by
     simp [g, t, coeff_X_pow, hm.ne, fun i => (hb i).1.ne]
   have heq : g = ∑ i, X ^ exponent m b i := by simp [g, t, Fintype.sum_option, exponent]
-  have hmod (i : Option (Option ι)) : exponent n a i ≡ exponent m b i [MOD period m] := by
+  have hmod (i : Option (Option ι)) : exponent n a i ≡ exponent m b i [MOD L] := by
     rcases i with _ | (_ | i)
     · exact hend
     · rfl
     · exact hint i
-  have h := factor_of_congruent_exponents Finset.univ (exponent n a) (exponent m b)
-    (fun i _ => hmod i) g heq (hgdeg ▸ hm) hgdeg.le hconst
+  obtain ⟨p, hp, hpg, hpow⟩ := chooseFactor g hgdeg hconst
+  have hg0 : g ≠ 0 := by intro h; simp [h] at hconst
+  refine ⟨p, hp, hgdeg ▸ natDegree_le_of_dvd hpg hg0, ?_⟩
+  have h := factor_dvd_of_congruent_exponents Finset.univ (exponent n a) (exponent m b)
+    (fun i _ => hmod i) hpg heq hpow
   simpa [Fintype.sum_option, exponent] using h
+
+/-- Keep the two endpoints and compress all interior exponents to the open
+interval (0,m), preserving their residues. The resulting degree-m polynomial
+supplies a factor of the original one. -/
+theorem factor_of_compressed_interior {ι : Type*} [Fintype ι] {m n : ℕ}
+    (hm : 0 < m) (a b : ι → ℕ) (hb : ∀ i, 0 < b i ∧ b i < m)
+    (hend : n ≡ m [MOD period m]) (hint : ∀ i, a i ≡ b i [MOD period m]) :
+    ∃ p : BinaryPoly, Irreducible p ∧ p.natDegree ≤ m ∧
+      p ∣ X ^ n + (1 + ∑ i, X ^ a i) := by
+  apply factor_of_compressed_interior_with_period hm a b hb hend hint
+  intro g hg hc
+  have hg0 : g ≠ 0 := by intro h; simp [h] at hc
+  obtain ⟨p, hp, hpg⟩ := WfDvdMonoid.exists_irreducible_factor
+    (not_isUnit_of_natDegree_pos g (hg ▸ hm)) hg0
+  exact ⟨p, hp, hpg, root_pow_period hp (hg ▸ natDegree_le_of_dvd hpg hg0)
+    (root_ne_zero_of_factor hp hpg hc)⟩
 
 private theorem compress_offset {D M w L shift e j : ℕ} (hM : w < M)
     (he0 : 0 < e) (he : e < D * (M + L * shift)) (hj : j ≤ D)
