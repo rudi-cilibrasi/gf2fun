@@ -5621,5 +5621,95 @@ The inverse has binary mask \(\mathtt{1648113175}\) in hexadecimal
 and its coefficient at \(j=33\) is one. This pentanomial is irreducible
 and passes all five order tests in Theorem~\ref{thm:1229-all-orders}.
 The mode \texttt{--census-1229} reproduces all parity counts.
+Comparing its output against the complete irreducibility census
+leaves \(3899\) irreducibles, all of which pass every known order
+test. The option \texttt{--irreducibles} accepts the full support
+list from \nolinkurl{scripts/census_1229_pentanomials.cpp}.
+
+\section{Many odd factor counts from cyclic trinomial inverses}
+\label{sec:cyclic-density}
+\begin{lemma}\label{lem:prime-inverse-weight}
+For every sufficiently large odd prime \(g\), there are at least
+\(g^2/100\) pairs \((\lambda,j)\) modulo \(g\) such that
+\(G_\lambda=1+Y+Y^\lambda\) is a unit in \(R_g\), \(j\ne0\),
+and \([Y^j]G_\lambda^{-1}=1\).
+\end{lemma}
+\begin{proof}
+Choose \(s\) with \(g/12< m=3^s\le g/4\). In characteristic two
+\[
+ (1+X+Y)^{2^s-1}=\prod_{i=0}^{s-1}(1+X^{2^i}+Y^{2^i}).
+\]
+Its support \(T\) consists of \(m\) distinct pairs whose binary
+digits never overlap. Their coordinates are below \(2^s<g\).
+The coefficients of \(P_\lambda=G_\lambda^{2^s-1}\) are the parities
+of the fibers of \((a,b)\mapsto a+\lambda b\bmod g\) on \(T\).
+A fiber of size \(k\) loses \(k-(k\bmod2)\le k(k-1)\) terms.
+Each ordered pair of distinct points collides at at most one slope
+because \(g\) is prime. Thus
+\[
+   \sum_{\lambda\bmod g}\operatorname{wt}(P_\lambda)
+       \ge gm-m(m-1)\ge 3gm/4.
+\]
+To bound the nonunits take a nonidentity \(g\)-th root \(z\).
+The equation \(1+z+z^\lambda=0\) determines at most one \(\lambda\),
+and its Frobenius conjugates give the same condition. There are
+\((g-1)/\operatorname{ord}_g(2)\) such orbits. Since
+\(\operatorname{ord}_g(2)\ge\log_2(g+1)\), at most \(g/8\) slopes
+give nonunits for sufficiently large \(g\). The root \(1\) excludes
+none. Removing the nonunits costs at most \(gm/8\) terms.
+For each remaining \(\lambda\), one has
+\(P_\lambda=G_\lambda^{2^s}G_\lambda^{-1}\), so
+\(\operatorname{wt}(P_\lambda)\le3\operatorname{wt}(G_\lambda^{-1})\).
+Omitting the constant coefficients costs at most \(g\) more from the
+inverse weights, leaving at least \(5gm/24-g\ge g^2/100\).
+The bound on total binary projection weight over an arbitrary
+finite field is formalized in \nolinkurl{GF2Sparse/CyclicWeight.lean}.
+\end{proof}
+
+\begin{theorem}\label{thm:prime-gap-density}
+For each fixed \(B\ge1\), in every sufficiently large degree \(n\)
+there are \(\gg_B n^3/\log n\) squarefree binary pentanomials
+with an odd number of irreducible factors, all of degrees greater
+than \(B\), exponent gcd one and fifteen distinct unordered pair sums.
+\end{theorem}
+\begin{proof}
+Theorem~\ref{thm:parity-counts} supplies a cubic count in five
+degree classes. For the other three, put
+\(L=\mathop{\rm lcm}_{1\le k\le B}(2^k-1)\) and \(X=\lfloor n/(10000L)\rfloor\).
+Use odd primes \(g\in[X,2X]\) coprime to \(nL\). There are
+\(\gg_B n/\log n\) by the prime number theorem, since at most
+\(\log_2(nL)\) primes divide \(nL\).
+
+For \(n\equiv3,5\pmod8\), set \(v=n,\ u=n-2g\). Choose
+\(n/16<a<n/12,\ n/4<c<n/3\), both divisible by eight, with
+\(a\equiv0,\ c\equiv u\pmod L\). For every pair \((\lambda,j)\)
+in Lemma~\ref{lem:prime-inverse-weight}, set
+\(e=-n/(2j)\bmod g\). Prescribe
+\(a/2\equiv e,\ c/2\equiv e\lambda\pmod g\).
+Each interval is longer than the CRT period \(8Lg\). Thus
+\(E=1+Y^{a/2}+Y^{c/2}=G_\lambda(Y^e)\) in \(R_g\) and its
+inverse has coefficient one at \(ej=-u/2\bmod g\). Theorem~\ref{thm:cyclic-parity}
+gives squarefreeness and odd factor count. The pairs \((0,a),(c,u)\)
+cancel at nonzero elements of degree at most \(B\). Also
+\(\gcd(n,u)=1\). To check the pair sums, \(2a<c,\ 2c<u\)
+separate the even sums from \(0,a,c\) from those made with two
+odd exponents. Odd sums cannot collide since \(n-u=2g\) is smaller
+than every positive gap in \(\{0,a,c\}\).
+
+For \(8\mid n\), choose an odd \(u\) in \((n/16,n/12)\) and put
+\(v=u+2g\). Take \(n/4<c<n/3\) divisible by eight. Impose
+\(u\equiv0,\ c\equiv2g\pmod L\). Now \(e=n/2\bmod g\) is a unit.
+Choose \(c/2\equiv e\lambda,\ u\equiv-2ej\pmod g\) in these
+intervals. Again \(E=1+Y^{n/2}+Y^{c/2}=G_\lambda(Y^e)\) gives the
+required inverse coefficient. The pairs \((0,u),(c,v)\) cancel and
+\(\gcd(u,v)=1\). The three odd-odd sums \(2u,u+v,2v\) lie strictly
+between zero and \(c\). The even-even sums from \(0,c,n\) are distinct,
+and \(2g\) is smaller than their positive exponent gaps, so the
+odd-even sums are distinct as well.
+
+In both constructions the support recovers \(g\) from its two odd
+exponents, then \((\lambda,j)\) from the displayed residues. There
+are \(\gg g^2\) supports per prime \(g\), proving the bound.
+\end{proof}
 
 \end{document}
