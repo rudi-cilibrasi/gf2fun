@@ -11,7 +11,7 @@ from itertools import combinations, combinations_with_replacement
 from math import gcd as integer_gcd, lcm
 from random import Random
 
-from make_witnesses import gcd, prime_factors, square_mod, x_power
+from make_witnesses import exact_quotient, gcd, prime_factors, square_mod, x_power
 
 
 def residue_range(start, stop, residue, modulus):
@@ -37,16 +37,6 @@ def parameter_ranges(degree, period):
     middle = residue_range(n // 16 + 1, (n + 7) // 8, residue, 4 * L)
     upper = residue_range(n // 4 + 1, (n + 2) // 3, lowest, 2 * L)
     return lowest, middle, upper
-
-
-def exact_quotient(f, g):
-    quotient = 0
-    while f.bit_length() >= g.bit_length():
-        shift = f.bit_length() - g.bit_length()
-        quotient ^= 1 << shift
-        f ^= g << shift
-    assert f == 0
-    return quotient
 
 
 def sidon(support):

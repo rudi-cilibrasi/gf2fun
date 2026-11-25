@@ -9,4 +9,5 @@ import GF2Sparse.ParityExamples
 import GF2Sparse.Progressions
 import GF2Sparse.QuadraticLift
 import GF2Sparse.ReciprocalSieve
+import GF2Sparse.RootProducts
 import GF2Sparse.ShiftedExample

@@ -1148,6 +1148,80 @@ offsets 2 and 5, respectively. The degree \(265=2^8+9\) member
 primality certificates for the seven prime factors of \(2^{265}-1\) in
 \texttt{GF2Sparse/ShiftedExample.lean}.
 
+\section{Testing four exterior powers with one reciprocal gcd}
+Let \(f\) be squarefree, monic and binary, with degree \(n>0\) and
+constant term 1. For a set \(S\) of its roots in the algebraic closure
+write \(S^k\) for the set of all products of exactly \(k\) elements,
+allowing repetitions. In what follows \(S\) is the entire root set.
+\begin{lemma}\label{lem:short-products}
+For every \(k\ge1\), \(S^k\) consists precisely of the products of
+nonempty subsets of \(S\) of size at most \(k\).
+\end{lemma}
+\begin{proof}
+Whenever a product contains two copies of \(x\), replace the pair
+by \(x^2\in S\). The length decreases until all entries are distinct.
+Conversely, squaring permutes \(S\), so any factor can be replaced by
+two copies of its square root in \(S\) until the length is \(k\).
+Lean proves this equality for all \(k\) in
+\texttt{GF2Sparse/RootProducts.lean}.
+\end{proof}
+Let \(P_f\) be the squarefree polynomial on the distinct values
+\(xy\) for \(x,y\in S\), \(x\ne y\), and put
+\(D_f=\operatorname{lcm}(f,P_f)\). These polynomials are binary by
+Frobenius invariance. Write \(g^*(X)=X^{\deg g}g(1/X)\).
+
+\begin{theorem}\label{thm:pair-products}
+The first four exterior-power tests all pass if and only if
+\(\gcd(D_f,D_f^*)=1\). For the first three tests the corresponding
+condition is \(\gcd(f,D_f^*)=1\).
+\end{theorem}
+\begin{proof}
+The roots of \(D_f\) form \(S^2\), since the products with two equal
+factors give the roots of \(f\). A product of four roots is 1 exactly
+when one element of \(S^2\) is the inverse of another. For triples
+one takes an element of \(S\) and one of \(S^2\). Apply
+Lemma~\ref{lem:short-products} and the triangularization in
+Theorem~\ref{thm:exterior}.
+\end{proof}
+
+One can compute \(P_f\) from ordinary powers of \(X\bmod f\).
+Let \(C\) be multiplication by \(X\) on \(\F[X]/(f)\), and
+\(v=1\wedge X\). In the basis given by evaluation at each root,
+the coordinate of \(v\) at \(x,y\) is \(x+y\ne0\). The operator
+\(\bigwedge^2 C\) is diagonal there with entry \(xy\). Thus the
+least monic polynomial annihilating \(v\) is precisely \(P_f\),
+including when several pairs have the same product.
+In the ordinary power basis the \(j\)-th vector is
+\[
+          (\textstyle\bigwedge^2 C)^j v =
+               (X^j\bmod f)\wedge (X^{j+1}\bmod f).
+\]
+The script \texttt{scripts/check\_pair\_products.py} starts with
+the constant polynomial 1 and tests the proposed relation on this vector
+sequence in every coordinate. If the relation fails at a coordinate,
+Berlekamp--Massey computes the minimal recurrence of that coordinate
+from \(2\binom n2\) terms. Its degree is at most \(\binom n2\).
+Taking the lcm strictly increases the proposed annihilator, which
+always divides \(P_f\). A successful test on the entire vector therefore
+certifies equality. The script checks the resulting gcd tests against
+the exterior-power matrices for all 2,730 squarefree constant-one
+polynomials of positive degrees through 12.
+
+For \(F_n=X^n+X^5+X^3+X^2+1\), the fourth test passes at every
+\(n=2^s\) with \(3\le s\le10\), through degree 1024.
+There is an obstruction at the fifth test for infinitely many \(s\).
+The gcd with \(X^{32}-X\) depends only on \(s\bmod5\), since
+the fifth power of Frobenius fixes \(\mathbb F_{32}\). For residues
+\(0,1,2,3,4\) it is, respectively,
+\[
+ X^5+X^3+X^2+X+1,\quad X^5+X^3+1,\quad
+ X^5+X^4+X^3+X^2+1,\quad 1,\quad 1 .
+\]
+Each displayed quintic is irreducible because its roots lie in
+\(\mathbb F_{32}\setminus\F\). Their five conjugates have product 1.
+In particular rank five is the first failure in degrees 32, 64, 128
+and 1024. The fourth test for all powers of two remains open here.
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is

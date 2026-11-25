@@ -7,7 +7,7 @@ from sympy import Poly, divisors, resultant, symbols
 
 from check_dyadic_triples import EMPTY, ONE, T, Quadratic, image_symmetric, normalize
 from check_exterior import fixed_dimension
-from make_witnesses import gcd, remainder, x_power
+from make_witnesses import gcd, mask_product, remainder, x_power
 
 
 def exceptional_parameters(offset):
@@ -46,16 +46,6 @@ def root_factors(parameter_mask):
         for factor, _ in eliminated.factor_list()[1]:
             factors.add(polynomial_mask(factor))
     return sorted(factors)
-
-
-def mask_product(a, b):
-    result = 0
-    while b:
-        if b & 1:
-            result ^= a
-        a <<= 1
-        b >>= 1
-    return result
 
 
 def first_three_pass(offset, s, factors):

@@ -32,6 +32,27 @@ def remainder(value, modulus):
     return value
 
 
+def mask_product(a, b):
+    if a.bit_length() < b.bit_length():
+        a, b = b, a
+    result = 0
+    while b:
+        bit = b & -b
+        result ^= a << (bit.bit_length() - 1)
+        b ^= bit
+    return result
+
+
+def exact_quotient(f, g):
+    quotient = 0
+    while f.bit_length() >= g.bit_length():
+        shift = f.bit_length() - g.bit_length()
+        quotient ^= 1 << shift
+        f ^= g << shift
+    assert f == 0
+    return quotient
+
+
 def gcd(left, right):
     while right:
         left, right = right, remainder(left, right)
