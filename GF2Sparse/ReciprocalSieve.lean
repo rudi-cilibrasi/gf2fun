@@ -242,6 +242,43 @@ private theorem coprime_iff_aux {K : Type*} [Field K] [IsAlgClosed K] [Algebra (
     have hxt : (x ^ w) ^ t = 1 := by rw [← pow_mul, Nat.mul_comm w t, pow_mul, htx, one_pow]
     exact (hh _).elim (· hH) (· ((hcycl _).2 hxt))
 
+/-- For odd degree and two odd taps, a cyclic trinomial detects every repeated root. -/
+theorem odd_product_separable_iff {n u v h d a : ℕ}
+    (hn : Odd n) (hu : Odd u) (hv : Odd v)
+    (hspan : u + v = h * 2) (hgap : v = u + d * 2) (hdegree : n = u + a * 2) :
+    (productCandidate n u v).Separable ↔
+      IsCoprime (X ^ a + X ^ d + 1 : BinaryPoly) (X ^ h - 1) := by
+  let K := AlgebraicClosure (ZMod 2)
+  have hpos : 0 < h := by have := hu.pos; omega
+  apply coprime_iff_aux (K := K) (w := 1) hpos (Nat.coprime_one_left _)
+  · simp [eval_product, zero_pow hn.pos.ne', zero_pow hu.pos.ne', zero_pow hv.pos.ne']
+  · intro x hx
+    rw [pow_one]
+    have hfix : x ^ (u + v) = 1 ↔ x ^ h = 1 := by
+      rw [hspan, pow_mul]
+      exact ⟨sq_one, fun he => by rw [he, one_pow]⟩
+    have hval (ht : x ^ h = 1) : aeval x (productCandidate n u v) = 0 ↔
+        aeval x (X ^ a + X ^ d + 1 : BinaryPoly) = 0 := by
+      have hp : x ^ u * x ^ v = 1 := by rw [← pow_add]; exact hfix.2 ht
+      have he : aeval x (productCandidate n u v) =
+          x ^ u * (aeval x (X ^ a + X ^ d + 1 : BinaryPoly)) ^ 2 := by
+        simp only [eval_product, map_add, map_pow, aeval_X, map_one, CharTwo.add_sq, one_pow]
+        calc
+          _ = x ^ n + x ^ v + x ^ u := by
+            linear_combination hp + CharTwo.add_self_eq_zero (1 : K)
+          _ = _ := by
+            rw [hdegree, hgap, pow_add, pow_add, pow_mul, pow_mul]
+            ring
+      rw [he, mul_eq_zero]
+      simp [pow_ne_zero _ hx]
+    constructor
+    · rintro ⟨hz, hd⟩
+      have ht := hfix.1 ((repeat_odd hn hu hv hx hz).1 hd)
+      exact ⟨ht, (hval ht).1 hz⟩
+    · rintro ⟨ht, hz⟩
+      have hf := (hval ht).2 hz
+      exact ⟨hf, (repeat_odd hn hu hv hx hf).2 (hfix.2 ht)⟩
+
 /-- In the inverse-root sieve, one fixed polynomial determines squarefreeness.
 The residual exponent t is n-(P+L)w for even n and n-Pw for odd n. -/
 theorem reciprocalSieve_separable_iff {n v P L w t : ℕ}
