@@ -2081,4 +2081,134 @@ relative density of the selected progression inside the prescribed one.
 \emph{Distribution of the fractional parts of a polynomial when the
 argument runs over primes in an arithmetical progression}}.
 
+\section{Three tests in degrees with at most three signed binary digits}
+\begin{theorem}\label{thm:signed-digits}
+Suppose \(n\ge4\) is a sum of at most three signed powers of two.
+There is a squarefree degree-\(n\) binary polynomial with at most
+five terms having no product-one selection of one, two or three roots,
+including repetitions. If \(n\) is odd, one can choose a trinomial
+\(X^n+X^a+1\) with \(\gcd(n,a)=1\).
+\end{theorem}
+For example, the theorem applies to \(2^{1000}-2^{500}-1\), which has
+999 ones in binary. Here \(X^n+X^2+1\) passes all three tests because
+the two gcds in the next lemma are \(\gcd(1000,499)=1\) and
+\(\gcd(500,1)=1\), and neither 1000 nor 500 is divisible by three.
+
+\begin{lemma}\label{lem:signed-dyadic}
+Let \(1\le t\le s-2\), \(n=2^s-2^t-1\) and \(0\le i<s\).
+Write \(E(m,h)\) for the simultaneous conditions
+\[
+          \gcd(m,h)\text{ is odd},\qquad
+          3\nmid m/\gcd(m,h).
+\]
+The trinomial \(X^n+X^{2^i}+1\) excludes product-one triples if and
+only if \(E(s,t-i)\) and \(E(s-t,i)\) both hold. Such an \(i\)
+exists for every \(s,t\) above.
+\end{lemma}
+\begin{proof}
+Write \(F(x)=x^2\) and \(\phi(x)=1/(1+x)\) on the algebraic closure
+with 0 and 1 removed. These maps commute and \(\phi^3=1\).
+The triple identity of Theorem~\ref{thm:triple-orbits} implies that
+if \(x\) is in a triple, then \(\phi(x)\) is also a root. Here taking
+the inner exponent is a Frobenius automorphism. Conversely, if both
+are roots, then \(\phi^2(x)=(1+x)/x\) is also a root. Indeed, with
+\(A=F^i x\), the two root equations give
+\(x^n=1+A\) and \((1+x)^n=(1+A)/A\). Hence
+\(\phi^2(x)^n=1/A=1+\phi^2(x)^{2^i}\), and the three elements have
+product 1.
+
+Put \(U=F^s x\) and \(V=F^t x\). The equations at \(x,\phi(x)\)
+are respectively
+\[
+ U=Vx(1+A),\qquad (1+V)(1+x)(1+A)=A(1+U).
+\]
+Substitution makes the second equation
+\((1+(1+A)V)(1+(1+A)x)=0\).
+Thus the two equations are equivalent to the union of the two cases
+\[
+ (V=\phi(A),\ U=x)\qquad\text{or}\qquad (x=\phi(A),\ U=V).
+\]
+The first requires \(F^s x=x,\ F^{t-i}x=\phi(x)\).
+The second requires \(F^{s-t}x=x,\ F^{-i}x=\phi(x)\).
+Negative Frobenius powers here denote its inverse.
+
+More generally consider \(F^m x=x,\ F^h x=\phi(x)\) with
+\(m>0\), and set \(g=\gcd(m,h)\). If \(3\nmid m/g\), applying the
+second equation \(m/g\) times gives \(\phi(x)=x\).
+Its fixed points are the two nontrivial cube roots of unity,
+which satisfy the two equations precisely when \(m,h\) are both even.
+If \(3\mid m/g\), choose an inverse \(b\) of \(h/g\) modulo \(m/g\).
+The system is then equivalent to \(F^g x=\phi^b(x)\).
+Indeed, \(b\equiv1,2\pmod3\), and every solution is fixed by
+\(F^{3g}\), with \(3g\mid m\). Writing \(q=2^g\), either
+\(X^{q+1}+X^q+1\) or \(X^{q+1}+X+1\) gives that equation.
+Both have roots in the closure and exclude 0 and 1. This proves that
+the system has no solution exactly when \(E(m,h)\) holds.
+
+Let \(A_3,B_3\) be the largest powers of three dividing \(s,s-t\)
+respectively, and set \(H=\max(A_3,B_3)\).
+We need \(i\equiv t\pmod{A_3}\) and \(i\equiv0\pmod{B_3}\).
+The smaller of \(A_3,B_3\) divides \(t\), so take \(i=t\) if
+\(A_3\ge B_3\), and \(i=0\) otherwise. When \(s\) is even we need
+\(i\) opposite in parity to \(t\), and when \(s-t\) is even we
+need \(i\) odd. If both restrictions occur, \(t\) is even and they
+agree. If a parity change is needed and \(H\le s/2\), one of
+\(i+H,i-H\) lies in \([0,s-1]\) and gives it. If \(H>s/2\), then
+\(H=s\) or \(H=s-t\). In the first case \(s\) is odd and \(i=t\)
+already has the required parity whenever \(s-t\) is even. In the
+second case \(s-t\) is odd and \(i=0\) works whenever \(s\) is even.
+Finally \(2^i<n\), since \(t\le s-2\).
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:signed-digits}]
+For \(4\mid n\) use the constructions in Theorem~\ref{thm:three-bits}.
+Otherwise cancel opposite powers and carry repeated powers of the
+same sign. The least power in the resulting expansion is 1 or 2, so
+\(n=e+2^s\pm2^t\) with \(e\in\{-2,-1,1,2\}\). With just two
+digits, split the leading power into two equal positive powers.
+The primitive witnesses handle \(n\le21\), and the exact trinomial
+gcd check gives normalized trinomials for the odd small degrees.
+
+For a positive sign and either negative offset the calculation for
+Theorem~\ref{thm:three-bits} still applies. All denominators are
+powers of \(u,1+u\), both nonzero. For a negative sign, the two
+Frobenius images \(b=u^{2^s},c=u^{2^t}\) instead satisfy
+\[
+ \frac{b}{c}=P(u)=\frac{(1+u)^a}{u^e},\qquad
+ \frac{1+b}{1+c}=R(u)=\frac{(1+u)^{a-e}}{u^a}.
+\]
+If \(P=R\) at \(u\), the equations force \(P=R=1\); include the
+common zeros of their two numerators after subtracting 1.
+Otherwise \(c=C(u)=(1+R)/(P+R)\) and \(b=B(u)=P C(u)\).
+Frobenius commutation gives \(B(C(u))=C(B(u))\). All denominators
+remain nonzero on the Frobenius images of \(u\). The numerator of
+this last difference together with the exceptional common zeros
+therefore gives a fixed univariate annihilator. Test its factors at
+\(u\) and \(\phi(u)\), exactly as in the positive-sign case, now
+retaining the order of the pair \((s,t)\).
+
+The new finite calculations have the following periods. A checkmark
+means the displayed options also enforce coprimality with \(n\).
+\[
+\begin{array}{c|r|l|r|c}
+ \text{sign}& e&a&\text{period}&\gcd(n,a)=1\\ \hline
+ +&-1&2,3,4,7&72&\surd\\
+ +&-2&1,3,7,15&36&\surd\\
+ -&1&4,6,7,8,12&72&\surd\\
+ -&-1&5,6,7,9,11&72&\\
+ -&2&5,7,9,11,13&252&\\
+ -&-2&3,5,7,11&252&
+\end{array}
+\]
+In each row every residue pair admits a passing choice.
+The positive sign with positive offset is covered by
+Theorem~\ref{thm:normalized-offsets}. For the negative sign with
+\(e=-1\), Lemma~\ref{lem:signed-dyadic} gives a normalized choice;
+when \(s=t+1\) the degree is \(2^t-1\) and one can split the leading
+power to use the positive-sign row. Whenever \(n\) is even the
+listed inner exponents are odd, so all these trinomials are squarefree.
+The calculation and the formula for choosing a dyadic exponent are in
+\nolinkurl{scripts/check_binary_degree_triples.py}.
+\end{proof}
+
 \end{document}
