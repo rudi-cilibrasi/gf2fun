@@ -1086,6 +1086,66 @@ has order at most \(m(2^Q-1)<2^{mQ}-1\), since its \(m\)-th power
 has degree at most \(Q\). The substitutions therefore settle the three
 tests even in degrees where further tests necessarily fail.
 
+\paragraph{Degrees near powers of two.}
+Put \(F_n=X^n+X^5+X^3+X^2+1\) for \(n>5\).
+\begin{theorem}\label{thm:shifted-triples}
+Suppose \(n=2^s+d\) with
+\[
+ d\in\{-3,-2,-1,0,1,3,4,6,7,8,9\}.
+\]
+Then \(F_n\) passes the first three exterior-power tests exactly when
+\(n\not\equiv0,5\pmod7\). In particular it passes in every degree
+\(2^s+7\) and \(2^s+9\). All these pentanomials have exponent gcd 1.
+\end{theorem}
+\begin{proof}
+Replace \(h(X)\) in the cubic calculation by \(h(X)/X^d\).
+A root of \(F_n\) is taken to its \(2^s\)-th power by this map.
+When \(xyz=1\), the product of the three images is still
+\(t^3(t^2+uv)\). Thus the same parameterization
+\(u=tb,\ v=t(b+1),\ b^2+b=1+t^{-5}\) applies.
+For the new image map \(\Phi_d\), compute the normalized norms of
+\(E\circ\Phi_d\) and \(E\circ\Phi_d^2\) as above.
+Every possible \(t\) is a root of their gcd \(G_d\).
+
+There is a short exact test for the remaining possibilities even when
+\(G_d\ne1\). Write \(a=X^3+tX+1\) and \(w=X^2+X\). The cubic
+\(H\) is \(a+twb\) and its norm multiplied by \(t^3\) is
+\[
+           J(t,X)=t^3(a^2+twa+t^2w^2)+w^2.
+\]
+For each irreducible factor \(g\) of \(G_d\), form
+\(\operatorname{Res}_t(g,J)\). Every coordinate of a product-one
+triple belongs to the roots of these resultants. Among their distinct
+irreducible factors \(p(X)\), retain exactly those dividing \(F_n\).
+For a factor of degree \(e\) this test depends only on \(s\bmod e\),
+since Frobenius to the \(e\)-th power fixes its roots.
+The product of retained factors is squarefree. Testing its first three
+exterior powers detects any triple of distinct roots, any inverse
+pair, and root 1. This also detects repeated triples, since
+\(x^2y=1\) gives an inverse pair or root 1. Conversely an inverse
+pair gives a repeated triple; its two roots are retained because
+the resultants are binary and their root sets are closed under
+squaring and square roots. Thus the finite calculation is exact.
+
+The table gives \(G_d\) in hexadecimal and the passing values of
+\(s\bmod3\). The calculation of each gcd and resultant, followed by the
+exterior-power tests, is in \texttt{scripts/check\_shifted\_triples.py}.
+\[
+\begin{array}{r|rrrrrrrrrrr}
+d&-3&-2&-1&0&1&3&4&6&7&8&9\\ \hline
+G_d &5&11&5&1&5&14115&39&5&1&541&41\\
+s\bmod3&1,2&0,2&1,2&0,1,2&0,1&0&1,2&1,2&0,1,2&0,1&0,1,2
+\end{array}
+\]
+These are precisely the indicated congruences on \(n\).
+The two excluded classes have cubic factors. Modulo \(X^3+X+1\)
+one has \(h=1\), and modulo \(X^3+X^2+1\) one has \(h=X^5\).
+The nonzero roots of either cubic have order 7.
+\end{proof}
+The same script gives exact periods 45 and 24 in \(s\) for the
+offsets 2 and 5, respectively. The degree \(265=2^8+9\) member
+\(X^{265}+X^5+X^3+X^2+1\) is primitive.
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is

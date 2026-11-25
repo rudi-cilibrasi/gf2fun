@@ -42,11 +42,15 @@ class Quadratic:
                 ^ laurent_product(D, laurent_product(self.b, self.b)))
 
 
-def image_symmetric(u, v, zero, one):
-    """Elementary symmetric functions after applying h to the roots of X³+uX²+vX+1."""
+def image_symmetric(u, v, zero, one, offset=0):
+    """Elementary symmetric functions after applying h(X)/X^offset to the cubic roots."""
     def shift(column):
         a, b, c = column
         return c, a + v*c, b + u*c
+
+    def shift_back(column):
+        a, b, c = column
+        return b + v*a, c + u*a, a
 
     power = (one, zero, zero)
     column = (zero, zero, zero)
@@ -54,8 +58,10 @@ def image_symmetric(u, v, zero, one):
         if exponent in (0, 2, 3, 5):
             column = tuple(x + y for x, y in zip(column, power))
         power = shift(power)
+    for _ in range(abs(offset)):
+        column = shift_back(column) if offset > 0 else shift(column)
 
-    # Multiplication by h on the basis 1, X, X². The coefficients of its
+    # Multiplication by h(X)/X^offset on the basis 1, X, X². The coefficients of its
     # characteristic polynomial work for repeated roots as well.
     (a, d, g), (b, e, h), (c, f, i) = column, shift(column), shift(shift(column))
     return (a + e + i, a*e + b*d + a*i + c*g + e*i + f*h,
