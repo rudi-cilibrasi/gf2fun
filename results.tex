@@ -3046,6 +3046,22 @@ A prime dividing both \(n\) and \(2^n-1\) would give an order of
 2 greater than 1 dividing both \(s\) and \(n\).
 \end{proof}
 
+\begin{corollary}
+Suppose the hypotheses for all the prime divisors of \(n\) in
+Theorem~\ref{thm:ore-primitive-component} hold, \(\gcd(n,2^n-1)=1\),
+and there is just one prime \(q\) with \(\operatorname{ord}_q(2)=n\).
+If \(q^2\nmid2^n-1\), the root \(r\) is primitive exactly when its
+norm to every maximal proper subfield is primitive.
+\end{corollary}
+\begin{proof}
+Write \(J=(2^n-1)/h\). The theorem puts \(q\) in \(h\) with its
+full multiplicity. Every other prime in \(2^n-1\) divides
+\(2^{n/p}-1\) for some prime \(p\mid n\). The index of the norm
+to that subfield is \(\gcd(J,2^{n/p}-1)\) by
+Section~\ref{sec:ore-norms}. All these indices equal one exactly
+when \(J=1\).
+\end{proof}
+
 For \(s=11\), \(n=2047=23\cdot89\), every lifted order contains a
 prime \(q\) with \(\operatorname{ord}_q(2)=2047\), hence
 \(q\equiv1\pmod{4094}\). This applies to \(X^{2047}+X^3+1\),
@@ -3061,6 +3077,49 @@ scaling element by binary elimination, multiplies the resulting
 polynomials below degree \(n\), and can independently compute
 \(X^D\) directly in the lifted quotient with FLINT. The comparison
 works for all 88 primitive trinomials and pentanomials of seed
-degree 15.
+degree 15. Lean verifies the polynomial separation, the common-scalar
+linear algebra, and the integer prime-power extraction in
+\nolinkurl{GF2Sparse/OreSubsetProducts.lean} and
+\nolinkurl{GF2Sparse/OreComponents.lean}.
+
+\section{Partial orders in degree 2047}\label{sec:ore2047}
+\begin{theorem}
+Of the 46 sparse primitive seeds of degree 11 and weight at most five,
+two give degree-2047 lifts whose orders omit 47. Their seed supports
+are \(\{0,2,3,7,11\}\) and \(\{0,4,8,9,11\}\).
+For all 46 lifts the root order contains each of
+\[
+ 131009,\quad 724639,\quad 2529391927,\quad 70676429054711
+\]
+and at least one further prime of order 2047 for the base 2.
+\end{theorem}
+\begin{proof}
+Put \(M=2^{2047}-1\). Let \(A\) be the product of the four displayed
+primes and the three primes \(47,178481,618970019642690137449562111\).
+All seven are prime, \(A\mid M\), and \(B=M/A\) is coprime to
+both \(A\) and \((2^{23}-1)(2^{89}-1)\). The integer \(B\) has
+549 decimal digits. Every prime of \(B\) therefore has order 2047
+for the base 2. The partial factor list is from
+\href{https://factordb.com/index.php?id=1000000000000002047}
+{the FactorDB record for \(2^{2047}-1\)}.
+
+Enumerate the primitive seeds and form each lifted quotient.
+For every root \(r\), one has \(r^M=1\) and \(r^A\ne1\).
+The latter test forces a prime of \(B\) into the order.
+For 44 seeds, \(r^{M/p}\ne1\) for all seven primes \(p\mid A\).
+For the two listed seeds the only equality is at \(p=47\).
+These checks use FLINT in \nolinkurl{scripts/check_ore_2047.py}.
+The exact order is consequently \(Au\) for the 44 seeds and
+\((A/47)u\) for the other two, with \(1<u\mid B\) in every case.
+The remaining factor \(u\) can depend on the seed.
+
+For the two exclusions, \(47\) is coprime to \(M/47\).
+Taking \(w=r^{47^{-1}\bmod(M/47)}\) gives \(w^{47}=r\).
+Lean verifies the two explicit masks for \(w\), the primitivity
+of each seed, the irreducibility of its lift, and nonprimitivity
+in \nolinkurl{GF2Sparse/OreIndexFortySeven.lean}. The witness check
+needs six exponent bits. These reciprocal seeds show that prime
+seed degree alone does not guarantee a primitive lift.
+\end{proof}
 
 \end{document}
