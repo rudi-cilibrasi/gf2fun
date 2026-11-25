@@ -2157,9 +2157,10 @@ agree. If a parity change is needed and \(H\le s/2\), one of
 \(H=s\) or \(H=s-t\). In the first case \(s\) is odd and \(i=t\)
 already has the required parity whenever \(s-t\) is even. In the
 second case \(s-t\) is odd and \(i=0\) works whenever \(s\) is even.
-Finally \(2^i<n\), since \(t\le s-2\). Lean verifies the sufficient
-integer tests and the example \(s=1000,t=500,i=1\) in
-\nolinkurl{GF2Sparse/SignedTriples.lean}.
+Finally \(2^i<n\), since \(t\le s-2\). Lean verifies the sufficient tests and the example \(s=1000,t=500,i=1\) in
+\nolinkurl{GF2Sparse/SignedTriples.lean}. It also verifies the choice
+of \(i\) for every such \(s,t\), including degree, exact weight,
+squarefreeness and coprimality, in \nolinkurl{GF2Sparse/SignedDegreeChoices.lean}.
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:signed-digits}]
@@ -2212,5 +2213,21 @@ listed inner exponents are odd, so all these trinomials are squarefree.
 The calculation and the formula for choosing a dyadic exponent are in
 \nolinkurl{scripts/check_binary_degree_triples.py}.
 \end{proof}
+
+\paragraph{A reduction for the all-degree three-test problem.}
+It suffices to construct squarefree polynomials of weight at most five
+with constant term 1 passing the three tests in degrees \(p\) and
+\(2p\) for every prime \(p\ge5\). An odd substitution \(X\mapsto X^m\)
+preserves the number of terms and the exclusions, since taking
+\(m\)-th powers sends roots back to roots and preserves product 1.
+It also preserves squarefreeness, since at a root of \(f(X^m)\) both
+\(X^{m-1}\) and \(f'(X^m)\) are nonzero. For odd \(n\ge5\),
+use an odd prime divisor \(p\ge5\) as the seed degree if one exists;
+otherwise \(9\mid n\) and the degree-nine seed works.
+For \(n\equiv2\pmod4\), \(n\ge6\), apply the same argument to
+\(n/2\), using seed \(2p\) or seed 6. The constructions in
+Theorem~\ref{thm:three-bits} cover \(4\mid n\).
+For \(m>1\), the exponents of the substituted polynomial have a common
+divisor \(m\), so this reduction concerns the three root-product tests.
 
 \end{document}
