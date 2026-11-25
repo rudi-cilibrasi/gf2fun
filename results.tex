@@ -4170,9 +4170,9 @@ of weight at most five. At every covered degree from 5 onward, it has
 the form \(X^n+(1+X^u)(1+X^v)\) with \(0<u<v<u+v<n\).
 \end{theorem}
 \begin{proof}
-The consecutive certificates cover degrees through 1228. The table
-\nolinkurl{data/product-witnesses-1230-1280.csv} supplies the remaining
-46 witnesses. In degree 1280 it gives \(u=6,v=49\).
+The consecutive certificates cover degrees through 1228.
+
+\nolinkurl{data/product-witnesses-1230-1280.csv} supplies 46 more witnesses. In degree 1280 it gives \(u=6,v=49\).
 For each row the group-order factors in
 \nolinkurl{data/mersenne-1230-1280-factors.json} multiply to \(2^n-1\).
 PARI/GP found the witnesses and FLINT independently verified
@@ -4219,5 +4219,41 @@ in square blocks gives a residue coprime to \(C\). This proves
 \(h>K(1+2n\cdot2^{32})\) in every row.
 \nolinkurl{scripts/check_open_degrees.py} replays the field checks
 and recomputes the products by Lagrange interpolation.
+
+\section{All even degrees through 2292}
+\begin{theorem}\label{thm:even2292}
+For every even \(6\le n\le2292\) there is a primitive pentanomial
+\[
+   X^n+(1+X^u)(1+X^v),\qquad 0<u<v<u+v<n,\quad u+v\le299.
+\]
+In particular every positive even degree at most 2292 admits a
+primitive polynomial of weight at most five. The uniform bound 299
+is sharp within this product family.
+\end{theorem}
+\begin{proof}
+The 1,144 rows of \nolinkurl{data/even-least-span-6-2292.csv} cover the
+even degrees from 6 through 2292 in steps of two. The largest value
+of \(u+v\) is attained only at \((n,u,v)=(2016,126,173)\).
+For each row, PARI/GP searched in increasing order of \(u+v\) and then
+of \(u\). FLINT checked the full power and all 23,551 prime-index
+powers for the displayed witnesses, verified every factorization of
+\(2^n-1\), and proved primality for the 6,794 distinct factors.
+The pinned Cunningham table supplies the integer inputs except at
+degrees 2182, 2194, 2216, 2218, 2246, 2248, 2258, 2272, and 2278.
+Their FactorDB decompositions appear in
+\nolinkurl{data/mersenne-even-2182-2292-extra.json}.
+Degrees two and four use the certificates of Theorem~1.
+
+To prove sharpness take \(n=2016\). Among the 22,052 pairs with
+\(0<u<v\) and \(u+v<299\), precisely 22,027 give reducible
+polynomials. The other 25 have a root of proper order.
+The independent checker \nolinkurl{scripts/check_even_span.py}
+first tests divisibility by monic binary polynomials of degrees
+through ten with constant term one. It tests the survivors for
+irreducibility in FLINT. For each surviving irreducible it verifies
+\(X^{(2^{2016}-1)/q}=1\) modulo the polynomial for a divisor
+\(q>1\) of \(2^{2016}-1\). The displayed degree-2016 witness
+attains span 299.
+\end{proof}
 
 \end{document}
