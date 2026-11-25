@@ -1,4 +1,5 @@
 import GF2Sparse.Table
+import GF2Sparse.PackedSquare
 import Mathlib.NumberTheory.LucasLehmer
 
 /-! Primitive witnesses from the even- and odd-degree families in the
@@ -102,5 +103,20 @@ theorem no_primitive_sidon_12 {a b c : ℕ} (ha : 0 < a) (hab : a < b)
   have he := excludesFullOrder_sound (by decide : 0 < 12) hf hd
     (by decide : 0 < 1365) (by decide) h
   simpa only [fiveTermMask, decode_xor, decode_pow_two, decode_one] using he
+
+open PackedSquare
+
+set_option maxRecDepth 32000 in
+set_option maxHeartbeats 16000000 in
+set_option exponentiation.threshold 8192 in
+/-- A primitive member of the two-odd-exponent parity family, with half-gap 43. -/
+theorem primitivePentanomial_2203_2117_656_168 :
+    Primitive (X^2203 + X^2117 + X^656 + X^168 + 1 : BinaryPoly) := by
+  rw [← decode_fiveTermMask]
+  exact primitive_of_run (n := 2203) (width := 2203) (fuel := 27)
+    (stages := stagesFor 12) (js := [2203, 2117, 656, 168, 0])
+    (by decide) (by decide +kernel)
+    (lucas_lehmer_sufficiency 2203 (by decide) (by norm_num))
+    (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 end GF2Sparse

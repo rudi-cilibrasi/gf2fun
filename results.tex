@@ -5838,4 +5838,25 @@ counts by Theorem~\ref{thm:parity-counts}. The uniform consequence
 uses \(n/\varphi(n)\ll\log\log(3n)\).
 \end{proof}
 
+The constructions for degrees \(0,3,5\pmod8\) include primitive
+examples. The file \nolinkurl{data/cyclic-parity-primitive.csv}
+records twenty examples between degrees \(1208\) and \(1280\) and one
+in degree \(2203\), all with odd prime half-gap. Their exponents meet
+the displayed interval, small-factor and pair-sum conditions. The
+prime half-gaps in the table are verified directly. The interval
+\([X,2X]\) used for the asymptotic count is unnecessary for these
+individual checks.
+NTL found the examples and FLINT independently checked each full
+power and all \(375\) prime-index powers. The checker proves
+the integer factors prime, using Lucas--Lehmer in degree \(2203\).
+The \texttt{--primitive-examples} option of the parity checker
+reproduces these calculations. In particular Lean proves that
+\[
+ X^{2203}+X^{2117}+X^{656}+X^{168}+1
+\]
+is primitive. Its half-gap is \(43\). The certificate uses a
+Lucas--Lehmer proof that \(2^{2203}-1\) is prime and checks the
+full power in the polynomial quotient.
+See \nolinkurl{GF2Sparse/ParityExamples.lean}.
+
 \end{document}

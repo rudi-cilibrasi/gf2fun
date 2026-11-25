@@ -69,6 +69,8 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+The cyclic inverse construction gives 21 certified primitive pentanomials, including $X^{2203}+X^{2117}+X^{656}+X^{168}+1$. Lean checks that example. The Python checker verifies all 21 full powers and 375 prime-index powers with `--primitive-examples`. [Witnesses](data/cyclic-parity-primitive.csv) · [Lean certificate](GF2Sparse/ParityExamples.lean) · [Verification code](scripts/check_cyclic_trinomial_parity.py)
+
 For pentanomials with two odd exponents and all even exponents divisible by eight, a single coefficient of a cyclic polynomial inverse gives the factor parity whenever the half-gap between the odd exponents is odd. At degree 1229 this identifies 638,918 squarefree candidates with odd factor count among 1,290,708 supports with prime half-gap. The complete census finds 3,899 irreducibles in this family. All pass the five order tests, including the example with taps 88, 376 and 1155. [Discriminant proof](results.pdf#page=72) · [Parity and census checker](scripts/check_cyclic_trinomial_parity.py)
 
 An exponent test rules out 38,390,964 pentanomials at degree 1229. If the three interior exponents are all 0 or 1 modulo four, the polynomial is reducible. More generally, a binary polynomial with constant term one supported in classes $\{0,s\}$ modulo four, with $s$ odd, is reducible in every degree congruent to 0, 3 or 5 modulo eight. [Proof](results.pdf#page=69) · [Discriminant and factorization check](scripts/check_two_residue_parity.py)

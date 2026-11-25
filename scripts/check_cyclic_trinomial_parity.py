@@ -2,12 +2,13 @@
 
 import argparse
 import csv
+import json
 from collections import Counter
-from itertools import combinations, product
-from math import isqrt
+from itertools import combinations, combinations_with_replacement, product
+from math import gcd, isqrt, lcm, prod
 from pathlib import Path
 
-from flint import fmpz_poly, nmod_poly
+from flint import fmpz, fmpz_poly, nmod_poly
 
 
 def inverse_mod(value, modulus):
@@ -70,6 +71,57 @@ def check_lifts(through):
           f"including integer discriminants for all {squarefree} squarefree lifts.")
 
 
+def check_primitive_examples():
+    data = Path(__file__).resolve().parents[1] / "data"
+    orders = {}
+    for name in ("mersenne-1207-1228-factors.json", "mersenne-1230-1280-factors.json"):
+        orders.update(json.loads((data / name).read_text()))
+    x = nmod_poly([0, 1], 2)
+    primes = set()
+    degrees = set()
+    checks = 0
+    with (data / "cyclic-parity-primitive.csv").open(newline="") as stream:
+        for row in csv.DictReader(stream):
+            n, a, b, c, cutoff = (int(row[k]) for k in ("degree", "a", "b", "c", "cutoff"))
+            if not 0 < a < b < c < n or n in degrees or cutoff < 1 or n % 8 not in (0, 3, 5):
+                raise ValueError(f"invalid example in degree {n}")
+            degrees.add(n)
+            support = (0, a, b, c, n)
+            even = [e for e in support if e % 2 == 0]
+            u, v = (e for e in support if e % 2)
+            gap = (v - u) // 2
+            period = lcm(*(2**d - 1 for d in range(1, cutoff + 1)))
+            low, high = even[1:] if n % 2 else (u, even[1])
+            partner = u if n % 2 else v
+            if (not fmpz(gap).is_prime() or gcd(gap, n * period) != 1
+                    or not 12 * low < n < 16 * low or not 3 * high < n < 4 * high
+                    or low % period or (high - partner) % period
+                    or gcd(*support) != 1
+                    or len({i+j for i, j in combinations_with_replacement(support, 2)}) != 15
+                    or discriminant_mod_eight(even, u, v) != (1 if n % 2 else 5)):
+                raise ArithmeticError(f"family conditions failed at {support}")
+            order = 2**n - 1
+            if n == 2203:
+                # Lucas--Lehmer proves primality of this full group order.
+                state = 4
+                for _ in range(n - 2):
+                    state = (state * state - 2) % order
+                if not fmpz(n).is_prime() or state:
+                    raise ArithmeticError(f"Lucas--Lehmer check failed in degree {n}")
+                factors = [order]
+            else:
+                factors = orders[str(n)]
+                primes.update(factors)
+            f = sum((x**e for e in support), nmod_poly([], 2))
+            if (prod(factors) != order or x.pow_mod(order, f) != 1
+                    or any(x.pow_mod(order // p, f) == 1 for p in set(factors))):
+                raise ArithmeticError(f"order check failed at {support}")
+            checks += len(set(factors))
+    if not degrees or not all(fmpz(p).is_prime() for p in primes):
+        raise ArithmeticError("missing examples or composite group-order factor")
+    print(f"Verified {len(degrees)} primitive pentanomials and {checks} prime-index powers.")
+
+
 def census_1229(irreducible_path):
     """Count every even-tap pair for each odd prime half-gap in degree 1229."""
     n = 1229
@@ -116,7 +168,9 @@ def census_1229(irreducible_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--through", type=int, default=48)
-    parser.add_argument("--census-1229", action="store_true", help="count parity for odd prime half-gaps")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--census-1229", action="store_true", help="count parity for odd prime half-gaps")
+    mode.add_argument("--primitive-examples", action="store_true", help="verify the full orders of the tabulated examples")
     parser.add_argument("--irreducibles", type=Path, help="compare the census against complete --list output")
     args = parser.parse_args()
     if args.through < 3:
@@ -125,5 +179,7 @@ if __name__ == "__main__":
         parser.error("--irreducibles requires --census-1229")
     if args.census_1229:
         census_1229(args.irreducibles)
+    elif args.primitive_examples:
+        check_primitive_examples()
     else:
         check_lifts(args.through)
