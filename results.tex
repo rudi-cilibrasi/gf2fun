@@ -1589,19 +1589,42 @@ operator argument in \texttt{GF2Sparse/Linearized.lean}.
 \href{https://maths-people.anu.edu.au/~brent/pd/rpb199.pdf\#page=8}
 {Brent, Larvala and Zimmermann, section 6}.
 
+\begin{theorem}\label{thm:additive-orbit}
+Let the roots of an irreducible binary polynomial be the nonzero
+elements of an \(s\)-dimensional binary vector space \(V\) in the
+algebraic closure. No product of \(k\) roots is 1 for \(0<k<s\),
+even if repetitions are allowed.
+\end{theorem}
+\begin{proof}
+Fix one root \(r\). Every nonzero element of \(V\) is a Frobenius
+conjugate of \(r\). Given \(k\) selected roots, write them as
+\(r^{2^{a_1}},\ldots,r^{2^{a_k}}\) and set
+\(H(v)=\prod_i v^{2^{a_i}}\). If \(H(r)=1\), then
+\(H(v)=1\) for every nonzero \(v\in V\), while \(H(0)=0\).
+Hence \(\sum_{v\in V} H(v)=1\) in characteristic two.
+
+In binary coordinates on \(V\), each map \(v\mapsto v^{2^{a_i}}\)
+is linear, with coefficients in the splitting field. Thus \(H\) has
+total degree at most \(k\). For \(k<s\) every monomial misses a
+coordinate. Summing over that coordinate counts each value twice,
+so the sum is zero, a contradiction.
+\end{proof}
+
 \begin{corollary}\label{cor:mersenne-127}
 Put \(n=2^{127}-1\) and \(u=(n-1)/3\). Both \(X^n+X+1\) and
 \(1+X(X^u+1)^3\) are irreducible. The latter pentanomial and its
-reciprocal pass the first seventeen exterior-power tests.
+reciprocal pass the first 126 exterior-power tests.
 \end{corollary}
 \begin{proof}
 Lean verifies that \(Y^{127}+Y+1\) is primitive, using Lucas--Lehmer
 for the primality of \(2^{127}-1\). Ore's implication gives the
 trinomial assertion. The cubing map in Theorem~\ref{thm:unbounded-ranks}
 preserves the root field in both directions, hence also the degree.
-If a product of \(l\le17\) pentanomial roots were 1, its lifts would
-give a product in \(\mathbb F_4^\times\) of trinomial roots. Each
-would have degree at most \(B_l\le B_{17}=34\cdot2^{120}<n\).
+The roots of \(X^{2^{127}}+X^2+X\) form a binary space of dimension
+127 by additivity and separability. Its nonzero elements are exactly
+the trinomial roots, so Theorem~\ref{thm:additive-orbit} applies.
+Since \(n\) is odd, cubing is injective on \(\mathbb F_{2^n}^\times\).
+Cubing or inverting the roots therefore preserves every product-one test.
 Lean checks both irreducibility assertions. Determining the full
 multiplicative order in degree \(n\) remains open here.
 \end{proof}
