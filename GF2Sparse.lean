@@ -1,3 +1,4 @@
+import GF2Sparse.ConjugateProducts
 import GF2Sparse.Coverage
 import GF2Sparse.Grid
 import GF2Sparse.IterateOrder

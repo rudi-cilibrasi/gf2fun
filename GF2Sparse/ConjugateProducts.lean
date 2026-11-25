@@ -1,0 +1,134 @@
+import GF2Sparse.Basic
+import Mathlib.Combinatorics.Colex
+
+/-! Detect full multiplicative order by products of binary Frobenius powers. -/
+
+namespace GF2Sparse
+
+variable {M : Type*} [CommMonoid M]
+
+def frobeniusProduct (x : M) (s : Finset ℕ) : M := ∏ i ∈ s, x ^ (2 ^ i)
+
+private theorem range_sum_bits (n : ℕ) : ∑ i ∈ Finset.range n, 2 ^ i = 2 ^ n - 1 := by
+  simpa using Nat.geomSum_eq (show 2 ≤ 2 by decide) n
+
+theorem frobeniusProduct_range (x : M) (n : ℕ) :
+    frobeniusProduct x (Finset.range n) = x ^ (2 ^ n - 1) := by
+  rw [frobeniusProduct, Finset.prod_pow_eq_pow_sum, range_sum_bits]
+
+private theorem bits_lt_of_ssubset {s : Finset ℕ} {n : ℕ} (hs : s ⊂ Finset.range n) :
+    ∑ i ∈ s, 2 ^ i < 2 ^ n - 1 := by
+  obtain ⟨j, hj, hjs⟩ := Finset.exists_of_ssubset hs
+  rw [← range_sum_bits]
+  exact Finset.sum_lt_sum_of_subset hs.subset hj hjs (Nat.two_pow_pos j) (fun _ _ _ => Nat.zero_le _)
+
+/-- No nonempty proper selection of conjugates of a full-order root has product one. -/
+theorem frobeniusProduct_ne_one_of_full_order {x : M} {n : ℕ}
+    (ho : orderOf x = 2 ^ n - 1) {s : Finset ℕ} (hs : s ⊂ Finset.range n)
+    (hne : s.Nonempty) : frobeniusProduct x s ≠ 1 := by
+  intro h
+  rw [frobeniusProduct, Finset.prod_pow_eq_pow_sum] at h
+  have hd := orderOf_dvd_of_pow_eq_one h
+  have hpos : 0 < ∑ i ∈ s, 2 ^ i := Finset.sum_pos (fun i _ => Nat.two_pow_pos i) hne
+  exact (not_lt_of_ge (Nat.le_of_dvd hpos (ho ▸ hd))) (bits_lt_of_ssubset hs)
+
+/-- Checking products up to half the degree suffices. If a proper subgroup
+contains the root, the binary digits of its order or their complement give
+a nonempty selection of at most half the indices with product one. -/
+theorem order_iff_half_frobeniusProducts {x : M} {n : ℕ} (hn : 0 < n) :
+    orderOf x = 2 ^ n - 1 ↔ frobeniusProduct x (Finset.range n) = 1 ∧
+    ∀ s ⊆ Finset.range n, s.Nonempty → 2 * s.card ≤ n → frobeniusProduct x s ≠ 1 := by
+  have hsize : 0 < 2 ^ n - 1 := Nat.sub_pos_of_lt (Nat.one_lt_two_pow hn.ne')
+  constructor
+  · intro ho
+    refine ⟨by rw [frobeniusProduct_range, ← ho, pow_orderOf_eq_one], ?_⟩
+    intro s hs hne hhalf
+    apply frobeniusProduct_ne_one_of_full_order ho _ hne
+    apply (Finset.ssubset_iff_subset_ne).2 ⟨hs, ?_⟩
+    rintro rfl
+    simp only [Finset.card_range] at hhalf
+    omega
+  · rintro ⟨hfull, hshort⟩
+    have hd := orderOf_dvd_of_pow_eq_one ((frobeniusProduct_range x n).symm.trans hfull)
+    have hpos := Nat.pos_of_dvd_of_pos hd hsize
+    refine (Nat.le_of_dvd hsize hd).eq_of_not_lt (fun hlt => ?_)
+    let s := (orderOf x).bitIndices.toFinset
+    have hsum : ∑ i ∈ s, 2 ^ i = orderOf x := Finset.twoPowSum_toFinset_bitIndices _
+    have hs : s ⊆ Finset.range n := by
+      intro i hi
+      have hbit := Nat.two_pow_le_of_mem_bitIndices (List.mem_toFinset.1 hi)
+      exact Finset.mem_range.2 ((Nat.pow_lt_pow_iff_right (by decide : 1 < 2)).1 (by omega))
+    have hne : s.Nonempty := by
+      by_contra! he
+      simp [he] at hsum
+      omega
+    have he : frobeniusProduct x s = 1 := by
+      rw [frobeniusProduct, Finset.prod_pow_eq_pow_sum, hsum, pow_orderOf_eq_one]
+    by_cases hsmall : 2 * s.card ≤ n
+    · exact hshort s hs hne hsmall he
+    · have hproper : s ≠ Finset.range n := by
+        intro heq
+        rw [heq, range_sum_bits] at hsum
+        omega
+      have hcomp := Finset.sdiff_nonempty.2 (fun hc => hproper (Finset.Subset.antisymm hs hc))
+      apply hshort _ Finset.sdiff_subset hcomp
+      · rw [Finset.card_sdiff_of_subset hs, Finset.card_range]
+        omega
+      · have hprod := Finset.prod_sdiff (f := fun i => x ^ (2 ^ i)) hs
+        change frobeniusProduct x _ * frobeniusProduct x s = frobeniusProduct x _ at hprod
+        simpa only [he, hfull, mul_one] using hprod
+
+theorem primitive_iff_half_frobeniusProducts {f : BinaryPoly} (hf : f.Monic) (hn : 0 < f.natDegree) :
+    let x := AdjoinRoot.root f
+    let n := f.natDegree
+    Primitive f ↔ frobeniusProduct x (Finset.range n) = 1 ∧
+      ∀ s ⊆ Finset.range n, s.Nonempty → 2 * s.card ≤ n → frobeniusProduct x s ≠ 1 :=
+  (show Primitive f ↔ orderOf (AdjoinRoot.root f) = 2 ^ f.natDegree - 1 from
+    ⟨fun h => h.2.2, primitive_of_order hf hn⟩).trans (order_iff_half_frobeniusProducts hn)
+
+/-- With r = 0 or 1, these are the even or odd positions below 2m. -/
+def alternatingPositions (m r : ℕ) : Finset ℕ :=
+  (Finset.range m).map ⟨fun i => 2 * i + r, fun _ _ h => by dsimp at h; omega⟩
+
+@[simp] theorem card_alternatingPositions (m r : ℕ) : (alternatingPositions m r).card = m := by
+  simp [alternatingPositions]
+
+private theorem sum_alternatingPositions (m r : ℕ) :
+    ∑ i ∈ alternatingPositions m r, 2 ^ i = (∑ i ∈ Finset.range m, 4 ^ i) * 2 ^ r := by
+  rw [alternatingPositions, Finset.sum_map, Finset.sum_mul]
+  apply Finset.sum_congr rfl
+  intro i _
+  change 2 ^ (2 * i + r) = _
+  rw [pow_add, pow_mul]
+  rfl
+
+private theorem three_sum_four (m : ℕ) : 3 * (∑ i ∈ Finset.range m, 4 ^ i) + 1 = 4 ^ m := by
+  induction m with
+  | zero => simp
+  | succ m ih => rw [Finset.sum_range_succ, pow_succ]; omega
+
+/-- At index three, the only nonempty proper products equal to one are the
+even-index and odd-index products. Both involve exactly half the indices. -/
+theorem frobeniusProduct_eq_one_iff_index_three {x : M} {m : ℕ}
+    (ho : 3 * orderOf x = 2 ^ (2 * m) - 1)
+    {s : Finset ℕ} (hs : s ⊂ Finset.range (2 * m)) (hne : s.Nonempty) :
+    frobeniusProduct x s = 1 ↔ s = alternatingPositions m 0 ∨ s = alternatingPositions m 1 := by
+  have hgeom := three_sum_four m
+  have ho' : 3 * orderOf x = 4 ^ m - 1 := by simpa only [pow_mul] using ho
+  have hsum : ∑ i ∈ Finset.range m, 4 ^ i = orderOf x := by omega
+  have hpos : 0 < ∑ i ∈ s, 2 ^ i := Finset.sum_pos (fun i _ => Nat.two_pow_pos i) hne
+  rw [frobeniusProduct, Finset.prod_pow_eq_pow_sum, ← orderOf_dvd_iff_pow_eq_one]
+  constructor
+  · rintro ⟨j, hj⟩
+    have hjlt : j < 3 := Nat.lt_of_mul_lt_mul_left (a := orderOf x) (by
+      rw [← hj, Nat.mul_comm (orderOf x) 3, ho]
+      exact bits_lt_of_ssubset hs)
+    have hjne : j ≠ 0 := fun he => hpos.ne' (by simpa only [he, Nat.mul_zero] using hj)
+    rcases (show j = 1 ∨ j = 2 by omega) with rfl | rfl
+    · exact Or.inl (Finset.geomSum_injective (by decide : 2 ≤ 2) (by
+        simp [sum_alternatingPositions, hj, hsum]))
+    · exact Or.inr (Finset.geomSum_injective (by decide : 2 ≤ 2) (by
+        simp [sum_alternatingPositions, hj, hsum]))
+  · rintro (rfl | rfl) <;> simp [sum_alternatingPositions, hsum]
+
+end GF2Sparse
