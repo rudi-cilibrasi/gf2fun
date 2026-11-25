@@ -4416,8 +4416,7 @@ remaining cofactor
  C=\frac{2^{1243}-1}{(2^{11}-1)(2^{113}-1)}.
 \]
 In particular every such sparse root has order exceeding
-\(10677288697857\) by the certified divisor bound in the table of
-open degrees.
+\(262340983306321921\).
 \end{theorem}
 \begin{proof}
 We first give the support obstruction. Let \(u,v>1\) be coprime,
@@ -4461,6 +4460,21 @@ The argument therefore excludes \(h\mid K\), where \(h=\ord(r)\).
 The integer check \(\gcd(K,C)=1\) supplies a prime \(\ell\mid h\)
 with \(\ell\mid C\). Its order for 2 divides 1243 and divides neither
 11 nor 113, so it equals 1243.
+
+For the numerical bound apply the sieved product construction with
+step \(2486\) and wheel \(W=5460=4\cdot3\cdot5\cdot7\cdot13\).
+Each candidate prime is \(1\bmod 2486\), is \(\pm1\bmod8\),
+and exceeds 13. Exactly 1,152 offsets survive per wheel period.
+Starting at index zero, twelve doublings with Newton interpolation
+gave a residue coprime to \(C\). The product of four adjacent
+eleven-doubling Lagrange computations reproduced that residue.
+Thus every cofactor prime exceeds
+\(1+2486\cdot5460\cdot1152\cdot4^{12}=262340983306321921\).
+The residues are in \nolinkurl{data/degree-1243-wheel-products.json}.
+For the published candidate \(X^{1243}+(1+X^{22})(1+X^{27})\)
+the tests at every prime of \(K\) raise its individual bound to
+\(\ord(r)>2^{181}\). The \texttt{--bound-1243} option of
+\nolinkurl{scripts/check_subfield_products.py} recomputes the products.
 \end{proof}
 
 \begin{lemma}\label{lem:plane-order-gaps}

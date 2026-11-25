@@ -18,27 +18,28 @@ EXTENDED_BOUND = 818085338814611457
 DATA = Path(__file__).resolve().parents[1] / "data" / "degree-1229-wheel-products.json"
 
 
-def wheel_offsets(start):
-    # Every cofactor prime is 1 mod 2n, is ±1 mod 8 and exceeds 11.
-    return [j for j in range(1, WHEEL+1)
-            if (v := 1+STEP*(start+j)) % 8 in (1, 7) and gcd(v, WHEEL//4) == 1]
+def wheel_offsets(start, step=STEP, wheel=WHEEL):
+    return [j for j in range(1, wheel+1)
+            if (v := 1+step*(start+j)) % 8 in (1, 7) and gcd(v, wheel//4) == 1]
 
 
 def interval_length(doublings):
     return WHEEL * SEED_DEGREE * 4**doublings
 
 
-def wheel_product(start, doublings, method):
-    offsets = wheel_offsets(start)
-    if len(offsets) != SEED_DEGREE:
+def wheel_product(start, doublings, method, *, cofactor=COFACTOR, step=STEP,
+                  wheel=WHEEL, seed_degree=SEED_DEGREE):
+    """Product of the retained terms in wheel * seed_degree * 4**doublings indices."""
+    offsets = wheel_offsets(start, step, wheel)
+    if len(offsets) != seed_degree:
         raise ArithmeticError("incorrect number of admissible residues")
-    modulus = fmpz(COFACTOR)
-    ring = fmpz_mod_poly_ctx(COFACTOR)
-    constants = [1+STEP*(start+j) for j in offsets]
+    modulus = fmpz(cofactor)
+    ring = fmpz_mod_poly_ctx(cofactor)
+    constants = [1+step*(start+j) for j in offsets]
     degree = len(constants)
     values = []
     for i in range(degree+1):
-        shift = STEP*WHEEL*i
+        shift = step*wheel*i
         value = fmpz(1)
         for c in constants:
             value = value*(shift+c) % modulus
@@ -54,23 +55,29 @@ def wheel_product(start, doublings, method):
     return int(result)
 
 
-def verify_extension():
-    """Replay the four adjacent intervals following the two original products."""
-    record = json.loads(DATA.read_text())
-    start = (PUBLISHED_BOUND-1)//STEP
+def verify_chunks(record, *, cofactor, step, wheel, seed_degree, start, doublings, end_bound):
+    """Check the adjacent Lagrange products against the combined Newton residue."""
     product = 1
     for row in record["chunks"]:
-        if row["start"] != start or row["doublings"] != 12:
+        if row["start"] != start or row["doublings"] != doublings:
             raise ValueError("gap or wrong length in the wheel certificate")
-        residue = wheel_product(start, row["doublings"], "lagrange")
+        residue = wheel_product(start, doublings, "lagrange", cofactor=cofactor, step=step,
+                                wheel=wheel, seed_degree=seed_degree)
         if residue != row["residue"]:
             raise ValueError(f"incorrect wheel product after index {start}")
-        product = product*residue % COFACTOR
-        start += interval_length(row["doublings"])
-    bound = 1+STEP*start
-    if bound != EXTENDED_BOUND or product != record["combined"] or gcd(product, COFACTOR) != 1:
+        product = product*residue % cofactor
+        start += wheel*seed_degree*4**doublings
+    bound = 1+step*start
+    if bound != end_bound or product != record["combined"] or gcd(product, cofactor) != 1:
         raise ValueError("the combined product or the end of the interval failed")
     return bound
+
+
+def verify_extension():
+    """Replay the four intervals following the original degree-1229 products."""
+    return verify_chunks(json.loads(DATA.read_text()), cofactor=COFACTOR, step=STEP,
+                         wheel=WHEEL, seed_degree=SEED_DEGREE, start=(PUBLISHED_BOUND-1)//STEP,
+                         doublings=12, end_bound=EXTENDED_BOUND)
 
 
 if __name__ == "__main__":

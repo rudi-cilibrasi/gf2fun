@@ -1,8 +1,10 @@
 """Exclude products from the two proper subfields in sparse semiprime degrees."""
 
 import argparse
+import json
 from functools import cache
 from math import gcd
+from pathlib import Path
 
 from flint import fmpz, nmod_poly
 
@@ -58,11 +60,30 @@ def verify_1243():
           "prime of multiplicative degree 1243. The polynomial gcds for 23 and 89 both equal one.")
 
 
+def verify_1243_bound(threads):
+    from flint import ctx
+    from check_1229_wheel import verify_chunks
+    ctx.threads = threads
+    proper = (2**11-1)*(2**113-1)
+    cofactor = (2**1243-1)//proper
+    path = Path(__file__).resolve().parents[1] / "data" / "degree-1243-wheel-products.json"
+    bound = verify_chunks(json.loads(path.read_text()), cofactor=cofactor, step=2486, wheel=5460,
+                          seed_degree=1152, start=0, doublings=11, end_bound=262340983306321921)
+    print(f"The forced prime exceeds {bound}. The root order of the published product candidate "
+          f"exceeds 2^{(proper*bound).bit_length()-1} using its known-factor certificate.")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--through", type=int, help="scan odd products of two distinct primes through this degree")
+    parser.add_argument("--bound-1243", action="store_true", help="replay the four sieved divisor products")
+    parser.add_argument("--threads", type=int, default=1, help="FLINT threads for the divisor products")
     args = parser.parse_args()
+    if args.threads < 1:
+        parser.error("expected a positive number of threads")
     verify_1243()
+    if args.bound_1243:
+        verify_1243_bound(args.threads)
     if args.through is not None:
         if args.through < 15:
             parser.error("the first degree with two distinct odd prime factors is 15")
