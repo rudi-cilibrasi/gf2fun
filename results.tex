@@ -1885,6 +1885,37 @@ root in the stated class, and its Frobenius conjugates with powers
 \(1,2,4\) or \(1,8,64\) have product 1. For the order-9 case,
 \(x,x^4,x^4\) give a product-one triple.
 
+\begin{theorem}\label{thm:normalized-offsets}
+Let \(s,t\ge1\) and \(1\le e\le32\). At degree \(n=2^s+2^t+e\),
+except for \(n=8\), there is a trinomial \(X^n+X^a+1\) with
+\(1\le a\le21\), \(a<n\), and \(\gcd(n,a)=1\) having no product-one
+selection of one, two or three roots, even with repetitions.
+In degree 8 the primitive pentanomial \(X^8+X^5+X^3+X^2+1\)
+passes these tests.
+\end{theorem}
+\begin{proof}
+The script \nolinkurl{scripts/check_binary_degree_triples.py}
+lists the inner exponents for each offset. Apply the
+two-Frobenius calculation above to every choice. Enforce coprimality as
+follows. For each odd prime \(p\mid a\), discard the pairs \((s,t)\)
+with \(2^s+2^t+e\equiv0\pmod p\). This exclusion has period
+\(\ord_p(2)\) in each coordinate. The parity of \(n\) is the parity of
+\(e\), since \(s,t\ge1\).
+
+For example the normalized choices at \(e=1\) are \(3,5,7,9\), with
+common period 180. At \(e=2\) they are \(3,5,7,21\), with period 36.
+At \(e=28\) just \(3,7,9\) suffice, with period 630.
+Over all 32 offsets the largest common period is 2520, at \(e=25,26\).
+The script intersects the forbidden residue pairs for each choice
+and checks that the intersection is empty in every row.
+For \(n>21\) every resulting exponent is strictly below \(n\).
+For \(5\le n\le21\) the exact gcd criterion of
+Theorem~\ref{thm:triple-orbits} verifies the small cases directly.
+In degree 8 every normalized trinomial fails. The pentanomial is the
+primitive degree-eight witness verified in
+\nolinkurl{GF2Sparse/DyadicTriples.lean}.
+\end{proof}
+
 \section{Prime degrees with a triple for every fixed inner exponent}
 \begin{theorem}\label{thm:fixed-tap-triples}
 For every \(A\ge1\), there are arbitrarily large prime degrees \(n>A\)
