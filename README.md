@@ -71,6 +71,15 @@ The five other gaps through 1280 each have an irreducible product pentanomial wi
 
 ~~~sh
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_open_degrees.py
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_subfield_products.py --bound-1243 --threads 4
+~~~
+
+The semiprime census checks every eligible support in each degree. PARI/GP and NTL provide independent factorizations of the trinomials used in the proof. The Python checker also supports FLINT directly. To replay the census through 1280 with PARI/GP, or with the parallel NTL enumerator, run
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_subfield_census.py --through 1280 --gp gp
+g++ -O3 -std=c++17 -fopenmp scripts/subfield_trinomial_factors.cpp -lntl -lgmp -o /tmp/gf2-subfield-factors
+OMP_NUM_THREADS=8 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_subfield_census.py --through 1280 --ntl /tmp/gf2-subfield-factors
 ~~~
 
 Both degree-1229 candidates pass the first nine exterior-power tests. One known prime divisor of their root orders suffices. The checker compares 77,221,860 exact residues for ranks one through eight, then tests all 3,662,491,560 five-term windows needed for rank nine. The full run took 142 seconds with 16 threads and about 1.7 GiB of memory. [Proof](results.pdf#page=52) · [Integer checker](scripts/check_1229_short_products.cpp)

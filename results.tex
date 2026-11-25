@@ -4638,9 +4638,16 @@ The exact enumeration in \nolinkurl{scripts/check_subfield_census.py}
 finds zero polynomials of weight at most five in this subgroup for
 all 251 degrees. The default factorization backend is FLINT;
 \texttt{--through 1280 --gp gp} uses PARI/GP for the trinomial
-factors. Both backends reproduce the census for the 96 degrees
-through 512. Squared and reciprocal trinomials reuse the factors of
-their smaller representatives.
+factors. Squared and reciprocal trinomials reuse the factors of
+their smaller representatives. The independent NTL enumerator in
+\nolinkurl{scripts/subfield_trinomial_factors.cpp} also checks
+all 251 degrees. The two enumerators produce the same 303,033
+required factor rows on representatives with \(s\le t/2\) and
+at least one odd exponent. FLINT reproduces the census through
+degree 512. As a further check on the small-order branch, the plane
+and gap tests leave 23 pairs \((n,PQ)\) with both orders at most \(n\).
+PARI directly factored \(X^{PQ}+1\) for each pair. The smallest
+weight of a degree-\(n\) factor among those factorizations is 17.
 
 For 245 of the degrees, \(q\nmid 2^p-1\), so the full-degree
 component supplies a prime as above. The other six degrees have the

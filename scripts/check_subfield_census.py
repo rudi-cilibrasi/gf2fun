@@ -21,39 +21,43 @@ def reverse_mask(mask):
     return int(f"{mask:b}"[::-1], 2)
 
 
-def pari_factors(limit, degrees, executable):
-    """Factor the canonical trinomials over F_2 using PARI's binary-polynomial backend."""
-    program = f"needed={sorted(degrees)};\n" + (
-        f"for(t=2,{limit},for(s=1,t\\2,if(t%2 || s%2,"
-        "my(ff=factormod(x^t+x^s+1,2));for(i=1,matsize(ff)[1],"
-        "my(fi=ff[i,1],d=poldegree(fi));if(setsearch(needed,d),"
-        'print(t," ",s," ",d," ",subst(lift(fi),x,2)))))));\n'
-        'print("finished");\nquit\n')
-    run = subprocess.run([executable, "-q", "-f", "-s", "512M"], input=program,
-                         capture_output=True, text=True, check=True)
+def external_factors(limit, degrees, gp, ntl):
+    """Read the factors of the canonical trinomials from PARI or NTL."""
+    program = None
+    if gp:
+        program = f"needed={sorted(degrees)};\n" + (
+            f"for(t=2,{limit},for(s=1,t\\2,if(t%2 || s%2,"
+            "my(ff=factormod(x^t+x^s+1,2));for(i=1,matsize(ff)[1],"
+            "my(fi=ff[i,1],d=poldegree(fi));if(setsearch(needed,d),"
+            'print(t," ",s," ",d," ",subst(lift(fi),x,2)))))));\n'
+            'print("finished");\nquit\n')
+        command = [gp, "-q", "-f", "-s", "512M"]
+    else:
+        command = [ntl, str(limit), *map(str, sorted(degrees))]
+    run = subprocess.run(command, input=program, capture_output=True, text=True, check=True)
     lines = run.stdout.splitlines()
     if run.stderr.strip() or not lines or lines.pop() != "finished":
-        raise RuntimeError(f"PARI factor enumeration failed: {run.stderr}")
+        raise RuntimeError(f"factor enumeration failed: {run.stderr}")
     factors = defaultdict(list)
     for line in lines:
         t, s, d, mask = map(int, line.split())
         if not 0 < s <= t//2 or t > limit or d not in degrees or mask.bit_length() != d+1:
-            raise ArithmeticError(f"invalid factor row from PARI: {line}")
+            raise ArithmeticError(f"invalid factor row: {line}")
         factors[t, s].append((d, mask))
     return factors
 
 
-def trinomial_factors(limit, degrees, gp=None):
+def trinomial_factors(limit, degrees, gp=None, ntl=None):
     """Index all relevant factors of 1+X^s+X^t, including squares and reciprocals."""
     by_degree = defaultdict(list)
-    earlier = pari_factors(limit, degrees, gp) if gp else {}
+    earlier = external_factors(limit, degrees, gp, ntl) if gp or ntl else {}
     for t in range(2, limit+1):
         for s in range(1, t):
             if 2*s > t:
                 factors = [(d, reverse_mask(f)) for d, f in earlier[t, t-s]]
             elif t % 2 == s % 2 == 0:
                 factors = earlier[t//2, s//2]
-            elif gp:
+            elif gp or ntl:
                 factors = earlier[t, s]
             else:
                 factors = [(f.degree(), mask_of(f)) for f, _ in (X**t+X**s+1).factor()[1]
@@ -132,12 +136,12 @@ def exceptional_masks(n, p, q, order, trinomials):
     return result
 
 
-def census(limit, gp=None):
+def census(limit, gp=None, ntl=None):
     primes = [p for p in range(3, limit//3+1, 2) if fmpz(p).is_prime()]
     degrees = sorted((p*q, p, q) for p, q in combinations(primes, 2) if p*q <= limit)
     options = {(u, v): possible_plane_orders(u, v)
                for _, p, q in degrees for u, v in ((p, q), (q, p))}
-    factors = trinomial_factors(limit, {v for (_, v), h in options.items() if h}, gp)
+    factors = trinomial_factors(limit, {v for (_, v), h in options.items() if h}, gp, ntl)
     exceptional_degrees = count = prime_count = 0
     for n, p, q in degrees:
         masks = set()
@@ -175,8 +179,10 @@ def census(limit, gp=None):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--through", type=int, default=256, help="maximum semiprime degree")
-    parser.add_argument("--gp", metavar="EXECUTABLE", help="use PARI/GP to factor trinomials")
+    backend = parser.add_mutually_exclusive_group()
+    backend.add_argument("--gp", metavar="EXECUTABLE", help="use PARI/GP to factor trinomials")
+    backend.add_argument("--ntl", metavar="EXECUTABLE", help="use the compiled NTL factor enumerator")
     args = parser.parse_args()
     if args.through < 15:
         parser.error("expected a bound of at least 15")
-    census(args.through, args.gp)
+    census(args.through, args.gp, args.ntl)
