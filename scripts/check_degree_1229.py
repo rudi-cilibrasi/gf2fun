@@ -37,15 +37,25 @@ def check_trinomials():
     print(f"Verified a proper polynomial factor for all {len(checked)} trinomials of degree {N}.")
 
 
-def check(bound, taps=(U, V, U+V)):
+def check_known_order(f):
     if REMAINDER or gcd(KNOWN, COFACTOR) != 1 or not all(fmpz(p).is_prime() for p in PRIMES):
         raise ValueError("incorrect known factors")
     if fmpz(COFACTOR).is_prime():
         raise ValueError("the unresolved factor is prime")
     x = nmod_poly([0, 1], 2)
+    if x.pow_mod(GROUP, f) != 1:
+        raise ValueError("the root fails the field-order test")
+    for d in PRIMES:
+        if x.pow_mod(GROUP//d, f) == 1:
+            raise ValueError(f"the root order misses the known prime {d}")
+    if x.pow_mod(KNOWN, f) == 1:
+        raise ValueError("the root order divides the known part")
+
+
+def check(bound, taps=(U, V, U+V)):
+    x = nmod_poly([0, 1], 2)
     f = x**N + sum((x**i for i in taps), x**0)
-    if x.pow_mod(GROUP, f) != 1 or any(x.pow_mod(GROUP//d, f) == 1 for d in (*PRIMES, COFACTOR)):
-        raise ValueError("failed a polynomial order test")
+    check_known_order(f)
     for candidate in range(2*N+1, bound+1, 2*N):
         if COFACTOR % candidate == 0:
             raise ValueError(f"found a new divisor {candidate}")

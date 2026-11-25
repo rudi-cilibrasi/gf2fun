@@ -5237,4 +5237,86 @@ absolute degree is \(pq\). Moreover \(q\mid\ord(\alpha)\) and
 \nolinkurl{scripts/check_semiprime_gap.cpp}.
 \end{proof}
 
+\section{Every irreducible pentanomial in degree 1229}
+\begin{theorem}\label{thm:1229-all-orders}
+There are \(639166\) irreducible binary pentanomials of degree \(1229\).
+Every one has root order greater than \(2^{330}\), divisible by a
+prime of the 284-digit cofactor \(C\). For \(639144\) of the polynomials
+the root order is \(Kt\), where \(1<t\mid C\), and exceeds \(2^{345}\).
+The remaining eleven reciprocal pairs each miss exactly one known
+prime.
+\end{theorem}
+\begin{proof}
+Write \(M=2^{1229}-1=KC\) and let \(p_1=36871,p_2=46703,p_3,p_4\)
+be the four known primes in increasing order. They occur with
+exponent one. For \(f=X^{1229}+X^c+X^b+X^a+1\), take the smaller
+lexicographically of \((a,b,c)\) and \((1229-c,1229-b,1229-a)\).
+Inversion preserves the order of a root, and no support is fixed by
+reversal, since its three interior exponents would need a middle
+exponent fixed by reflection. This gives
+\(\binom{1228}{3}/2=153940238\) reciprocal pairs.
+
+Sieving by all 224 irreducibles of degrees two through ten leaves
+\(31863827\) pairs. For a fixed \(a,b\) and small factor \(g\), the
+excluded exponents are precisely the \(c\) satisfying
+\(X^c=1+X^{1229}+X^a+X^b\bmod g\).
+On the survivors, \(X^{2^{1229}}=X\bmod f\) is equivalent to
+irreducibility. Indeed \(X^{2^{1229}}+X\) has simple irreducible
+factors of degrees one and \(1229\), and \(f(0)=f(1)=1\).
+For each irreducible, compute \(X^{M/p_i}\bmod f\) for the four
+primes and \(X^K\bmod f\). The former residue is one exactly when
+\(p_i\) is absent from the root order. The latter is one exactly
+when the order has no cofactor prime. The counts up to reversal are
+\[
+\begin{array}{l|r}
+\text{order tests}&\text{reciprocal pairs}\\\hline
+p_1,p_2,p_3,p_4\text{ and a cofactor prime present}&319572\\
+p_1\text{ missing, other three and a cofactor prime present}&5\\
+p_2\text{ missing, other three and a cofactor prime present}&6\\
+\text{all other cases among irreducibles}&0
+\end{array}
+\]
+Theorem~\ref{thm:1229-cofactor-bound} therefore puts every order
+above \(818085338814611457\,p_1p_3p_4>2^{330}\).
+The counts sum to \(319583\) pairs. For the first row
+\(818085338814611457\,K>2^{345}\).
+
+The packed squaring and sparse polynomial reduction are in
+\nolinkurl{scripts/census_1229_pentanomials.cpp}. Every shard checks
+its field arithmetic against NTL on both sparse candidates and
+additional moduli with taps at word boundaries or near the leading
+term. The complete counts and all eleven exceptional tap triples
+are in \nolinkurl{data/degree-1229-pentanomial-census.csv} and
+\nolinkurl{data/degree-1229-order-exceptions.csv}.
+An independent Python implementation checks the sieve counts, assigning
+weight one half to equal endpoint gaps. FLINT verifies irreducibility
+and all five order projections for each exception. A separate NTL
+search tests \(X^K\bmod f\) directly on the sieve survivors.
+\end{proof}
+
+\begin{corollary}
+The same 3380 Gauss-period targets give a sufficient primitivity
+certificate for any one of the \(639144\) polynomials in the first
+row. Each supplied logarithm may be taken in the subgroup of order
+\(C\).
+\end{corollary}
+\begin{proof}
+The first row gives \(K\mid h\) for the root order \(h\), and every
+proper index \(M/h\) is at least \(818085338814611458\).
+Use the period projection of Section~\ref{sec:period-logs}.
+If the first parameter \(u=X\) gives the identity on projection,
+vary \(u\) in the field. The map
+\(u\mapsto (u+\tau+1)/(u+\tau)\), with \(\tau^2+\tau+1=0\),
+is injective from the projective line to the norm-one torus. Both
+sets have \(2^{1229}+1\) points, so the map is onto. A nonidentity
+projection to its subgroup of order 2459 exists. Parameters \(u\)
+and \(u+1\) give inverse elements, so one of each pair suffices.
+The resulting period satisfies the same irreducible polynomial in
+each field. All 2345 published period identities, their triangular
+consequences, and the degree counts in the character bound therefore
+apply. Section~\ref{sec:1229-frobenius-models} gives the lifting step
+from projected logarithms. The checker accepts the three interior taps
+and verifies the required order powers in the selected field.
+\end{proof}
+
 \end{document}

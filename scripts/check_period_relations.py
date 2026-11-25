@@ -10,7 +10,7 @@ from math import lcm
 from pathlib import Path
 
 from check_1229_wheel import EXTENDED_BOUND
-from check_degree_1229 import COFACTOR, KNOWN
+from check_degree_1229 import COFACTOR, KNOWN, check_known_order
 from check_factor_base import DATA, irreducible, irreducible_counts, modulus, moment_bound, polynomial
 from find_factor_base_logs import insert, recover
 from period_coordinate import CANDIDATES, DEGREE, coordinate, frobenius_indices, mask_of, period_polynomial
@@ -171,10 +171,12 @@ def read_compact_targets(masks, pivots, path=COMPACT_TARGETS):
     return targets, closure(pivots, targets)
 
 
-def verify_submissions(name, paths, pivots, masks, moment=ORIGINAL_MOMENT, projected=False):
-    f = modulus(DEGREE, CANDIDATES[name])
+def verify_submissions(name, paths, pivots, masks, moment=ORIGINAL_MOMENT, projected=False, taps=None):
+    taps = CANDIDATES[name] if taps is None else taps
+    f = modulus(DEGREE, taps)
     r = polynomial(2)
     a = coordinate(f)
+    check_known_order(f)
     group_exponent = COFACTOR if projected else ORDER
     projection = KNOWN if projected else 1
     base = r.pow_mod(projection, f)
@@ -209,7 +211,7 @@ def verify_submissions(name, paths, pivots, masks, moment=ORIGINAL_MOMENT, proje
         from batch_degree_1229 import verify_published
         from check_1229_wheel import verify_extension
         from check_degree_1229 import check as check_order
-        check_order(10**10, CANDIDATES[name])
+        check_order(10**10, taps)
         bound = verify_published()
         if moment == WHEEL_MOMENT:
             bound = verify_extension()
@@ -252,19 +254,24 @@ if __name__ == "__main__":
     selection.add_argument("--compact", action="store_true", help="check the 3,399-target list")
     selection.add_argument("--wheel", action="store_true", help="use the sieved index bound and 3,380 targets")
     parser.add_argument("--example-89", action="store_true", help="replay the complete one-logarithm example")
-    parser.add_argument("--candidate", choices=CANDIDATES, help="sparse modulus used for submitted exponents")
+    candidate = parser.add_mutually_exclusive_group()
+    candidate.add_argument("--candidate", choices=CANDIDATES, help="named modulus used for submitted exponents")
+    candidate.add_argument("--taps", nargs=3, type=int, metavar=("A", "B", "C"),
+                           help="use X^1229+X^C+X^B+X^A+1 as the sparse modulus")
     parser.add_argument("--logs", nargs="+", type=Path, help="verify supplied powers of the sparse root")
     parser.add_argument("--projected", action="store_true", help="verify logarithms after raising both sides to the known part of the order")
     args = parser.parse_args()
     if args.example_89:
-        if args.list_targets or args.compact or args.wheel or args.logs or args.candidate or args.projected:
+        if args.list_targets or args.compact or args.wheel or args.logs or args.candidate or args.taps or args.projected:
             parser.error("--example-89 is a standalone certificate")
         example89()
         sys.exit(0)
-    if bool(args.logs) != bool(args.candidate) or (args.list_targets and args.logs):
-        parser.error("log submissions require a candidate and at least one CSV")
+    if args.taps and not 0 < args.taps[0] < args.taps[1] < args.taps[2] < DEGREE:
+        parser.error("expected 0 < A < B < C < 1229")
+    if bool(args.logs) != bool(args.candidate or args.taps) or (args.list_targets and args.logs):
+        parser.error("log submissions require --candidate or --taps and at least one CSV")
     if args.projected and not args.logs:
-        parser.error("--projected requires --logs and --candidate")
+        parser.error("--projected requires --logs and a candidate")
     small = small_irreducibles()
     pivots = read_relations(small)
     raw_count = len(pivots)
@@ -290,4 +297,5 @@ if __name__ == "__main__":
               f"{len(targets)} inputs imply {len(covered)} polynomial logarithms.")
         print(f"Their conditional moment score is {score} > {DEGREE-2}.")
         if args.logs:
-            verify_submissions(args.candidate, args.logs, pivots, masks, moment, args.projected)
+            name = args.candidate or "taps " + ",".join(map(str, args.taps))
+            verify_submissions(name, args.logs, pivots, masks, moment, args.projected, args.taps)

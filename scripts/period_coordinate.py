@@ -1,6 +1,7 @@
 """Construct and check a Gauss period in either sparse field of degree 1229."""
 
 import argparse
+from itertools import chain
 
 from check_factor_base import irreducible, modulus, polynomial
 
@@ -48,18 +49,24 @@ def period_polynomial(n):
 
 
 def coordinate(f):
-    """Use u=X and project (u+t+1)/(u+t) to the (2n+1)-torsion, t²+t+1=0."""
+    """Project (u+t+1)/(u+t) to the (2n+1)-torsion, starting with u=X and t²+t+1=0."""
     n = f.degree()
     frobenius_indices(n)
     p = 2*n + 1
     if n % 2 == 0 or (2**n + 1) % p or not irreducible(f):
         raise ValueError("expected an odd extension degree, p dividing 2^n+1, and a field")
-    x = polynomial(2)
-    g, inv, _ = (x*x+x+1).xgcd(f)
-    if g != 1:
-        raise ArithmeticError("the trace denominator has no inverse")
-    a = dickson_value((2**n + 1)//p, inv % f, f)
-    if a == 0 or dickson_value(p, a, f) != 0:
+    # The choices u and u+1 give inverse torus points with the same trace.
+    for mask in chain((2,), range(4, 1 << n, 2)):
+        u = polynomial(mask)
+        g, inv, _ = (u*u+u+1).xgcd(f)
+        if g != 1:
+            raise ArithmeticError("the trace denominator has no inverse")
+        a = dickson_value((2**n + 1)//p, inv % f, f)
+        if a != 0:
+            break
+    else:
+        raise ArithmeticError("no nonidentity prime-torsion projection")
+    if dickson_value(p, a, f) != 0:
         raise ArithmeticError("the chosen trace failed the prime-torsion test")
     if period_polynomial(n).compose_mod(a, f) != 0:
         raise ArithmeticError("the independent minimal-polynomial check failed")

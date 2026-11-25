@@ -136,10 +136,10 @@ struct Result {
     Counts counts;
     long irreducibles = 0;
     std::array<long, 32> missing{};
-    std::vector<std::array<int, 3>> exceptions;
+    std::vector<std::array<int, 3>> taps;
 };
 
-Result check(int a, const std::vector<SmallFactor> &factors, const Exponents &tests) {
+Result check(int a, const std::vector<SmallFactor> &factors, const Exponents &tests, bool list) {
     Result r;
     r.counts = visit_tap(a, factors, [&](int b, int c) {
         const SparseModulus f(a, b, c);
@@ -149,20 +149,22 @@ Result check(int a, const std::vector<SmallFactor> &factors, const Exponents &te
         for (int j = 0; j < 5; ++j)
             if (f.power(tests[j]) == Element{1}) missing |= 1 << j;
         ++r.missing[missing];
-        if (missing) r.exceptions.push_back({b, c, missing});
+        if (missing || list) r.taps.push_back({b, c, missing});
     });
     return r;
 }
 }
 
 int main(int argc, char **argv) {
+    const bool list = argc > 1 && std::string(argv[1]) == "--list";
+    const int arg = list ? 2 : 1;
     int first = 1, last = degree/2;
-    if (argc == 3) {
-        first = std::stoi(argv[1]);
-        last = std::stoi(argv[2]);
+    if (argc == arg+2) {
+        first = std::stoi(argv[arg]);
+        last = std::stoi(argv[arg+1]);
     }
-    if ((argc != 1 && argc != 3) || first < 1 || last < first || last > degree/2) {
-        std::cerr << "usage: census_1229_pentanomials [first_tap last_tap]\n";
+    if ((argc != arg && argc != arg+2) || first < 1 || last < first || last > degree/2) {
+        std::cerr << "usage: census_1229_pentanomials [--list] [first_tap last_tap]\n";
         return 2;
     }
     const auto tests = order_tests();
@@ -170,7 +172,14 @@ int main(int argc, char **argv) {
     const auto factors = small_factors();
     std::vector<Result> results(last-first+1);
     #pragma omp parallel for schedule(dynamic, 1)
-    for (int a = first; a <= last; ++a) results[a-first] = check(a, factors, tests);
+    for (int a = first; a <= last; ++a) results[a-first] = check(a, factors, tests, list);
+    if (list) {
+        std::cout << "a,b,c,missing_mask\n";
+        for (int a = first; a <= last; ++a)
+            for (auto row : results[a-first].taps)
+                std::cout << a << ',' << row[0] << ',' << row[1] << ',' << row[2] << '\n';
+        return 0;
+    }
     std::cout << "smallest_tap,supports,no_small_factor,irreducibles,all_five,missing_p1,missing_p2,missing_both,other\n";
     std::cerr << "a,b,c,missing_mask\n";
     for (int a = first; a <= last; ++a) {
@@ -182,7 +191,7 @@ int main(int argc, char **argv) {
             other -= r.missing[i];
         }
         std::cout << ',' << other << '\n';
-        for (auto row : r.exceptions)
+        for (auto row : r.taps)
             std::cerr << a << ',' << row[0] << ',' << row[1] << ',' << row[2] << '\n';
     }
 }
