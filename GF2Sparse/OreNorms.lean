@@ -106,6 +106,24 @@ theorem frobenius_fixed_iff_nodes {t : ℕ} {z : K} {a c : Fin t → K}
   simpa [sub_eq_zero, binary_frobenius_pow_apply] using
     frobenius_annihilator_of_expansion ha hc hz ((X : BinaryPoly)^d-1)
 
+/-- An expansion with t distinct active nodes makes the first t
+conjugates linearly independent. If t is the field degree they form a normal basis. -/
+theorem independent_conjugates_of_expansion {t : ℕ} {z : K} {a c : Fin t → K}
+    (ha : Function.Injective a) (hc : ∀ i, c i ≠ 0)
+    (hz : ∀ k : ℕ, z^(2^k) = ∑ i, c i * (a i)^k) :
+    LinearIndependent (ZMod 2) (fun i : Fin t => z^(2^(i : ℕ))) := by
+  classical
+  apply Fintype.linearIndependent_iff.2
+  intro g hg i
+  let p : BinaryPoly := ∑ j : Fin t, C (g j) * X^(j : ℕ)
+  have hact : aeval (frobeniusAlgHom (ZMod 2) K).toLinearMap p z = 0 := by
+    simpa [p, LinearMap.sum_apply, Module.End.mul_apply, Algebra.algebraMap_eq_smul_one,
+      binary_frobenius_pow_apply] using hg
+  have hp := (frobenius_annihilator_of_expansion ha hc hz p).1 hact
+  have hzero : (fun j => algebraMap (ZMod 2) K (g j)) = 0 :=
+    Matrix.eq_zero_of_forall_index_sum_mul_pow_eq_zero ha fun j => by simpa [p] using hp j
+  exact (algebraMap (ZMod 2) K).injective (by simpa using congrFun hzero i)
+
 /-- Sums indexed by all nonzero binary coefficient vectors. Repetitions
 are retained, so the definition also applies to a dependent list. -/
 def nonemptyBinarySums {A : Type*} [Add A] : List A → List A

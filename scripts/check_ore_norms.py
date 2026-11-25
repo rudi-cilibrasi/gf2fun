@@ -22,8 +22,19 @@ def support(mask):
     return tuple(i for i in range(mask.bit_length()) if mask & (1 << i))
 
 
+def prefix_products(basis, modulus):
+    """Yield the product of the nonzero binary combinations of each successive prefix."""
+    values = list(basis)
+    result = nmod_poly([1], 2)
+    for i, pivot in enumerate(values):
+        result = result * pivot % modulus
+        yield result
+        for j in range(i + 1, len(values)):
+            values[j] = values[j] * (values[j] + pivot) % modulus
+
+
 def relative_norm(seed, s, b, modulus):
-    """Multiply all nonzero points of a b-dimensional subspace by successive elimination."""
+    """Compute the subspace product for the distinguished subfield of the seed field."""
     m = ((1 << s) - 1) // ((1 << b) - 1)
     scalar = x_power(m, seed)
     basis = []
@@ -31,12 +42,7 @@ def relative_norm(seed, s, b, modulus):
     for _ in range(b):
         basis.append(from_support([1 << i for i in support(value)]))
         value = remainder(mask_product(value, scalar), seed)
-    norm = nmod_poly([1], 2)
-    for i, pivot in enumerate(basis):
-        norm = norm * pivot % modulus
-        for j in range(i + 1, b):
-            basis[j] = basis[j] * (basis[j] + pivot) % modulus
-    return norm
+    return list(prefix_products(basis, modulus))[-1]
 
 
 def first_relation(value, modulus, bound, *, frobenius):
