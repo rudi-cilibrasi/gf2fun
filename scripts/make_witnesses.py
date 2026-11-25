@@ -158,23 +158,28 @@ def power_blocks(exponent, modulus, bits):
     return value, previous[::-1]
 
 
+def emit_modular_power(n, mask, bits, exponent, expression, name, *, full):
+    """Emit a kernel proof that X to this power is, or is not, one modulo modulus."""
+    value, blocks = power_blocks(exponent, mask, bits)
+    if (value == 1) != full:
+        raise ValueError(f"unexpected residue in degree {n} for {name}")
+    relation = "= 1" if full else "≠ 1"
+    print(f"\nprivate theorem {name} : root ^ {expression} {relation} :=")
+    if full:
+        print(f"  root_pow_one_of_blocks {n} modulus {bits} _ [")
+    else:
+        print(f"  root_pow_ne_one_of_blocks {n} modulus {bits} _ 0x{value:x} [")
+    print(",\n".join(f"    0x{a:x}" for a in blocks) + "] (by decide +kernel)")
+    if not full:
+        print("    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)")
+
+
 def emit_block_powers(n, mask, factors, bits, modulus_expression):
     print(f"\nprivate abbrev modulus := {modulus_expression}")
     print("private noncomputable abbrev root := AdjoinRoot.root (decode modulus)")
     for p in [1, *sorted(set(factors))]:
-        value, blocks = power_blocks(((1 << n) - 1) // p, mask, bits)
-        if (value == 1) != (p == 1):
-            raise ValueError(f"unexpected residue in degree {n} for divisor {p}")
-        exponent = f"(2 ^ {n} - 1)" if p == 1 else f"((2 ^ {n} - 1) / {p})"
-        relation = "= 1" if p == 1 else "≠ 1"
-        print(f"\nprivate theorem power{p} : root ^ {exponent} {relation} :=")
-        if p == 1:
-            print(f"  root_pow_one_of_blocks {n} modulus {bits} _ [")
-        else:
-            print(f"  root_pow_ne_one_of_blocks {n} modulus {bits} _ 0x{value:x} [")
-        print(",\n".join(f"    0x{a:x}" for a in blocks) + "] (by decide +kernel)")
-        if p != 1:
-            print("    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)")
+        expression = f"(2 ^ {n} - 1)" if p == 1 else f"((2 ^ {n} - 1) / {p})"
+        emit_modular_power(n, mask, bits, ((1 << n) - 1) // p, expression, f"power{p}", full=p == 1)
 
 
 def emit_certified_powers(n, factors):

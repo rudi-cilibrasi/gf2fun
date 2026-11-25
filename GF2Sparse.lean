@@ -1,6 +1,7 @@
 import GF2Sparse.AdditiveOrbit
 import GF2Sparse.ConjugateProducts
 import GF2Sparse.Coverage
+import GF2Sparse.Degree1229
 import GF2Sparse.DyadicExample1024
 import GF2Sparse.DyadicFactors
 import GF2Sparse.DyadicTap
