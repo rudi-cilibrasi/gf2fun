@@ -3466,10 +3466,34 @@ parity rule. Taking \(N_{16}=276\) gives
 \]
 Seroussi's listed polynomial \(X^{1229}+X^{15}+X^6+X^2+1\) also
 satisfies the full power and the four known prime-factor checks, so
-both sufficient sets apply to its root. These are two separate fields
-in the computation, each represented by its own modulus. The required
-logarithms for the 4,996-value test remain open for both candidates.
+both sufficient sets apply to its root. The logarithms use the residue
+of \(X\) for the chosen modulus. Lean proves the irreducibility and
+known order part of this second example in
+\nolinkurl{GF2Sparse/Seroussi1229.lean}. The required logarithms
+remain open for both candidates.
 \end{proof}
+
+For Seroussi's modulus, 4,993 supplied logarithms suffice. To see
+the two dependencies beyond the known value \(\log_r(r)=1\), write
+\(B_m\) for the polynomial with binary coefficient mask \(m\) and
+\(g=X^{15}+X^6+X^2+1\). Direct factorization gives
+\[
+\begin{aligned}
+ g&=B_3B_{32707},\\
+ X^{39}+1&=B_3B_7B_{6031}B_{7741}B_{8191},\\
+ X^{19}g+1&=B_{47}B_{16197}B_{121583}.
+\end{aligned}
+\]
+These displayed factors are irreducible. The first equality and
+\(r^{1229}=g(r)\) recover the logarithm of the degree-14 factor
+\(B_{32707}\) from that of \(B_3=X+1\). Also
+\(r^{19}g(r)+1=(r^{39}+1)^{32}\) because \(39\cdot32=1229+19\).
+The latter two factorizations therefore recover the logarithm of
+the degree-16 factor \(B_{121583}\) from lower degrees.
+It suffices to supply the other 4,718 lower-degree logarithms and
+any 275 further degree-16 logarithms. One explicit assignment is
+\nolinkurl{data/degree-1229-seroussi-targets.csv}. The checker verifies each
+derived value by modular exponentiation.
 
 In degree 47, take \(f=X^{47}+X^5+X^4+X+1\).
 The 71 logarithms in \nolinkurl{data/factor-base-47.csv} cover every

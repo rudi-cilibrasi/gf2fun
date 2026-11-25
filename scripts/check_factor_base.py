@@ -2,9 +2,11 @@
 
 import argparse
 import csv
+import sys
 from collections import Counter
 from fractions import Fraction
 from itertools import accumulate
+from math import prod
 from pathlib import Path
 
 from flint import nmod_poly
@@ -92,6 +94,58 @@ def verify_logs(paths, n, f):
                 logs[mask] = exponent
     return logs
 
+def seroussi_relations(logs, f):
+    """Complete any single missing log in two low-degree relations for Seroussi's field."""
+    x = polynomial(2)
+    tail = x**15 + x**6 + x**2 + 1
+    left = (3, 7, 6031, 7741, 8191)
+    right = (47, 16197, 121583)
+    if (polynomial(3) * polynomial(32707) != tail
+            or prod(map(polynomial, left)) != x**39 + 1
+            or prod(map(polynomial, right)) != x**19 * tail + 1):
+        raise ArithmeticError("incorrect factorizations for the degree-1229 relations")
+    if not all(irreducible(polynomial(p)) for p in {*left, *right, 32707}):
+        raise ArithmeticError("a listed polynomial factor is reducible")
+    ratios = {p: 32 for p in left}
+    ratios.update({p: -1 for p in right})
+    relations = (({3: 1, 32707: 1}, 1229), (ratios, 0))
+    order = (1 << 1229) - 1
+    added = 0
+    while True:
+        before = len(logs)
+        for terms, target in relations:
+            missing = terms.keys() - logs.keys()
+            if len(missing) != 1:
+                continue
+            p = missing.pop()
+            rest = sum(c * logs[q] for q, c in terms.items() if q != p)
+            exponent = ((target - rest) * pow(terms[p], -1, order)) % order
+            if not irreducible(polynomial(p)) or x.pow_mod(exponent, f) != polynomial(p):
+                raise ArithmeticError("the derived polynomial logarithm failed direct verification")
+            logs[p] = exponent
+            added += 1
+        if len(logs) == before:
+            return added
+
+
+def list_targets(seroussi):
+    """Emit one deterministic choice of the new logs in the extended-index certificate."""
+    implied = {2, 32707, 121583} if seroussi else {2}
+    needed = 275 if seroussi else 276
+    writer = csv.writer(sys.stdout, lineterminator="\n")
+    writer.writerow(("mask", "degree"))
+    for degree in range(1, 17):
+        for mask in range(1 << degree, 1 << (degree+1)):
+            if mask in implied or not irreducible(polynomial(mask)):
+                continue
+            writer.writerow((mask, degree))
+            if degree == 16:
+                needed -= 1
+                if needed == 0:
+                    return
+    raise ArithmeticError("insufficient degree-16 irreducibles")
+
+
 def check(n, paths, extended_index=False, seroussi=False):
     taps, index_floor, length = CASES[n]
     if seroussi:
@@ -117,6 +171,9 @@ def check(n, paths, extended_index=False, seroussi=False):
     if not irreducible(f):
         raise ValueError("the field modulus is reducible")
     logs = verify_logs(paths, n, f)
+    if seroussi:
+        derived = seroussi_relations(logs, f)
+        print(f"Additional logarithms from the two polynomial relations: {derived}.")
     counts = Counter(mask.bit_length() - 1 for mask in logs)
     size = ratio_bound(n, counts)
     index_ceiling = ((1 << n) - 1) // size
@@ -135,7 +192,13 @@ if __name__ == "__main__":
     parser.add_argument("--logs", nargs="+", action="extend", type=Path, help="one or more logarithm CSVs")
     parser.add_argument("--extended-index", action="store_true", help="replay the larger degree-1229 divisor bound")
     parser.add_argument("--seroussi", action="store_true", help="use the degree-1229 taps 2, 6, 15")
+    parser.add_argument("--list-targets", action="store_true", help="write the degree-1229 target masks as CSV")
     args = parser.parse_args()
+    if args.list_targets:
+        if args.degree != 1229 or args.logs or args.extended_index:
+            parser.error("list targets for degree 1229 with an optional --seroussi")
+        list_targets(args.seroussi)
+        sys.exit(0)
     if (args.extended_index or args.seroussi) and args.degree != 1229:
         parser.error("the alternate modulus and extended index apply to degree 1229")
     paths = args.logs or []
