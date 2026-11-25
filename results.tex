@@ -6467,4 +6467,111 @@ the corresponding four counts are \(457,401,351,290\).
 The \texttt{--joint} option of the sector checker uses direct gcds
 with the reciprocal and the lcm of \(X^{2^d}+X\) through each cutoff.
 
+\section{Factor parity for an odd smaller tap and any even larger tap}
+\label{sec:odd-smaller-tap}
+
+\begin{theorem}\label{thm:odd-smaller-tap}
+Let \(n,u\) be odd and \(v\) even, with \(0<u<v<u+v<n\).
+Put \(a=(n-u-v)/2,\ b=(n-u)/2,\ r=v/2\).
+The discriminant of \(F=X^n+(1+X^u)(1+X^v)\) is
+\((-1)^{(n-1)/2}n(1+4E)\bmod8\). For even \(r\) use the two tests of
+Theorem~\ref{thm:product-parity-sector}. For odd \(r\), with brackets
+denoting indicators, compute \(E\) modulo two by
+\[
+ [2\mid b]\bigl([a\mid u]+[u\ge a+b,\ 2a\mid u-a-b]\bigr)
+     +\sum_{j=0}^3[r\mid n-ju] .
+\]
+Among all such supports, the number with \(E=1\) is
+\(\Theta(n\log n)\). In degrees \(3,5\bmod8\) these are
+exactly the supports with odd factor count.
+\end{theorem}
+\begin{proof}
+Only odd \(r\) needs a new discriminant calculation. Use the same
+integer lift and set \(C=1+X^u,\ V=1+X^v,\ U=X^u,\ Z=X^v C/V\),
+\(e=(n-u)/n,\ h=-v/n\).
+At a root \(\alpha\) the derivative calculation gives
+\(\alpha F'(\alpha)=-nV(\alpha)(1+eU(\alpha)+hZ(\alpha))\).
+Write \(\operatorname{Tr}\) for the sum over the roots of \(F\), and
+\(P_j=\operatorname{Tr}(X^j)\). As before \(P_u=0\).
+In characteristic two, \(\operatorname{Tr}(UZ)=0\): it is the sum
+of \((x^{u+v-1}+x^{2u+v-1})/F'(x)\). Lagrange interpolation
+annihilates the first term and gives \([X^{u-2a}]1/F^*\) for the
+second, with a negative index read as zero. The index is odd and
+less than \(u\), while both odd exponents of \(F^*\) exceed \(u\).
+
+For the two traces of \(Z\), let \(\beta\) run over the roots of
+\(V\) in characteristic zero. Write \(c=1+\beta^u,\ c_1=u\beta^u\), and put
+\[
+ S_3=\sum_\beta\beta^{-n}c^3,\quad
+ T_3=\sum_\beta\beta^{-n}c^2c_1,\quad
+ S_4=\sum_\beta\beta^{-2n}c^4 .
+\]
+Since \(F(\beta)=\beta^n\), partial fractions give
+\(\operatorname{Tr}(C/V)=n-\sum_\beta\beta^{-n}c^2\).
+Thus \(\operatorname{Tr}Z=\sum_\beta\beta^{-n}c^2\equiv0\bmod4\):
+only the term with exponent \(u-n\) can contribute, and its sum is
+a multiple of \(2v\).
+
+For clarity, let \(I=P_{2u-v}\) for \(2u\ge v\), and \(I=0\)
+otherwise. The simple and double poles give
+\begin{align*}
+ \operatorname{Tr}(C^2/V)&= I+(n/v)\sum_\beta c^2-S_3,\\
+ \operatorname{Tr}(C^2/V^2)&=(n/v)\sum_\beta c^2
+ -(2n/v^2)\sum_\beta cc_1-(2n/v)S_3+(4/v)T_3+S_4 .
+\end{align*}
+Indeed, sum the residues of the indicated rational function times
+\(F'/F\,dX\). The polynomial part of \(C^2/V\) contributes \(I\),
+and \(C^2/V^2\) is proper. At \(X=\beta(1+t)\), use
+\(V=-vt-\binom v2t^2+\cdots,\ C=c+c_1t+\cdots\), and
+\[
+ F/\beta^n=1+(n-v\beta^{-n}c)t+
+  \left(\tbinom n2-\beta^{-n}\bigl(\tbinom v2c+vc_1\bigr)\right)t^2+\cdots .
+\]
+The negative of the residue at each \(\beta\) gives the displayed terms.
+
+Now \(Z^2=C^2-2C^2/V+C^2/V^2\). If \(v\ne2u\), then
+\(\sum c^2=v,\ \sum cc_1=0\), and \(I\) is even: any positive
+index \(2u-v<u\) has even power sum, by the logarithmic derivative
+of \(F^*\bmod2\). At \(v=2u\) the same three quantities are
+\(0,-uv,n\), respectively, giving the same cancellation.
+Since \(T_3/v\) is integral, the result modulo four is
+\[
+ \operatorname{Tr} Z^2\equiv P_{2u}+2(v-n)S_3/v+S_4\pmod4 .
+\]
+In \(S_3/v\bmod2\) the exponents \(u-n,3u-n\) contribute if
+divisible by \(v\); both exponents are even. In \(S_4/2\bmod2\)
+the two possible contributions are \([r\mid n]\) and
+\([r\mid 2u-n]\), since \(v/2\) is odd. This gives
+\(\operatorname{Tr}Z^2/2\equiv P_{2u}/2+\sum_{j=0}^3[r\mid n-ju]\bmod2\).
+
+Expand the norm of \(1+eU+hZ\) through degree two in the even
+numbers \(e,h\). Its linear terms vanish modulo eight; its mixed
+term vanishes because \(\operatorname{Tr}(UZ)\) is even.
+The pure quadratic terms give the discriminant bit
+\([2\mid b]P_{2u}/2+\sum_j[r\mid n-ju]\bmod2\).
+When \(b\) is even, \(a\) is odd and
+\[
+ P_{2u}/2\equiv [Y^u]\frac{Y^a}{1+Y^a+Y^b}\pmod2 .
+\]
+Here \(2b>u\); expansion through the first power of \(Y^b\) gives
+the two indicators in the theorem.
+
+The conditions involving \(a\) cost \(O(n\log n)\) choices as in
+Corollary~\ref{cor:product-sector-size}. For \(j=1,2,3\), sum
+\(\tau(|n-ju|)\) over \(u\), allowing \(O(n)\) choices if \(n=ju\).
+For \(j=0\), sum \(2r\) over \(r\mid n\), since \(u<v=2r\).
+These are again \(O(n\log n)\). The lower-bound construction in
+that corollary already has \(u<v\) and \(4\mid v\).
+\end{proof}
+
+At \(n=1229\), exactly \(1330\) of the \(94249\) supports with an
+odd smaller tap and an even larger tap have odd factor count; \(12\)
+are irreducible. Taking the union with the sector of
+Theorem~\ref{thm:product-parity-sector} gives \(141067\) supports,
+\(2384\) with odd factor count and \(20\) irreducibles. Every one
+of the \(20\) passes the order projections in Theorem~\ref{thm:open-product-orders}.
+Among the \(2384\), exactly \(1176\) also avoid inverse pairs and
+all factors through degree five. The checker compares the union with
+full binary factorizations using \texttt{--sector union --factor}.
+
 \end{document}
