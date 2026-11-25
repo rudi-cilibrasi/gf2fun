@@ -838,6 +838,78 @@ these explicit matrices have odd cycle-cover count. The script
 prime-divisor order test on all 4,095 monic binary polynomials of
 positive degree at most 12 with constant coefficient one.
 
+\section{Passing the first two exterior-power tests in every large degree}
+\begin{theorem}\label{thm:reciprocal-sieve}
+For each \(B\ge1\) there is a constant \(c_B>0\) such that, in every
+sufficiently large degree \(n\), at least \(c_B\varphi(n)\) distinct pentanomials \(F_{n,u,v}\)
+are squarefree, have exponent gcd 1, avoid all irreducible factors
+of degree at most \(B\), and have no pair of mutually inverse roots.
+In particular, every one of them passes the tests at \(k=1,2\) in
+Theorem~\ref{thm:exterior}.
+\end{theorem}
+\begin{proof}
+Let \(L=\operatorname{lcm}_{1\le d\le B}(2^d-1)\), and choose a
+power of two \(P>L\). For positive odd \(w\) coprime to \(n\) in the
+interval
+\[
+ \frac{n}{2P}<w<\frac{n}{P+L},
+ \qquad u=Lw,\qquad v=2n-(2P+L)w,
+\]
+one has \(0<u<v<u+v<n\). Also \(\gcd(n,u,v)=1\), since
+\(\gcd(L,2P+L)=1\). The factor bound follows as in
+Theorem~\ref{thm:sieve} because \(L\mid u\).
+
+If \(x\) and \(1/x\) were both roots, multiplying the equation
+for \(1/x\) by \(x^{u+v+n}\) and using the equation for \(x\) gives
+\(x^{2n}=x^{u+v}\). Hence \(x^{2Pw}=1\), which implies \(x^w=1\)
+in characteristic two. This contradicts \(F_{n,u,v}(x)=0\),
+since \(w\mid u\). Lean checks this inverse-root argument and the
+primitive example \(F_{55,21,25}\) in \texttt{GF2Sparse/ReciprocalSieve.lean}.
+
+To control repeated roots, put \(c=P+L\) for even \(n\), and \(c=P\)
+for odd \(n\). Define
+\[
+               H(Y)=Y^{P+L}+Y^{2L}+1 .
+\]
+We claim \(F_{n,u,v}\) is squarefree exactly when
+\(\gcd(H(Y),Y^{n-cw}-1)=1\).
+Indeed, write \(\beta=x^w\) and \(F=F_{n,u,v}\). For even \(n\),
+\(XF'=X^u+X^v\), so at a nonzero repeated root \(x^{v-u}=1\).
+This gives \(x^{n-cw}=1\), since \(v-u=2(n-cw)\), and substitution
+in \(F\) gives \(H(\beta)=0\). For odd \(n\),
+\(F+XF'=1+X^{u+v}\), with \(u+v=2(n-cw)\). Now \(x^n=\beta^P\)
+and \(x^v=\beta^{-L}\). Multiplying \(F(x)\) by \(\beta^L\) again
+gives \(H(\beta)\). Conversely, since \(\gcd(w,n-cw)=1\),
+raising to \(w\) permutes the roots of \(Y^{n-cw}-1\). A common
+root \(\beta\) therefore has a preimage \(x\) in this group, and the
+same equations give \(F(x)=F'(x)=0\).
+
+Every root of \(H\) has odd order dividing the fixed integer
+\(M=\operatorname{lcm}_{1\le d\le P+L}(2^d-1)\).
+Also \(H\) has no root of order dividing \(c\). For \(c=P\) the
+only candidate is 1. For \(c=P+L\) substituting \(Y^c=1\) leaves
+\(Y^{2L}\ne0\). Thus \(\gcd(M,n-cw)\mid c\) suffices.
+For each odd prime \(p\mid M\), choose a nonzero class for \(w\bmod p\)
+such that \(p^{v_p(c)+1}\nmid n-cw\). At most one class is forbidden
+by this condition, since \(c/p^{v_p(c)}\) is a unit modulo \(p\).
+Together with oddness these choices specify a unit class modulo
+\(D=2\prod_{p\mid M}p\), all of whose members satisfy the sufficient
+condition.
+
+The interval has length \(\delta n\) with
+\(\delta=1/(P+L)-1/(2P)>0\). Inclusion--exclusion over primes
+dividing \(n\) outside \(D\) counts the coprime members of the class as
+\[
+ \frac{\delta n}{D}\prod_{\substack{p\mid n\\p\nmid D}}(1-1/p)
+       +O(2^{\omega(n)}).
+\]
+Here the main term is at least \(\delta\varphi(n)/D\), and
+\(2^{\omega(n)}=o(\varphi(n))\) by the product formula
+\(\varphi(n)/2^{\omega(n)}=\prod_{p^a\parallel n}p^{a-1}(p-1)/2\).
+Distinct choices of \(w\) have distinct smallest interior exponents
+\(u=Lw\), proving the count.
+\end{proof}
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is
