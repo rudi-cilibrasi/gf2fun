@@ -1,3 +1,4 @@
+import GF2Sparse.CompositionNorm
 import GF2Sparse.Grid
 import GF2Sparse.IterateOrder
 import GF2Sparse.Many

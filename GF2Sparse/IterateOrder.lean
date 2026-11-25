@@ -1,4 +1,5 @@
 import GF2Sparse.OrderBound
+import GF2Sparse.Roots
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Polynomial.BigOperators
@@ -119,12 +120,6 @@ private theorem iterateProduct_injective {g : BinaryPoly} (hd : 0 < g.natDegree)
     have hh := ih (mul_right_cancel₀ (pow_ne_zero _ hG) heq)
     funext j
     exact Fin.lastCases hl (fun i => congrFun hh i) j
-
-private theorem aeval_dyadic {R : Type*} [CommRing R] [Algebra (ZMod 2) R] [CharP R 2]
-    (p : BinaryPoly) (r : R) (t : ℕ) : aeval (r ^ (2 ^ t)) p = (aeval r p) ^ (2 ^ t) := by
-  have h := map_aeval_eq_aeval_map (φ := RingHom.id (ZMod 2)) (ψ := iterateFrobenius R 2 t)
-    (Subsingleton.elim _ _) p r
-  simpa [iterateFrobenius_def] using h.symm
 
 private theorem triangle (s : ℕ) : (∑ j : Fin s, (s - j.val)) * 2 = s * (s + 1) := by
   induction s with

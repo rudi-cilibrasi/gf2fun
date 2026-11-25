@@ -11,6 +11,13 @@ theorem binary_monic {f : BinaryPoly} (hf : f ≠ 0) : f.Monic := by
   have choices : ∀ a : ZMod 2, a = 0 ∨ a = 1 := by decide
   exact (choices f.leadingCoeff).resolve_left (leadingCoeff_ne_zero.mpr hf)
 
+/-- Binary polynomial evaluation commutes with every power of Frobenius. -/
+theorem aeval_dyadic {R : Type*} [CommRing R] [Algebra (ZMod 2) R] [CharP R 2]
+    (p : BinaryPoly) (r : R) (t : ℕ) : aeval (r ^ (2 ^ t)) p = (aeval r p) ^ (2 ^ t) := by
+  have h := map_aeval_eq_aeval_map (φ := RingHom.id (ZMod 2)) (ψ := iterateFrobenius R 2 t)
+    (Subsingleton.elim _ _) p r
+  simpa [iterateFrobenius_def] using h.symm
+
 variable {K : Type*} [Field K] [Algebra (ZMod 2) K]
 
 theorem orderOf_root_at {f : BinaryPoly} (hf : Irreducible f) {z : K}
