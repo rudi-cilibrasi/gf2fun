@@ -1,4 +1,4 @@
-import GF2Sparse.Basic
+import GF2Sparse.Roots
 import Mathlib.Combinatorics.Colex
 
 /-! Detect full multiplicative order by products of binary Frobenius powers. -/
@@ -130,5 +130,74 @@ theorem frobeniusProduct_eq_one_iff_index_three {x : M} {m : ℕ}
     · exact Or.inr (Finset.geomSum_injective (by decide : 2 ≤ 2) (by
         simp [sum_alternatingPositions, hj, hsum]))
   · rintro (rfl | rfl) <;> simp [sum_alternatingPositions, hsum]
+
+/-- In every even degree 2m ≥ 4 there is an irreducible polynomial whose
+root generates the subgroup of index three. Its first failed product test
+therefore uses exactly m conjugates. -/
+theorem exists_irreducible_index_three (m : ℕ) (hm : 2 ≤ m) :
+    ∃ f : BinaryPoly, f.natDegree = 2 * m ∧ Irreducible f ∧
+      3 * orderOf (AdjoinRoot.root f) = 2 ^ (2 * m) - 1 := by
+  classical
+  let K := GaloisField 2 (2 * m)
+  letI : Fintype K := Fintype.ofFinite K
+  have hn : 2 * m ≠ 0 := by omega
+  have hcard : Nat.card K = 2 ^ (2 * m) := GaloisField.card 2 _ hn
+  obtain ⟨u, hu⟩ := (isCyclic_iff_exists_orderOf_eq_natCard (α := Kˣ)).1 inferInstance
+  have hgen : orderOf (u : K) = 2 ^ (2 * m) - 1 := by
+    rw [orderOf_units, hu, Nat.card_units, hcard]
+  have h3 : 3 ∣ orderOf (u : K) := by
+    rw [hgen, pow_mul]
+    exact ⟨∑ i ∈ Finset.range m, 4 ^ i, by change 4 ^ m - 1 = _; have := three_sum_four m; omega⟩
+  let x := (u : K) ^ 3
+  have ho : 3 * orderOf x = 2 ^ (2 * m) - 1 := by
+    rw [show orderOf x = orderOf (u : K) / 3 from orderOf_pow_of_dvd (by decide) h3,
+      Nat.mul_div_cancel' h3, hgen]
+  have hlarge : 2 ^ m - 1 < orderOf x := by
+    have hq : 4 ≤ 2 ^ m := Nat.pow_le_pow_right (by decide : 0 < 2) hm
+    have hmulg := Nat.mul_le_mul_right (2 ^ m) hq
+    rw [pow_mul', sq] at ho
+    omega
+  let f := minpoly (ZMod 2) x
+  have hi : Irreducible f := minpoly.irreducible (IsIntegral.of_finite (ZMod 2) x)
+  have hz : Polynomial.aeval x f = 0 := minpoly.aeval _ _
+  have hd : f.natDegree ∣ 2 * m := (degree_dvd_iff_frobenius hi hz _).2 (by
+    rw [← hcard, Nat.card_eq_fintype_card]
+    exact FiniteField.pow_card x)
+  have hgt : m < f.natDegree := by
+    by_contra! hsmall
+    have hle := order_le_of_aeval (pow_ne_zero 3 u.ne_zero) hi.ne_zero hz
+    have hbound := Nat.pow_le_pow_right (by decide : 0 < 2) hsmall
+    change orderOf x ≤ _ at hle
+    omega
+  refine ⟨f, (Nat.eq_of_dvd_of_lt_two_mul hn hd (by omega)).symm, hi, ?_⟩
+  rwa [← orderOf_root_at hi hz]
+
+theorem exists_irreducible_first_failure_at_half (m : ℕ) (hm : 2 ≤ m) :
+    ∃ f : BinaryPoly, f.natDegree = 2 * m ∧ Irreducible f ∧ ¬ Primitive f ∧
+      (∀ s ⊆ Finset.range (2 * m), s.Nonempty → s.card < m →
+        frobeniusProduct (AdjoinRoot.root f) s ≠ 1) ∧
+      ∃ s ⊆ Finset.range (2 * m), s.card = m ∧ frobeniusProduct (AdjoinRoot.root f) s = 1 := by
+  obtain ⟨f, hn, hi, ho⟩ := exists_irreducible_index_three m hm
+  refine ⟨f, hn, hi, ?_, ?_, ?_⟩
+  · intro hp
+    rw [hp.2.2, hn] at ho
+    have := Nat.one_lt_two_pow (show 2 * m ≠ 0 by omega)
+    omega
+  · intro s hs hne hlen hprod
+    have hproper : s ⊂ Finset.range (2 * m) := Finset.ssubset_iff_subset_ne.2 ⟨hs, by
+      rintro rfl; simp only [Finset.card_range] at hlen; omega⟩
+    rcases (frobeniusProduct_eq_one_iff_index_three ho hproper hne).1 hprod with rfl | rfl <;>
+      simp at hlen
+  · let s := alternatingPositions m 0
+    have hcard : s.card = m := card_alternatingPositions _ _
+    have hs : s ⊆ Finset.range (2 * m) := by
+      intro i hi
+      obtain ⟨j, hj, rfl⟩ := Finset.mem_map.1 hi
+      have hj' := Finset.mem_range.1 hj
+      exact Finset.mem_range.2 (show 2 * j + 0 < 2 * m by omega)
+    have hproper : s ⊂ Finset.range (2 * m) := Finset.ssubset_iff_subset_ne.2 ⟨hs, by
+      intro he; rw [he, Finset.card_range] at hcard; omega⟩
+    exact ⟨s, hs, hcard, (frobeniusProduct_eq_one_iff_index_three ho hproper
+      (Finset.card_pos.1 (by omega))).2 (Or.inl rfl)⟩
 
 end GF2Sparse

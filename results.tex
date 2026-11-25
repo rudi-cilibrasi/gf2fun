@@ -820,8 +820,9 @@ and \(2e\). Their binary digits occupy respectively the even and odd
 positions, exactly \(m\) each. The middle exterior power therefore
 has a two-dimensional fixed space. For a five-term example,
 \(X^8+X^7+X^3+X+1\) has root order \(85=(2^8-1)/3\).
-Lean verifies the half-degree product test and the exact index-three
-obstruction in \texttt{GF2Sparse/ConjugateProducts.lean}.
+Lean verifies the half-degree product test and constructs an irreducible
+polynomial whose first failed product test has size \(m\) in every
+degree \(2m\ge4\), in \texttt{GF2Sparse/ConjugateProducts.lean}.
 \end{proof}
 
 For \(f=X^n+\sum_{i\in A}X^i\) the test has an explicit sparse matrix
