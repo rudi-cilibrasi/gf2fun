@@ -4578,4 +4578,90 @@ binary polynomial of weight at most five has root order outside the
 divisors of \(3\cdot7\cdot31\cdot127=82677\), although
 \(\ord_{82677}(2)=210\).
 
+\section{A full-degree order component in every odd semiprime degree through 1280}
+\begin{theorem}\label{thm:semiprime-census}
+Let \(n=pq\le1280\), with \(p<q\) distinct odd primes. For every
+irreducible binary polynomial of degree \(n\) and weight at most five,
+the order \(h\) of a root contains a prime power \(\ell^a\) for which
+\(\ord_{\ell^a}(2)=n\). One can always take \(a=1\) except at
+\[
+                     n=21,\ 155,\ 253,\ 889,\ 979,\ 1081.
+\]
+At each of those six degrees there is an irreducible trinomial for
+which every prime divisor of the root order has smaller degree.
+\end{theorem}
+\begin{proof}
+It suffices to exclude \(h\mid(2^p-1)(2^q-1)\). Such a root would
+be \(\alpha\beta\) with the two factors in their respective subfields.
+The rank argument already excludes a trinomial. For a pentanomial,
+try both assignments of the rank-two side, with component degree
+\(u\), order \(P\), and other component degree \(v\), order \(Q\).
+The five exponents split into the three classes with equal powers
+of \(\alpha\). All three class sums of the powers of \(\beta\)
+equal the same nonzero value. The plane and gap restrictions of
+the preceding results give the finite list of possible \(P\).
+
+When \(Q\le n\), enumerate the degree-\(u\) irreducible factors \(g\)
+of \(X^P+1\) and the degree-\(v\) factors \(k\) of \(X^Q+1\).
+For each pair, use their two quotient power bases. Multiplication
+is injective on the tensor product because \(u,v\) are coprime.
+The first binary dependence among
+\(\alpha^i\otimes\beta^i\), starting at \(i=0\), gives the minimal
+polynomial of \(\alpha\beta\).
+Its degree is \(uv\), since an equality
+\((\alpha\beta)^{2^j}=\alpha\beta\) gives
+\(\alpha^{2^j-1}=\beta^{1-2^j}\) in the intersection
+\(\mathbb F_2^\times=\{1\}\). Every pair of conjugates is included
+by coprimality of their orbit lengths.
+This covers all partitions of sizes \(3,1,1\) since their two
+singleton powers of \(\beta\) agree.
+
+For sizes \(2,2,1\), subtract the singleton exponent from every
+exponent. Write the pairs as \((i,j)\) and \((k,l)\) with the
+smaller entry first. They must satisfy
+\[
+ \beta^i+\beta^j=\beta^k+\beta^l=1,\qquad
+ P\mid j-i,\quad P\mid l-k,\quad 1+\alpha^i+\alpha^k=0 .
+\]
+The Laurent trinomials \(1+X^i+X^j\) and \(1+X^k+X^l\), after
+translation of the smallest exponent to zero, have degree at most
+\(n\) and share the degree-\(v\) minimal polynomial of \(\beta\).
+Factor every \(1+X^s+X^t\), \(0<s<t\le1280\). Taking each of
+\(0,s,t\) as the singleton records all possible pairs for each
+irreducible factor and degree. Join two pairs at the same factor
+when their five-exponent support has span exactly \(n\). Test the
+remaining equation for \(\alpha\) by a polynomial gcd with \(X^P+1\),
+reducing its exponents modulo \(P\). This exhausts the second
+partition type without knowing \(Q\).
+
+The exact enumeration in \nolinkurl{scripts/check_subfield_census.py}
+finds zero polynomials of weight at most five in this subgroup for
+all 251 degrees. The default factorization backend is FLINT;
+\texttt{--through 1280 --gp gp} uses PARI/GP for the trinomial
+factors. Both backends reproduce the census for the 96 degrees
+through 512. Squared and reciprocal trinomials reuse the factors of
+their smaller representatives.
+
+For 245 of the degrees, \(q\nmid 2^p-1\), so the full-degree
+component supplies a prime as above. The other six degrees have the
+following witnesses. Each row denotes \(X^n+X^b+1\). Direct
+factorization proves irreducibility. Modular powers at the indicated
+order and at its quotients by every prime factor verify the exact
+order. Its primes all divide \(2^p-1\).
+\[
+\begin{array}{r|r|r|l}
+ n & b & h & \text{primes dividing }h\\ \hline
+ 21 & 7 &49&7\\
+ 155&62&961&31\\
+ 253&46&47081&23,89\\
+ 889&127&16129&127\\
+ 979&178&182183&23,89\\
+ 1081&235&394264529&47,178481
+\end{array}
+\]
+\end{proof}
+
+The exclusion of the proper-subfield product in every degree \(pq\)
+with \(p,q\) distinct odd primes remains open beyond this census.
+
 \end{document}
