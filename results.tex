@@ -5112,6 +5112,26 @@ Membership certificates connecting their values to \(r\) are still
 needed to establish full order.
 
 \section{A three-term progression forced by two subfields}
+\begin{lemma}\label{lem:weighted-plane}
+Let a multiplicative subgroup of a finite binary field contain \(y\)
+and \(A(y)\), where \(y\) has degree \(d\), \(A\in\F[Y]\) has
+\(A(0)=1\) and \(m=\deg A>0\). Its order is at least
+\(\lceil 3d^2/(4m)\rceil\).
+\end{lemma}
+\begin{proof}
+In the band of lattice points \((a,b)\) in Lemma~\ref{lem:plane-size},
+at least a fraction \(1/m\) of the points have the same second
+coordinate modulo \(m\), say \(b\equiv s\pmod m\) with \(0\le s<m\).
+Use the subgroup elements \(y^a A(y)^{(b-s)/m}\) at these points.
+After cancelling common powers on both sides of a proposed equality,
+the maximum degree is \(\max(|\Delta a|,|\Delta b|,|\Delta a+\Delta b|)<d\).
+The resulting polynomial identity fixes the exponent of \(Y\) by
+multiplicity at zero, then fixes the exponent of \(A\) by degree.
+This proves injectivity. Lean verifies the bound for general \(A\)
+and its linear and quadratic specializations in
+\nolinkurl{GF2Sparse/PlaneOrder.lean}.
+\end{proof}
+
 \begin{theorem}\label{thm:semiprime-gap}
 Let \(p<q\) be odd primes, \(n=pq\), and \(4q\le9p\). Suppose an
 irreducible binary polynomial of degree \(n\) and weight at most five
@@ -5168,17 +5188,8 @@ triple is \(t,t+P,t+2P\). This forces \(2P\le n\) and \(i=p\),
 as \(i=q\) would give \(2P\ge3q^2/2>n\). The singleton exponents
 agree modulo \(Q\). Also the triple sum shows that \(1+y+y^2\)
 lies in the same subgroup as \(y=\beta^P\), of degree \(q\).
-Take the band of lattice points in Lemma~\ref{lem:plane-size} for
-\(d=q\). At least half of its points \((a,b)\) have the same parity
-\(\epsilon\) of \(b\). On these points the products
-\[
-                y^a(1+y+y^2)^{(b-\epsilon)/2}
-\]
-are distinct. After cancelling common powers, the maximum degree on
-the two sides is \(\max(|\Delta a|,|\Delta b|,|\Delta a+\Delta b|)<q\).
-A collision would give a polynomial identity. Multiplicity at zero
-fixes the exponent of \(Y\), then the degree fixes the exponent of
-\(1+Y+Y^2\). Hence \(Q\ge3q^2/8>n/2\), since \(2q>3p\).
+Apply Lemma~\ref{lem:weighted-plane} with \(A=1+Y+Y^2\).
+This gives \(Q\ge3q^2/8>n/2\), since \(2q>3p\).
 The nonzero singleton gap must therefore be exactly \(Q\).
 The root order \(h\) satisfies \(\operatorname{ord}_{h}(2)=pq\).
 If every prime power in \(h\) has smaller multiplicative degree,
