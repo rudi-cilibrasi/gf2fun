@@ -93,9 +93,12 @@ public:
         }
         std::sort(keys.begin(), keys.end());
         for (std::size_t i = 1; i < keys.size(); ++i) {
+            if (keys[i] == keys[i - 1])
+                throw std::runtime_error("distinct cyclic subset orbits have equal signatures");
             if (keys[i][0] == keys[i - 1][0] && (keys[i][1] ^ keys[i - 1][1]) == 1)
                 throw std::runtime_error("opposite half-sum signatures intersect");
         }
+        std::cout << "All " << total << " nonzero subset-orbit signatures are distinct.\n";
         std::cout << "All " << total << " signatures exclude product-one ranks 1 through "
                   << 2 * half << ".\n";
     }

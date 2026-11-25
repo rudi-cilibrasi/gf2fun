@@ -101,4 +101,30 @@ theorem binary_root_products (f : BinaryPoly) {n : ℕ} (hn : 0 < n)
     rw [aeval_dyadic] at hx
     exact eq_zero_of_pow_eq_zero hx
 
+/-- The n-th powers distinguish representatives of distinct orbits under a generator of order n. -/
+theorem injective_cyclic_orbits_of_power {G ι : Type*} [CommGroup G]
+    (g : G) (s : ι → G) (hs : Function.Injective (fun i => (s i) ^ orderOf g)) :
+    Function.Injective (fun u : ι × Fin (orderOf g) => s u.1 * g ^ (u.2 : ℕ)) := by
+  rintro ⟨i, j⟩ ⟨i', j'⟩ h
+  change s i * g ^ (j : ℕ) = s i' * g ^ (j' : ℕ) at h
+  have fixed (k : ℕ) : (g ^ k) ^ orderOf g = 1 := by
+    rw [← pow_mul, Nat.mul_comm, pow_mul, pow_orderOf_eq_one, one_pow]
+  have hi : i = i' := hs (by
+    simpa only [mul_pow, fixed, mul_one] using congrArg (fun x : G => x ^ orderOf g) h)
+  subst i'
+  have hj : j = j' := Fin.ext (pow_injOn_Iio_orderOf j.isLt j'.isLt (mul_left_cancel h))
+  cases hj
+  rfl
+
+/-- Distinct dyadic exponent sums modulo an order divisor give distinct products of conjugates. -/
+theorem injective_conjugate_products_of_exponent_sums
+    (r : M) (hr : IsOfFinOrder r) {p : ℕ} (hp : p ∣ orderOf r) (S : Set (Finset ℕ))
+    (hs : S.InjOn (fun I => (∑ i ∈ I, 2 ^ i : ℕ) % p)) :
+    S.InjOn (fun I => ∏ i ∈ I, r ^ (2 ^ i : ℕ)) := by
+  intro I hI J hJ h
+  change (∏ i ∈ I, r ^ (2 ^ i : ℕ)) = ∏ j ∈ J, r ^ (2 ^ j : ℕ) at h
+  rw [Finset.prod_pow_eq_pow_sum I (fun i => 2 ^ i) r,
+      Finset.prod_pow_eq_pow_sum J (fun j => 2 ^ j) r] at h
+  exact hs hI hJ (Nat.ModEq.of_dvd hp (hr.pow_eq_pow_iff_modEq.mp h))
+
 end GF2Sparse

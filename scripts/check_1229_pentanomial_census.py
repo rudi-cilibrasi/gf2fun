@@ -85,7 +85,7 @@ def verify_exceptions():
     return counts
 
 
-def compare_shard(path, rows):
+def compare_shard(path, rows, require_all=False):
     with path.open(newline="") as stream:
         reader = csv.reader(stream)
         header = tuple(next(reader, []))
@@ -103,9 +103,11 @@ def compare_shard(path, rows):
             seen.add(a)
         if not seen:
             raise ValueError(f"empty shard in {path}")
+        if require_all and seen != rows.keys():
+            raise ValueError(f"incomplete run in {path}, missing {len(rows) - len(seen)} smallest taps")
 
 
-def audit(shards):
+def audit(shards, full_runs=()):
     exceptions = verify_exceptions()
     tables = sieve_tables()
     counts = Counter()
@@ -133,6 +135,8 @@ def audit(shards):
         raise ArithmeticError("incomplete reciprocal coverage")
     for path in shards:
         compare_shard(path, rows)
+    for path in full_runs:
+        compare_shard(path, rows, require_all=True)
     print(f'{counts["supports"]:,} reciprocal pairs, {counts["no_small_factor"]:,} sieve survivors, '
           f'{counts["irreducibles"]:,} irreducibles, {sum(exceptions.values())} verified exceptions.')
 
@@ -141,4 +145,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--shards", nargs="*", type=Path, default=(),
                         help="also compare output from either C++ search")
-    audit(parser.parse_args().shards)
+    parser.add_argument("--full-runs", nargs="+", type=Path, default=(),
+                        help="compare each file and require all 614 smallest taps in each")
+    args = parser.parse_args()
+    audit(args.shards, args.full_runs)

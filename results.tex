@@ -5291,7 +5291,11 @@ are in \nolinkurl{data/degree-1229-pentanomial-census.csv} and
 An independent Python implementation checks the sieve counts, assigning
 weight one half to equal endpoint gaps. FLINT verifies irreducibility
 and all five order projections for each exception. A separate NTL
-search tests \(X^K\bmod f\) directly on the sieve survivors.
+search computed \(X^K\bmod f\) directly on all \(31863827\) sieve
+survivors, including the reducible ones. It found zero divisors of
+\(X^K+1\). A complete rerun of the packed census with portable
+bit spreading in place of carryless multiplication reproduced every
+entry in all 614 rows and the identical list of exceptions.
 \end{proof}
 
 \begin{corollary}
@@ -5317,6 +5321,36 @@ consequences, and the degree counts in the character bound therefore
 apply. Section~\ref{sec:1229-frobenius-models} gives the lifting step
 from projected logarithms. The checker accepts the three interior taps
 and verifies the required order powers in the selected field.
+\end{proof}
+
+\begin{corollary}\label{cor:1229-all-products}
+For every irreducible binary pentanomial of degree \(1229\), no product of
+one through nine of its roots is one, even allowing repetitions. The
+\(94905665941\) products indexed by subsets of at most four roots,
+including the empty subset, are all distinct. In ranks one through
+four, the exterior-power characteristic polynomials are squarefree
+and pairwise coprime, and every irreducible factor has degree \(1229\).
+\end{corollary}
+\begin{proof}
+Theorem~\ref{thm:1229-all-orders} puts \(p=10543179280661916121033\)
+in every root order. The zero-sum computation in
+Theorem~\ref{thm:1229-short-tests} then excludes all nine ranks.
+For the second assertion recall its signatures
+\(t_I=(\sum_{i\in I}2^i)^{1229}\bmod p\), one per cyclic orbit of
+nonempty index sets of size at most four. The sorted list contains
+\(77221860\) distinct, nonzero signatures. Equality of two root
+products implies equality of their exponent sums modulo \(p\), hence
+of their signatures. Their index sets must be translates \(I,I+j\).
+The sums then differ by the multiplier \(2^j\). The sum is nonzero
+and \(2\) has order \(1229\) modulo \(p\), so \(j=0\bmod1229\).
+This proves injectivity on all \(\sum_{k=0}^4\binom{1229}{k}\) subsets.
+Every nonempty product is different from zero and one. Its degree
+in \(\mathbb F_{2^{1229}}\) must therefore be \(1229\), which is prime.
+The roots of the rank-\(k\) exterior-power characteristic polynomial
+are precisely the \(k\)-subset products, counted with multiplicity.
+The orbit injectivity and the passage from exponent sums modulo an
+order divisor to distinct conjugate products are formalized in
+\nolinkurl{GF2Sparse/RootProducts.lean}.
 \end{proof}
 
 \section{Factor parity for two exponent classes modulo four}
