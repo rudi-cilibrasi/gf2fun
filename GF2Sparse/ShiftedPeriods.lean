@@ -251,4 +251,52 @@ theorem primitive_seed_first_failure {s₀ r : ℕ} (hr : 0 < r) (hs : r < 2^s�
     exact (h j (by omega)).1 (hf.no_short_root_products (show n-1<n by omega) j hj hjn)
   · exact fun hbad => hf.has_degree_length_product ((h n le_rfl).2 hbad)
 
+/-- Arbitrarily large common shifts of a finite family of primitive seeds retain every
+seed as a factor and preserve its shortest product-one length, including repetitions. -/
+theorem simultaneous_seed_translations {ι : Type*} [Fintype ι] (n : ι → ℕ) (h : ι → BinaryPoly)
+    (hd : ∀ i, 0 < (h i).natDegree) (ht : ∀ i, (h i).natDegree < n i)
+    (hc : ∀ i, (h i).coeff 0 = 1) (hp : ∀ i, Primitive (X^(n i)+h i)) (B : ℕ) :
+    ∃ T > B, ∀ i, let f : BinaryPoly := X^(T+n i)+h i
+      (X^(n i)+h i) ∣ f ∧ NoShortRootProducts (n i-1) f ∧ ¬ NoRootProductOfLength (n i) f := by
+  classical
+  let s₀ := ∑ i, n i
+  have hbig (i : ι) : n i < 2^s₀ :=
+    (Finset.single_le_sum (fun j _ => Nat.zero_le (n j)) (Finset.mem_univ i)).trans_lt
+      Nat.lt_two_pow_self
+  have deg (i : ι) : (X^(n i)+h i).natDegree = n i := by
+    rw [natDegree_add_eq_left_of_natDegree_lt (by simpa using ht i), natDegree_X_pow]
+  have per (i : ι) : ∃ m > 0, ∀ l : ℕ, let f : BinaryPoly := X^(2^(s₀+m*l)-(2^s₀-n i))+h i
+      NoShortRootProducts (n i-1) f ∧ ¬ NoRootProductOfLength (n i) f := by
+    have hb := hbig i
+    have hn := (hd i).trans (ht i)
+    have he : 2^s₀-(2^s₀-n i) = n i := by omega
+    simpa only [he, deg] using primitive_seed_first_failure (s₀ := s₀) (r := 2^s₀-n i)
+      (by omega) (by omega) (h i) (hd i) (hc i) (by simpa only [he] using hp i)
+  choose m hm hper using per
+  let M := ∏ i, m i * n i
+  have hM : 0 < M := Finset.prod_pos fun i _ => Nat.mul_pos (hm i) ((hd i).trans (ht i))
+  let L := M * (B+2^s₀)
+  have hdiv (i : ι) : m i * n i ∣ L :=
+    (Finset.dvd_prod_of_mem (fun j => m j * n j) (Finset.mem_univ i)).trans (Nat.dvd_mul_right M _)
+  let T := 2^(s₀+L)-2^s₀
+  have hL : B+2^s₀ ≤ L := Nat.le_mul_of_pos_left _ hM
+  have hpow : s₀+L < 2^(s₀+L) := Nat.lt_two_pow_self
+  refine ⟨T, by dsimp [T]; omega, fun i => ?_⟩
+  have hmod : 2^(n i)-1 ∣ T := by
+    have hnL := (Nat.dvd_mul_left (n i) (m i)).trans (hdiv i)
+    have he : T = 2^s₀ * (2^L-1) := by simp [T, pow_add, Nat.mul_sub]
+    rw [he]
+    exact (Nat.pow_sub_one_dvd_pow_sub_one 2 hnL).trans (Nat.dvd_mul_left _ _)
+  have hr : (AdjoinRoot.root (X^(n i)+h i))^T = 1 :=
+    orderOf_dvd_iff_pow_eq_one.1 (by rw [(hp i).2.2, deg]; exact hmod)
+  constructor
+  · apply AdjoinRoot.mk_eq_zero.1
+    rw [map_add, map_pow, AdjoinRoot.mk_X, pow_add, hr, one_mul]
+    simpa only [map_add, map_pow, AdjoinRoot.mk_X] using
+      (AdjoinRoot.mk_eq_zero.2 (dvd_refl (X^(n i)+h i)))
+  · obtain ⟨l, hl⟩ := (Nat.dvd_mul_right (m i) (n i)).trans (hdiv i)
+    have hb := hbig i
+    have he : 2^(s₀+m i*l)-(2^s₀-n i) = T+n i := by rw [← hl]; dsimp [T]; omega
+    simpa only [he] using hper i l
+
 end GF2Sparse
