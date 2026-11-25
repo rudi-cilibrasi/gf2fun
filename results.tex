@@ -2886,4 +2886,175 @@ nonzero elements by \(X\). Both computations can be repeated with
 {Cunningham table transcription}.
 \end{proof}
 
+\section{Multiplicative order from several seed degrees}\label{sec:mixed-order}
+Let \(P\) be primitive of degree \(s\), let \(n=2^s-1\), and let
+\(r\) be a root of \(O_P\). Put \(H=\langle r\rangle\).
+For a binary polynomial \(g\), write \(L_g(X)=X O_g(X)\).
+
+\begin{theorem}\label{thm:ore-mixed-order}
+The polynomial \(X\) and all \(O_g(X)\) for positive-degree monic
+\(g\) with \(g(0)=1\) are multiplicatively independent in \(\F[X]\).
+For \(P\nmid g\), the value \(O_g(r)\) belongs to \(H\).
+In particular, let \(1\le a\), \(a+1<s\), \(k=2^a\), and
+\(u,v\ge0\). If \(u(k-1)+v(2k-1)<n\), then
+\[
+  |H|\ \ge\ {k+u-1\choose u}{k+v-1\choose v}.
+\]
+\end{theorem}
+\begin{proof}
+In an equality of products cancel common factors from the two lists.
+The multiplicity at zero recovers the exponent of \(X\).
+For a remaining seed \(g\) of maximal degree, take a point of exact
+Frobenius annihilator \(g\) as in Theorem~\ref{thm:ore-order}. It is
+nonzero, and \(O_h\) vanishes there precisely when \(g\mid h\).
+Among the remaining seeds only \(g\) can vanish there. This rules out
+a nonempty list on either side. Any relation with integer exponents
+reduces to such an equality.
+
+Use \(E=\F[Y]/P\), \(\theta=Y\bmod P\) and the linear map
+\(L:E\to K\) of Section~\ref{sec:ore-norms}, with \(L(1)=r\).
+If \(P\nmid g\), then \(rO_g(r)=L(g(\theta))\) is a nonzero
+conjugate of \(r\). Now take the \(k\) generators consisting of
+\(X\) and the \(O_g\) with \(1\le\deg g\le a\). They have degrees
+at most \(k-1\). The \(k\) further generators with \(\deg g=a+1\)
+have degree \(2k-1\). Each choice of a multiset of size \(u\) from
+the first group and a multiset of size \(v\) from the second gives a
+different polynomial. Their degrees are less than \(n\), so their
+values at \(r\) are distinct elements of \(H\). Lean verifies the
+independence, the general weighted multiset bound, and the displayed
+integer bound in \nolinkurl{GF2Sparse/OreMixedOrder.lean} and
+\nolinkurl{GF2Sparse/OreOrderCounts.lean}.
+\end{proof}
+
+\begin{corollary}
+Uniformly over primitive seeds as \(s\to\infty\),
+\[
+ \log_2 |H|\ \ge\ \tfrac32\log_2(3)\sqrt{n+1}-O(\log(n+1)).
+\]
+\end{corollary}
+\begin{proof}
+Set \(m=2^{\lfloor s/2\rfloor}\), \(u=m\), \(v=m/2\).
+For even \(s\) use \(k=m/2\) and for odd \(s\) use \(k=m\).
+In both cases the degree cost is \(n+1-3m/2<n\) for \(m\ge2\).
+Stirling's formula gives
+\(\log_2\binom{2j}{j}=2j-O(\log j)\) and
+\(\log_2\binom{3j}{j}=(3\log_2 3-2)j-O(\log j)\).
+Decreasing the top entry by one changes each logarithm here by a
+bounded amount. The coefficients of \(\sqrt{n+1}\) are respectively
+\(C=\tfrac32\log_2 3\) and \((1+C)/\sqrt 2\).
+The latter exceeds \(C\) since \(C<12/5<1+\sqrt2\).
+\end{proof}
+For example the exact integer bound in degree 2047 is
+\(\binom{63}{32}\binom{47}{16}>2^{100}\).
+
+\section{Prime-power divisors forced into an Ore root order}\label{sec:ore-primitive-part}
+Keep \(E,\theta,r,H\) from Section~\ref{sec:mixed-order}. The nonzero
+elements of \(V=L(E)\) are the \(n\) conjugates of \(r\), with
+\(L(\theta^j x)=L(x)^{2^j}\). Write \(h=|H|\).
+
+\begin{lemma}\label{lem:ore-subset-products}
+Different finite sets of nonzero binary polynomials \(g\) give
+different ordinary products \(\prod_g L_g(X)\).
+\end{lemma}
+\begin{proof}
+Write each \(g=Y^j b\) with \(b(0)=1\). Then
+\(L_g=(X O_b)^{2^j}\). For every \(b\ne1\), multiplicative
+independence in Theorem~\ref{thm:ore-mixed-order} recovers
+the exponent of \(O_b\) from the product. The exponent of \(X\)
+recovers the sum of the exponents over all \(b\), so subtraction
+recovers the contribution of \(b=1\) as well. At fixed \(b\) that
+contribution is a sum of distinct powers \(2^j\), whose binary
+digits recover the selected shifts.
+\end{proof}
+
+\begin{theorem}\label{thm:scaled-separation}
+Suppose \(d\ge0\), \(1\le t\le 2^{d+1}\), and \(2td<s\).
+All products of \(t\) distinct members of \(V\setminus\{0\}\) are
+distinct. For \(s\ge2\), \(V\) is also a multiplicative Sidon space:
+any equality \(xy=zw\) among nonzero members determines the same
+unordered pair, including repetitions. Every quotient of two distinct
+members has field degree exactly \(n\).
+\end{theorem}
+\begin{proof}
+Write the two products with input sets \(A,B\subset E^\times\).
+An equality persists on replacing every input \(a\) by \(ca\)
+for any \(c\in E^\times\), since \(c=\theta^j\) and this raises
+both sides to \(2^j\). In the basis \(1,\theta,\ldots,\theta^{s-1}\),
+require the top \(d\) coordinates of each \(ca\), \(a\in A\cup B\),
+to vanish. These are at most \(2td<s\) homogeneous binary linear
+conditions on \(c\). Choose a nonzero solution. Represent each
+\(ca\) by a nonzero polynomial \(g_a\) of degree at most \(s-d-1\).
+Then \(L(ca)=rO_{g_a}(r)\). Cancel \(r^t\) on both sides.
+Each polynomial product of the quotients has degree at most
+\(t(2^{s-d-1}-1)<n\). Indeed \(t2^{s-d-1}\le2^s\), giving a
+strict bound for \(t\ge2\), and \(t=1\) follows directly.
+Evaluation at \(r\) is injective in those degrees. Multiplying
+the polynomial identity by \(X^t\) and using
+Lemma~\ref{lem:ore-subset-products} gives equality of the input sets.
+
+For two factors take \(d=0\). The very same degree bound gives an
+ordinary polynomial identity when entries repeat. A repeated factor
+gives \(L_g^2=L_{Yg}\), so the lemma also separates a repeated pair
+from a pair of distinct factors. Squaring is injective.
+Thus \(x/y=z/w\), \(x\ne y\), forces \(x=z\) and \(y=w\). A
+Frobenius power fixing \(x/y\) then fixes both entries, each of
+degree \(n\). This also supplies \(n(n-1)\) distinct elements of
+full field degree in \(H\).
+\end{proof}
+For background on multiplicative Sidon spaces, including a construction
+from linearized trinomials, see
+\href{https://ronny.cswp.cs.technion.ac.il/wp-content/uploads/sites/54/2017/11/sidon.pdf}
+{Roth, Raviv and Tamo, \emph{Construction of Sidon spaces with applications to coding}}.
+
+\begin{theorem}\label{thm:ore-primitive-component}
+Let \(s\ge2\), choose \(k\ge1\) distinct primes \(p_1,\ldots,p_k\) dividing
+\(n=2^s-1\), and put
+\[
+ D=\prod_{i=1}^k(2^{n/p_i}-1).
+\]
+If \(k\le2\) or \(s>2^k(k-2)\), then \(r^D\ne1\).
+Some prime power \(q^e\mid h\) has \(\operatorname{ord}_{q^e}(2)\) divisible
+by the full \(p_i\)-power in \(n\) for every chosen \(i\) simultaneously.
+If the list contains all the prime divisors of \(n\), this order is exactly \(n\).
+If \(\gcd(n,2^n-1)=1\), one can take \(e=1\). The latter coprimality
+holds in particular whenever \(\gcd(s,n)=1\).
+\end{theorem}
+\begin{proof}
+When \(k=1\), \(r^{2^{n/p_1}-1}\ne1\) by the field degree of \(r\).
+For \(k\ge2\), expand the product defining \(D\).
+Each subset \(I\) gives a signed power \(2^{j_I}\) with
+\(j_I=\sum_{i\in I}n/p_i\). These indices are distinct modulo
+\(n\): reduction modulo the full \(p_i\)-power dividing \(n\)
+detects membership of \(i\). An equality \(r^D=1\) would equate
+two disjoint products of \(t=2^{k-1}\) conjugates. Apply
+Theorem~\ref{thm:scaled-separation} with \(d=k-2\).
+
+For each prime power \(q^e\) exactly dividing \(h\), the order
+of 2 modulo \(q^e\) divides \(n\). If each such order divided at least one \(n/p_i\), then every
+\(q^e\) would divide one of the factors of \(D\), giving \(h\mid D\).
+An order dividing none of the \(n/p_i\) contains each of the selected
+prime powers in full.
+Finally, the ratio of the orders modulo \(q^e\) and modulo \(q\)
+is a power of \(q\). If \(q\nmid n\), this ratio must be 1.
+A prime dividing both \(n\) and \(2^n-1\) would give an order of
+2 greater than 1 dividing both \(s\) and \(n\).
+\end{proof}
+
+For \(s=11\), \(n=2047=23\cdot89\), every lifted order contains a
+prime \(q\) with \(\operatorname{ord}_q(2)=2047\), hence
+\(q\equiv1\pmod{4094}\). This applies to \(X^{2047}+X^3+1\),
+from \(Y^{11}+Y^2+1\). For \(s=15\), \(n=32767=7\cdot31\cdot151\)
+and \(15>8\), so the same theorem forces a prime of order 32767
+into every such root order, including that of \(X^{32767}+X+1\).
+The conclusion concerns the presence of a divisor. Establishing that
+all prime powers of \(2^n-1\) divide the order of some sparse root
+remains the primitivity problem.
+
+The checker \nolinkurl{scripts/check_ore_components.py} finds the
+scaling element by binary elimination, multiplies the resulting
+polynomials below degree \(n\), and can independently compute
+\(X^D\) directly in the lifted quotient with FLINT. The comparison
+works for all 88 primitive trinomials and pentanomials of seed
+degree 15.
+
 \end{document}
