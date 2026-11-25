@@ -25,6 +25,7 @@ import GF2Sparse.Witnesses577To592
 import GF2Sparse.Witnesses593To608
 import GF2Sparse.Witnesses609To624
 import GF2Sparse.Witnesses625To640
+import GF2Sparse.Witnesses641To656
 
 /-! Combine the independently checkable witness tables into degree intervals. -/
 
@@ -206,5 +207,17 @@ theorem sparsePrimitive_upto_640 (n : ℕ) (hn : 0 < n) (hmax : n ≤ 640) :
   by_cases h : n < 5
   · exact sparsePrimitive_upto_128 n hn (by omega)
   · exact (primitiveProduct_upto_640 n (by omega) hmax).sparse
+
+theorem primitiveProduct_upto_656 (n : ℕ) (hn : 5 ≤ n) (hmax : n ≤ 656) :
+    HasPrimitiveProduct n := by
+  by_cases h : n ≤ 640
+  · exact primitiveProduct_upto_640 n hn h
+  · exact primitiveProduct_641_to_656 n (by omega) hmax
+
+theorem sparsePrimitive_upto_656 (n : ℕ) (hn : 0 < n) (hmax : n ≤ 656) :
+    HasSparsePrimitive n := by
+  by_cases h : n < 5
+  · exact sparsePrimitive_upto_128 n hn (by omega)
+  · exact (primitiveProduct_upto_656 n (by omega) hmax).sparse
 
 end GF2Sparse
