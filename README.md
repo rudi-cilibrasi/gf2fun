@@ -71,6 +71,12 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 In odd degree $n$, a single inverse modulo $Y^{(u+v)/2}+1$ determines whether $X^n+(1+X^u)(1+X^v)$ is squarefree and, if so, the parity of its factor count when both taps are odd. If $(u+v)/2$ is odd, raising the degree by $2(u+v)$ reverses that parity. Together with the even-tap formulas, this covers every product support in odd degree. The checker agrees with direct factorization on all 21,327 two-odd-tap supports through degree 128. [Proof](results.pdf#page=88) · [Cyclic inverse checker](scripts/check_odd_tap_parity.py)
 
+At degree 1229, 51,671 of the 376,382 product pentanomials are squarefree with an odd factor count. Of these, 25,406 also avoid inverse pairs and factors through degree five. The two-odd-tap family supplies 44,187 and 21,961 of these counts, respectively, and contains 393 of the 449 irreducibles. Independent full factorizations agree with the parity predictions on every support. [Six-degree counts](results.pdf#page=90) · [Irreducible supports](data/open-product-irreducibles.csv)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_odd_tap_parity.py --degree 1229 --factor --joint --jobs 8
+~~~
+
 The divisor enumerator lists every odd-factor product pentanomial with an even tap in degrees congruent to 3 or 5 modulo eight. Its running time is $n^{1+o(1)}$. At degree 100,003 it finds 1,341,358 candidates among 1,875,025,000 supports. The exhaustive C++ scan produces the same sorted CSV. [Enumeration proof](results.pdf#page=87) · [Divisor enumerator](scripts/enumerate_even_tap_parity.py) · [Exhaustive comparison](scripts/check_even_tap_enumeration.cpp)
 
 ~~~sh

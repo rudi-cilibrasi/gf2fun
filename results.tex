@@ -6933,4 +6933,32 @@ Squarefree classes exist, for instance \(n\equiv u\pmod{2h}\)
 makes \(P=Y^d\) in \(R_h\).
 \end{proof}
 
+Applying the cyclic inverse to every two-odd-tap support gives the
+following counts. The final column counts irreducibles passing every
+available order projection in the independently computed support list.
+\[
+\begin{array}{r|r|r|r|r|r}
+n&\text{repeated}&\text{squarefree even}&\text{squarefree odd}&
+  \text{irreducible}&\text{all projections}\\\hline
+1229&5450&44612&44187&393&393\\
+1231&5491&44085&44980&397&397\\
+1237&5579&45131&44771&451&451\\
+1243&5640&45537&45233&413&388\\
+1249&5728&45403&46213&380&380\\
+1259&5728&46858&46324&393&393
+\end{array}
+\]
+FLINT factorizations of all \(94249\) two-odd-tap supports in degree
+\(1229\) agree with every predicted parity and repeated-factor flag.
+Their irreducibles match the published NTL support list term for term.
+Among the \(44187\) squarefree odd-factor supports, the counts without
+inverse pairs or factors through degrees one to five are, respectively,
+\(35394,35394,29408,25870,21961\).
+Together with the even-tap counts this gives \(51671\) squarefree
+odd-factor supports among all \(376382\) product pentanomials in
+degree \(1229\), with \(25406\) also passing the inverse-pair and
+degree-five tests. The checker \nolinkurl{scripts/check_odd_tap_parity.py}
+uses binary polynomial arithmetic for the prediction. Its small-degree
+mode also checks the integer discriminants through degree \(48\).
+
 \end{document}
