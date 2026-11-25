@@ -69,6 +69,8 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+At degree 1229, exactly 1,560 of the 93,942 polynomials $X^n+(1+X^u)(1+X^v)$ with $u$ odd and $v$ divisible by four have an odd number of factors. The census finds 12 irreducibles among them. Across all degrees congruent to 3 and 5 modulo eight, the fraction of this family with odd factor count tends to zero. When $2u<n$, two divisibility tests decide parity. [Discriminant formula and counts](results.pdf#page=81) · [Independent factorization checker](scripts/check_product_parity_sector.py)
+
 The simultaneous sieve also works with a cutoff that grows with the degree. For every fixed $0<\epsilon<1$, at least $n^{1-o(1)}$ candidates in each sufficiently large degree avoid every factor through $(1-\epsilon)\log\log n$, have odd factor count, and pass the inverse-root test. When $8\nmid n$, the cutoff can reach $\frac1{32}\sqrt{\log n/\log\log n}$. The proof uses natural logarithms. [Proof and parameters](results.pdf#page=80) · [Verify the seven classes with --gap-slices](scripts/check_joint_product_sieve.py)
 
 For degrees divisible by eight, the simultaneous sieve has an exact factor-parity table. For $q=8$, its 63 exponent classes split into 21 with odd factor count, 21 with even count and 21 with repeated roots. Negating a squarefree class reverses its parity for every power of two $q\ge8$. The checker compares all 318 classes at $q=8,16$ with full factorizations. Lean proves the constructed examples in degrees 56 and 152 are primitive. [Parity formula](results.pdf#page=79) · [Lean certificates](GF2Sparse/ReciprocalSieve.lean) · [Reproduce with the --residues option](scripts/check_joint_product_sieve.py)

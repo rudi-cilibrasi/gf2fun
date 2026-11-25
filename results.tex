@@ -6145,8 +6145,8 @@ Multiplying the ratios now gives
 Stickelberger--Swan and the root bijection give the conclusion.
 \end{proof}
 
-The auxiliary root identity and the evaluation at \(t^s=1\) are
-proved in \nolinkurl{GF2Sparse/ReciprocalSieve.lean}.
+Lean proves the auxiliary root identity and its evaluation at \(t^s=1\)
+in \nolinkurl{GF2Sparse/ReciprocalSieve.lean}.
 The finite check in \nolinkurl{scripts/check_joint_product_sieve.py}
 compares the reciprocal criterion against the full polynomial gcd,
 the integer resultants against factor parity, and both sides of the
@@ -6262,8 +6262,8 @@ exclude at most two classes, as in that theorem, to impose
 then gives factor parity and squarefreeness. For the seven other
 classes use \(A=8\).
 
-It remains to count on these progressions, uniformly in \(B\).
-Put \(U=\log\log n,\ z=\exp(\log n/(256U))\).
+For a count uniform in \(B\), let \(U=\log\log n\)
+and put \(z=\exp(\log n/(256U))\).
 For the larger cutoff in the seven classes,
 \(\log s\le B(B+1)(\log2)/2\), so \(s+k\le\sqrt z\) for large \(n\).
 For multiples of eight the prime number theorem gives
@@ -6291,5 +6291,105 @@ The number of primes of \(nM\) above \(z\) is at most
 They remove \(O(z^{2/3}(N/z+1))=o(N/(\log n)^2)\) more indices.
 The remaining \(n^{1-o(1)}\) supports have all the asserted properties.
 \end{proof}
+
+\section{A sparse set of odd-parity product supports in odd degrees}\label{sec:product-parity-sector}
+
+\begin{theorem}\label{thm:product-parity-sector}
+Let \(n,u\) be odd and \(v\) a positive multiple of four, with
+\(u>0,\ u+v<n\). The pentanomial \(F=X^n+(1+X^u)(1+X^v)\)
+is squarefree. Set \(a=(n-u-v)/2,\ b=(n-u)/2\), and let
+\[
+ E=\begin{cases}
+ [Y^u](1+Y^a+Y^b)^{-1}\ \text{in }\F[[Y]],& b\text{ odd},\\
+ 0,& b\text{ even}.
+ \end{cases}
+\]
+Its positive-coefficient integer lift has discriminant
+\[
+ \operatorname{disc}(F)\equiv(-1)^{(n-1)/2}n(1+4E)\pmod8 .
+\]
+For \(2u<n\) and \(b\) odd, \(E\) is the parity of the two conditions
+\[
+ a\mid u,\qquad u\ge b\ \text{ and }\ 2a\mid u-b .
+\]
+\end{theorem}
+\begin{proof}
+At a binary root \(x\), \(xF'(x)=1+x^v\ne0\), giving squarefreeness.
+At an integer-lift root \(\alpha\), set \(e=(n-u)/n\) and write
+\[
+ \alpha F'(\alpha)=-n(1+\alpha^v)(1+e\alpha^u)
+                     +v\alpha^v(1+\alpha^u).
+\]
+The first summand is a unit above two. Since \(4\mid v\), adding the
+second changes its norm modulo eight by a multiplicative factor
+\(1+vT\), where \(T\) is the binary trace
+\[
+ T=\sum_{F(x)=0}\frac{x^v(1+x^u)}{1+x^v}
+   =\sum_{F(x)=0}\frac{x^{v-1}(1+x^u)}{F'(x)}=0 .
+\]
+The last equality follows from Lagrange interpolation, since the
+numerator has degree less than \(n-1\). As before the norm of
+\(1+\alpha^v\) is one. Thus it remains to evaluate
+\(\prod(1+e\alpha^u)\).
+
+In \(F^*=X^nF(1/X)\) the even-exponent part is \(R(X^2)\), where
+\(R(Y)=1+Y^a+Y^b\). Its other two exponents are \(n-v=u+2a\)
+and \(n\), both odd and strictly greater than \(u\).
+Writing \(P_j=\sum\alpha^j\), the logarithmic derivative gives
+\(P_u=0,\ P_{2u}/2=-[Y^u]YR'/R\). Indeed, an even exponent at most
+\(2u\) cannot use either odd exponent: it would need to use at least
+two. The product of the linear terms is therefore
+\(1-e^2 P_{2u}/2\bmod8\). If \(b\) is even, \(4\mid e\) in
+\(\mathbb Z_2\). Otherwise \(e^2\equiv4\bmod8\), and \(a,b\) are both
+odd as \(4\mid v\). Then \(YR'=R+1\bmod2\), giving the formula.
+If \(2u<n\), then \(u<2b\). Through degree \(u\) the inverse of \(R\)
+is \((1+Y^a)^{-1}+Y^b(1+Y^{2a})^{-1}\), which gives the two tests.
+\end{proof}
+
+\begin{corollary}\label{cor:product-sector-size}
+In every odd degree, the number of supports in
+Theorem~\ref{thm:product-parity-sector} with \(E=1\) is
+\(O(\sigma(n)(\log(2n))^2)\), where \(\sigma\) is the sum of divisors.
+On the part \(2u<n\), this count is \(\Theta(n\log n)\) as \(n\)
+grows. For \(n\equiv3,5\bmod8\), these are exactly the supports
+with an odd number of factors. Thus a fraction tending to zero of
+this quadratic-size family can be irreducible in these degrees.
+For \(n\equiv1,7\bmod8\), the exceptional supports have even factor count.
+\end{corollary}
+\begin{proof}
+A nonzero coefficient requires \(u=ia+jb\) with \(i,j\ge0\).
+As \(u=n-2b\), if \(i=0\) then \(b\mid n\), giving at most
+\(\sum_{b\mid n}b=\sigma(n)\) pairs \((a,b)\).
+Otherwise \(h=(j+2)b<n,\ ia=n-h\). This gives at most
+\(\sum_{0<h<n}\tau(h)\tau(n-h)\) pairs, where \(\tau\) counts divisors.
+Using divisors of size at most \(\sqrt n\) and the Chinese remainder
+theorem bounds this sum by
+\[
+ 4\sum_{\substack{d,e\le\sqrt n\\(d,e)\mid n}}
+ \left(\frac{n(d,e)}{de}+1\right)
+ \ll n+n(1+\log n)^2\sum_{c\mid n}\frac1c .
+\]
+This proves the first bound, as \(\sigma(n)/n\le n/\varphi(n)\).
+
+In the part \(2u<n\), the first divisibility test gives at most
+\(\sum_{u<n}\tau(u)\) choices; the second gives
+\(O(\sum_{j\le 2n}\tau(j)+n)\), by using \(2(u-b)=3u-n\)
+and treating \(3u=n\) separately. Both are \(O(n\log n)\).
+For the lower bound take all odd \(s\le\sqrt n\) and
+\(n/(16(s+2))<w<n/(8(s+2))\) with
+\((s+2)w\equiv n\bmod8\). Put \(u=sw,\ v=n-(s+2)w\).
+Then \(a=w\mid u,\ b>u,\ b\) is odd. Each \(s\) contributes
+\(\gg n/(s+2)\) distinct supports, and the sum is \(\gg n\log n\).
+Stickelberger--Swan determines the two parity cases.
+\end{proof}
+
+At \(n=1229\) there are \(93942\) supports in this sector.
+Exactly \(1560\) have odd factor count, and \(12\) are irreducible.
+When the odd tap is the smaller one, these counts are \(47124,506,4\).
+The checker \nolinkurl{scripts/check_product_parity_sector.py}
+computes \(E\) by counting solutions \(ia+jb=u\) with no binary
+carry in \(i+j\), by the binary binomial theorem. It can independently
+factor the entire sector and compare its list of irreducibles with
+Theorem~\ref{thm:open-product-orders}.
 
 \end{document}
