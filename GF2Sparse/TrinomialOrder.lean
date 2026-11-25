@@ -1,4 +1,4 @@
-import GF2Sparse.DyadicTap
+import GF2Sparse.KasamiTriples
 import GF2Sparse.CompositionNorm
 import Mathlib.Data.Finset.Prod
 
@@ -102,5 +102,47 @@ theorem trinomial_inner_no_root_triple {n a : ℕ} (ha : 1 < a) (han : a+1 < n)
   zify [show a ≤ n by omega, show 1 ≤ a by omega, show 1 ≤ n-a by omega,
     show n ≤ n*n by nlinarith] at lo hi hpos
   nlinarith
+
+/-- Inversion exchanges the two complementary taps. -/
+theorem trinomial_inverse_root {n a : ℕ} (ha : 0 < a) (han : a < n) {x : K}
+    (hx : aeval x (trinomial n a) = 0) : aeval x⁻¹ (trinomial n (n-a)) = 0 := by
+  have hx0 := trinomial_root_ne_zero ha han hx
+  have hp : x^(n-a)*x^a = x^n := by rw [← pow_add, Nat.sub_add_cancel han.le]
+  have he : (x⁻¹)^(n-a)*x^n = x^a := by
+    rw [inv_pow, ← hp, ← mul_assoc, inv_mul_cancel₀ (pow_ne_zero _ hx0), one_mul]
+  apply mul_right_cancel₀ (pow_ne_zero n hx0)
+  simp only [trinomial, map_add, map_pow, aeval_X, map_one, add_mul, one_mul, zero_mul, he]
+  rw [inv_pow, inv_mul_cancel₀ (pow_ne_zero _ hx0)]
+  simpa only [trinomial, map_add, map_pow, aeval_X, map_one, add_comm, add_left_comm,
+    add_assoc] using hx
+
+/-- For all relatively prime exponents above degree nine, irreducibility suffices
+for the first three root-product tests. -/
+theorem trinomial_no_root_triple_of_nine_lt {n a : ℕ} (hn : 9 < n) (ha : 0 < a)
+    (han : a < n) (hc : a.Coprime n) (hf : Irreducible (trinomial n a)) :
+    NoRootTriple (trinomial n a) := by
+  by_cases ha1 : a = 1
+  · subst a
+    exact irreducible_dyadic_tap_no_root_triple_of_nine_lt (i := 0) hn han hf
+  by_cases he : a+1 = n
+  · intro x y z hx hy hz h
+    have hi {w : AlgebraicClosure (ZMod 2)} (hw : aeval w (trinomial n a) = 0) :
+        aeval w⁻¹ (trinomial n 1) = 0 := by
+      simpa only [show n-a=1 by omega] using trinomial_inverse_root ha han hw
+    let g := minpoly (ZMod 2) x⁻¹
+    have hg : Irreducible g := minpoly.irreducible (Algebra.IsIntegral.isIntegral x⁻¹)
+    have hgr : aeval x⁻¹ g = 0 := minpoly.aeval _ _
+    have hfix := (degree_dvd_iff_frobenius hg hgr g.natDegree).1 dvd_rfl
+    have hd := (degree_dvd_iff_frobenius hf hx g.natDegree).2 (by simpa using congrArg Inv.inv hfix)
+    have hdeg := trinomial_degree (show 0 < 1 by decide) (show 1 < n by omega)
+    have hg_eq : trinomial n 1 = g := eq_of_monic_of_dvd_of_natDegree_le
+      (minpoly.monic (Algebra.IsIntegral.isIntegral x⁻¹))
+      (binary_monic (by intro hzero; simp [hzero] at hdeg; omega)) (minpoly.dvd _ _ (hi hx))
+      (by rw [hdeg, ← trinomial_degree ha han]; exact Nat.le_of_dvd hg.natDegree_pos hd)
+    have hp : Irreducible (trinomial n 1) := by rwa [hg_eq]
+    apply irreducible_dyadic_tap_no_root_triple_of_nine_lt (i := 0) hn (by change 1 < n; omega) hp
+      x⁻¹ y⁻¹ z⁻¹ (hi hx) (hi hy) (hi hz)
+    simpa only [mul_inv, inv_one] using congrArg Inv.inv h
+  · exact trinomial_inner_no_root_triple (by omega) (by omega) hc hf
 
 end GF2Sparse
