@@ -54,7 +54,7 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
-The two degree-1229 candidate fields also admit a common polynomial coordinate. Let $r$ be the root of the selected candidate and $a=z+z^{-1}$ for an element $z$ of order 2459. To obtain the exact mask of $a$ in the power basis of $r$, run the command below. It checks $a\ne0$, $D_{2459}(a)=0$, and the degree-1229 period polynomial at $a$. Here $D_j(z+z^{-1})=z^j+z^{-j}$. The residues $\pm2^k$ for $0\le k<1229$ exhaust the nonzero residues modulo 2459, so $D_j(a)$ for each such residue is a known Frobenius power of $a$. [Coordinate construction](scripts/period_coordinate.py)
+The two degree-1229 candidate fields also admit a common polynomial coordinate. Let $r$ be the root of the selected candidate and $a=z+z^{-1}$ for an element $z$ of order 2459. To obtain the exact mask of $a$ in the power basis of $r$, run the command below. It checks $a\ne0$, $D_{2459}(a)=0$, and the degree-1229 period polynomial at $a$. Here $D_j(z+z^{-1})=z^j+z^{-j}$. The residues $\pm2^k$ for $0\le k<1229$ exhaust the nonzero residues modulo 2459, so $D_j(a)$ for each such residue is a known Frobenius power of $a$. Lean proves the signed Frobenius identity, the degree of every order-2459 period, and the subgroup step for an invertible coefficient. [Coordinate construction](scripts/period_coordinate.py) · [Lean proofs](GF2Sparse/GaussPeriod.lean)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/period_coordinate.py
