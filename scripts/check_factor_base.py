@@ -13,7 +13,7 @@ from flint import nmod_poly
 DATA = Path(__file__).resolve().parents[1] / "data"
 # Interior exponents, lower bound for a proper index, length of the character sum.
 CASES = {47: ((1, 4, 5), 176, 22), 61: ((1, 2, 5), 1024, 28),
-         1229: ((27, 50, 77), 10**10 + 1, 84)}
+         89: ((3, 5, 6), 1024, 30), 1229: ((27, 50, 77), 10**10 + 1, 84)}
 
 
 def polynomial(mask):

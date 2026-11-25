@@ -3444,7 +3444,14 @@ through 175. This gives an elementary full-order certificate. In degree
 61 take \(f=X^{61}+X^5+X^2+X+1\). The analogous 71 logarithms give
 \(Q>90\) with \(J=1024\), \(L=28\), and the same weights with
 \(85-i\) replaced by \(29-i\). Trial division through 1023 supplies
-the index floor. Both files are checked by
+the index floor. In degree 89 the 71 logarithms for
+\(X^{89}+X^6+X^5+X^3+1\) give \(Q>90>87\) with \(J=1024\)
+and \(L=30\). Lean proves the injection of a fraction family into
+the root subgroup and the bounded-index order criterion in
+\nolinkurl{GF2Sparse/FactorBase.lean}. It verifies all 213 modular
+power identities in \nolinkurl{GF2Sparse/FactorBaseExamples.lean}.
+The character estimate uses Weil's theorem, and the numerical counts
+are checked by
 \nolinkurl{scripts/check_factor_base.py}.
 
 The searches use polynomial relations as in
