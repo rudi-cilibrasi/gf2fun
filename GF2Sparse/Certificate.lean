@@ -82,7 +82,7 @@ private theorem residue_step (n f a : ℕ) :
   simp only [step, residue]
   split <;> simp
 
-private theorem decode_shift_by (a k : ℕ) : decode (a <<< k) = X ^ k * decode a := by
+theorem decode_shift_by (a k : ℕ) : decode (a <<< k) = X ^ k * decode a := by
   induction k with
   | zero => simp
   | succ k ih => rw [Nat.shiftLeft_add, decode_shift, ih, pow_succ', mul_assoc]
@@ -157,6 +157,13 @@ private theorem decode_shiftedSum (a : ℕ) (js : List ℕ) :
   induction js with
   | nil => simp [shiftedSum]
   | cons j js ih => simp [shiftedSum, decode_shift_by, ih, add_mul]
+
+/-- Carryless multiplication of two binary coefficient masks. -/
+def maskProduct (a b : ℕ) : ℕ := shiftedSum b (taps a)
+
+@[simp] theorem decode_maskProduct (a b : ℕ) :
+    decode (maskProduct a b) = decode a * decode b := by
+  rw [maskProduct, decode_shiftedSum, sum_taps]
 
 /-- Cancel all terms at or above degree n in one XOR with a polynomial
 multiple of f. Low interior exponents usually need only a few rounds. -/
