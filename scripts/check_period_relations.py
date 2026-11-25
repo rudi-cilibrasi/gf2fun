@@ -6,11 +6,12 @@ import json
 import sys
 from collections import Counter
 from functools import lru_cache
+from math import lcm
 from pathlib import Path
 
 from check_factor_base import DATA, irreducible, irreducible_counts, modulus, moment_bound, polynomial
 from find_factor_base_logs import insert
-from period_coordinate import CANDIDATES, DEGREE, PRIME, coordinate, frobenius_indices, period_polynomial
+from period_coordinate import CANDIDATES, DEGREE, PRIME, coordinate, frobenius_indices, mask_of, period_polynomial
 
 
 ORDER = (1 << DEGREE) - 1
@@ -72,8 +73,38 @@ def closure(pivots, supplied):
     return have
 
 
+def extend_dickson(small, pivots):
+    """Factor B(D_m) in F_2[T], keeping relations supported through degree 32."""
+    masks = set(small)
+    x = polynomial(2)
+    dickson = [x*0, x]
+    for _ in range(2, 8):
+        dickson.append(x*dickson[-1] + dickson[-2])
+    indices = frobenius_indices(DEGREE)
+    for m in (3, 5, 7):
+        for p in sorted(small):
+            composed = polynomial(p)(dickson[m])
+            factors = composed.factor()[1]
+            if any(f.degree() > 32 for f, _ in factors):
+                continue
+            product = polynomial(1)
+            row = {}
+            for f, e in factors:
+                q = mask_of(f)
+                if q not in masks and not irreducible(f):
+                    raise ArithmeticError("a higher-degree factor is reducible")
+                masks.add(q)
+                row[q] = e
+                product *= f**e
+            if product != composed:
+                raise ArithmeticError("incorrect Dickson factorization")
+            row[p] = row.get(p, 0) - (1 << indices[m])
+            insert(row, pivots, ORDER, fixed_x=False)
+    return masks
+
+
 def select_targets(masks, pivots):
-    """Supply the free low columns, then greedily unlock 276 degree-16 columns."""
+    """Supply free low columns and choose degree-16 inputs by newly available moment weight."""
     low = {p for p in masks if p < 1 << 16}
     targets = low - pivots.keys()
     have = closure(pivots, targets)
@@ -82,12 +113,24 @@ def select_targets(masks, pivots):
     deps = {}
     for p in sorted(masks-have):
         if p in pivots:
-            deps[p] = set().union(*(deps.get(q, set()) for q in pivots[p] if q != p))
-        else:
+            missing = pivots[p].keys() - {p} - have
+            if missing <= deps.keys():
+                deps[p] = set().union(*(deps[q] for q in missing))
+        elif p < 1 << 17:
             deps[p] = {p}
-    while len(have-low) < 276:
-        singles = Counter(next(iter(s)) for s in deps.values() if len(s) == 1)
-        chosen = min(singles, key=lambda p: (-singles[p], p))
+    base = moment_bound({}, INDEX_FLOOR, 129, 3)
+    weights = {d: moment_bound({d: 1}, INDEX_FLOOR, 129, 3) - base
+               for d in {p.bit_length()-1 for p in masks}}
+    scale = lcm(base.denominator, *(w.denominator for w in weights.values()))
+    gain = {d: int(scale*w) for d, w in weights.items()}
+    score = int(scale*base) + sum(gain[p.bit_length()-1] for p in have)
+    while score <= (DEGREE-2)*scale:
+        rewards = Counter()
+        for p, missing in deps.items():
+            if len(missing) == 1:
+                rewards[next(iter(missing))] += gain[p.bit_length()-1]
+        chosen = min(rewards, key=lambda p: (-rewards[p], p))
+        score += rewards[chosen]
         targets.add(chosen)
         for p in list(deps):
             deps[p].discard(chosen)
@@ -151,8 +194,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if bool(args.logs) != bool(args.candidate) or (args.list_targets and args.logs):
         parser.error("log submissions require a candidate and at least one CSV")
-    masks = small_irreducibles()
-    pivots = read_relations(masks)
+    small = small_irreducibles()
+    pivots = read_relations(small)
+    raw_count = len(pivots)
+    masks = extend_dickson(small, pivots)
     targets, covered = select_targets(masks, pivots)
     counts = Counter(p.bit_length()-1 for p in covered)
     score = moment_bound(counts, INDEX_FLOOR, 129, 3)
@@ -165,7 +210,7 @@ if __name__ == "__main__":
             rows = list(csv.reader(source))
         if rows != [["mask", "degree"]] + [[str(p), str(p.bit_length()-1)] for p in sorted(targets)]:
             raise ArithmeticError("the published target list differs from reconstruction")
-        print(f"{len(pivots)} polynomial identities and unit pivots verified. "
+        print(f"{raw_count} listed identities and {len(pivots)-raw_count} further unit pivots verified. "
               f"{len(targets)} inputs imply {len(covered)} polynomial logarithms.")
         print(f"Their conditional moment score is {score} > {DEGREE-2}.")
         if args.logs:

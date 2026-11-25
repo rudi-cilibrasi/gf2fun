@@ -3555,7 +3555,7 @@ exactly when \(z^{2^j}\) is a root of \(Y^2+aY+1\), equivalently when
 
 \begin{corollary}\label{cor:period-targets}
 For either of the two sparse degree-1229 moduli in
-Corollary~\ref{cor:1229-logs}, it suffices to supply exponents for the 3,635 masks
+Corollary~\ref{cor:1229-logs}, it suffices to supply exponents for the 3,531 masks
 listed in \nolinkurl{data/degree-1229-period-targets.csv}.
 Each is an exponent to base \(r\) for \(P(a)\) in the chosen field.
 \end{corollary}
@@ -3591,13 +3591,30 @@ of \(B_b(a)\) equal to \(\sum_m e_{m,b}2^{k(m)}\). Exponents can be
 reduced modulo \(M=2^n-1\) since each factor is nonzero in \(K\).
 Subtracting a multiple of a row corresponds to dividing by a power
 of its product. Scaling a row by a unit modulo \(M\) preserves its
-solution set. These operations give 2,343 unit pivots in order of
-decreasing polynomial mask. Triangular substitution from the listed
-3,410 lower-degree inputs and 225 degree-16 inputs recovers all 4,720
-irreducibles through degree 15 and 276 distinct irreducibles of
-degree 16. The exact rational calculation in
-Corollary~\ref{cor:1229-logs} then proves full order. The relation and
-target replay is \nolinkurl{scripts/check_period_relations.py}.
+solution set. The listed identities give 2,345 unit pivots in order of decreasing
+polynomial mask. For each irreducible \(P\) of degree at most 16 and
+\(m=3,5,7\), also factor \(P(D_m(T))\) over \(\F\). Retain
+factorizations in degrees at most 32 and verify each by multiplication.
+The Frobenius identity supplies a further 8,684 unit pivots.
+
+Triangular substitution from the 3,409 listed inputs of degrees at
+most 15 and 122 inputs of degree 16 recovers all 4,720 irreducibles
+through degree 15. It recovers the following counts in higher degrees,
+for a total of 7,420 values.
+\[
+\begin{array}{c|rrrrrrrrrrr}
+d&16&18&20&21&22&24&26&27&28&30&32\\\hline
+N_d&165&31&57&7&93&182&315&19&603&1131&97
+\end{array}
+\]
+With the same \(J,L,c_i\) as in the blocked-divisor case of
+Corollary~\ref{cor:1229-logs}, these counts in
+Theorem~\ref{thm:factor-moments} give
+\[
+Q=\frac{1813173590421350930948365429016698398250315673}
+       {1477604062553248309256046276542932470202368}>1227 .
+\]
+The relation and target replay is \nolinkurl{scripts/check_period_relations.py}.
 Lean proves the signed Frobenius identity, the degree of the period,
 and recovery of subgroup membership from a unit coefficient in
 \nolinkurl{GF2Sparse/GaussPeriod.lean}.
