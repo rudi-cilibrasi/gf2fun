@@ -4187,4 +4187,37 @@ and FactorDB records for
 \href{https://factordb.com/index.php?id=1000000000000001277}{1277}.
 \end{proof}
 
+For each of the five open degrees above 1229, the table below gives
+an irreducible \(F_{n,u,v}=X^n+(X^u+1)(X^v+1)\) with a partially
+certified root order \(h\). The bound \(b\) in the last column means
+\(h>2^b\).
+\[
+\begin{array}{r|r|r|r}
+n&u&v&b\\ \hline
+1231&4&11&184\\
+1237&14&67&273\\
+1243&22&27&167\\
+1249&3&44&209\\
+1259&6&41&276
+\end{array}
+\]
+Write \(2^n-1=KC\) with \(K\) the product of the known prime powers
+and \(C\) the remaining cofactor. The data file
+\nolinkurl{data/open-degrees-1231-1259.json} gives these integers
+for every row, using the FactorDB entries for the five group orders.
+The checker proves the primality of the listed primes, verifies
+\(\gcd(K,C)=1\), and checks \(X^{(2^n-1)/q}\ne1\) for every prime
+\(q\mid K\) as well as \(X^K\ne1\). Hence \(h=Kt\) with
+\(1<t\mid C\). For every prime \(\ell\mid n\) the checker also
+verifies \(\gcd(C,2^{n/\ell}-1)=1\). Consequently each prime
+\(q\mid C\) has \(\ord_q(2)=n\), and \(q\equiv1\pmod{2n}\) since
+\(n\) is odd. Computing
+\(
+\prod_{j=1}^{2^{32}}(1+2nj)\bmod C
+\)
+in square blocks gives a residue coprime to \(C\). This proves
+\(h>K(1+2n\cdot2^{32})\) in every row.
+\nolinkurl{scripts/check_open_degrees.py} replays the field checks
+and recomputes the products by Lagrange interpolation.
+
 \end{document}
