@@ -2387,4 +2387,62 @@ Lean verifies the equivalence, weight, degree and short-product
 claim in \nolinkurl{GF2Sparse/OreLift.lean} and the applications
 in \nolinkurl{GF2Sparse/OreExamples.lean}.
 
+\begin{theorem}\label{thm:ore-order}
+Suppose \(P\) is primitive of degree \(s\) and \(r\) is a root
+of \(O_P\), of degree \(n=2^s-1\). For \(1\le b<s\), let
+\(m=2^{b-1}\). Whenever \(h(2^b-1)<n\),
+\[
+                       \ord(r)\ge {m+h\choose h}.
+\]
+In particular, for \(a\ge2\) and \(2a+1\le s\),
+\[
+                       \ord(r)>2^{\,2^{a+1}-a}.
+\]
+For every such lift of degree \(n=2^s-1\), \(s\ge5\), this gives
+\(\log_2\ord(r)>\sqrt{n+1}-\tfrac12\log_2(n+1)\).
+\end{theorem}
+\begin{proof}
+Use all \(m\) monic degree-\(b\) binary polynomials \(g\) with
+constant term 1. For each, \(r O_g(r)=g(F)r\) belongs to
+\(\ker P(F)\) because the operators commute. It is nonzero since
+\(O_g\) has smaller degree than the minimal polynomial of \(r\).
+It is therefore a conjugate of \(r\), giving
+\(O_g(r)\in\langle r\rangle\).
+
+Each \(O_g\) has a root \(z_g\) on which none of the other \(O_{g'}\)
+vanishes. To see this, call the monic generator of the annihilator
+of a point under \(F\) its additive order. The kernel of \(d(F)\)
+has \(2^{\deg d}\) points for each monic constant-one divisor \(d\)
+of \(g\), since \(L_d\) is separable. Counting these points by exact
+additive order and applying inclusion--exclusion, the number of
+points of additive order \(g\) is
+\[
+          2^{\deg g}\prod_{u\mid g,\ u\ {\rm irreducible}}
+                              (1-2^{-\deg u})>0 .
+\]
+Any such point is nonzero. Another degree-\(b\) polynomial annihilating
+it would be a multiple of \(g\), hence equal to \(g\).
+This step allows reducible \(g\) as well as irreducible \(g\) in
+Theorem~\ref{thm:additive-order}.
+
+Adjoin \(X\) to the list of \(m\) polynomials. Its distinguished root
+is zero, where all the \(O_g\) equal 1. The multiplicity at each
+distinguished root recovers the corresponding exponent in any product.
+Hence the \(\binom{m+h}{h}\) products of exactly \(h\) factors from
+this list are distinct. Their degrees are at most \(h(2^b-1)<n\), so
+their values at \(r\) are distinct powers of \(r\).
+
+Take \(b=a+1\), \(h=m=2^a\). The total degree bound is
+\(2^{2a+1}-2^a<n\). The central binomial coefficient satisfies
+\(m\binom{2m}{m}>4^m\) for \(m\ge4\).
+For instance, it holds at \(m=4\), and the ratio of the left side
+at \(m+1\) to its value at \(m\) is \(4+2/m\).
+Taking \(a=\lfloor(s-1)/2\rfloor\) gives the last inequality.
+\end{proof}
+In degree \(2^{127}-1\) the resulting bound is
+\(2^{2^{64}-63}\). In degree \(2^{2203}-1\) the displayed
+pentanomial has root order strictly greater than \(2^{2^{1102}-1101}\).
+Lean verifies the general bounds and the latter application in
+\nolinkurl{GF2Sparse/OreOrder.lean} and \nolinkurl{GF2Sparse/OreExamples.lean}.
+
 \end{document}

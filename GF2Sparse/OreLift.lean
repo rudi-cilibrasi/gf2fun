@@ -33,6 +33,23 @@ theorem oreLift_coeff (p : BinaryPoly) (i : ℕ) : (oreLift p).coeff (2^i-1) = p
 @[simp] theorem oreLift_constant (p : BinaryPoly) : (oreLift p).coeff 0 = p.coeff 0 :=
   oreLift_coeff p 0
 
+theorem oreLift_ne_zero {p : BinaryPoly} (hp : p ≠ 0) : oreLift p ≠ 0 := by
+  have h := oreLift_coeff p p.natDegree
+  rw [coeff_natDegree] at h
+  intro e
+  exact leadingCoeff_ne_zero.2 hp (by simpa [e] using h.symm)
+
+@[simp] theorem oreLift_add (p q : BinaryPoly) : oreLift (p+q) = oreLift p + oreLift q :=
+  toFinsupp_injective (Finsupp.embDomain_add _ _ _)
+
+@[simp] theorem oreLift_X_pow (a : ℕ) : oreLift ((X : BinaryPoly)^a) = X^(2^a-1) := by
+  apply toFinsupp_injective
+  change Finsupp.embDomain oreIndex _ = _
+  rw [toFinsupp_X_pow, Finsupp.embDomain_single, toFinsupp_X_pow]
+  rfl
+
+@[simp] theorem oreLift_one : oreLift 1 = 1 := by simpa using oreLift_X_pow 0
+
 theorem oreLift_degree {p : BinaryPoly} (hp : p ≠ 0) :
     (oreLift p).natDegree = 2^p.natDegree-1 := by
   have top := natDegree_mem_support_of_nonzero hp
@@ -65,7 +82,7 @@ theorem oreLift_frobenius {K : Type*} [Field K] [Algebra (ZMod 2) K] (p : Binary
   change z^(2^i) = z * z^(2^i-1)
   rw [← pow_succ', Nat.sub_add_cancel (Nat.two_pow_pos i)]
 
-private theorem primitive_constant {p : BinaryPoly} (hp : Primitive p) : p.coeff 0 = 1 := by
+theorem Primitive.coeff_zero_eq_one {p : BinaryPoly} (hp : Primitive p) : p.coeff 0 = 1 := by
   have h : ∀ a : ZMod 2, a ≠ 0 → a = 1 := by decide
   apply h
   intro hc
@@ -137,7 +154,7 @@ theorem irreducible_oreLift_iff {p : BinaryPoly} (hs : 0 < p.natDegree) (hc : p.
     rwa [he]
 
 theorem Primitive.irreducible_oreLift {p : BinaryPoly} (hp : Primitive p) : Irreducible (oreLift p) :=
-  (irreducible_oreLift_iff hp.2.1.natDegree_pos (primitive_constant hp)).2 hp
+  (irreducible_oreLift_iff hp.2.1.natDegree_pos hp.coeff_zero_eq_one).2 hp
 
 /-- The lifted roots are the nonzero points of a binary cube. This excludes
 every product of fewer than the seed degree many roots, including repetition. -/

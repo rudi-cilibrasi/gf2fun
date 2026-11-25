@@ -1,4 +1,4 @@
-import GF2Sparse.OreLift
+import GF2Sparse.OreOrder
 import GF2Sparse.Coverage
 import GF2Sparse.MersenneExamples
 
@@ -33,5 +33,10 @@ theorem oreLift_2203 : Irreducible (oreLift (productCandidate 2203 62 135)) ∧
   refine ⟨h.irreducible_oreLift, h.oreLift_short_products ?_⟩
   rw [(product_shape (u := 62) (v := 135) (n := 2203) (by decide) (by decide) (by decide) (by decide)).1]
   decide
+
+theorem oreLift_2203_order :
+    2^(2^(1101+1)-1101) < orderOf (AdjoinRoot.root (oreLift (productCandidate 2203 62 135))) := by
+  have hd := (product_shape (u := 62) (v := 135) (n := 2203) (by decide) (by decide) (by decide) (by decide)).1
+  exact primitiveProduct_2203_62_135.oreLift_order_exponential (a := 1101) (by decide) (by rw [hd])
 
 end GF2Sparse
