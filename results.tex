@@ -3868,4 +3868,95 @@ above degree nine. The \texttt{--progressions 191} mode of
 odd-degree progression pentanomials through degree 191 directly.
 It finds exactly the two degree-nine exceptions.
 
+\section{An order bound from the exponents of an irreducible pentanomial}
+For a finite set of residues modulo \(m\), its circular span is the
+smallest \(s\) for which a cyclic interval of \(s+1\) residues contains
+the set. Equivalently, subtract the largest gap between consecutive
+residues on the circle from \(m\).
+
+\begin{theorem}\label{thm:sparse-extension-span}
+Let \(f\) be an irreducible binary polynomial of degree \(n>1\), with
+support \(E=\{0,e_1,\ldots,e_d\}\) and \(\gcd(e_1,\ldots,e_d)=1\).
+Let \(\alpha\) be a root. For any \(m\ge2\) and any unit \(v\bmod m\),
+\[
+ [\F(\alpha):\F(\alpha^m)]\ \le\
+       \operatorname{span}_m(vE).
+\]
+In particular, suppose \(\alpha^H=1\) with \(H\) odd.
+For \(0<u<H\), put \(k=\gcd(u,H)\) and take \(\ord_1(2)=1\).
+Then
+\[
+       n k\ \le\ \ord_k(2)\operatorname{span}_H(uE).
+\]
+\end{theorem}
+\begin{proof}
+Write \(s=\operatorname{span}_m(vE)\). Lift the residues \(ve\) to
+integers \(w_e\) in one interval of width \(s\), taking equal lifts for
+equal residues. Let \(c\) be an inverse of \(v\bmod m\) and
+\(q_e=(e-cw_e)/m\). Put \(L=\F(\alpha^m)\) and \(\beta=\alpha^c\).
+The equality \(L(\beta)=\F(\alpha)\) follows from \(\gcd(m,c)=1\).
+At least two residue classes occur, since \(0\in E\) and \(E\) has gcd one.
+In the equation
+\[
+        0=f(\alpha)=\sum_{e\in E}(\alpha^m)^{q_e}\beta^{w_e}
+\]
+the coefficient of each occupied power of \(\beta\) is nonzero.
+Indeed a zero coefficient would make a nonempty proper subsum of
+\(f\) vanish at \(\alpha\), whereas \(f\) is its degree-\(n\) minimal
+polynomial. Multiplying by the inverse of the lowest power of
+\(\beta\) gives a nonzero polynomial of degree \(s\) over \(L\).
+This proves the extension-degree bound.
+
+For the second inequality put \(m=H/k\) and \(v=u/k\).
+The element \(\alpha^m\) has order dividing \(k\), so its degree
+over \(\F\) divides \(\ord_k(2)\). Now use the tower law and
+\(\operatorname{span}_H(uE)=k\operatorname{span}_m(vE)\).
+\end{proof}
+
+\begin{corollary}\label{cor:pentanomial-packing}
+For every irreducible binary pentanomial of degree \(n\) whose positive
+exponents have gcd one, its root order \(h\) satisfies
+\[
+ 16h^3\ \ge\
+ \begin{cases}
+      5n^4,& n\text{ even},\\
+      5n^4+10n^2+1,& n\text{ odd}.
+ \end{cases}
+\]
+\end{corollary}
+\begin{proof}
+For \(e=(e_1,\ldots,e_d)\) form the integer lattice
+\(\Lambda=h\mathbb Z^d+\mathbb Z e\). Its index is \(h^{d-1}\),
+since \(e\) generates a group of order \(h\) modulo \(h\mathbb Z^d\).
+Put \(\rho(x)=\max(0,x_i)-\min(0,x_i)\), where both extrema use all coordinates.
+Every nonzero lattice vector has \(\rho(x)\ge n\). For a vector congruent
+to \(ue\bmod h\) with \(0<u<h\), this follows from
+Theorem~\ref{thm:sparse-extension-span}, since \(\ord_k(2)\le k\).
+A nonzero vector in \(h\mathbb Z^d\) has span at least \(h\ge n\).
+The vector \(e\) attains \(n\), so the minimum is exact.
+
+The unit ball of \(\rho\) has volume \(d+1\). Partition by which of
+the \(d+1\) entries \(0,x_1,\ldots,x_d\) is smallest, ignoring ties
+of measure zero. Subtracting that minimum and dropping its entry
+gives the unit cube in each part via a determinant-\(\pm1\) linear map.
+Translates of the open ball of radius \(n/2\) by \(\Lambda\) have
+disjoint interiors by the triangle inequality. Its volume is therefore
+at most the lattice index. This gives \(h^{d-1}\ge(d+1)(n/2)^d\).
+For odd \(n=2s+1\), the integer vectors of span at most \(s\) have
+distinct images modulo \(\Lambda\). Subtracting the minimum from the
+tuple \((0,x_1,\ldots,x_d)\) identifies them with tuples in
+\(\{0,\ldots,s\}^{d+1}\) containing zero. Their number is
+\((s+1)^{d+1}-s^{d+1}\). Take \(d=4\) in both bounds.
+For related sparse root bounds in a finite field using cosets and
+lattices, see \href{https://doi.org/10.1112/S1461157016000334}{Kelley}.
+\end{proof}
+
+For example \(X^6+X^4+X^3+X+1\) is irreducible by trial division
+through degree three. To prove its root order is 63, exclude 21 and 9.
+For \(H=21,u=7\) the circular span is 7 and \(\ord_7(2)=3\).
+For \(H=9,u=3\) the span is 3 and \(\ord_3(2)=2\).
+Both violate Theorem~\ref{thm:sparse-extension-span}.
+The support calculation and small-degree order checks are implemented in
+\nolinkurl{scripts/check_exponent_spans.py}.
+
 \end{document}
