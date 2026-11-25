@@ -20,6 +20,21 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 The Lean target for an all-degree proof is `GF2Sparse.Conjecture`. The gap is to force exact order $2^n-1$ for at least one candidate in each degree. That order implies irreducibility by exhausting all nonzero residues of the quotient. [Formal statement and order criterion](GF2Sparse/Basic.lean)
 
+## Contributing
+
+For a proof attempt, one open subproblem is to find a squarefree pentanomial in every sufficiently large degree that passes the first three exterior-power tests. The reciprocal-root sieve supplies the first two. The third asks that no three distinct roots have product 1. Passing all ranks through half the degree for the same candidate proves it primitive. [Determinant criterion and sieve](results.pdf#page=11)
+
+For a computational contribution, choose a degree interval beyond the checked-in range and run it on your own machine. With Python, SymPy and the repository's Lean toolchain installed, search degrees 257 through 264 and verify a completed table with
+
+~~~sh
+python3 scripts/make_witnesses.py --start 257 264 > /tmp/gf2-257-264.lean &&
+  cp /tmp/gf2-257-264.lean GF2Sparse/Witnesses257To264.lean &&
+  lake build GF2Sparse.Witnesses257To264 &&
+  lake env leanchecker -v GF2Sparse.Witnesses257To264
+~~~
+
+A pull request can include the generated table and the corresponding interval theorem. Existing tables can be checked independently, so contributors can work on disjoint ranges. [Combining verified intervals](GF2Sparse/Coverage.lean)
+
 ## Verification
 
 From the repository root, with Lean managed by elan, run
@@ -27,7 +42,7 @@ From the repository root, with Lean managed by elan, run
 ~~~sh
 lake exe cache get
 lake build
-lake env leanchecker GF2Sparse
+LEAN_NUM_THREADS=3 lake env leanchecker -v GF2Sparse
 ~~~
 
 The checked-in witnesses contain the integer factorizations, their primality certificates, and the binary polynomial exponentiation checks. To reproduce the search with Python and SymPy, run
