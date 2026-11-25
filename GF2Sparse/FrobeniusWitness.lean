@@ -36,7 +36,8 @@ private theorem decode_stretch (d k w : ℕ) (hw : w < 2^(2^k)) :
 private theorem stretch_bound (w : ℕ) : w < 2^(2^(w.log2.log2+1)) :=
   Nat.lt_log2_self.trans_le (Nat.pow_le_pow_right (by decide) (Nat.succ_le_of_lt Nat.lt_log2_self))
 
-private def xorShifts : List ℕ → ℕ → ℕ
+/-- XOR the shifts indexed by the support of a binary polynomial. -/
+def xorShifts : List ℕ → ℕ → ℕ
   | [], _ => 0
   | j::js, a => (a <<< j) ^^^ xorShifts js a
 
@@ -46,11 +47,12 @@ private theorem decode_xorShifts (js : List ℕ) (w : ℕ) :
   | nil => simp [xorShifts]
   | cons j js ih => simp [xorShifts, decode_shift_by, ih, add_mul]
 
-private def reduceHigh (n : ℕ) (js : List ℕ) : ℕ → ℕ → ℕ
+/-- Cancel the terms of degree at least n using the supplied modulus support. -/
+def reduceHigh (n : ℕ) (js : List ℕ) : ℕ → ℕ → ℕ
   | 0, a => a
   | k+1, a => if a < 2^n then a else reduceHigh n js k (a ^^^ xorShifts js (a >>> n))
 
-private theorem mk_reduceHigh (n f k a : ℕ) (js : List ℕ) (hf : xorShifts js 1 = f) :
+theorem mk_reduceHigh (n f k a : ℕ) (js : List ℕ) (hf : xorShifts js 1 = f) :
     AdjoinRoot.mk (decode f) (decode (reduceHigh n js k a)) = AdjoinRoot.mk (decode f) (decode a) := by
   induction k generalizing a with
   | zero => rfl
