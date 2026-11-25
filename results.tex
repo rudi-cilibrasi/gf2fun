@@ -2380,8 +2380,9 @@ Such a polynomial uniquely determines its seed. Lean verifies the
 equivalence for the original all-degree statement in
 \nolinkurl{GF2Sparse/OreConjecture.lean}.
 
-The verified seeds cover \(1\le s\le400\) and the five further degrees
-511, 1023, 1024, 1279 and 2203. For instance, the five exponents
+The Lean-certified seeds cover \(1\le s\le400\) and the five further degrees
+511, 1023, 1024, 1279 and 2203. Theorem~\ref{thm:ore4095} adds twelve
+seeds in degree 4095. For instance, the five exponents
 \[
     0,\quad 2^{62}-1,\quad 2^{135}-1,\quad 2^{197}-1,\quad 2^{2203}-1
 \]
@@ -2850,6 +2851,10 @@ and computes the field-element orders with \texttt{fforder}.
 It checks the largest prime using the included elliptic-curve
 primality certificate and proves primality for every other factor.
 Both computations use \nolinkurl{data/mersenne-4095-factors.json}.
+For the largest factor, \nolinkurl{scripts/make_ore_prime_certificate.py}
+also produces a \href{https://github.com/thery/coqprime}{CoqPrime}
+proof from 67 elliptic certificates and a Pocklington proof of the
+terminal prime \(18219323130506984767\).
 \end{proof}
 
 Applying the Ore equivalence once more gives twelve distinct
