@@ -14,6 +14,7 @@ import GF2Sparse.OreConjecture
 import GF2Sparse.OreExamples
 import GF2Sparse.OreFactorExamples
 import GF2Sparse.OreIndexSeven
+import GF2Sparse.OreNorms
 import GF2Sparse.OrePrimitiveExamples
 import GF2Sparse.OreReciprocalExamples
 import GF2Sparse.ParityExamples
