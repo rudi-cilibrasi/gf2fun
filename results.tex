@@ -1392,16 +1392,27 @@ over \(\mathbb F_q\), each root of such an \(H\) has degree at most
 \(kD\) over \(\mathbb F_q\).
 \end{lemma}
 \begin{proof}
-Write \(H=X^k+\sum_{i<k}c_i X^i\). The \(j\)-th equation has degree
-\(\deg g_j\) in the \(k\) coefficients. At a common point at infinity
-the nonzero polynomial \(U=\sum_{i<k}c_i X^i\) would satisfy
-\(\prod_{g_j(a)=0}U(a)=0\) for every \(j\). Choosing one vanishing
-factor from each product would give \(k\) distinct roots of \(U\),
-although \(\deg U<k\). Thus the projective intersection misses the
-hyperplane at infinity and is finite, since every positive-dimensional
-projective closed set meets a hyperplane. The
-\href{https://pinakimondal.org/books/p1_to_16.pdf}{Bézout bound}
-gives at most \(D\) points. Frobenius over \(\mathbb F_q\) permutes
+List the roots of \(g_j\) as \(a_{j,0},\ldots,a_{j,d_j-1}\),
+including repetitions. For each index vector \(0\le b_j<d_j\)
+define a function on the set of solutions by
+\[
+                    W_b(H)=\prod_{j<k}\prod_{i<b_j}H(a_{j,i}).
+\]
+There are \(D\) such functions and \(W_0=1\). Their span is stable
+under multiplication by any coefficient of \(H\). Indeed, fix \(b\).
+The \(k\) nodes \(a_{j,b_j}\) are distinct. Interpolating \(H-X^k\)
+at those nodes writes each coefficient below degree \(k\) as an affine
+linear combination of the \(H(a_{j,b_j})\). Multiplying \(W_b\) by
+the \(j\)-th evaluation increments \(b_j\). When \(b_j=d_j-1\),
+it resets \(b_j\) to zero and multiplies by \(\lambda_j\).
+
+The span thus contains every polynomial function of the coefficients.
+On any finite set of \(m\) distinct solutions these functions span
+all of \(K^m\). Indeed, to isolate one solution, for each other
+solution choose a coefficient in which the two differ, subtract its
+value at the other solution, multiply all these differences, and
+normalize the result to 1 at the chosen solution. Hence \(m\le D\)
+for every finite subset. Frobenius over \(\mathbb F_q\) permutes
 the solutions. Each coefficient tuple therefore belongs to
 \(\mathbb F_{q^d}\) for some \(d\le D\). Adjoining a root raises the
 extension degree by at most \(k\).
