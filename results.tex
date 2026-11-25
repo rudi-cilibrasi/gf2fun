@@ -3959,17 +3959,17 @@ Both violate Theorem~\ref{thm:sparse-extension-span}.
 The support calculation and small-degree order checks are implemented in
 \nolinkurl{scripts/check_exponent_spans.py}.
 
-\section{Eight exterior-power tests in degree 1229}
-\begin{theorem}\label{thm:1229-eight-tests}
+\section{Nine exterior-power tests in degree 1229}
+\begin{theorem}\label{thm:1229-short-tests}
 Let \(f\) be either \(X^{1229}+X^{77}+X^{50}+X^{27}+1\) or
-\(X^{1229}+X^{15}+X^6+X^2+1\). No product of one through eight of
+\(X^{1229}+X^{15}+X^6+X^2+1\). No product of one through nine of
 its roots equals one, even allowing repeated roots.
 \end{theorem}
 \begin{proof}
 Both irreducibility certificates give \(p=10543179280661916121033\)
 as a divisor of the order of any root \(r\). The roots are \(r^{2^i}\)
 for \(0\le i<1229\). Hence a product-one relation of length at most
-eight would give a nonempty sum of at most eight elements of
+nine would give a nonempty sum of at most nine elements of
 \(S=\langle2\rangle\subset\mathbb F_p^\times\) equal to zero.
 Two equal powers of two can be replaced by the next power, reducing
 the number of terms while preserving the sum modulo \(p\). The
@@ -3991,8 +3991,19 @@ are nonzero, and none occurs together with its negative.
 Splitting any zero sum of length two through eight into two nonempty
 halves of size at most four would give opposite half-sums. Their
 signatures are also opposite because \(n\) is odd. A single power of
-two is nonzero. This proves the stated exclusions using one prime
-factor of the order.
+two is nonzero.
+
+For a nine-element subset, sum the cyclic spans of all nine windows
+consisting of five consecutive selected indices. Each cyclic gap occurs
+four times, so the sum is \(4n\). Some window has width at most
+\(\lfloor4n/9\rfloor=546\). Translate its first index to zero.
+This produces a five-term sum with the other four indices in
+\(\{1,\ldots,546\}\), and the complementary four indices give a sum
+covered by the preceding list of signatures. The \texttt{--nine} check
+examines all \(\binom{546}{4}=3\,662\,491\,560\) windows.
+Each five-term signature is nonzero and its negative is absent from
+the sorted exact table. Two bit tables skip impossible matches, and
+every surviving comparison uses the full residue.
 \end{proof}
 The exact integer checker is \nolinkurl{scripts/check_1229_short_products.cpp}.
 The two Lean order-divisibility results are in

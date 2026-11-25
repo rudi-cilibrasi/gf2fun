@@ -1,5 +1,5 @@
 // Check short sums of conjugate exponents modulo a known degree-1229 order divisor.
-// Build with g++ -O3 -std=c++17 scripts/check_1229_short_products.cpp -lgmpxx -lgmp -o check1229
+// Build with g++ -O3 -std=c++17 -fopenmp scripts/check_1229_short_products.cpp -lgmpxx -lgmp -o check1229
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -29,6 +29,16 @@ class Checker {
     mpz_class value;
     std::vector<Key> keys;
 
+    Key signature(const mpz_class &sum, mpz_class &result) const {
+        mpz_powm_ui(result.get_mpz_t(), sum.get_mpz_t(), degree, prime.get_mpz_t());
+        bool negative = result > middle;
+        if (negative) result = prime - result;
+        // Store (min(t,p-t), sign) exactly as a two-word lexicographic key.
+        std::uint64_t words[2]{};
+        mpz_export(words, nullptr, -1, sizeof(words[0]), 0, 0, result.get_mpz_t());
+        return {(words[1] << 1) | (words[0] >> 63), (words[0] << 1) | negative};
+    }
+
     void record(int size) {
         // The closing gap is first in this cyclic ordering. Use the largest
         // lexicographic rotation to resolve ties between largest gaps.
@@ -39,14 +49,9 @@ class Checker {
                 if (other < gaps[i]) break;
             }
         }
-        mpz_powm_ui(value.get_mpz_t(), sums[size - 1].get_mpz_t(), degree, prime.get_mpz_t());
-        if (value == 0) throw std::runtime_error("a half-sum is zero");
-        bool negative = value > middle;
-        if (negative) value = prime - value;
-        // Store (min(t,p-t), sign) exactly as a two-word lexicographic key.
-        std::uint64_t words[2]{};
-        mpz_export(words, nullptr, -1, sizeof(words[0]), 0, 0, value.get_mpz_t());
-        keys.push_back({(words[1] << 1) | (words[0] >> 63), (words[0] << 1) | negative});
+        Key key = signature(sums[size - 1], value);
+        if (key == Key{}) throw std::runtime_error("a half-sum is zero");
+        keys.push_back(key);
     }
 
     void enumerate(int size, int used, int last, int largest) {
@@ -94,15 +99,63 @@ public:
         std::cout << "All " << total << " signatures exclude product-one ranks 1 through "
                   << 2 * half << ".\n";
     }
+
+    void check_nine() const {
+        // The nine cyclic windows of five points each use four gaps. Their
+        // total width is 4n, so a shortest window fits in [0, floor(4n/9)].
+        constexpr int width = 4 * degree / 9;
+        constexpr std::uint64_t mask = (std::uint64_t{1} << 31) - 1;
+        std::vector<std::uint64_t> low((mask + 1) / 64), high(low.size());
+        for (const Key &key : keys) {
+            auto a = key[1] & mask;
+            auto b = ((key[1] >> 32) ^ key[0]) & mask;
+            low[a / 64] |= std::uint64_t{1} << (a % 64);
+            high[b / 64] |= std::uint64_t{1} << (b % 64);
+        }
+        std::uint64_t tested = 0, collisions = 0;
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic, 1) reduction(+:tested, collisions)
+#endif
+        for (int i = 1; i <= width - 3; ++i) {
+            mpz_class pair = 1 + powers[i], triple, four, five, result;
+            for (int j = i + 1; j <= width - 2; ++j) {
+                triple = pair + powers[j];
+                for (int k = j + 1; k <= width - 1; ++k) {
+                    four = triple + powers[k];
+                    for (int l = k + 1; l <= width; ++l) {
+                        five = four + powers[l];
+                        Key wanted = signature(five, result);
+                        ++tested;
+                        if (wanted == Key{}) {
+                            ++collisions;
+                            continue;
+                        }
+                        wanted[1] ^= 1;
+                        auto a = wanted[1] & mask;
+                        if (!((low[a / 64] >> (a % 64)) & 1)) continue;
+                        auto b = ((wanted[1] >> 32) ^ wanted[0]) & mask;
+                        if (!((high[b / 64] >> (b % 64)) & 1)) continue;
+                        if (std::binary_search(keys.begin(), keys.end(), wanted)) ++collisions;
+                    }
+                }
+            }
+        }
+        if (tested != binomial(width, 4)) throw std::runtime_error("incorrect five-term window count");
+        if (collisions) throw std::runtime_error("five-term windows give a zero or an opposite signature");
+        std::cout << "All " << tested << " five-term windows exclude rank 9.\n";
+    }
 };
 }
 
 int main(int argc, char **argv) {
     try {
-        int half = argc == 1 ? max_half : std::stoi(argv[1]);
+        bool nine = argc == 2 && std::string(argv[1]) == "--nine";
+        int half = argc == 1 || nine ? max_half : std::stoi(argv[1]);
         if (argc > 2 || half < 1 || half > max_half)
-            throw std::invalid_argument("supply a half-rank from 1 through 4");
-        Checker{}.run(half);
+            throw std::invalid_argument("supply --nine or a half-rank from 1 through 4");
+        Checker checker;
+        checker.run(half);
+        if (nine) checker.check_nine();
     } catch (const std::exception &error) {
         std::cerr << error.what() << '\n';
         return 1;
