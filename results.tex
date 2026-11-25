@@ -4257,7 +4257,7 @@ attains span 299.
 \end{proof}
 
 \section{A sieved order bound in degree 1229}
-\begin{theorem}
+\begin{theorem}\label{thm:1229-cofactor-bound}
 Every prime divisor of the remaining cofactor \(C=(2^{1229}-1)/K\)
 exceeds \(B=818085338814611457\). The orders of both sparse candidate
 roots exceed \(2^{345}\), and \(C\) has at most 15 prime factors
@@ -4969,5 +4969,62 @@ degrees where a proof of primitivity needs a different way of excluding
 small factors at this cutoff. In prime degree, every product
 pentanomial with \(0<u,v<n\) already has \(\gcd(n,u,v)=1\), so
 Theorem~\ref{thm:balanced-sieve} retains this necessary condition.
+
+\section{Coefficient weights in a subgroup of degree 1229}
+\begin{theorem}\label{thm:1229-subgroup-weight}
+Every irreducible binary polynomial of degree \(1229\) and weight below
+\(521\) has a root order divisible by a prime exceeding
+\(818085338814611457\). The weight cutoff is sharp.
+\end{theorem}
+\begin{proof}
+Put \(n=1229,\ p=36871,\ q=46703,\ B=818085338814611457\).
+By Theorem~\ref{thm:1229-cofactor-bound} and the four known factors
+of \(2^n-1\), the primes at most \(B\) dividing \(2^n-1\) are precisely
+\(p,q\), both with exponent one. It suffices to find the least
+weight of a degree-\(n\) factor of \(X^{pq}+1\).
+
+In the field defined by \(X^n+X^{15}+X^6+X^2+1\), put
+\(\alpha=X^{(2^n-1)/p}\) and \(\beta=X^{(2^n-1)/q}\).
+Powering verifies that these elements have orders \(p,q\).
+Every nonidentity element of their product group has degree \(n\),
+since \(n\) is prime. Frobenius doubles both exponents of
+\(\alpha^a\beta^b\). Choose one \(a\) from each doubling orbit
+of nonzero exponents modulo \(p\), then run \(b\) over all residues
+modulo \(q\). This covers each orbit with \(a\ne0\) exactly once.
+For \(a=0\), take one nonzero \(b\) per orbit modulo \(q\).
+The minimal polynomials give the following exact counts and weights.
+The last column is an exponent pair attaining each minimum.
+\[
+\begin{array}{r|r|r|r|r}
+\text{order}&\text{polynomials}&\text{minimum}&\text{maximum}&(a,b)\\\hline
+36871&30&605&629&(37,0)\\
+46703&38&579&661&(0,89)\\
+1721986313&1401060&521&701&(35,16790)
+\end{array}
+\]
+The NTL computation in \nolinkurl{scripts/check_1229_subgroup_weights.cpp}
+checks the degrees and each orbit count. In particular it exhibits
+a weight-\(521\) polynomial of order \(pq\).
+\end{proof}
+
+There is an independent shorter computation for the pentanomial
+exclusion. For a nonidentity subgroup element \(y\) write \(f\) for
+its minimal polynomial, \(f^*(T)=T^nf(1/T)\) and
+\(s_k=\operatorname{Tr}(y^k)\). Logarithmic differentiation gives
+\[
+   \sum_{k\ge1}s_kT^k=-T(f^*)'(T)/f^*(T).
+\]
+If among the coefficients in positions \(1,\ldots,L\) of \(f^*\)
+at most one is nonzero, the odd \(s_k\) for \(k\le L\) all vanish
+or equal \(\mathbf1_{e\mid k}\) for some odd \(e\le L\).
+The checker \nolinkurl{scripts/check_1229_subgroup_traces.py}
+tests this condition for every one of the \((pq-1)/n=1401128\)
+orbits using field traces. The last possible pattern disappears at
+\(k=53\). Thus every polynomial has at least two interior coefficients
+within 53 positions of its leading term. Inversion permutes the
+subgroup and reverses the minimal polynomial, giving the same
+conclusion at the constant term. The windows are disjoint, which
+rules out weight five independently. Direct linear dependence of
+field powers also verifies the three displayed minimum witnesses.
 
 \end{document}
