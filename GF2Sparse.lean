@@ -15,7 +15,7 @@ import GF2Sparse.OreExamples
 import GF2Sparse.OreFactorExamples
 import GF2Sparse.OreIndexSeven
 import GF2Sparse.OrePrimitiveExamples
-import GF2Sparse.OreReciprocal
+import GF2Sparse.OreReciprocalExamples
 import GF2Sparse.ParityExamples
 import GF2Sparse.PrimeGrid
 import GF2Sparse.Progressions

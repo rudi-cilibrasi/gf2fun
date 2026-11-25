@@ -67,14 +67,27 @@ private theorem factor_coeff (p : BinaryPoly) (z : K) {j t : ℕ} (hj : j < t) :
   simp only [factorPoly, finset_sum_coeff, coeff_C_mul_X_pow, EmbeddingLike.apply_eq_iff_eq]
   simp [Finset.mem_range.2 hj]
 
-private theorem factor_monic (p : BinaryPoly) (z : K) (t : ℕ) (ht : b p z (t+1) = 1) :
-    (factorPoly p z (t+1)).Monic := by
-  apply monic_of_degree_le (oreIndex t) _ ((factor_coeff p z (Nat.lt_succ_self t)).trans ht)
-  apply (degree_sum_le _ _).trans (Finset.sup_le ?_)
-  intro i hi
-  apply (degree_C_mul_X_pow_le _ _).trans
-  have h := Nat.pow_le_pow_right (by decide : 0 < 2) (Nat.le_of_lt_succ (Finset.mem_range.1 hi))
-  exact WithBot.coe_le_coe.2 (show 2^i-1 ≤ 2^t-1 by omega)
+private theorem factor_shape (p : BinaryPoly) (z : K) (t : ℕ) (ht : b p z (t+1) = 1) :
+    (factorPoly p z (t+1)).Monic ∧ (factorPoly p z (t+1)).natDegree = oreIndex t := by
+  have hc := (factor_coeff p z (Nat.lt_succ_self t)).trans ht
+  have hd : (factorPoly p z (t+1)).degree ≤ ↑(oreIndex t) := by
+    apply (degree_sum_le _ _).trans (Finset.sup_le ?_)
+    intro i hi
+    apply (degree_C_mul_X_pow_le _ _).trans
+    have h := Nat.pow_le_pow_right (by decide : 0 < 2) (Nat.le_of_lt_succ (Finset.mem_range.1 hi))
+    exact WithBot.coe_le_coe.2 (show 2^i-1 ≤ 2^t-1 by omega)
+  exact ⟨monic_of_degree_le _ hd hc, natDegree_eq_of_le_of_coeff_ne_zero
+    (natDegree_le_of_degree_le hd) (hc ▸ one_ne_zero)⟩
+
+private theorem factor_derivative (p : BinaryPoly) (z : K) (t : ℕ) :
+    derivative (X * factorPoly p z (t+1)) = C (b p z 1) := by
+  rw [factorPoly, Finset.mul_sum, map_sum]
+  rw [Finset.sum_eq_single_of_mem 0 (Finset.mem_range.2 (Nat.zero_lt_succ t)) ?_]
+  · simp [oreIndex, derivative_mul]
+  · intro i _ hi
+    have he : oreIndex i + 1 = 2^i := Nat.sub_add_cancel (Nat.two_pow_pos i)
+    rw [mul_left_comm (X : K[X]), ← pow_succ', he, derivative_C_mul, derivative_X_pow, Nat.cast_pow]
+    simp [CharTwo.two_eq_zero, hi]
 
 private theorem mul_factor_eval (p : BinaryPoly) (z x : K) (t : ℕ) :
     x * (factorPoly p z t).eval x = part p z x t := by
@@ -114,10 +127,11 @@ private theorem mul_ore_eval (p : BinaryPoly) (x : K) :
   intro i _
   rw [mul_left_comm, ← pow_succ', Nat.sub_add_cancel (Nat.two_pow_pos i)]
 
-/-- Every root of the reciprocal seed's lift is a product of roots of the original lift. -/
-theorem oreLift_reverse_root_product {p : BinaryPoly} (hs : 0 < p.natDegree) (hc : p.coeff 0 = 1)
+/-- Every reciprocal lift root is a product of exactly 2^(s-1)-1 distinct original lift roots. -/
+theorem oreLift_reverse_distinct_root_product {p : BinaryPoly} (hs : 0 < p.natDegree) (hc : p.coeff 0 = 1)
     {z : AlgebraicClosure (ZMod 2)} (hz : aeval z (oreLift p.reverse) = 0) :
-    ∃ w : Multiset (AlgebraicClosure (ZMod 2)), w.prod = z ∧ ∀ x ∈ w, aeval x (oreLift p) = 0 := by
+    ∃ w : Multiset (AlgebraicClosure (ZMod 2)), w.Nodup ∧ w.card = 2^(p.natDegree-1)-1 ∧
+      w.prod = z ∧ ∀ x ∈ w, aeval x (oreLift p) = 0 := by
   classical
   have hz0 : z ≠ 0 := by
     rintro rfl
@@ -130,13 +144,21 @@ theorem oreLift_reverse_root_product {p : BinaryPoly} (hs : 0 < p.natDegree) (hc
   have pm := binary_monic (show p ≠ 0 by intro he; simp [he] at hc)
   have hlead : a p (t+1) = 1 := by simp [a, ← ht, pm.coeff_natDegree]
   let g := factorPoly p z (t+1)
-  have gm : g.Monic := factor_monic p z t htop
+  obtain ⟨gm, gd⟩ := factor_shape p z t htop
+  change g.Monic at gm
+  change g.natDegree = oreIndex t at gd
   have g0 : g.coeff 0 = z := by
     change (factorPoly p z (t+1)).coeff (oreIndex 0) = z
     rw [factor_coeff p z (Nat.zero_lt_succ t)]
     simp [b, a, hc]
   have hprod := (IsAlgClosed.splits g).coeff_zero_eq_prod_roots_of_monic gm
-  refine ⟨g.roots, (by simpa [g0, CharTwo.neg_eq] using hprod.symm), fun x hx => ?_⟩
+  have hsep : (X*g).Separable := by
+    rw [separable_def, factor_derivative, show b p z 1 = z by simp [b, a, hc]]
+    exact ⟨0, C z⁻¹, by simp [← C_mul, hz0]⟩
+  have hcard := (IsAlgClosed.splits g).natDegree_eq_card_roots.symm.trans gd
+  refine ⟨g.roots, nodup_roots (hsep.of_dvd (dvd_mul_left g X)),
+    (by simpa only [ht, Nat.add_sub_cancel] using hcard),
+    (by simpa [g0, CharTwo.neg_eq] using hprod.symm), fun x hx => ?_⟩
   have hroot := (mem_roots gm.ne_zero).1 hx
   change g.eval x = 0 at hroot
   have hx0 : x ≠ 0 := by
@@ -149,6 +171,12 @@ theorem oreLift_reverse_root_product {p : BinaryPoly} (hs : 0 < p.natDegree) (hc
   apply (mul_eq_zero.1 ?_).resolve_left hx0
   rw [mul_ore_eval, ht, Finset.sum_range_succ, ← sub_eq_zero.1 hsum.symm, hlead, one_mul,
     CharTwo.add_self_eq_zero]
+
+theorem oreLift_reverse_root_product {p : BinaryPoly} (hs : 0 < p.natDegree) (hc : p.coeff 0 = 1)
+    {z : AlgebraicClosure (ZMod 2)} (hz : aeval z (oreLift p.reverse) = 0) :
+    ∃ w : Multiset (AlgebraicClosure (ZMod 2)), w.prod = z ∧ ∀ x ∈ w, aeval x (oreLift p) = 0 := by
+  obtain ⟨w, _, _, hw⟩ := oreLift_reverse_distinct_root_product hs hc hz
+  exact ⟨w, hw⟩
 
 /-- The multiplicative submonoid generated by all lifted roots is invariant under reversal. -/
 theorem oreLift_reverse_root_closure {p : BinaryPoly} (hs : 0 < p.natDegree) (hc : p.coeff 0 = 1) :
@@ -163,5 +191,71 @@ theorem oreLift_reverse_root_closure {p : BinaryPoly} (hs : 0 < p.natDegree) (hc
     exact multiset_prod_mem w fun x hx => Submonoid.subset_closure (hw x hx)
   apply le_antisymm (incl hs hc)
   simpa only [rev_invol hc] using incl ((reverse_degree hc).symm ▸ hs) (reverse_constant hc)
+
+/-- Replacing a primitive seed by its reciprocal replaces its roots by their inverses. -/
+theorem Primitive.reverse {p : BinaryPoly} (hp : Primitive p) : Primitive p.reverse := by
+  classical
+  have hc := hp.coeff_zero_eq_one
+  have hdr := reverse_degree hc
+  have hm := binary_monic (show p.reverse ≠ 0 from fun he => hp.2.1.ne_zero (reverse_eq_zero.1 he))
+  obtain ⟨r, hr⟩ := IsAlgClosed.exists_aeval_eq_zero K p (ne_of_gt hp.2.1.degree_pos)
+  have h0 : r ≠ 0 := by
+    rintro rfl
+    rw [← coeff_zero_eq_aeval_zero', hc, map_one] at hr
+    exact one_ne_zero hr
+  letI := invertibleOfNonzero h0
+  have hr' : aeval r⁻¹ p.reverse = 0 := by
+    simpa only [aeval_def, invOf_eq_inv] using (eval₂_reverse_eq_zero_iff (algebraMap (ZMod 2) K) r p).2 hr
+  let g := minpoly (ZMod 2) r⁻¹
+  have hg := minpoly.irreducible (Algebra.IsIntegral.isIntegral r⁻¹ : IsIntegral (ZMod 2) r⁻¹)
+  have hz : aeval r⁻¹ g = 0 := minpoly.aeval _ _
+  have hfix := (degree_dvd_iff_frobenius hg hz g.natDegree).1 dvd_rfl
+  have hdiv := (degree_dvd_iff_frobenius hp.2.1 hr g.natDegree).2 (by simpa using congrArg Inv.inv hfix)
+  have he : p.reverse = g := eq_of_monic_of_dvd_of_natDegree_le
+    (minpoly.monic (Algebra.IsIntegral.isIntegral r⁻¹)) hm (minpoly.dvd _ _ hr')
+    (by rw [hdr]; exact Nat.le_of_dvd hg.natDegree_pos hdiv)
+  have hir : Irreducible p.reverse := by rwa [he]
+  let u := Units.mk0 r h0
+  have hoi : orderOf r⁻¹ = orderOf r :=
+    calc
+      _ = orderOf u⁻¹ := orderOf_units
+      _ = orderOf u := orderOf_inv _
+      _ = _ := orderOf_units.symm
+  exact ⟨hm, hir, (orderOf_root_at hir hr').symm.trans
+    (hoi.trans ((orderOf_root_at hp.2.1 hr).trans (by rw [hp.2.2, hdr])))⟩
+
+/-- For primitive seeds, the reciprocal Ore lifts have exactly equal root orders. -/
+theorem Primitive.oreLift_reverse_order {p : BinaryPoly} (hp : Primitive p) :
+    orderOf (AdjoinRoot.root (oreLift p.reverse)) = orderOf (AdjoinRoot.root (oreLift p)) := by
+  classical
+  have hi := hp.irreducible_oreLift
+  have hi' := hp.reverse.irreducible_oreLift
+  obtain ⟨r, hr⟩ := IsAlgClosed.exists_aeval_eq_zero K _ (ne_of_gt hi.degree_pos)
+  obtain ⟨z, hz⟩ := IsAlgClosed.exists_aeval_eq_zero K _ (ne_of_gt hi'.degree_pos)
+  have closure {f : BinaryPoly} (hf : Irreducible f) {x : K} (hx : aeval x f = 0) :
+      Submonoid.closure {y : K | aeval y f = 0} = Submonoid.powers x := by
+    apply le_antisymm
+    · apply Submonoid.closure_le.2
+      intro y hy
+      obtain ⟨k, hk⟩ := exists_frobenius_root hf hx hy
+      exact (Submonoid.mem_powers_iff _ _).2 ⟨2^k, hk.symm⟩
+    · exact Submonoid.powers_le.2 (Submonoid.subset_closure (s := {y : K | aeval y f = 0}) hx)
+  have eqp := oreLift_reverse_root_closure hp.2.1.natDegree_pos hp.coeff_zero_eq_one
+  rw [closure hi' hz, closure hi hr] at eqp
+  have divides {x y : K} (hle : Submonoid.powers x ≤ Submonoid.powers y) : orderOf x ∣ orderOf y := by
+    obtain ⟨k, hk⟩ := (Submonoid.mem_powers_iff _ _).1 (Submonoid.powers_le.1 hle)
+    rw [← hk]
+    exact orderOf_pow_dvd k
+  rw [← orderOf_root_at hi' hz, ← orderOf_root_at hi hr]
+  exact Nat.dvd_antisymm (divides eqp.le) (divides eqp.ge)
+
+theorem Primitive.primitive_oreLift_reverse_iff {p : BinaryPoly} (hp : Primitive p) :
+    Primitive (oreLift p.reverse) ↔ Primitive (oreLift p) := by
+  have hf := hp.irreducible_oreLift
+  have hg := hp.reverse.irreducible_oreLift
+  have hd : (oreLift p.reverse).natDegree = (oreLift p).natDegree := by
+    rw [oreLift_degree hp.reverse.2.1.ne_zero, oreLift_degree hp.2.1.ne_zero, reverse_degree hp.coeff_zero_eq_one]
+  simp only [Primitive, binary_monic hf.ne_zero, binary_monic hg.ne_zero, hf, hg, true_and,
+    hp.oreLift_reverse_order, hd]
 
 end GF2Sparse
