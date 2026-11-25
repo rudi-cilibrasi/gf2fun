@@ -6,7 +6,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **Primitive witnesses.** Lean proves the statement for every $1\le n\le256$. For every $5\le n\le256$ it verifies the shape $X^n+(X^u+1)(X^v+1)$, where $0<u<v$ and $u+v<n$. One example is $X^{24}+X^4+X^3+X+1$. The same exponent relation appears in the pentanomial entries of Table 4.8 of the *Handbook of Applied Cryptography*. Published minimum-weight tables cover degrees 2 through 640 with unrestricted interior exponents. [Lean degree coverage](GF2Sparse/Coverage.lean) · [Table 4.8 and its construction](https://cacr.uwaterloo.ca/hac/about/chap4.pdf#page=37) · [Minimum-weight tables](https://people.math.carleton.ca/~daniel/hff/)
+- **Primitive witnesses.** Lean proves the statement for every $1\le n\le288$. For every $5\le n\le288$ it verifies the shape $X^n+(X^u+1)(X^v+1)$, where $0<u<v$ and $u+v<n$. One example is $X^{24}+X^4+X^3+X+1$. The same exponent relation appears in the pentanomial entries of Table 4.8 of the *Handbook of Applied Cryptography*. Published minimum-weight tables cover degrees 2 through 640 with unrestricted interior exponents. [Lean degree coverage](GF2Sparse/Coverage.lean) · [Table 4.8 and its construction](https://cacr.uwaterloo.ca/hac/about/chap4.pdf#page=37) · [Minimum-weight tables](https://people.math.carleton.ca/~daniel/hff/)
 - **An all-degree sieve.** Fix $B$ and put $L=\operatorname{lcm}_{1\le d\le B}(2^d-1)$. For every $n>L+2$, the explicit polynomial $X^n+(X^L+1)(X^2+1)$ is squarefree and has no irreducible divisor of degree at most $B$. Allowing all three interior exponents to vary gives at least $LM^3$ distinct squarefree pentanomials with this property whenever $n>6LM$. [Explicit construction](GF2Sparse/LocalFactors.lean) · [Counting proof](GF2Sparse/Many.lean)
 - **Odd factor count in every large degree.** For every $n>128L$, at least $n^2/(6144L^2)$ degree-$n$ pentanomials are squarefree, avoid factors of degree at most $B$, and have an odd number of irreducible factors. The exponents have gcd 1 and all fifteen unordered pair sums are distinct. Any reducible candidate in this family has a factor between degrees $B+1$ and $\lfloor n/3\rfloor$. The paper proof computes the discriminant modulo 8 in both parities. The even-degree calculation also follows from Theorem 6 of Kim and Kim. Lean certifies primitive examples from the two constructions in degrees 200 and 521. [Proof in the note](results.pdf#page=3) · [Lean examples](GF2Sparse/ParityExamples.lean) · [Reproducible factor checks](scripts/check_parity_sieve.py) · [Kim and Kim](https://doi.org/10.1155/2014/482837)
 - **Four exponents in arithmetic progression.** In odd degrees $n\ge5$, cubing roots gives a bijection between primitive trinomials and primitive pentanomials containing a four-term arithmetic progression. In even degrees there are no such primitive pentanomials. The forward sampling construction goes back to Kashiwagi and Uchimura. [Lean bijection](GF2Sparse/Progressions.lean) · [Original construction](https://doi.org/10.9746/sicetr1965.18.747)
@@ -32,13 +32,13 @@ The Lean target for an all-degree proof is `GF2Sparse.Conjecture`. The gap is to
 
 For a proof attempt, one open subproblem is to find a squarefree pentanomial in every sufficiently large degree that passes the first three exterior-power tests. The dyadic construction supplies four tests in every multiple of eight. In the remaining degrees the reciprocal-root sieve supplies the first two tests for all sufficiently large degrees. The third asks that no three distinct roots have product 1. Passing all ranks through half the degree for the same candidate proves it primitive. [Determinant criterion and sieve](results.pdf#page=11)
 
-For a computational contribution, choose a degree interval beyond the checked-in range and run it on your own machine. With Python, SymPy and the repository's Lean toolchain installed, search degrees 257 through 264 and verify a completed table with
+For a computational contribution, choose a degree interval beyond the checked-in range and run it on your own machine. With Python, SymPy and the repository's Lean toolchain installed, search degrees 321 through 328 and verify a completed table with
 
 ~~~sh
-python3 scripts/make_witnesses.py --start 257 264 > /tmp/gf2-257-264.lean &&
-  cp /tmp/gf2-257-264.lean GF2Sparse/Witnesses257To264.lean &&
-  lake build GF2Sparse.Witnesses257To264 &&
-  lake env leanchecker -v GF2Sparse.Witnesses257To264
+python3 scripts/make_witnesses.py --start 321 328 > /tmp/gf2-321-328.lean &&
+  cp /tmp/gf2-321-328.lean GF2Sparse/Witnesses321To328.lean &&
+  lake build GF2Sparse.Witnesses321To328 &&
+  lake env leanchecker -v GF2Sparse.Witnesses321To328
 ~~~
 
 A pull request can include the generated table and the corresponding interval theorem. Existing tables can be checked independently, so contributors can work on disjoint ranges. [Combining verified intervals](GF2Sparse/Coverage.lean)
