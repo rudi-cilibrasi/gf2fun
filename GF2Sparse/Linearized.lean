@@ -35,6 +35,52 @@ theorem frobenius_trinomial_not_coprime {s d : ℕ} {x : K} (hx : x ≠ 0)
   intro hc
   exact hx (Submodule.disjoint_def.1 (disjoint_ker_aeval_of_isCoprime F hc) x hp hq)
 
+/-- An ordinary multiple of the Frobenius polynomial gives a common
+field of definition for all the roots of the linearized trinomial. -/
+theorem fixed_of_associate_dvd {s d : ℕ} {x : K} (hx : x ^ (2 ^ s) = x ^ 2 + x)
+    (hdiv : trinomial s 1 ∣ (X : BinaryPoly) ^ d - 1) : x ^ (2 ^ d) = x := by
+  let F := (frobeniusAlgHom (ZMod 2) K).toLinearMap
+  have hF (i : ℕ) : (F ^ i) x = x ^ (2 ^ i) := frobenius_pow_apply i x
+  have h1 : F x = x ^ 2 := by simpa using hF 1
+  have hp : (aeval F (trinomial s 1)) x = 0 := by
+    simp only [trinomial, pow_one, map_add, map_pow, aeval_X, map_one, LinearMap.add_apply,
+      Module.End.one_apply, hF, h1, hx, CharTwo.add_self_eq_zero]
+  obtain ⟨q, hq⟩ := hdiv
+  have he : (aeval F ((X : BinaryPoly) ^ d - 1)) x = 0 := by
+    rw [hq, mul_comm, map_mul, Module.End.mul_apply, hp, map_zero]
+  simpa [hF, sub_eq_zero] using he
+
+/-- For Q=2^m the identity X P^Q + P = X^(Q²+Q+1) + 1 holds for
+P = X^(Q+1) + X + 1. -/
+theorem associate_dvd_norm_exponent (m : ℕ) :
+    let Q := 2 ^ m
+    trinomial (Q+1) 1 ∣ (X : BinaryPoly) ^ (Q^2 + Q + 1) - 1 := by
+  let Q := 2 ^ m
+  let P := trinomial (Q+1) 1
+  have hQ : 0 < Q := Nat.two_pow_pos m
+  have hid : (X : BinaryPoly) * P ^ Q + P = X ^ (Q^2 + Q + 1) - 1 := by
+    simp only [P, trinomial, Q, pow_one, add_pow_expChar_pow, one_pow, ← pow_mul,
+      sub_eq_add_neg, CharTwo.neg_eq]
+    ring_nf
+    simp [CharTwo.two_eq_zero]
+  refine ⟨X * P ^ (Q-1) + 1, ?_⟩
+  change X ^ (Q^2 + Q + 1) - 1 = P * (X * P ^ (Q-1) + 1)
+  rw [← hid, show P ^ Q = P ^ (Q-1) * P by rw [← pow_succ, Nat.sub_add_cancel hQ]]
+  ring
+
+theorem linearized_trinomial_root {s : ℕ} (hs : 0 < s) {x : K}
+    (hT : aeval x (trinomial (2 ^ s - 1) 1) = 0) : x ≠ 0 ∧ x ^ (2 ^ s) = x ^ 2 + x := by
+  have hpow : x ^ (2 ^ s - 1) = x + 1 := by
+    simpa only [trinomial, pow_one, map_add, map_pow, aeval_X, map_one,
+      CharTwo.add_eq_zero] using hT
+  have hpos := Nat.one_lt_two_pow hs.ne'
+  have hx0 : x ≠ 0 := by
+    rintro hzero
+    simp [hzero, zero_pow (by omega : 2 ^ s - 1 ≠ 0)] at hpow
+  refine ⟨hx0, ?_⟩
+  conv_lhs => rw [← Nat.sub_add_cancel (by omega : 1 ≤ 2 ^ s), pow_succ, hpow]
+  ring
+
 /-- Test the possible degree of an irreducible divisor with polynomials
 of ordinary degrees s and d. -/
 theorem additive_trinomial_factor_obstruction {p : BinaryPoly} (hp : Irreducible p)
@@ -45,18 +91,26 @@ theorem additive_trinomial_factor_obstruction {p : BinaryPoly} (hp : Irreducible
   let x := AdjoinRoot.root p
   have hx : aeval x p = 0 := by rw [AdjoinRoot.aeval_eq]; exact AdjoinRoot.mk_self
   have hT : aeval x (trinomial (2 ^ s - 1) 1) = 0 := by
-    obtain ⟨q, hq⟩ := hdiv
-    rw [hq, map_mul, hx, zero_mul]
-  have hpow : x ^ (2 ^ s - 1) = x + 1 := by
-    simpa only [trinomial, pow_one, map_add, map_pow, aeval_X, map_one,
-      CharTwo.add_eq_zero] using hT
-  have hpos := Nat.one_lt_two_pow hs.ne'
-  have hx0 : x ≠ 0 := by
-    rintro hzero
-    simp [hzero, zero_pow (by omega : 2 ^ s - 1 ≠ 0)] at hpow
-  apply frobenius_trinomial_not_coprime hx0 _ ((degree_dvd_iff_frobenius hp hx _).1 dvd_rfl)
-  conv_lhs => rw [← Nat.sub_add_cancel (by omega : 1 ≤ 2 ^ s), pow_succ, hpow]
-  ring
+    rw [AdjoinRoot.aeval_eq]
+    exact AdjoinRoot.mk_eq_zero.2 hdiv
+  obtain ⟨hne, hpow⟩ := linearized_trinomial_root hs hT
+  exact frobenius_trinomial_not_coprime hne hpow ((degree_dvd_iff_frobenius hp hx _).1 dvd_rfl)
+
+/-- Every factor degree of T_(Q+1) divides the norm-one group order
+Q²+Q+1. This can be much smaller than the degree of the trinomial. -/
+theorem additive_factor_degree_dvd_norm {p : BinaryPoly} (hp : Irreducible p) (m : ℕ)
+    (hdiv : p ∣ trinomial (2 ^ (2 ^ m + 1) - 1) 1) :
+    p.natDegree ∣ (2 ^ m) ^ 2 + 2 ^ m + 1 := by
+  letI : Fact (Irreducible p) := ⟨hp⟩
+  letI : CharP (AdjoinRoot p) 2 := charP_of_injective_ringHom (AdjoinRoot.of p).injective 2
+  let x := AdjoinRoot.root p
+  have hx : aeval x p = 0 := by rw [AdjoinRoot.aeval_eq]; exact AdjoinRoot.mk_self
+  have hT : aeval x (trinomial (2 ^ (2 ^ m + 1) - 1) 1) = 0 := by
+    rw [AdjoinRoot.aeval_eq]
+    exact AdjoinRoot.mk_eq_zero.2 hdiv
+  apply (degree_dvd_iff_frobenius hp hx _).2
+  exact fixed_of_associate_dvd (linearized_trinomial_root (Nat.succ_pos (2^m)) hT).2
+    (associate_dvd_norm_exponent m)
 
 /-- Ore's irreducibility construction for a primitive X^s + X + 1. -/
 theorem irreducible_trinomial_of_primitive_associate {s : ℕ} (hs : 1 < s)

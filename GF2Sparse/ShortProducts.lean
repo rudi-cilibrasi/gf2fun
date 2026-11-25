@@ -214,6 +214,57 @@ private theorem inverse_cubic_sample {u : ℕ} (hu : 0 < u) {z : K}
   simp only [sampledBlock, pow_zero, pow_one, map_add, map_mul, map_pow, aeval_X, map_one, hval,
     CharTwo.add_self_eq_zero]
 
+/-- In the sequence with s=Q+1, Q=2^m, the degree of every irreducible
+factor of the pentanomial divides Q²+Q+1. -/
+theorem cubic_product_factor_degree_dvd_norm {u m : ℕ} (hu : 0 < u)
+    (hn : 3*u+1 = 2 ^ (2^m+1) - 1) {p : BinaryPoly} (hp : Irreducible p)
+    (hd : p ∣ productCandidate (3*u+1) u (2*u)) :
+    p.natDegree ∣ (2^m)^2 + 2^m + 1 := by
+  obtain ⟨z, hz⟩ := IsAlgClosed.exists_aeval_eq_zero K p (ne_of_gt hp.degree_pos)
+  have hpoly : aeval z (productCandidate (3*u+1) u (2*u)) = 0 := by
+    obtain ⟨g, hg⟩ := hd
+    rw [hg, map_mul, hz, zero_mul]
+  obtain ⟨r, hc, ht⟩ := trinomial_root_of_cubic_sample (inverse_cubic_sample hu hpoly)
+  rw [hn] at ht
+  have hfix := fixed_of_associate_dvd (linearized_trinomial_root (Nat.succ_pos _) ht).2
+    (associate_dvd_norm_exponent m)
+  apply (degree_dvd_iff_frobenius hp hz _).2
+  apply inv_injective
+  rw [← inv_pow, ← hc, pow_right_comm, hfix]
+
+theorem cubic_product_factor_degree_prime_norm {u m : ℕ} (hu : 0 < u)
+    (hn : 3*u+1 = 2 ^ (2^m+1) - 1) (hprime : Nat.Prime ((2^m)^2 + 2^m + 1))
+    {p : BinaryPoly} (hp : Irreducible p) (hd : p ∣ productCandidate (3*u+1) u (2*u)) :
+    p.natDegree = (2^m)^2 + 2^m + 1 := by
+  apply ((Nat.dvd_prime hprime).1 (cubic_product_factor_degree_dvd_norm hu hn hp hd)).resolve_left
+  intro hone
+  obtain ⟨z, hz⟩ := IsAlgClosed.exists_aeval_eq_zero K p (ne_of_gt hp.degree_pos)
+  have hpoly : aeval z (productCandidate (3*u+1) u (2*u)) = 0 := by
+    obtain ⟨g, hg⟩ := hd
+    rw [hg, map_mul, hz, zero_mul]
+  have hfix := (degree_dvd_iff_frobenius hp hz 1).1 (hone ▸ dvd_rfl)
+  have hor : z = 0 ∨ z = 1 := by
+    have he : z * (z - 1) = 0 := by linear_combination hfix
+    exact (mul_eq_zero.1 he).imp_right sub_eq_zero.1
+  rcases hor with rfl | rfl <;>
+    simp [productCandidate, zero_pow hu.ne', zero_pow (by omega : 2*u ≠ 0),
+      CharTwo.add_self_eq_zero] at hpoly
+
+theorem factor_degree_511 {p : BinaryPoly} (hp : Irreducible p)
+    (hd : p ∣ productCandidate 511 170 340) : p.natDegree = 73 :=
+  cubic_product_factor_degree_prime_norm (u := 170) (m := 3) (by decide) (by decide)
+    (by norm_num1) hp hd
+
+set_option exponentiation.threshold 513 in
+theorem factor_degree_mersenne_513 {p : BinaryPoly} (hp : Irreducible p)
+    (hd : p ∣ productCandidate (2^513-1) ((2^513-2)/3) (2*((2^513-2)/3))) :
+    p.natDegree = 262657 := by
+  let u := (2^513-2)/3
+  have hn : 3*u+1 = 2^513-1 := by dsimp only [u]; norm_num1
+  have hdiv : p ∣ productCandidate (3*u+1) u (2*u) := by rw [hn]; exact hd
+  exact cubic_product_factor_degree_prime_norm (u := u) (m := 9) (by dsimp only [u]; norm_num1) hn
+    (by norm_num1) hp hdiv
+
 private theorem cubic_product_squarefree {u : ℕ} (hu : 0 < u) (he : Even u) :
     Squarefree (productCandidate (3*u+1) u (2*u)) := by
   have h2 : Even (2*u) := ⟨u, by omega⟩

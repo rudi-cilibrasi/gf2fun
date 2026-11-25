@@ -1587,7 +1587,7 @@ When \(P_s\) is primitive this forces \(2^s-1\mid d\), so \(T_s\)
 is irreducible. The construction is due to Ore. Lean checks the
 operator argument in \texttt{GF2Sparse/Linearized.lean}.
 \href{https://maths-people.anu.edu.au/~brent/pd/rpb199.pdf\#page=8}
-{Brent, Larvala and Zimmermann, section 7}.
+{Brent, Larvala and Zimmermann, section 6}.
 
 \begin{corollary}\label{cor:mersenne-127}
 Put \(n=2^{127}-1\) and \(u=(n-1)/3\). Both \(X^n+X+1\) and
@@ -1630,6 +1630,58 @@ recover \(i,j\). Counting the pairs gives \(3m(3m+1)/2\le\ord(y)\le d\).
 For the pentanomial use the degree bound on a short product relation
 in the proof of Theorem~\ref{thm:unbounded-ranks}.
 \end{proof}
+
+\begin{theorem}\label{thm:splitting-period}
+For \(Q=2^m\) with \(m\ge1\), put \(s=Q+1\) and \(D=Q^2+Q+1\).
+The splitting fields over \(\F\) of \(T_s\) and of the corresponding
+pentanomial \(X^{2^s-1}+(X^{(2^s-2)/3}+1)^3\) both have degree
+exactly \(D\). In particular every factor degree divides \(D\).
+\end{theorem}
+\begin{proof}
+For \(P_s(Y)=Y^{Q+1}+Y+1\), characteristic two gives
+\[
+                 Y P_s(Y)^Q+P_s(Y)=Y^D+1 .
+\]
+On the space \(V\) of roots of \(X^{2^s}+X^2+X\), this implies
+\(F^D=1\), since \(P_s(F)=0\). The space has \(2^s\) elements by
+separability. An ordinary nonzero polynomial of degree \(b<s\) in
+\(F\) acts by a nonzero linearized polynomial of degree \(2^b\),
+so cannot annihilate \(V\). Thus the minimal polynomial of \(F\)
+on \(V\) is \(P_s\). A field of degree \(c\) contains \(V\) exactly
+when \(P_s\mid Y^c-1\).
+
+The roots of \(P_s\) are distinct, since its derivative
+\((Y+1)^Q\) has no common root with it. They lie in the group of
+\(D\)-th roots of unity by the displayed identity. Their quotients
+give every nonidentity element of this group. Indeed, if \(z,tz\)
+are distinct roots, then
+\[
+                   (t^{Q+1}+t)z=1+t^{Q+1}.
+\]
+The multiplier on the left is nonzero since \(t\ne0,1\) and
+\(t^Q=1\) would force \(t=1\). Thus every ordered pair of distinct
+roots has a different quotient. There are exactly \(Q(Q+1)=D-1\)
+such pairs. This is the polynomial description of a Singer
+difference set given by
+\href{https://page.mi.fu-berlin.de/szabo/PDF/singer.pdf}
+{Mészáros, Rónyai and Szabó}.
+If \(P_s\mid Y^c-1\), all these quotients are also \(c\)-th roots
+of unity, whence \(D\mid c\). This proves exactness for \(T_s\).
+Cubing, taking reciprocals and the recovery formula for trinomial
+roots preserve the splitting field.
+\end{proof}
+
+For \(m\ge2\), \(D<2^s-1\), so every one of these pentanomials is
+reducible. Together with Theorem~\ref{thm:factor-growth}, this gives
+an explicit sequence of reducible, squarefree, exponent-gcd-one
+pentanomials passing arbitrarily many tests. For \(m=3,9\), the
+values of \(D\) are the primes 73 and 262657. The pentanomials have
+no binary root, so every factor has degree exactly \(D\). The
+degree-511 example consequently has seven factors of degree 73 and
+passes the first four tests. In degree \(2^{513}-1\), the first six
+pass since \(B_6=12288<262657\). Lean verifies the factor-degree
+divisibility and both exact factor degrees in
+\texttt{GF2Sparse/ShortProducts.lean}.
 
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
