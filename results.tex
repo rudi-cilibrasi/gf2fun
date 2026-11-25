@@ -1227,6 +1227,79 @@ the exact quintic criterion in \texttt{GF2Sparse/DyadicFactors.lean}.
 In particular rank five is the first failure in degrees 32, 64, 128
 and 1024. The fourth test for all powers of two remains open here.
 
+\section{Periodicity of the fourth test in dyadic degrees}
+\begin{theorem}\label{thm:quartic-period}
+Let \(M=\operatorname{lcm}(1,2,\ldots,62500)\).
+For \(s\ge3\), whether \(F_{2^s}=X^{2^s}+(1+X^2)(1+X^3)\) passes
+the fourth exterior-power test depends only on \(s\bmod M\).
+In particular it passes the first four tests for infinitely many
+dyadic degrees, including every \(s\equiv3,4,\ldots,10\pmod M\).
+For \(s\equiv5\pmod M\) its first failure is exactly rank five.
+\end{theorem}
+\begin{proof}
+For a product-one quartet write its quartic as
+\(H=X^4+uX^3+vX^2+wX+1\). The roots can repeat.
+Write \(h=(1+X)^3(1+X+X^2)\) and choose
+\(\omega^2+\omega+1=0\). Put
+\[
+ t=H(1)=u+v+w,\quad a=u+v+1,\quad b=v+w+1,\quad
+ p=H(\omega)=a+\omega b,\quad q=H(\omega^2)=a+\omega^2 b.
+\]
+The product of the four images under \(h\) is \(t^3pq\).
+When it equals 1, both \(t,p\) are nonzero. Conversely the entire surface
+is parametrized by these two nonzero coordinates via
+\[
+ q=t^{-3}p^{-1},\quad b=p+q,\quad a=\omega^2p+\omega q,\quad
+ (u,v,w)=(t+b+1,\ t+a+b,\ t+a+1).
+\]
+
+Let \(\Psi(u,v,w)\) be the first three elementary symmetric functions
+of the four images. Put \(E=t^3(a^2+ab+b^2)+1\), the product defect.
+For roots of \(F_{2^s}\), applying \(h\) agrees with Frobenius to the
+\(s\)-th power. Thus any such quartet satisfies
+\(E=E\circ\Psi=E\circ\Psi^2=0\).
+We show that these three equations leave only finitely many points.
+
+On the parametrized surface write \(E_1=E\circ\Psi\) and
+\(E_2=E\circ\Psi^2\) as Laurent polynomials in \(t,p\).
+Multiplication by \(X\) modulo \(H\) sends a column
+\((i,j,k,l)\) to \((l,i+wl,j+vl,k+ul)\).
+The sums of principal minors of sizes 1, 2 and 3 for multiplication
+by \(h\) give \(\Psi\).
+The calculation in \texttt{scripts/check\_quartic\_period.py}
+gives 655 terms for \(E_1\). Its least and greatest powers of \(p\)
+are \(-19,19\), with respective coefficients \(t^{-57},1\).
+Take \(\beta^4+\beta+1=0\) in \(\mathbb F_{16}\), with \(\omega=\beta^5\).
+At \(t=\beta\), the two Laurent polynomials normalized to least
+\(p\)-exponent zero have degrees 38 and 214 and have gcd 1.
+
+The two extreme coefficients of \(E_1\) are units in the Laurent ring
+in \(t\). This rules out a factor depending on \(t\) alone.
+Any common factor of positive \(p\)-width would likewise have units
+as both extreme coefficients, because they divide those of \(E_1\).
+It would retain its positive width at \(t=\beta\), contradicting the gcd.
+This argument works over the algebraic closure. Hence the two curves
+have no common component in the torus, and their intersection is finite.
+
+The resultant \(\operatorname{Res}_X(H(X),Y+h(X))\) has degree at
+most 5 in the coefficients of \(H\). Its coefficients include \(\Psi\)
+and the product of the images. Consequently \(E,E\circ\Psi,E\circ\Psi^2\)
+have degrees at most 5, 25 and 125 in \(u,v,w\).
+The \href{https://pinakimondal.org/books/p1_to_16.pdf}{affine Bézout bound,
+Theorem I.2} gives at most \(5\cdot25\cdot125=15625\) points.
+The equations are binary, so each coefficient triple belongs to a field of
+degree at most 15625 by its Frobenius orbit. A root of its quartic
+therefore has degree at most 62500. Every possible coordinate of a
+product-one quartet is fixed by Frobenius to the power \(M\).
+It follows that \(h(x)=x^{2^s}\) selects the same quartets whenever
+the exponents \(s\) agree modulo \(M\).
+The three lower ranks always pass by Theorem~\ref{thm:dyadic-triples}.
+The checked cases and quintic factors above now give both progressions.
+\end{proof}
+This reduces the uniform fourth-test question to a finite intersection.
+A common zero of the three equations is only a candidate. Its four
+coordinates must also admit the same Frobenius power acting as \(h\).
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is
