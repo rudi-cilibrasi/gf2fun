@@ -27,6 +27,7 @@ import GF2Sparse.OreReciprocalExamples
 import GF2Sparse.PackedMersenne9689
 import GF2Sparse.PackedMersenne9941
 import GF2Sparse.PackedMersenne11213
+import GF2Sparse.PackedMersenne44497
 import GF2Sparse.PackedMersenneExamples
 import GF2Sparse.ParityExamples
 import GF2Sparse.PrimeGrid
