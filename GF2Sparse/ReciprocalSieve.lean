@@ -346,4 +346,29 @@ theorem reciprocal_sieve_example_55 :
     simp at hp
     rcases hp with rfl | rfl | rfl | rfl | rfl | rfl <;> norm_num1) (by decide +kernel)
 
+/-- A primitive member of the q = 8 slice with w = 1. -/
+theorem product_slice_primitive_56 :
+    Primitive (X ^ 56 + X ^ 54 + X ^ 47 + X ^ 7 + 1) := by
+  apply certify_five_terms 56 54 47 7 [3, 5, 17, 29, 43, 113, 127, 15790321]
+  · intro p hp
+    simp at hp
+    rcases hp with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> norm_num1
+  · decide +kernel
+
+/-- With q = 64 the lower tap 63 also excludes all factors of degree at most three. -/
+theorem product_slice_primitive_152 :
+    Primitive (X ^ 152 + X ^ 150 + X ^ 87 + X ^ 63 + 1) := by
+  have h : Nat.Prime 24517014940753 := by
+    let two : ProvenPrime := ⟨2, by decide⟩
+    exact (lucasPrime 24517014940753 15 [two, two, two, two, ⟨3, by decide⟩,
+      ⟨17, by decide⟩, ⟨19, by decide⟩, ⟨2309, by norm_num1⟩, ⟨684857, by norm_num1⟩]
+      (by decide +kernel)).property
+  apply certify_five_terms 152 150 87 63
+    [3, 5, 17, 229, 457, 1217, 148961, 174763, 524287, 525313, 24517014940753]
+  · intro p hp
+    simp at hp
+    rcases hp with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
+      first | exact h | norm_num1
+  · decide +kernel
+
 end GF2Sparse

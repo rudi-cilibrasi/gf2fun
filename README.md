@@ -69,6 +69,8 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+For degrees divisible by eight, the simultaneous sieve has an exact factor-parity table. For $q=8$, its 63 exponent classes split into 21 with odd factor count, 21 with even count and 21 with repeated roots. Negating a squarefree class reverses its parity for every power of two $q\ge8$. The checker compares all 318 classes at $q=8,16$ with full factorizations. Lean proves the constructed examples in degrees 56 and 152 are primitive. [Parity formula](results.pdf#page=79) · [Lean certificates](GF2Sparse/ReciprocalSieve.lean) · [Reproduce with the --residues option](scripts/check_joint_product_sieve.py)
+
 The cyclic inverse construction gives 21 certified primitive pentanomials, including $X^{2203}+X^{2117}+X^{656}+X^{168}+1$. Lean checks that example. The Python checker verifies all 21 full powers and 375 prime-index powers with `--primitive-examples`. [Witnesses](data/cyclic-parity-primitive.csv) · [Lean certificate](GF2Sparse/ParityExamples.lean) · [Verification code](scripts/check_cyclic_trinomial_parity.py)
 
 For pentanomials with two odd exponents and all even exponents divisible by eight, a single coefficient of a cyclic polynomial inverse gives the factor parity whenever the half-gap between the odd exponents is odd. At degree 1229 this identifies 638,918 squarefree candidates with odd factor count among 1,290,708 supports with prime half-gap. The complete census finds 3,899 irreducibles in this family. All pass the five order tests, including the example with taps 88, 376 and 1155. [Discriminant proof](results.pdf#page=72) · [Parity and census checker](scripts/check_cyclic_trinomial_parity.py)

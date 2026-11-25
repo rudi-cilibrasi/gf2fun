@@ -6154,4 +6154,42 @@ root bijection against independent factorizations. At \(n=1229\)
 the three choices \((s,w)=(1,295),(17,15),(363,1)\) give irreducible
 members with all the order projections of Theorem~\ref{thm:open-product-orders}.
 
+\begin{corollary}\label{cor:joint-trace}
+Retain the assumptions of Lemma~\ref{lem:joint-even-disc} on
+\(n,q,s,w,v\), but allow any \(m=n-2qw>0\). Put \(J=Y^q+Y^{q-1}+1\).
+The pentanomial is squarefree exactly when \(\gcd(J,1+Y^m)=1\).
+In that case the parity of its number of irreducible factors is
+\[
+ \tau_q(m)=\sum_{J(y)=0}\frac{y^{m+q}}{1+y^m}\ \in\mathbb F_2 .
+\]
+This test depends only on \(m\bmod(q^2-1)\). Every squarefree
+residue has \(\tau_q(-m)=1+\tau_q(m)\); in particular exactly half
+the unit residues give odd factor count.
+\end{corollary}
+\begin{proof}
+The two resultants in Lemma~\ref{lem:joint-even-disc} are odd exactly
+when every \(Z_\epsilon\) is a unit, which reduces to \(1+y^m\ne0\).
+The ratio calculation before substituting \(y^m=y\) gives
+\(Z_-/Z_+\equiv1+4y^{q+m}/(1+y^m)\pmod8\). Thus the discriminant
+is \(1+4\tau_q(m)\), and Stickelberger--Swan gives the stated parity
+since \(n\) is even. For each \(y\) the two summands at \(m,-m\)
+add to \(y^q\); their sum over the roots is one. All roots have
+order dividing \(q^2-1\), and none has order one.
+\end{proof}
+
+The numbers of odd, even, and repeated-root residues for
+\(q=8,16,32,64\) are respectively
+\((21,21,21),(126,126,3),(340,340,343),(1909,1909,277)\).
+Compute the trace as the coefficient of \(Y^{q-1}\) in the remainder
+of \(J'Y^{m+q}/(1+Y^m)\) modulo \(J\), by Lagrange interpolation.
+The \texttt{--residues} check compares every residue for \(q=8,16\)
+with integer resultants and full binary factorizations.
+At \(q=8,64\), respectively, the slice with \(w=1\) contains
+\[
+ X^{56}+X^{54}+X^{47}+X^7+1,\qquad
+ X^{152}+X^{150}+X^{87}+X^{63}+1 .
+\]
+Lean verifies the full primitive orders of both polynomials in
+\nolinkurl{GF2Sparse/ReciprocalSieve.lean}.
+
 \end{document}

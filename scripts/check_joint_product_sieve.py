@@ -1,6 +1,7 @@
 """Check the simultaneous factor-count and reciprocal-root construction over GF(2)."""
 
 import argparse
+from collections import Counter
 from math import gcd, lcm
 
 from flint import fmpz_poly, nmod_poly
@@ -27,6 +28,41 @@ def signed_resultants(n, q, w):
         lift = fmpz_poly([int(k) for k in h])
         residues.append(int((Y**q - sign*(Y**s+1)).resultant(lift)) % 8)
     return residues
+
+
+def parity_residue(q, residue):
+    j = X**q + X**(q-1) + 1
+    power = X.pow_mod(residue, j)
+    common, inverse, _ = (1+power).xgcd(j)
+    if common != 1:
+        return "repeated"
+    # The leading coefficient of J' h modulo J is the sum of h over its roots.
+    trace = ((j.derivative()*power*X**q*inverse) % j)[q-1]
+    return "odd" if trace else "even"
+
+
+def check_residues():
+    for q in (8, 16, 32, 64):
+        period = q*q - 1
+        rows = [parity_residue(q, r) for r in range(period)]
+        counts = Counter(rows)
+        for r, row in enumerate(rows):
+            opposite = {"odd": "even", "even": "odd", "repeated": "repeated"}[row]
+            if rows[-r] != opposite or (gcd(r, period) == 1 and row == "repeated"):
+                raise ArithmeticError(f"incorrect opposite residue at {(q, r)}")
+            if q > 16:
+                continue
+            m = 8*(r*pow(8, -1, period) % period) or 8*period
+            n, v = m+2*q, m+q-1
+            f = X**n + (1+X**(q-1))*(1+X**v)
+            factors = factor_degrees(f)
+            actual = "repeated" if any(e > 1 for _, e in factors) else (
+                "odd" if len(factors) % 2 else "even")
+            left, right = signed_resultants(n, q, 1)
+            disc = left*right % 8
+            if actual != row or {1: "even", 5: "odd"}.get(disc, "repeated") != row:
+                raise ArithmeticError(f"trace, integer resultant or factor count failed at {(q, r)}")
+        print(f"q={q}: {counts['odd']} odd, {counts['even']} even, {counts['repeated']} repeated.")
 
 
 def check(n, s, w, even_case):
@@ -96,7 +132,11 @@ def main(through):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--through", type=int, default=256, help="odd-degree sample limit")
+    parser.add_argument("--residues", action="store_true", help="classify all residues for four powers of two")
     args = parser.parse_args()
     if args.through < 5:
         parser.error("expected an odd-degree limit of at least five")
-    main(args.through)
+    if args.residues:
+        check_residues()
+    else:
+        main(args.through)
