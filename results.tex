@@ -5410,4 +5410,117 @@ identity would put each exponent \(5e\) in class zero or one
 modulo four. Since \(5\equiv1\pmod4\), this also holds for \(e\).
 \end{proof}
 
+\section{Counting sparse candidates with an odd number of factors}
+\label{sec:parity-counts}
+\begin{theorem}\label{thm:parity-counts}
+Fix \(B\ge1\). For every sufficiently large \(n\), there are
+\(\gg_B n^2\log n\) squarefree binary pentanomials of degree \(n\)
+with an odd number of irreducible factors, all of degrees greater
+than \(B\). Their exponents have gcd one and their fifteen unordered
+pair sums are distinct. For \(n\equiv1,2,4,6,7\pmod8\) the count is
+\(\gg_B n^3\).
+\end{theorem}
+\begin{proof}
+Put \(L=\mathop{\rm lcm}_{1\le d\le B}(2^d-1)\). Write
+\(F=1+X^a+X^b+X^c+X^n\) for the integer lift. In every construction
+below take \(1\le A\le n/(1000L)\) with \(\gcd(A,6L)=1\).
+Choose \(c\equiv0\pmod8,\ c\equiv a\pmod L,\ \gcd(A,c)=1\).
+Since \(L\mid b\), the terms in pairs \((0,b)\) and \((a,c)\)
+cancel at every nonzero element of degree at most \(B\).
+Exactly one exponent is odd, so the reduction is squarefree.
+The smallest positive exponent \(a\) is either \(8A\) or \(2A\).
+An odd exponent and \(\gcd(A,c)=1\) give gcd one.
+
+\emph{Degrees \(1,2,4,6,7\) modulo eight.}
+Take \(a=8A,\ n/16<b<n/8,\ n/4<c<n/3\).
+For odd \(n\) take \(b\equiv0\pmod{8L}\). Theorem~\ref{thm:two-residue-parity}
+gives discriminant one modulo eight and odd factor count.
+For even \(n\), take \(b\) odd and divisible by \(L\).
+When \(n\equiv2\pmod4\), require \(b\equiv3(n/2)\pmod4\).
+Modulo eight \(F'=bX^{b-1}+nX^{n-1}\). Put \(t=n-b\), and
+write \(P_j\) for the \(j\)-th power sum of the complex roots of \(F\).
+Then \(P_t=-t,\ P_{2t}=t\). Indeed the logarithmic derivative of
+\(X^n F(1/X)\) computes these sums. Its smallest positive exponent
+is \(n-c>2n/3\), and among sums of two such exponents only \(t+t\)
+equals \(2t\), since \(2a<b,\ 2b<c\).
+Factoring \(bX^{b-1}\) from the derivative at each root thus gives
+\[
+ \operatorname{disc}(F)\equiv (-1)^{n/2}
+ \left(1-t\,n/b+\tbinom{t}{2}(n/b)^2\right)
+ \equiv (-1)^{n/2}(1-n/b)\equiv5\pmod8 .
+\]
+Here \(b^n\equiv1\), \(t\) is odd, and \(n/b\equiv6\pmod8\)
+when \(n\equiv2\pmod4\). Stickelberger--Swan gives odd factor count.
+In these five classes \(2a<b,\ 2b<c,\ 2c<n\) give the pair-sum claim.
+
+\emph{Degrees \(3,5\) modulo eight.}
+Take \(a=8A,\ b=2h,\ n/4<h<n/3,\ 3n/4<c<n\).
+Require \(L\mid h\) and \(3h\equiv n\pmod{4A}\), a single class
+modulo \(4AL\). In particular \(h\) is odd. Put \(k=n-2h\) and
+\(w=n-3h\). The inverse-root power sum at \(k\) vanishes since
+\(k<n\) is odd and every lower exponent of \(F\) is even. As in
+Theorem~\ref{thm:parity}, the inverse-root power sum at \(2k\),
+divided by two, has parity
+\[
+ [Y^k]\frac{-YG'(Y)}{G(Y)}
+    =[Y^w]\frac{1}{1+Y^{4A}}=1\quad\text{in }\mathbb F_2,\qquad
+ G=1+Y^{4A}+Y^h+Y^{c/2}.
+\]
+Indeed \(2k<n,\ 0<w<h<c/2\) and \(4A\mid w\).
+Only the derivative terms at \(2h\) and \(n\) survive modulo eight.
+After factoring \(nX^{n-1}\), the linear term of the product is zero
+and its quadratic term is four modulo eight by the power sums above.
+The discriminant is \((-1)^{(n-1)/2}n(1+4)\equiv1\pmod8\), as needed.
+Among \(0,a,b,c\), one has \(2a<b,\ b+a<c<2b\). A collision with
+\(2b\) is impossible because \(2b\equiv4\pmod8\) and \(a,c\) are
+multiples of eight. The sums using \(n\) once are odd, and \(2n\)
+exceeds every other sum.
+
+\emph{Degrees divisible by eight.}
+Take \(a=2A,\ n/16<b<n/8,\ n/4<c<n/3\) and let \(b\) be an odd
+multiple of \(AL\). Now \(F'\equiv bX^{b-1}+aX^{a-1}\pmod8\).
+For \(k=b-a\), the inverse-root power sum \(P_{-k}\) is zero,
+since \(k<b\) is odd. At the even index \(2k<2b<c\), the term
+of degree \(b\) cannot contribute to \(-XF'/F\). Hence
+\[
+ P_{-2k}=[X^{2k}]\frac{-aX^a}{1+X^a}=-a ,
+\]
+because \(2k/a=b/A-2\) is odd. The second elementary symmetric
+function of the inverse \(k\)-th powers is therefore
+\((P_{-k}^2-P_{-2k})/2=A\). Factoring \(bX^{b-1}\) from the
+derivative gives discriminant \(1+(a/b)^2 A\equiv5\pmod8\).
+The factor count is odd and the pair sums are distinct as before.
+
+\emph{Counting.} For each \(A\), the CRT gives a single progression
+of \(c\)'s modulo \(8L\) before imposing coprimality. In every block
+of \(A\) successive choices exactly \(\varphi(A)\) are coprime to \(A\).
+The interval lengths are at least \(n/12\) and \(8LA\le n/125\), so
+there are \(\gg n\varphi(A)/(LA)\) choices. In the first five degree
+classes the interval for \(b\) contains \(\gg n/L\) choices. In the
+last three classes the progression for \(h\) or \(b\) gives
+\(\gg n/(AL)\) choices. The ordered exponents determine all parameters.
+
+For \(D=6L\) fixed, expanding \(\varphi(A)/A=\sum_{d\mid A}\mu(d)/d\)
+and counting integers coprime to \(D\) gives
+\[
+ \sum_{\substack{A\le x\\(A,D)=1}}\frac{\varphi(A)}A
+ =c_D x+O_D(\log(2x)),\qquad
+ c_D=\frac{\varphi(D)}D\prod_{p\nmid D}(1-p^{-2})>0 ,
+\]
+where the product is over primes. Partial summation gives
+\(\sum_{A\le x,\,(A,D)=1}\varphi(A)/A^2=c_D\log x+O_D(1)\).
+The two asserted counts follow.
+\end{proof}
+
+The cutoff \(A\le n/(1000L)\) ensures uniform counts. The parity
+and pair-sum arguments in degrees \(3,5\) modulo eight only require
+\(8A<n/12\) in addition to the congruence and interval conditions.
+At degree \(1229\), this construction with
+\(A=5,\ h=323,\ c=1112,\ B=1\) gives an irreducible example whose
+root order passes all five tests of Theorem~\ref{thm:1229-all-orders}.
+Thus the counting construction includes candidates for the first
+open degree. The sample checker factors its test polynomials over
+\(\mathbb F_2\) and verifies all factor degrees and support conditions.
+See \nolinkurl{scripts/check_parity_families.py}.
+
 \end{document}
