@@ -415,7 +415,7 @@ One can also let the cutoff grow with the degree. For instance, take
 The product bound for \(L\) gives \(\log d=O(B^2)\). With the same choice of \(s\),
 \(s d^s\le n\) and \(\log\ord(X)\gg(\log n)^2/\log d\gg(\log n)^{4/3}\).
 
-\section{Exact primitivity under substitution}
+\section{Exact primitivity under substitution}\label{sec:four-ap}
 \begin{lemma}\label{lem:sampling}
 Let \(F,T\) be monic binary polynomials of the same positive degree \(n\),
 and \(m\ge1\). If \(T(X)\mid F(X^m)\), then
@@ -1884,5 +1884,70 @@ choose the cube root \(x\) of \(u\) in that group. It is a trinomial
 root in the stated class, and its Frobenius conjugates with powers
 \(1,2,4\) or \(1,8,64\) have product 1. For the order-9 case,
 \(x,x^4,x^4\) give a product-one triple.
+
+\section{Prime degrees with a triple for every fixed inner exponent}
+\begin{theorem}\label{thm:fixed-tap-triples}
+For every \(A\ge1\), there are arbitrarily large prime degrees \(n>A\)
+such that every trinomial \(X^n+X^a+1\) with \(1\le a\le A\) has
+three distinct roots with product 1. These degrees occur in every
+prescribed reduced arithmetic progression.
+\end{theorem}
+\begin{proof}
+Put \(Q=2^m\) and \(D=Q^2+Q+1\). The polynomial \(g=X^{Q+1}+X+1\)
+divides \(X^D-1\), since \(Xg^Q+g=X^D+1\).
+Choose a root \(u\) of \(g\). If \(\gcd(a,D)=1\), taking an
+\(a\)-th root inside the cyclic group of \(D\)-th roots of unity
+gives \(x\) with \(x^a=u\). Whenever \(n\equiv a(Q+1)\pmod D\),
+\[
+                      x^n=u^{Q+1}=1+u=1+x^a .
+\]
+The three roots \(x,x^Q,x^{Q^2}\) have product \(x^D=1\).
+Raising to \(Q\) cycles them because \(D\mid Q^3-1\).
+If two agree, all three agree and \(x^3=1\). When \(3\nmid D\)
+this forces \(x=1\), which cannot be a trinomial root.
+
+Take \(m=3^j\). Then \(Q\equiv-1\pmod3\), so \(3\nmid D\).
+For every prime \(p\mid D\), the order of \(Q\) modulo \(p\) is exactly
+three. Indeed \(Q^3\equiv1\pmod p\), and \(Q\equiv1\pmod p\)
+would give \(p=3\). Thus \(\ord_p(2)\mid 3^{j+1}\) and
+\(\ord_p(2)\nmid 3^j\), giving \(3^{j+1}\mid p-1\).
+Taking \(j\) large makes \(D\) coprime to any previously chosen
+modulus and to \(a\). Also \(\gcd(Q+1,D)=1\).
+
+Start with the prescribed reduced class. For each \(a=1,\ldots,A\)
+choose such a fresh \(D\) and impose \(n\equiv a(Q+1)\pmod D\).
+The Chinese remainder theorem gives one reduced class satisfying all
+the congruences. Dirichlet's theorem supplies arbitrarily large primes in it.
+Lean verifies the construction, distinctness, and the prime-degree conclusion
+in \nolinkurl{GF2Sparse/TripleObstruction.lean}.
+\end{proof}
+
+\begin{corollary}\label{cor:affine-tap-triples}
+Fix finitely many rules \(d a=b n+c\) with \(d>0\) and integer
+\(b,c\). In arbitrarily large prime degrees in any prescribed reduced
+class, every rule supplying an integer \(0<a<n\) gives a trinomial
+with three distinct roots of product 1.
+\end{corollary}
+\begin{proof}
+A rule with \(c=0\) and \(0<b/d<1\) in lowest terms requires its
+denominator to divide \(n\), which excludes sufficiently large primes.
+For \(c\ne0\) choose \(D\) as above, also coprime to
+\(cd(d^2-db+b^2)\). This integer is nonzero, since
+\(4(d^2-db+b^2)=(2d-b)^2+3b^2>0\).
+Write \(h=Q+1\), so \(h^2-h+1=D\). A prime dividing both
+\(d-bh\) and \(D\) would divide \(d^2-db+b^2\). We can therefore add
+the reduced congruence \(n\equiv ch(d-bh)^{-1}\pmod D\).
+If the rule supplies an integer \(a\), then
+\(dn\equiv (bn+c)h=dah\pmod D\), so \(n\equiv ah\pmod D\).
+Both \(n\) and \(h\) are units modulo \(D\), and hence so is \(a\).
+The preceding proof now applies to every rule simultaneously.
+\end{proof}
+
+The same prime degrees defeat cubic sampling of these trinomials into
+pentanomials. If \(X^i+X^t(X^{3v}+1)=X^n+X^a+1\), then the cubes
+of its roots are roots of \(X^i+X^t(X^v+1)^3\) by the divisibility
+identity of Section~\ref{sec:four-ap}. The three selected roots lie in
+a group of order coprime to three, so their cubes stay distinct and
+their product is still 1.
 
 \end{document}
