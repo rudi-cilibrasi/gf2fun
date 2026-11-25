@@ -2445,4 +2445,35 @@ pentanomial has root order strictly greater than \(2^{2^{1102}-1101}\).
 Lean verifies the general bounds and the latter application in
 \nolinkurl{GF2Sparse/OreOrder.lean} and \nolinkurl{GF2Sparse/OreExamples.lean}.
 
+\begin{theorem}\label{thm:primitive-lifts}
+The trinomials \(X^{511}+X^{15}+1\) and \(X^{1023}+X^7+1\) are
+primitive. Among the 83 primitive binary trinomials and
+pentanomials of seed degrees \(2\le s\le10\), exactly 81 have
+primitive Ore lifts. The remaining two seeds have degree 6, with
+supports \(\{0,1,2,5,6\}\) and \(\{0,1,4,5,6\}\). Each lift
+has multiplicative order \((2^{63}-1)/7\).
+\end{theorem}
+\begin{proof}
+The two primitive trinomials come from seeds \(Y^9+Y^4+1\)
+and \(Y^{10}+Y^3+1\). Lean checks the full order from the
+factorizations of \(2^{511}-1\) and \(2^{1023}-1\), proving
+primality of every integer factor and checking the modular powers in
+\nolinkurl{GF2Sparse/OrePrimitiveExamples.lean}. Lean also checks the
+two exceptional seed orders, lift irreducibilities and exact lifted
+orders in \nolinkurl{GF2Sparse/OreIndexSeven.lean}.
+For the census, enumerate all choices of one or three interior
+exponents. Test the seed against the full exponent and each prime
+divisor of its group size. For each primitive seed, repeat this
+calculation on its lift, dividing the group size by each prime
+factor as long as the resulting power of \(X\) is 1. The resulting
+counts are reproduced by \nolinkurl{scripts/check_ore_lifts.py}.
+\[
+\begin{array}{c|rrrrrrrrr}
+s&2&3&4&5&6&7&8&9&10\\\hline
+\text{primitive seeds}&1&2&2&6&6&14&12&18&22\\
+\text{primitive lifts}&1&2&2&6&4&14&12&18&22
+\end{array}
+\]
+\end{proof}
+
 \end{document}
