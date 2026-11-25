@@ -1610,10 +1610,37 @@ coordinate. Summing over that coordinate counts each value twice,
 so the sum is zero, a contradiction.
 \end{proof}
 
+\begin{theorem}\label{thm:additive-order}
+In Theorem~\ref{thm:additive-orbit}, write \(n=2^s-1\) and let
+\(r\) be any root. For \(2\le b<s\), let \(I_b\) be the number
+of monic binary irreducibles of degree \(b\), and put
+\(h=\lfloor(n-1)/(2^b-1)\rfloor\). Then
+\[
+                   \ord(r)\ \ge\ \binom{I_b+h}{h}.
+\]
+\end{theorem}
+\begin{proof}
+All nonzero elements of \(V\) belong to \(\langle r\rangle\),
+since they are powers of \(r\). For each monic irreducible
+\(g(Y)=\sum_i g_iY^i\) of degree \(b\), form
+\(G_g(X)=\sum_i g_i X^{2^i-1}\). Its constant term is 1 and its
+degree is \(2^b-1<n\), so \(G_g(r)\ne0\). In terms of binary
+Frobenius \(F\), the element \(rG_g(r)=g(F)r\) belongs to \(V\).
+Consequently \(G_g(r)\in\langle r\rangle\).
+
+Distinct \(G_g,G_{g'}\) are coprime. A common root \(v\) would be
+nonzero and satisfy \(g(F)v=g'(F)v=0\), contradicting a polynomial
+Bézout identity for \(g,g'\). By unique factorization, the
+\(\binom{I_b+h}{h}\) products containing at most \(h\) of the
+polynomials \(G_g\), with repetitions allowed, are distinct.
+Each has degree below \(n\), so their values at \(r\) are also distinct.
+\end{proof}
+
 \begin{corollary}\label{cor:mersenne-127}
 Put \(n=2^{127}-1\) and \(u=(n-1)/3\). Both \(X^n+X+1\) and
 \(1+X(X^u+1)^3\) are irreducible. The latter pentanomial and its
-reciprocal pass the first 126 exterior-power tests.
+reciprocal pass the first 126 exterior-power tests, and their root
+orders exceed \(2^{2^{61}}\).
 \end{corollary}
 \begin{proof}
 Lean verifies that \(Y^{127}+Y+1\) is primitive, using Lucas--Lehmer
@@ -1625,9 +1652,35 @@ The roots of \(X^{2^{127}}+X^2+X\) form a binary space of dimension
 the trinomial roots, so Theorem~\ref{thm:additive-orbit} applies.
 Since \(n\) is odd, cubing is injective on \(\mathbb F_{2^n}^\times\).
 Cubing or inverting the roots therefore preserves every product-one test.
+It also preserves their multiplicative order. Take \(b=67\) in
+Theorem~\ref{thm:additive-order}. Since 67 is prime,
+\(I_{67}=(2^{67}-2)/67>7\cdot2^{58}\), by counting elements of
+degree 67 in \(\mathbb F_{2^{67}}\). Choose \(2^{58}\) disjoint
+groups of seven generators. In each group the products of up to four
+generators give \(\binom{11}{4}=330>2^8\) choices. Their combined
+degree is at most \(2^{60}(2^{67}-1)<n\), giving the claimed order.
 Lean checks both irreducibility assertions. Determining the full
 multiplicative order in degree \(n\) remains open here.
 \end{proof}
+
+The additive-orbit argument also applies to Ore's lift of a general
+primitive trinomial \(Y^s+Y^a+1\). For a concrete example take
+\(s=74\,207\,281\), \(a=9\,156\,813\), from Table~1 of
+\href{https://maths-people.anu.edu.au/~brent/pd/rpb266.pdf}
+{Brent and Zimmermann, \emph{Twelve new primitive binary trinomials}}.
+Put \(N=2^s-1\), \(A=2^a-1\), \(w=(N-A)/3\). Since \(s,a\) are
+odd, \(w\) is a positive integer. Ore's construction gives an
+irreducible \(X^N+X^A+1\) whose roots together with zero form an
+\(s\)-dimensional binary space. For each root \(r\),
+\(r^A((r^3)^w+1)=1\). Cubing shows that \(r^3\) is a root of
+the degree-\(N\) pentanomial
+\[
+                         1+X^A(X^w+1)^3.
+\]
+Cubing permutes the multiplicative group in this odd-degree field and
+commutes with Frobenius. Thus this explicit pentanomial is irreducible
+and passes the first \(74\,207\,280\) tests, including repetitions.
+Its numerical input is the published trinomial computation.
 
 \begin{theorem}\label{thm:factor-growth}
 Let \(m=3^a\), \(s=2^m+1\) and \(n=2^s-1\). Every irreducible
