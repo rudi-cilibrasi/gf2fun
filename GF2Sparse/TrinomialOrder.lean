@@ -1,5 +1,7 @@
 import GF2Sparse.KasamiTriples
 import GF2Sparse.CompositionNorm
+import GF2Sparse.OrderBound
+import GF2Sparse.SignedDegreeChoices
 import Mathlib.Data.Finset.Prod
 
 /-! Root quotients of a binary trinomial with relatively prime exponents. -/
@@ -44,22 +46,16 @@ theorem trinomial_root_pair_unique {n a : ℕ} (ha : 0 < a) (han : a < n)
     rw [mul_comm u x] at he
     exact Or.inr ⟨rfl, mul_left_cancel₀ (trinomial_root_ne_zero ha han hx) he⟩
 
-/-- The n(n-1) off-diagonal quotients occupy different nonidentity powers of the root. -/
-theorem trinomial_root_order_lower_bound {n a : ℕ} (ha : 0 < a) (han : a < n)
-    (hc : a.Coprime n) (hf : Irreducible (trinomial n a)) {r : K}
-    (hr : aeval r (trinomial n a) = 0) : n*n - n + 1 ≤ orderOf r := by
+/-- Distinct roots inside one torsion subgroup give distinct off-diagonal quotients. -/
+theorem trinomial_card_le_common_exponent {n a k h : ℕ} (ha : 0 < a) (han : a < n)
+    (hc : a.Coprime n) (hh : 0 < h) (z : Fin k → K) (hinj : Function.Injective z)
+    (root : ∀ i, aeval (z i) (trinomial n a) = 0) (hpow : ∀ i, (z i)^h = 1) :
+    k*k - k + 1 ≤ h := by
   classical
-  let z (i : Fin n) := r^(2^i.val)
-  have hd := trinomial_degree ha han
-  have hinj : Function.Injective z := by
-    simpa only [one_mul] using relative_frobenius_conjugates_injective hf hr
-      (r := 1) (m := n) (by decide) (hd.trans (one_mul n).symm)
-  have root (i : Fin n) : aeval (z i) (trinomial n a) = 0 := by
-    simp [z, aeval_dyadic, hr]
-  have nz (i : Fin n) : z i ≠ 0 := trinomial_root_ne_zero ha han (root i)
-  let q (p : Fin n × Fin n) := z p.1 / z p.2
-  let pairs := (Finset.univ : Finset (Fin n)).offDiag
-  have inj : Set.InjOn q (pairs : Set (Fin n × Fin n)) := by
+  have nz (i : Fin k) : z i ≠ 0 := trinomial_root_ne_zero ha han (root i)
+  let q (p : Fin k × Fin k) := z p.1 / z p.2
+  let pairs := (Finset.univ : Finset (Fin k)).offDiag
+  have inj : Set.InjOn q (pairs : Set (Fin k × Fin k)) := by
     rintro ⟨i,j⟩ hij ⟨k,l⟩ _ h
     have hprod := (div_eq_div_iff (nz j) (nz l)).1 h
     rcases trinomial_root_pair_unique ha han hc (root i) (root l) (root k) (root j) hprod with h | h
@@ -69,26 +65,152 @@ theorem trinomial_root_order_lower_bound {n a : ℕ} (ha : 0 < a) (han : a < n)
     rintro h
     obtain ⟨⟨i,j⟩,hij,he⟩ := Finset.mem_image.1 h
     exact (Finset.mem_offDiag.1 hij).2.2 (hinj ((div_eq_one_iff_eq (nz j)).1 he))
+  have inside : insert 1 (pairs.image q) ⊆ nthRootsFinset h (1 : K) := by
+    intro t ht'
+    apply (mem_nthRootsFinset hh 1).2
+    rcases Finset.mem_insert.1 ht' with rfl | hm
+    · exact one_pow _
+    · obtain ⟨⟨i,j⟩,_,rfl⟩ := Finset.mem_image.1 hm
+      simp only [q, div_pow, hpow, div_one]
+  have hcard := (Finset.card_le_card inside).trans
+    ((Multiset.toFinset_card_le _).trans (card_nthRoots h (1 : K)))
+  simpa only [Finset.card_insert_of_notMem none, Finset.card_image_of_injOn inj, pairs,
+    Finset.offDiag_card, Finset.card_univ, Fintype.card_fin] using hcard
+
+/-- This bound on the number of roots participating in triples also holds for reducible trinomials. -/
+theorem trinomial_triple_root_count_bound {n a k : ℕ} (ha : 0 < a) (han : a < n)
+    (hc : a.Coprime n) (x : Fin k → K) (hi : Function.Injective x)
+    (hr : ∀ i, aeval (x i) (trinomial n a) = 0)
+    (ht : ∀ i, ∃ y z : K, aeval y (trinomial n a) = 0 ∧ aeval z (trinomial n a) = 0 ∧ x i*y*z=1) :
+    k*k-k+1 ≤ n*(n-a)+a*a := by
+  apply trinomial_card_le_common_exponent ha han hc (by positivity) x hi hr
+  intro i
+  obtain ⟨y,z,hy,hz,he⟩ := ht i
+  exact orderOf_dvd_iff_pow_eq_one.1 (trinomial_triple_order_dvd han.le (hr i) hy hz he)
+
+/-- A binary trinomial with relatively prime positive exponents has simple roots. -/
+theorem trinomial_separable_of_coprime {n a : ℕ} (ha : 0 < a) (han : a < n)
+    (hc : a.Coprime n) : (trinomial n a).Separable := by
+  rcases Nat.even_or_odd n with hn | hn
+  · have ho : Odd a := by
+      rcases Nat.even_or_odd a with he | ho
+      · have hdiv := Nat.dvd_gcd (even_iff_two_dvd.mp he) (even_iff_two_dvd.mp hn)
+        rw [hc.gcd_eq_one] at hdiv
+        omega
+      · exact ho
+    have hconst : (trinomial n a).coeff 0 = 1 := by simp [trinomial, coeff_X_pow, ha.ne, (ha.trans han).ne]
+    refine isCoprime_of_irreducible_dvd (fun h => by simp [h.1] at hconst) ?_
+    intro p hp hpf hpd
+    letI : Fact (Irreducible p) := ⟨hp⟩
+    have hx := root_ne_zero_of_factor hp hpf hconst
+    have he := AdjoinRoot.mk_eq_zero.2 hpd
+    simp [trinomial, derivative_X_pow, hn.natCast_zmod_two, ho.natCast_zmod_two, hx] at he
+  · exact trinomial_separable_odd_degree hn ha
+
+/-- The whole trinomial has period at least n(n-1)+1, including reducible cases. -/
+theorem trinomial_period_lower_bound {n a h : ℕ} (ha : 0 < a) (han : a < n)
+    (hc : a.Coprime n) (hh : 0 < h) (hd : trinomial n a ∣ X^h - 1) :
+    n*n - n + 1 ≤ h := by
+  classical
+  let L := AlgebraicClosure (ZMod 2)
+  let f := trinomial n a
+  have hf0 : f ≠ 0 := by
+    intro he
+    have hdeg := trinomial_degree ha han
+    change f.natDegree = n at hdeg
+    simp [he] at hdeg
+    omega
+  have hcard : Fintype.card (Fin n) = Fintype.card (f.rootSet L) := by
+    rw [Fintype.card_fin, card_rootSet_eq_natDegree (trinomial_separable_of_coprime ha han hc)
+      (IsAlgClosed.splits _), trinomial_degree ha han]
+  let z := Fintype.equivOfCardEq hcard
+  have root (i : Fin n) : aeval (z i).val f = 0 := (mem_rootSet_of_ne hf0).1 (z i).property
+  apply trinomial_card_le_common_exponent ha han hc hh (fun i => (z i).val)
+    (Subtype.val_injective.comp z.injective) root
+  intro i
+  obtain ⟨g,hg⟩ := hd
+  have he := congrArg (aeval (z i).val) hg
+  have hi : aeval (z i).val (trinomial n a) = 0 := root i
+  simpa only [map_sub, map_pow, aeval_X, map_one, map_mul, hi, zero_mul, sub_eq_zero] using he
+
+/-- The order in the actual quotient ring obeys the lower bound in every degree. -/
+theorem trinomial_quotient_order_lower_bound {n a : ℕ} (ha : 0 < a) (han : a < n)
+    (hc : a.Coprime n) : n*n - n + 1 ≤ orderOf (AdjoinRoot.root (trinomial n a)) := by
+  classical
+  let f := trinomial n a
+  have hconst : f.coeff 0 = 1 := by simp [f, trinomial, coeff_X_pow, ha.ne, (ha.trans han).ne]
+  have hf : f ≠ 0 := by intro he; simp [he] at hconst
+  let e := (AdjoinRoot.powerBasisAux hf).equivFun.toEquiv
+  letI : Fintype (AdjoinRoot f) := Fintype.ofEquiv _ e.symm
+  apply trinomial_period_lower_bound ha han hc (root_unit hconst).isOfFinOrder.orderOf_pos
+  apply AdjoinRoot.mk_eq_zero.1
+  simp only [map_sub, map_pow, AdjoinRoot.mk_X, map_one]
+  exact sub_eq_zero.2 (pow_orderOf_eq_one (AdjoinRoot.root f))
+
+/-- In degree q+1 for a binary power q, the linear tap attains the bound,
+even when its quotient is not a field. -/
+theorem trinomial_dyadic_plus_one_period (j : ℕ) :
+    orderOf (AdjoinRoot.root (trinomial (2^j+1) 1)) = 2^j*2^j+2^j+1 := by
+  let f := trinomial (2^j+1) 1
+  have hlt : 1 < 2^j+1 := by have := Nat.two_pow_pos j; omega
+  have hdeg : 0 < f.natDegree := by rw [trinomial_degree (by decide) hlt]; omega
+  letI := AdjoinRoot.nontrivial f (degree_ne_of_natDegree_ne hdeg.ne')
+  letI : CharP (AdjoinRoot f) 2 := charP_of_injective_ringHom (AdjoinRoot.of f).injective 2
+  let r := AdjoinRoot.root f
+  have hr := AdjoinRoot.mk_self (f := f)
+  change (AdjoinRoot.mk f) (X^(2^j+1)+(X^1+1)) = 0 at hr
+  have h1 : r^(2^j+1) = r+1 := by
+    simpa only [map_add, map_pow, AdjoinRoot.mk_X, map_one, pow_one, CharTwo.add_eq_zero] using hr
+  have h2 := congrArg (fun x => x^(2^j)) h1
+  change (r^(2^j+1))^(2^j) = (r+1)^(2^j) at h2
+  rw [← pow_mul, Nat.add_mul, Nat.one_mul, add_pow_expChar_pow, one_pow] at h2
+  have hp : r^(2^j*2^j+2^j+1) = 1 := by
+    rw [pow_succ, h2, add_mul, one_mul, ← pow_succ, h1]
+    simp [add_right_comm, CharTwo.add_self_eq_zero]
+  have hh : 0 < 2^j*2^j+2^j+1 := by positivity
+  have lo := trinomial_quotient_order_lower_bound (by decide : 0 < 1) hlt (Nat.coprime_one_left _)
+  have he : (2^j+1)*(2^j+1)-(2^j+1)+1 = 2^j*2^j+2^j+1 := by
+    simp only [Nat.add_mul, Nat.mul_add, Nat.one_mul, Nat.mul_one]
+    omega
+  exact le_antisymm (Nat.le_of_dvd hh (orderOf_dvd_of_pow_eq_one hp)) (he ▸ lo)
+
+/-- The n(n-1) off-diagonal quotients occupy different nonidentity powers of the root. -/
+theorem trinomial_root_order_lower_bound {n a : ℕ} (ha : 0 < a) (han : a < n)
+    (hc : a.Coprime n) (hf : Irreducible (trinomial n a)) {r : K}
+    (hr : aeval r (trinomial n a) = 0) : n*n - n + 1 ≤ orderOf r := by
+  have hd := trinomial_degree ha han
   have hfix := (degree_dvd_iff_frobenius hf hr n).1 (by rw [hd])
   have hpower : r^(2^n-1) = 1 := by
     apply mul_right_cancel₀ (trinomial_root_ne_zero ha han hr)
     rw [one_mul, ← pow_succ, Nat.sub_add_cancel (Nat.two_pow_pos _), hfix]
-  have ht : 0 < orderOf r := (isOfFinOrder_iff_pow_eq_one.2
+  have ht := (isOfFinOrder_iff_pow_eq_one.2
     ⟨2^n-1, Nat.sub_pos_of_lt (Nat.one_lt_two_pow (ha.trans han).ne'), hpower⟩).orderOf_pos
-  have inside : insert 1 (pairs.image q) ⊆ nthRootsFinset (orderOf r) (1 : K) := by
-    intro t ht'
-    apply (mem_nthRootsFinset ht 1).2
-    rcases Finset.mem_insert.1 ht' with rfl | hm
-    · exact one_pow _
-    · obtain ⟨⟨i,j⟩,_,rfl⟩ := Finset.mem_image.1 hm
-      have h (i : Fin n) : (z i)^(orderOf r) = 1 := by
-        change (r ^ (2 ^ i.val)) ^ orderOf r = 1
-        rw [pow_right_comm, pow_orderOf_eq_one, one_pow]
-      simp only [q, div_pow, h, div_one]
-  have hcard := (Finset.card_le_card inside).trans
-    ((Multiset.toFinset_card_le _).trans (card_nthRoots (orderOf r) (1 : K)))
-  simpa only [Finset.card_insert_of_notMem none, Finset.card_image_of_injOn inj, pairs,
-    Finset.offDiag_card, Finset.card_univ, Fintype.card_fin] using hcard
+  apply trinomial_card_le_common_exponent ha han hc ht (fun i : Fin n => r^(2^i.val))
+  · simpa only [one_mul] using relative_frobenius_conjugates_injective hf hr
+      (r := 1) (m := n) (by decide) (hd.trans (one_mul n).symm)
+  · intro i; simp [aeval_dyadic, hr]
+  · intro i; rw [pow_right_comm, pow_orderOf_eq_one, one_pow]
+
+/-- No product of two proper subfield group sizes can absorb the whole root order. -/
+theorem trinomial_order_not_dvd_subfield_product {n a u v : ℕ} (ha : 0 < a) (han : a < n)
+    (hc : a.Coprime n) (hf : Irreducible (trinomial n a)) {r : K}
+    (hr : aeval r (trinomial n a) = 0) (hu : ¬n ∣ u) (hv : ¬n ∣ v) :
+    ¬orderOf r ∣ (2^u-1)*(2^v-1) := by
+  intro h
+  have hsum : (2^u-1)*(2^v-1) + (2^u+2^v) = 2^(u+v)+1 := by
+    rw [pow_add]
+    have h1 := Nat.two_pow_pos u
+    have h2 := Nat.two_pow_pos v
+    zify [show 1 ≤ 2^u by omega, show 1 ≤ 2^v by omega]
+    ring
+  have he : r * r^(2^(u+v)) = r^(2^u)*r^(2^v) := by
+    rw [← pow_succ', ← hsum, pow_add, (orderOf_dvd_iff_pow_eq_one.1 h), one_mul, pow_add]
+  have root (b : ℕ) : aeval (r^(2^b)) (trinomial n a) = 0 := by simp [aeval_dyadic, hr]
+  have div {b : ℕ} (hfix : r = r^(2^b)) : n ∣ b := by
+    simpa only [trinomial_degree ha han] using (degree_dvd_iff_frobenius hf hr b).2 hfix.symm
+  rcases trinomial_root_pair_unique ha han hc hr (root (u+v)) (root u) (root v) he with hp | hp
+  · exact hu (div hp.1)
+  · exact hv (div hp.1)
 
 /-- Every interior normalized tap strictly between 1 and n-1 precludes a product-one triple
 for an irreducible trinomial. -/

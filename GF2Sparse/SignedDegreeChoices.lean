@@ -106,7 +106,7 @@ private theorem trinomial_three_terms {n a : ℕ} (ha : 0 < a) (han : a < n) :
     simp [mem_support_iff, coeff_X_pow]
   simp [hs, terms, ha.ne', han.ne', hn.ne']
 
-private theorem trinomial_separable_odd_degree {n a : ℕ} (hn : Odd n) (ha : 0 < a) :
+theorem trinomial_separable_odd_degree {n a : ℕ} (hn : Odd n) (ha : 0 < a) :
     (trinomial n a).Separable := by
   have hn0 : 0 < n := by obtain ⟨k,hk⟩ := hn; omega
   have hc : (trinomial n a).coeff 0 = 1 := by simp [trinomial, coeff_X_pow, ha.ne, hn0.ne]

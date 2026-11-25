@@ -4011,4 +4011,98 @@ The two Lean order-divisibility results are in
 For comparison, the exterior-power criterion for primitivity in degree
 1229 requires the tests through rank 614.
 
+\section{Field degrees of pair products and quotients of trinomial roots}
+\begin{theorem}\label{thm:trinomial-pair-degrees}
+Let \(T=X^n+X^a+1\) be irreducible with \(0<a<n\) and \(\gcd(n,a)=1\).
+For any two distinct roots \(x,y\), the quotient \(x/y\) has degree \(n\).
+Their product \(xy\) also has degree \(n\), except when \(n\) is even
+and \(y=x^{2^{n/2}}\), in which case it has degree \(n/2\).
+For a root order \(h\), whenever \(n\nmid u\) and \(n\nmid v\),
+\[
+          h\nmid(2^u-1)(2^v-1).
+\]
+\end{theorem}
+\begin{proof}
+Number the roots \(r_i=r^{2^i}\) cyclically modulo \(n\).
+Theorem~\ref{thm:trinomial-root-quotients} distinguishes all ordered
+off-diagonal quotients and all unordered products. Frobenius advances
+both indices by one. A cyclic translation fixing an ordered pair
+fixes both indices. A nonidentity translation fixing an unordered
+pair must exchange its two entries, which requires them to be
+opposite on a cycle of even length. These orbit sizes give the degrees.
+For the integer assertion, divisibility would give
+\[
+      r\,r^{2^{u+v}}=r^{2^u}r^{2^v}.
+\]
+By pair uniqueness \(r\) would equal one of the factors on the right,
+so \(n\mid u\) or \(n\mid v\).
+\end{proof}
+
+In particular the characteristic polynomial of the second exterior
+power of the companion matrix is squarefree. In odd degree it has
+\((n-1)/2\) irreducible factors of degree \(n\).
+In even degree it has \((n-2)/2\) factors of degree \(n\) and one of degree
+\(n/2\). This follows by grouping all unordered pairs of distinct
+roots into the Frobenius orbits just counted.
+The same counting gives the full factor-degree pattern for a reducible
+coprime-exponent trinomial. Apply the within-orbit rule to each
+irreducible factor separately. For two distinct factors of degrees
+\(b,c\), their cross products contribute \(\gcd(b,c)\) additional
+irreducible factors of degree \(\mathop{\rm lcm}(b,c)\). Pair uniqueness
+keeps all these factors distinct.
+
+\begin{corollary}\label{cor:trinomial-full-order-component}
+If \(n\) has at most two distinct prime divisors, the root order of
+every such trinomial has a prime-power divisor \(L\) with
+\(\ord_L(2)=n\). For \(n=p^a q^b\) with primes \(p<q\) and
+\(\ord_q(2)\ne p^a\), one can take \(L\) prime.
+\end{corollary}
+\begin{proof}
+Write the root order \(h\) as a product of pairwise coprime prime powers.
+The order of 2 modulo each divides \(n\). If all these orders are
+proper divisors, then each divides \(n/p\) or \(n/q\), where \(p,q\)
+are the primes dividing \(n\), taking \(q=p\) in the one-prime case.
+It follows that \(h\) divides \((2^{n/p}-1)(2^{n/q}-1)\), contrary
+to Theorem~\ref{thm:trinomial-pair-degrees}.
+For \(L=\ell^e\) of full degree, the quotient
+\(\ord_{\ell^e}(2)/\ord_\ell(2)\) is an \(\ell\)-power by reduction
+of units modulo \(\ell\). If \(\ord_\ell(2)<n\), then \(\ell=p\)
+or \(\ell=q\). Since \(\ord_p(2)\le p-1<q\) for odd \(p\), a power
+of \(p\) cannot supply the factor \(q\). Oddness of \(h\) excludes
+\(\ell=p=2\). For \(\ell=q\) one must have
+\(\ord_q(2)=p^a\), as \(\ord_q(2)\mid q-1\).
+\end{proof}
+
+For example every irreducible degree-15 trinomial with exponent gcd
+one has root order divisible by 151. The factorization
+\(2^{15}-1=7\cdot31\cdot151\) leaves only 151 with order 15 for 2.
+\nolinkurl{GF2Sparse/TrinomialOrder.lean} verifies the subfield-product
+exclusion, the period bound in the whole quotient ring for arbitrary
+coprime exponents, and the exact period \(q^2+q+1\) for \(X^{q+1}+X+1\)
+at every binary power \(q\).
+
+\begin{corollary}\label{cor:trinomial-good-roots}
+In every degree \(n\ge6\) there is an explicit squarefree trinomial
+for which at least
+\[
+       n-\left\lfloor\frac{1+\sqrt{3n^2+13}}{2}\right\rfloor
+\]
+roots belong to no product-one triple of its roots, even with repetitions.
+The proportion is at least \(1-\sqrt{3}/2-O(1/n)\).
+\end{corollary}
+\begin{proof}
+Take \(a=(n-1)/2\) for odd \(n\), \(a=n/2-1\) for \(4\mid n\),
+and \(a=n/2-2\) for \(n\equiv2\bmod4\).
+In all three cases \(a\) is positive, \(\gcd(n,a)=1\), and
+\(|a-n/2|\le2\). Therefore \(T=X^n+X^a+1\) has \(n\) distinct roots.
+If \(k\) roots occur in triples, Theorem~\ref{thm:triple-orbits} puts
+them in the group of \(D\)-th roots of unity for
+\[
+        D=n^2-na+a^2=\tfrac34n^2+(a-n/2)^2.
+\]
+Their off-diagonal quotients and 1 are distinct inside this group.
+Thus \(k(k-1)+1\le D\), which gives the bound. This counting inequality
+is also formalized as \texttt{trinomial\_triple\_root\_count\_bound}.
+\end{proof}
+
 \end{document}
