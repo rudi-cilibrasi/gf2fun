@@ -66,7 +66,7 @@ theorem sampledBlock_primitive_iff {a t u m : ℕ} (hu : 0 < u) (hm : 0 < m)
   · exact hm
   · exact endpoints_dvd_expand_block _ _ _ _
 
-private theorem coprime_three_iff_odd (n : ℕ) :
+theorem mersenne_coprime_three_iff_odd (n : ℕ) :
     (2 ^ n - 1).Coprime 3 ↔ Odd n := by
   have hpow (k : ℕ) : 2 ^ (2 * k) ≡ 1 [MOD 3] := by
     rw [pow_mul]; simpa using (show 2 ^ 2 ≡ 1 [MOD 3] by decide).pow k
@@ -127,7 +127,7 @@ theorem progression_ancestors {n : ℕ} {f : BinaryPoly} (hshape : IsProgression
     Odd n ∧ ∃ g : BinaryPoly, IsTrinomial n g ∧ Primitive g ∧ g ∣ expand (ZMod 2) 3 f := by
   obtain ⟨a, t, u, hu, h0, ha, _, _, hd, hn, rfl⟩ := hshape
   obtain ⟨hT, hcop⟩ := (sampledBlock_primitive_iff hu (by decide) hd).1 hp
-  rw [hn, coprime_three_iff_odd] at hcop
+  rw [hn, mersenne_coprime_three_iff_odd] at hcop
   exact ⟨hcop, _, endpoints_are_trinomial hu h0 ha hd hn, hT, endpoints_dvd_expand_block ..⟩
 
 theorem IsProgressionPentanomial.shape {n : ℕ} {f : BinaryPoly} (h : IsProgressionPentanomial n f) :
@@ -211,7 +211,7 @@ theorem trinomial_has_progression {n : ℕ} (hn : 5 ≤ n) (ho : Odd n) {g : Bin
   obtain ⟨a,t,u,hu,h0,ha,h1,h2,h3,hdeg,he⟩ := trinomial_parameters hn hk hkn hp
   refine ⟨sampledBlock a t u 3, ⟨a,t,u,hu,h0,ha,h1,h2,h3,hdeg,rfl⟩, ?_, ?_⟩
   · apply (sampledBlock_primitive_iff hu (by decide) h3).2
-    exact ⟨he ▸ hp, hdeg ▸ (coprime_three_iff_odd n).2 ho⟩
+    exact ⟨he ▸ hp, hdeg ▸ (mersenne_coprime_three_iff_odd n).2 ho⟩
   · rw [← he]
     exact endpoints_dvd_expand_block ..
 
@@ -272,7 +272,7 @@ noncomputable def trinomialProgressionEquiv (n : ℕ) (hn : 5 ≤ n) (ho : Odd n
     have h := Nat.pow_le_pow_right (by decide : 0 < 2) (show 2 ≤ n by omega)
     change 4 ≤ 2 ^ n at h
     omega
-  have hunit := Nat.exists_mul_mod_eq_one_of_coprime ((coprime_three_iff_odd n).2 ho).symm hN
+  have hunit := Nat.exists_mul_mod_eq_one_of_coprime ((mersenne_coprime_three_iff_odd n).2 ho).symm hN
   let r := hunit.choose
   have hr : 3 * r % (2 ^ n - 1) = 1 := hunit.choose_spec.2
   have reverse {g : T} {f : P} (hd : g.val ∣ expand (ZMod 2) 3 f.val) :

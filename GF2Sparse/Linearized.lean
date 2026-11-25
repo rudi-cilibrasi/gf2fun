@@ -13,7 +13,7 @@ open Polynomial FiniteField
 variable {K : Type*} [Field K] [Algebra (ZMod 2) K] [CharP K 2]
 
 omit [CharP K 2] in
-private theorem frobenius_pow_apply (k : ℕ) (x : K) :
+theorem binary_frobenius_pow_apply (k : ℕ) (x : K) :
     ((frobeniusAlgHom (ZMod 2) K).toLinearMap ^ k) x = x ^ (2 ^ k) := by
   rw [Module.End.pow_apply]
   change (fun y : K => y ^ Fintype.card (ZMod 2))^[k] x = _
@@ -25,7 +25,7 @@ theorem frobenius_trinomial_not_coprime {s d : ℕ} {x : K} (hx : x ≠ 0)
     (hs : x ^ (2 ^ s) = x ^ 2 + x) (hd : x ^ (2 ^ d) = x) :
     ¬ IsCoprime (trinomial s 1) ((X : BinaryPoly) ^ d - 1) := by
   let F := (frobeniusAlgHom (ZMod 2) K).toLinearMap
-  have hF (k : ℕ) : (F ^ k) x = x ^ (2 ^ k) := frobenius_pow_apply k x
+  have hF (k : ℕ) : (F ^ k) x = x ^ (2 ^ k) := binary_frobenius_pow_apply k x
   have h1 : F x = x ^ 2 := by simpa using hF 1
   have hp : x ∈ LinearMap.ker (aeval F (trinomial s 1)) := by
     simp only [LinearMap.mem_ker, trinomial, pow_one, map_add, map_pow, aeval_X, map_one,
@@ -40,7 +40,7 @@ field of definition for all the roots of the linearized trinomial. -/
 theorem fixed_of_associate_dvd {s d : ℕ} {x : K} (hx : x ^ (2 ^ s) = x ^ 2 + x)
     (hdiv : trinomial s 1 ∣ (X : BinaryPoly) ^ d - 1) : x ^ (2 ^ d) = x := by
   let F := (frobeniusAlgHom (ZMod 2) K).toLinearMap
-  have hF (i : ℕ) : (F ^ i) x = x ^ (2 ^ i) := frobenius_pow_apply i x
+  have hF (i : ℕ) : (F ^ i) x = x ^ (2 ^ i) := binary_frobenius_pow_apply i x
   have h1 : F x = x ^ 2 := by simpa using hF 1
   have hp : (aeval F (trinomial s 1)) x = 0 := by
     simp only [trinomial, pow_one, map_add, map_pow, aeval_X, map_one, LinearMap.add_apply,

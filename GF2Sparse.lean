@@ -1,3 +1,4 @@
+import GF2Sparse.AdditiveOrbit
 import GF2Sparse.ConjugateProducts
 import GF2Sparse.Coverage
 import GF2Sparse.DyadicExample1024

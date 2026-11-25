@@ -39,7 +39,8 @@ theorem outer_degree_dvd_factor {H h p : BinaryPoly} (hH : Irreducible H)
   exact (degree_dvd_iff_frobenius hH hHz _).2 (by
     rw [← aeval_dyadic, (degree_dvd_iff_frobenius hp hz _).1 dvd_rfl])
 
-private theorem conjugates_injective {K : Type*} [Field K] [Algebra (ZMod 2) K] [CharP K 2]
+/-- Distinct relative Frobenius powers of an irreducible root. -/
+theorem relative_frobenius_conjugates_injective {K : Type*} [Field K] [Algebra (ZMod 2) K] [CharP K 2]
     {f : BinaryPoly} (hf : Irreducible f) {z : K} (hz : aeval z f = 0)
     {r m : ℕ} (hr : 0 < r) (hd : f.natDegree = r * m) :
     Function.Injective (fun j : Fin m => z ^ (2 ^ (r * j.val))) := by
@@ -79,7 +80,7 @@ theorem norm_congruence_of_irreducible_comp {H h : BinaryPoly} (hH : Irreducible
   let z (j : Fin m) := x ^ (2 ^ (r * j.val))
   have hx : aeval x f = 0 := (AdjoinRoot.aeval_eq _).trans AdjoinRoot.mk_self
   have hβ : aeval β H = 0 := (aeval_comp x).symm.trans hx
-  have hinj : Function.Injective z := conjugates_injective hf hx hH.natDegree_pos natDegree_comp
+  have hinj : Function.Injective z := relative_frobenius_conjugates_injective hf hx hH.natDegree_pos natDegree_comp
   let P := h.map (algebraMap (ZMod 2) E) - C β
   have hh : h.Monic := binary_monic (fun he => by simp [he] at hm)
   have hm' : (h.map (algebraMap (ZMod 2) E)).natDegree = m := natDegree_map _

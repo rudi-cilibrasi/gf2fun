@@ -1659,8 +1659,9 @@ degree 67 in \(\mathbb F_{2^{67}}\). Choose \(2^{58}\) disjoint
 groups of seven generators. In each group the products of up to four
 generators give \(\binom{11}{4}=330>2^8\) choices. Their combined
 degree is at most \(2^{60}(2^{67}-1)<n\), giving the claimed order.
-Lean checks both irreducibility assertions. Determining the full
-multiplicative order in degree \(n\) remains open here.
+Lean checks both irreducibility assertions and all 126 root-product
+tests in \texttt{GF2Sparse/AdditiveOrbit.lean} and its imports.
+Determining the full multiplicative order in degree \(n\) remains open here.
 \end{proof}
 
 The additive-orbit argument also applies to Ore's lift of a general
