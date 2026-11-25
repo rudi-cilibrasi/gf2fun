@@ -69,6 +69,15 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+The divisor enumerator lists every odd-factor product pentanomial with an even tap in degrees congruent to 3 or 5 modulo eight. Its running time is $n^{1+o(1)}$. At degree 100,003 it finds 1,341,358 candidates among 1,875,025,000 supports. The exhaustive C++ scan produces the same sorted CSV. [Enumeration proof](results.pdf#page=87) · [Divisor enumerator](scripts/enumerate_even_tap_parity.py) · [Exhaustive comparison](scripts/check_even_tap_enumeration.cpp)
+
+~~~sh
+python3 scripts/enumerate_even_tap_parity.py 100003 --list > /tmp/gf2-divisors-100003.csv
+g++ -O3 -std=c++17 -fopenmp scripts/check_even_tap_enumeration.cpp -o /tmp/gf2-even-tap-check
+OMP_NUM_THREADS=8 /tmp/gf2-even-tap-check 100003 > /tmp/gf2-direct-100003.csv
+cmp /tmp/gf2-divisors-100003.csv /tmp/gf2-direct-100003.csv
+~~~
+
 In odd degrees congruent to 3 or 5 modulo eight, among the $\Theta(n^2)$ product pentanomials with at least one even tap, only $n^{1+o(1)}$ have an odd number of factors. At degree 1229, parity rules exclude 274,649 of the 282,133 such supports. The remaining 7,484 contain 56 irreducibles, all of which pass the known order tests. Of the 449 irreducibles in the full product census, 393 have two odd taps. For prime degrees in these two classes, at least $c_B n\log n$ supports with an odd smaller tap pass the simultaneous sieve at each fixed cutoff $B$. [All even-tap formulas and six-degree counts](results.pdf#page=85) · [Odd smaller tap](results.pdf#page=83) · [Counting proof](results.pdf#page=82) · [Independent factorization checker](scripts/check_product_parity_sector.py)
 
 The simultaneous sieve also works with a cutoff that grows with the degree. For every fixed $0<\epsilon<1$, at least $n^{1-o(1)}$ candidates in each sufficiently large degree avoid every factor through $(1-\epsilon)\log\log n$, have odd factor count, and pass the inverse-root test. When $8\nmid n$, the cutoff can reach $\frac1{32}\sqrt{\log n/\log\log n}$. The proof uses natural logarithms. [Proof and parameters](results.pdf#page=80) · [Verify the seven classes with --gap-slices](scripts/check_joint_product_sieve.py)

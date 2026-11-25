@@ -6145,8 +6145,8 @@ Multiplying the ratios now gives
 Stickelberger--Swan and the root bijection give the conclusion.
 \end{proof}
 
-Lean proves the auxiliary root identity and its evaluation at \(t^s=1\)
-in \nolinkurl{GF2Sparse/ReciprocalSieve.lean}.
+The file \nolinkurl{GF2Sparse/ReciprocalSieve.lean} proves the auxiliary
+root identity and the evaluation at \(t^s=1\).
 The finite check in \nolinkurl{scripts/check_joint_product_sieve.py}
 compares the reciprocal criterion against the full polynomial gcd,
 the integer resultants against factor parity, and both sides of the
@@ -6720,5 +6720,54 @@ column comes from the independently audited irreducibility census.
 \]
 At degree \(1229\), \(3445\) of the \(7484\) also avoid inverse
 pairs and every factor through degree five.
+
+\begin{corollary}\label{cor:even-tap-enumeration}
+For \(n\equiv3,5\bmod8\), all the odd-factor product supports with
+at least one even tap can be listed in \(n^{1+o(1)}\) operations
+on \(O(\log n)\)-bit integers, including the sorting of the output.
+At degree \(100003\), exactly \(1341358\) of \(1875025000\) such
+supports have odd factor count; \(226329\) of the survivors have two
+even taps.
+\end{corollary}
+\begin{proof}
+Sieve the divisors of every integer through \(2n\).
+Generate terms of the indicators and coefficients of
+Theorem~\ref{thm:all-even-taps}, counting each sorted support modulo two.
+For the ordinary coefficients enumerate \(m=Jb\le n,\ J\ge2\)
+and \(n-m=Ia,\ 0<a<b\). For \(m=n\) take \(I=0\) and all \(a<b\).
+These parameters give \(u=n-2b,\ r=b-a,\ v=2r\).
+For even \(r\) and odd \(b\), contribute once if \(I,J-2\)
+have disjoint sets of binary digits equal to one. For odd \(r\),
+use \(I-3,J-2\) at even \(b\) and \(I,J-5\) at odd \(b\), discarding
+negative arguments. Indeed \([Y^k](1+Y^a+Y^b)^{-1}\) is the
+parity of exactly those carry-free representations \(k=ia+jb\).
+This accounts for each coefficient term exactly once per representation.
+
+For the remaining opposite-parity terms, take each odd \(u\) and the
+union of odd divisors \(r<(n-u)/2\) of \(|n-ju|\), \(0\le j\le3\).
+For a zero argument allow all \(r\) in the interval. All possibly
+nonzero periodic terms occur on these lists by the proof of
+Theorem~\ref{thm:all-even-taps}. For two even taps, iterate each
+partner \(v\) and toggle \((2a,v)\) for divisors \(a\) of \(n\)
+and \(n-v\), respecting the support inequalities. Exchanging the
+roles of the taps supplies the other two indicators.
+
+The additive divisor bound already used counts even the attempts
+with multiplicity. In the zero case the total loop length over
+divisors \(b\mid n\) is at most \(\sigma(n)\). The periodic and
+two-even loops cost \(O(n\tau(n)+n\log n)\), and generating the
+divisor lists costs \(O(n\log n)\). Sorting or collecting equal
+pairs costs at most another logarithmic factor.
+
+At degree \(100003\) the divisor enumeration and an exhaustive scan
+of the two taps produced identical ordered CSV files. The SHA-256
+digest, including the header and a final newline, is
+\begin{center}\small\ttfamily
+0feaeb5b6df64ff95aa34fb65384db6a3a719fa7fe9075527257cd8cf1ad39c1
+\end{center}
+The Python enumeration uses the standard library. The independent
+scan computes the coefficient by looping over one exponent of the
+trinomial and testing the other by division.
+\end{proof}
 
 \end{document}
