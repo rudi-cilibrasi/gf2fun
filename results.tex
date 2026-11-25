@@ -3122,4 +3122,130 @@ needs six exponent bits. These reciprocal seeds show that prime
 seed degree alone does not guarantee a primitive lift.
 \end{proof}
 
+\section{A binary derivative test for trinomials with a dyadic inner exponent}
+Put \(F(x)=x^2\), \(S(x)=1/(1+x)\), and
+\(D_m(X)=(1+X)^m+X^m+1\). Work in the algebraic closure of \(\F\).
+\begin{theorem}\label{thm:tap-derivative}
+Let \(a=2^i<n\) and \(f=X^n+X^a+1\). A root \(x\) belongs to
+a product-one triple, with repetitions allowed, exactly when
+\(D_{n-a}(x)=0\). In that case the triple is the orbit
+\(x,S(x),S^2(x)\), with the fixed points repeated three times.
+Every irreducible such trinomial of degree \(n>9\) passes the first
+three root-product tests.
+\end{theorem}
+\begin{proof}
+No root is 0 or 1. In a triple the \(a\)-th powers and their translates
+both have product one, by the root equation. The orbit identity in
+Theorem~\ref{thm:triple-orbits} and injectivity of \(F^i\) force another
+member to be \(S(x)\). Write \(m=n-a\). The equation at \(x\) is
+\(x^a(x^m+1)=1\). Multiplying the equation at \(S(x)\) by
+\((1+x)^n\) gives \(x^a(1+x)^m=1\). Thus the two equations hold
+precisely for a common root of \(f,D_m\). Their third orbit member is
+also a root, since both the orbit and its translates have product one.
+A repeated orbit member is fixed by \(S\), so it is a primitive cube
+root of unity. An inverse pair gives a triple by squaring one member
+and repeating the other.
+
+Write \(m=2^b d\) with \(d\) odd. We have \(D_m=D_d^{2^b}\).
+For \(d>1\) the coefficient of \(X\) in \(D_d\) is 1, and its degree
+is at most \(d<n\). A common root would force the irreducible \(f\)
+to divide this nonzero polynomial. For \(d=1\) the trinomial is a
+square when \(i,b>0\). Otherwise it or its reciprocal has the form
+\(X^{2^j+1}+X+1\). For \(j>0\), every root satisfies
+\(F^j x=S^2(x)\), so \(F^{3j}x=x\) and its degree divides \(3j\).
+For \(j\ge4\) the degree \(2^j+1\) exceeds \(3j\). The remaining
+values give degrees at most nine. The bound is sharp. The roots
+of \(X^9+X+1\) have degree dividing 9, and a root of degree
+dividing 3 would have to be an \(S\)-fixed point in \(\mathbb F_8\).
+Neither primitive cube root lies there. Thus this degree-nine
+trinomial is irreducible and its roots form three triples.
+\end{proof}
+
+\begin{theorem}\label{thm:kasami-tap}
+Let \(j\ge1\), \(Q=2^j\), and put \(n=2^i+2^b m\).
+In the following three cases, all nonfixed triple members of
+\(X^n+X^{2^i}+1\) lie in \(\mathbb F_Q\).
+\[
+\begin{array}{c|c|c}
+ m & c & \text{possible additional triple members outside }\mathbb F_Q\\ \hline
+ Q+1       & 1 & \text{none}\\
+ Q^2-Q+1   & 0 & \text{none}\\
+ Q+3       & 2 & \text{primitive cube roots}
+\end{array}
+\]
+Set \(h=|i-b-c|\) and \(g=\gcd(j,h)\). The number of distinct
+unordered triples of three different roots is
+\[
+  \begin{cases}(2^g-(-1)^g)/3,&3\mid j/g,\\0,&3\nmid j/g.\end{cases}
+\]
+There is one inverse pair if \(g\) is even in the first two rows,
+or if \(i\equiv b+j\pmod2\) in the last row. Otherwise there are none.
+In particular, when \(j\) is coprime to six the Kasami row passes
+all three tests for every \(i,b\). Taking one of \(i,b\) equal to zero
+gives squarefree trinomials, including, for example, degree
+\(2^{202}-2^{101}+2^{47}+1\) with inner exponent \(2^{47}\).
+\end{theorem}
+\begin{proof}
+Theorem~\ref{thm:tap-derivative} reduces the triple equations to
+\[
+             D_m(x)=0,\qquad x^{2^i}(1+x^m)^{2^b}=1 .
+\]
+In the first row \(D_m=x^Q+x\). For the Kasami exponent put
+\(A=x\), \(B=x^Q\), \(C=x^{Q^2}\). The identities \(x^m B=CA\)
+and \((1+x)^m(1+B)=(1+C)(1+A)\) give
+\[
+             B(1+B)D_m(x)=(A+B)(B+C).
+\]
+For a trinomial root, \(B(1+B)\ne0\), and either factor on the right
+vanishes exactly when \(A=B\). In the last row direct expansion gives
+\(D_m(x)=(x^Q+x)(x^2+x+1)\).
+The Gold and Kasami exponents also occur in the exceptional APN
+classification. The displayed univariate identities suffice here.
+\href{https://www.sciencedirect.com/science/article/pii/S0021869311003656}{Hernando and McGuire, J.~Algebra 343 (2011), 78--92}.
+
+In \(\mathbb F_Q\) one has \(x^m=x^{2^c}\) in each row. Cancelling
+the common Frobenius power in the second equation gives
+\(F^h x=S(x)\) or \(F^h x=S^2(x)\). If \(3\nmid j/g\), iterating
+forces \(S(x)=x\). If \(3\mid j/g\), the argument of
+Lemma~\ref{lem:signed-dyadic} gives the equivalent equation
+\(F^g x=S^e(x)\), \(e\in\{1,2\}\). For \(q=2^g\) this is
+\(X^{q+1}+X^q+1=0\) or \(X^{q+1}+X+1=0\). Each has \(q+1\)
+simple roots, all fixed by \(F^{3g}\). The fixed points occur
+precisely when \(g\) is even. Removing them leaves
+\(2^g-(-1)^g\) members of three-element orbits. For \(m=Q+3\),
+on a primitive cube root \(x\) one has \(x^m=x^Q\). The product
+equation there holds precisely when \(i\equiv b+j\pmod2\).
+For the squarefree assertion, positive odd degree suffices for a
+binary trinomial with constant one. If \(i=b=0\) its inner exponent
+is one and its even-degree leading monomial has zero derivative.
+\end{proof}
+
+For arbitrary \(m\) the derivative also admits a change of variable
+that keeps only one residue class of exponents. Choose a primitive
+cube root \(\omega\), set \(z=(x+\omega)/(x+\omega^2)\), and write
+\(I\preceq m\) if every binary one of \(I\) occurs in \(m\). Then
+\[
+ (1+z)^m D_m\!\left(\frac{\omega+\omega^2z}{1+z}\right)
+      =\sum_{I\preceq m,\ I\equiv-m\ (3)} z^I .
+\]
+Indeed each coefficient in the binomial expansion is multiplied by
+\(1+\omega^{m+I}+\omega^{2(m+I)}\). In particular, if
+\(m=2^{u_1}+2^{u_2}+2^{u_3}\) with distinct indices, away from
+\(x=\omega,\omega^2\) the derivative vanishes precisely when
+\[
+                z^{\,|(-2)^{u_1}+(-2)^{u_2}+(-2)^{u_3}|}=1 .
+\]
+To see this, write \(A_k=x^{2^{u_k}}\).
+The derivative is the sum of the first and second elementary symmetric
+functions of the three \(A_k\). It vanishes exactly when
+\(\prod_k(A_k+\omega)=\prod_k(A_k+\omega^2)\).
+The quotient of the \(k\)-th factors is \(z^{(-2)^{u_k}}\).
+
+Lean verifies the derivative criterion in \nolinkurl{GF2Sparse/DyadicTap.lean},
+the degree-nine bound and the three families' sufficiency conditions in
+\nolinkurl{GF2Sparse/KasamiTriples.lean}. The independent order-gcd
+calculation in \nolinkurl{scripts/check_dyadic_tap.py} checks every one
+of the 5,120 coprime dyadic taps through degree 1024, including
+314 instances of the three count formulas.
+
 \end{document}
