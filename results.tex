@@ -6392,4 +6392,79 @@ carry in \(i+j\), by the binary binomial theorem. It can independently
 factor the entire sector and compare its list of irreducibles with
 Theorem~\ref{thm:open-product-orders}.
 
+\begin{theorem}\label{thm:odd-joint-log}
+Fix \(B\ge1\). For every sufficiently large \(n\equiv3,5\bmod8\),
+at least \(c_B\varphi(n)\log n\) pentanomials in the part \(2u<n\)
+of Theorem~\ref{thm:product-parity-sector} are squarefree, have odd
+factor count and exponent gcd one, avoid every factor through degree
+\(B\), and have no mutually inverse roots. In prime degrees in these
+two classes this attains the order of magnitude of the entire set
+with odd factor count in that part.
+\end{theorem}
+\begin{proof}
+Put \(L=\mathop{\rm lcm}_{d\le B}(2^d-1)\).
+Choose \(H\) exceeding the prime factors of \(2L\), large enough that
+\(\sum_{d>H,\ d\ {\rm odd}}1/(d\ord_d(2))<1/32\);
+the convergence is proved in Lemma~\ref{lem:many-gap-moduli}.
+Write \(A=8\prod_{3\le p\le H}p\), with the product over primes.
+For each dyadic range \(S\le s<2S\), take \(s\equiv L\bmod 8L\),
+and write \(D\) for the number of such \(s\).
+For \(S\) large, \(D\asymp_B S\).
+Take \(n/(32S)<w<n/(16S)\), in the class \(w\equiv n/(L+2)\bmod8\),
+and at each odd \(p\mid A\) choose one class avoiding \(0,-n/2\bmod p\).
+This gives one progression modulo \(A\), independent of \(s\).
+Let
+\[
+ W=\frac{n}{32SA}\prod_{p\mid n,\ p\nmid A}(1-1/p)
+       \gg_B \frac{\varphi(n)}{S}.
+\]
+There are \(W+O(2^{\omega(n)})\) such \(w\) coprime to \(n\).
+For \(u=sw,\ v=n-(s+2)w\), every resulting support passes the
+factor-degree, squarefreeness, parity and exponent gcd conditions
+of Theorem~\ref{thm:joint-sieve}; here \(u<n/8,\ 8\mid v\).
+It remains to exclude inverse pairs.
+
+For each \(s\), let \(\mathcal D_s\) denote the orders of the roots
+of \(T_s\) that are coprime to \(nA\). All are greater than \(H\),
+since \(T_s(1)=1\). An inverse pair would require \(d\mid n+2w\)
+for some \(d\in\mathcal D_s\), because \((n+2w,nA)=1\).
+Such \(w\) lie in a single class modulo \(d\). Inclusion--exclusion
+on the primes of \(n\) gives \(W/d+O(2^{\omega(n)})\) of them.
+
+For \(H<d\le D\) coprime to \(nA\), consider a root \(t\) of
+exact order \(d\). With \(z=t^s\), the equation
+\(t^2 z+(1+z)(1+t^4z)=0\) is quadratic in \(z\).
+It excludes at most two classes of \(s\bmod d\) per Frobenius orbit
+of \(t\), and there are \(\varphi(d)/\ord_d(2)\) orbits.
+Since \((d,8L)=1\), a single excluded class occurs at most
+\(\lceil D/d\rceil\le2D/d\) times in the progression for \(s\).
+Consequently
+\[
+ \frac1D\sum_s\sum_{\substack{d\in\mathcal D_s\\d\le D}}\frac1d
+ \le 4\sum_{d>H,\ d\ {\rm odd}}\frac1{d\ord_d(2)}<\tfrac18 .
+\]
+For \(d>D\), the corresponding irreducible factors of \(T_s\) have
+degree at least \(\log_2(D+1)\). Since \(\deg T_s=2s+4\), for
+each \(s\) the remaining reciprocal sum is at most
+\((4S+4)/(D\log_2(D+1))<1/8\) once \(S\) is sufficiently large.
+Thus removing all excluded \(w\) costs at most \(DW/4\)
+in the main term. Even one rounding error for every root order of
+every \(T_s\) costs only \(O(DS\,2^{\omega(n)})=o(DW)\), uniformly
+for \(S\le n^{1/3}\).
+
+Each dyadic range from a fixed \(S_B\) through \(n^{1/3}\)
+therefore gives \(\gg_B DW\gg_B\varphi(n)\) surviving supports.
+The smaller tap is \(u\), and \(w=(n-u-v)/2,\ s=u/w\) recover both
+parameters. The \(\gg\log n\) disjoint ranges give the bound.
+For prime \(n\), Corollary~\ref{cor:product-sector-size} gives the
+matching upper bound.
+\end{proof}
+
+In degree \(1229\), the full sector contains \(1233\) odd-parity
+supports with no inverse pair. Imposing factor cutoffs \(3,4,5\)
+leaves \(1058,913,758\), respectively. In the part \(2u<n\),
+the corresponding four counts are \(457,401,351,290\).
+The \texttt{--joint} option of the sector checker uses direct gcds
+with the reciprocal and the lcm of \(X^{2^d}+X\) through each cutoff.
+
 \end{document}

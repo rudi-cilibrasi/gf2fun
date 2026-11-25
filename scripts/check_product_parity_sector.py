@@ -77,15 +77,41 @@ def published_supports(n):
         return result
 
 
+def joint_counts(n):
+    sieve = X
+    cutoffs = []
+    for d in range(1, 6):
+        field = X**(2**d) + X
+        sieve = (sieve//sieve.gcd(field))*field
+        cutoffs.append(sieve)
+    counts = [[0, 0] for _ in cutoffs]
+    for u in range(1, n-4, 2):
+        for v in range(4, n-u, 4):
+            if not predicted_odd(n, u, v):
+                continue
+            f = X**n + (1+X**u)*(1+X**v)
+            if f.gcd(f.reverse()) != 1:
+                continue
+            for row, small in zip(counts, cutoffs):
+                if f.gcd(small) != 1:
+                    break
+                row[int(2*u >= n)] += 1
+    for d, (lower, upper) in enumerate(counts, 1):
+        print(f"Cutoff {d} and no inverse pair: {lower+upper:,} pass, including {lower:,} with 2u < n.")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--through", type=int, default=80, help="check all odd degrees up to this limit")
     parser.add_argument("--degree", type=int, choices=[1229, 1231, 1237, 1243, 1249, 1259])
     parser.add_argument("--factor", action="store_true", help="factor every support in the selected large degree")
+    parser.add_argument("--joint", action="store_true", help="count the joint survivors at cutoffs one through five")
     parser.add_argument("--jobs", type=int, default=1)
     args = parser.parse_args()
     if args.jobs < 1 or args.through < 7:
         parser.error("expected a positive worker count and a small-degree limit of at least seven")
+    if (args.factor or args.joint) and args.degree is None:
+        parser.error("--factor and --joint require a selected large degree")
     with ProcessPoolExecutor(max_workers=args.jobs) as pool:
         workers = pool if args.jobs > 1 else None
         if args.degree is None:
@@ -105,3 +131,5 @@ if __name__ == "__main__":
             print(f"Degree {n}: {counts[1]:,} odd among {counts[0]:,} supports, "
                   f"including {counts[3]:,} among {counts[2]:,} with the odd tap smaller. "
                   f"The complete support list contains {len(published)} irreducibles.")
+            if args.joint:
+                joint_counts(n)
