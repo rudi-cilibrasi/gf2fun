@@ -2697,4 +2697,13 @@ minimal polynomial and Frobenius annihilator by separate binary row
 reductions. Its \texttt{--direct} option checks the product calculation
 against exponentiation in the lifted field for every seed.
 
+Lean independently certifies the six missing order factors in
+\nolinkurl{GF2Sparse/OreNormObstructions.lean}. For each lift the
+certificate supplies a nonzero residue \(w\) with \(w^8=rw\).
+Thus \(r=w^7\), and \(r^{(2^{4095}-1)/7}=1\) follows from the
+size of the residue field. Checking this equality for \(w\) requires
+one binary polynomial congruence per seed. The seed remainder formula,
+subspace product algorithm and Vandermonde criterion for an expansion
+are verified in \nolinkurl{GF2Sparse/OreNorms.lean}.
+
 \end{document}
