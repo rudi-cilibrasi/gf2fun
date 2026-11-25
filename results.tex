@@ -1472,6 +1472,61 @@ the \(m\)-th power. The resulting squarefree pentanomials have degrees
 \(n\bmod 2n\). The theorem leaves open how to pass all ranks through
 \(\lfloor n/2\rfloor\) in a prescribed degree \(n\).
 
+\section{Transferring short-product exclusions to powers of two}
+
+\begin{theorem}\label{thm:all-rank-period}
+Fix \(0<u<v\) and write \(h=(X^u+1)(X^v+1)\),
+\(g=h\circ h=X^e V\) with \(V(0)\ne0\), and \(d=(u+v)^2\).
+If \(k\) roots of \(X^{2^s}+h\) have product 1, then each of these
+roots has degree over \(\F\) at most
+\[
+                A_k=k(d-e)^{k-1}d^{\binom{k-1}{2}}.
+\]
+Thus the existence of a product-one relation of length at most \(k\)
+depends only on \(s\bmod\operatorname{lcm}(1,\ldots,A_k)\).
+\end{theorem}
+\begin{proof}
+We have \(h(0)=1\) and \(h(1)=0\), so \(g(0)=0\). Also
+\(h(X)+1=X^u(1+X^{v-u}+X^v)\) has a nonzero root mapping to 1
+under \(h\). That root maps to zero under \(g\), hence \(0<e<d\).
+Take \(g_0=X\) and \(g_j=V\circ g^{\circ(j-1)}\) for \(1\le j<k\).
+A root of \(g_j\) first reaches zero at step \(j\), so their root
+sets are disjoint. On the given tuple \((r_i)\), \(g\) acts as
+Frobenius to the power \(2s\). Consequently
+\(\prod_i g^{\circ j}(r_i)=1\) for all \(j\). Since
+\(g^{\circ j}=(g^{\circ(j-1)})^e g_j\), this also gives
+\(\prod_i g_j(r_i)=1\). Apply Lemma~\ref{lem:disjoint-fibres} over
+\(\F\) to \(H=\prod_i(X+r_i)\). The degrees of the \(g_j\) for
+\(j\ge1\) are \((d-e)d^{j-1}\), which gives \(A_k\).
+For two congruent exponents Frobenius has the same action on all
+elements of degrees through \(A_k\). Any tuple from either exponent
+therefore occurs for the other. The bounds \(A_l\) increase with \(l\).
+\end{proof}
+
+\begin{corollary}\label{cor:dyadic-unbounded}
+For every \(k\ge1\), infinitely many power-of-two degrees admit a
+squarefree pentanomial with exponent gcd 1 passing the first \(k\)
+exterior-power tests. For fixed \(k\) the exponents \(s\) of these
+degrees \(2^s\) include an arithmetic progression.
+\end{corollary}
+\begin{proof}
+Choose \(t\ge3\) with \(t\equiv1\pmod{M_k}\) from
+Theorem~\ref{thm:unbounded-ranks}, and take \(u=1,\ v=2^t-1\).
+At \(s=t\) the two leading terms in \(X^{2^s}+h\) cancel. The
+remaining trinomial is \(X^{2^t-1}+X+1=T_t\), whose roots avoid all
+the stated relations by the proof of Theorem~\ref{thm:unbounded-ranks}.
+By Theorem~\ref{thm:all-rank-period} this persists whenever
+\(s\equiv t\pmod{\operatorname{lcm}(1,\ldots,A_k)}\). Further
+require \(s>t\) and \(s\equiv t\pmod{t-1}\). Then the five terms
+are distinct and the support contains exponent 1.
+
+The derivative is \(X^{v-1}+1\). A multiple root \(x\) would satisfy
+\(x^{v-1}=1\), so \(x^{2^{t-1}}=x\) and \(x^v=x\).
+Since \(t-1\mid s-1\), this gives \(x^{2^s}=x^2\), whereas
+\(h(x)=(x+1)^2=x^2+1\). The extra congruence thus ensures
+squarefreeness throughout the progression.
+\end{proof}
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is
