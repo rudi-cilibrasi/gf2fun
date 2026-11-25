@@ -1800,4 +1800,89 @@ has a Lean witness in Theorem 1. A separate Lean proof of the restriction
 tests the exponents 4095 and 1365 on every admissible support in
 \texttt{GF2Sparse/ParityExamples.lean}.
 
+\section{Three tests when the degree has at most three binary digits equal to one}
+\begin{theorem}\label{thm:three-bits}
+In every degree \(n\ge4\) with at most three ones in its binary expansion,
+there is a squarefree binary polynomial of weight at most five having no
+product-one selection of one, two or three roots, even with repetitions.
+For odd \(n>7\) one can use \(X^n+X^a+1\) with
+\(a\in\{3,4,5,7\}\). For \(n\equiv2\pmod4\), \(n>11\), one can use
+\(a\in\{3,7,11\}\).
+\end{theorem}
+\begin{proof}
+For \(4\mid n\) with \(n/4\) odd, substitute \(X^{n/4}\) in the primitive
+trinomial \(X^4+X+1\). The fourth-degree seed excludes all three lengths,
+and odd substitution preserves squarefreeness and the exclusions.
+For \(8\mid n\) apply Theorem~\ref{thm:dyadic-triples}. The primitive
+witnesses of Theorem~1 cover the small degrees. In the remaining cases
+write \(n=e+2^s+2^t\) with \(e=1\) or 2 according to parity. If the
+binary expansion has only two ones, split the larger power of two into
+two equal powers. We will use the indicated finite sets of inner exponents.
+They give squarefree trinomials. If exactly one exponent is odd the
+derivative is a monomial, and if both are odd then \(T+XT'=1\).
+
+Suppose \(x,y,z\) are roots of \(T=X^n+X^a+1\) with \(xyz=1\).
+Put \(u=x^a\), \(v=y^a\), \(w=z^a\). Both these three elements and
+their translates by 1 have product 1. By the identity in
+Theorem~\ref{thm:triple-orbits}, one of \(v,w\) is
+\(\phi(u)=1/(1+u)\). In particular, both \(u\) and \(\phi(u)\)
+satisfy \(U^n=(1+U)^a\). They are different from 0 and 1.
+Set \(b=u^{2^s},\ c=u^{2^t}\). Applying the two equations gives
+\[
+ bc=P(u)=\frac{(1+u)^a}{u^e},\qquad
+ (1+b)(1+c)=\frac{(1+u)^{a-e}}{u^a},\qquad
+ b+c=S(u)=1+P(u)+\frac{(1+u)^{a-e}}{u^a}.
+\]
+Clear the common denominator \(D(u)\) of these displayed expressions,
+writing \(S=S_0/D,\ P=P_0/D\). Thus \(b,c\) are roots of
+\(H(u,Y)=D(u)Y^2+S_0(u)Y+P_0(u)\).
+Raising \(H(u,c)=0\) to \(2^s\) and \(H(u,b)=0\) to \(2^t\) shows
+that \(H(b,Y)\) and \(H(c,Y)\) have the common root \(u^{2^{s+t}}\).
+
+For binary polynomials \(A,B\) abbreviate
+\([A,B]=A(b)B(c)+A(c)B(b)\). The resultant of the last two quadratics is
+\[
+            [D,P_0]^2+[D,S_0][S_0,P_0]=0.
+\]
+Every bracket is symmetric in \(b,c\). To evaluate it, replace
+\(b^ic^j+c^ib^j\) by \(P^{\min(i,j)}h_{|i-j|}\), where
+\(h_0=0,h_1=S,h_{k+2}=S h_{k+1}+P h_k\). Substitution and clearing
+denominators gives a polynomial in \(u\) alone, independent of \(s,t\).
+For each irreducible factor of degree \(d>1\), test both \(u\) and
+\(\phi(u)\) against \(U^e U^{2^s}U^{2^t}=(1+U)^a\) in the quotient
+field. This depends only on \(s,t\bmod d\). The calculation gives
+\[
+\begin{array}{c|l|r|r|r}
+ e & a & \text{common period} & \text{unordered residue pairs} &
+       \text{pairs with no passing choice}\\ \hline
+ 1&3,4,5,7&72&2628&0\\
+ 2&3,7,11&18&171&0
+\end{array}
+\]
+A passing choice excludes every possible \(u\). The calculation in
+\nolinkurl{scripts/check_binary_degree_triples.py} generates and factors
+all seven polynomials and checks every pair in the table. Root 1 and
+inverse pairs are excluded by the triple condition as in
+Corollary~\ref{cor:cubic-triples}.
+\end{proof}
+
+For the choice \(a=3\) the test admits a short exact description.
+When \(e=1\), a product-one triple exists precisely when
+\[
+           n\equiv2\pmod7,\quad n\equiv6\pmod9,\quad\text{or}\quad
+           n\equiv49\pmod{73}.
+\]
+When \(e=2\), the corresponding classes are \(1\bmod7\) and \(6\bmod9\).
+Indeed the distinct possible factors for \(u=x^3\), after removing 0 and 1,
+are \(X^2+X+1,X^3+X+1,X^9+X^8+1\) when \(e=1\), and
+\(X^2+X+1,X^3+X^2+1\) when \(e=2\). In degree two, \(x\) has order 9
+and \(1+x^3=x^6\). In degree three, \(u\) has order 7, with
+\(1+u=u^3\) or \(u^5\) respectively. In degree nine, \(u^8=\phi(u)\),
+so \(u^{73}=1\) and \(1+u=u^{-8}\). The equation \(u^n=(1+u)^3\)
+gives the stated classes for orders 7 and 73. Conversely, in either group
+choose the cube root \(x\) of \(u\) in that group. It is a trinomial
+root in the stated class, and its Frobenius conjugates with powers
+\(1,2,4\) or \(1,8,64\) have product 1. For the order-9 case,
+\(x,x^4,x^4\) give a product-one triple.
+
 \end{document}
