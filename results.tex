@@ -991,6 +991,71 @@ three. Its one product-one triple is the root set of \(X^3+X^2+1\).
 The script \texttt{scripts/check\_trinomial\_triples.py} compares both
 counts against the nullities of the actual exterior-power matrices.
 
+\section{Five terms passing three tests in every multiple of eight}
+Write \(h(X)=(1+X^2)(1+X^3)\).
+\begin{theorem}\label{thm:dyadic-triples}
+For \(Q=2^s\), \(s\ge3\), let \(F_Q=X^Q+h\).
+No three roots of \(F_Q\) have product 1, even if repetitions are allowed.
+For every odd \(m\ge1\), \(F_Q(X^m)\) is a squarefree pentanomial
+of degree \(mQ\) passing the first three tests of Theorem~\ref{thm:exterior}.
+\end{theorem}
+\begin{proof}
+Suppose \(x,y,z\) are roots with \(xyz=1\).
+Put \(u=x+y+z\), \(v=xy+yz+zx\), so these are the roots of
+\(H=X^3+uX^2+vX+1\). Let \(A,B,C\) be the elementary symmetric
+functions of \(h(x),h(y),h(z)\) in that order, and put \(\Phi=(A,B)\),
+\(E=C+1\). These are polynomials in \(u,v\) over \(\F\).
+Since \(h(x)=x^Q\) and likewise for \(y,z\), we have
+\(\Phi(u,v)=(u^Q,v^Q)\) and \(E(u,v)=0\). Hence
+\[
+              E(u,v)=(E\circ\Phi)(u,v)=(E\circ\Phi^2)(u,v)=0 .
+\]
+We show by an exact polynomial calculation that these equations are inconsistent.
+
+Multiplication by \(X\) on the basis \(1,X,X^2\) modulo \(H\) sends a
+column \((a,b,c)\) to \(S(a,b,c)=(c,a+vc,b+uc)\). Set
+\(w=(I+S^2)(I+S^3)(1,0,0)^{\mathsf T}\).
+The matrix with columns \(w,Sw,S^2w\) represents multiplication by \(h\).
+Its trace, sum of principal two-by-two minors and determinant are
+\(A,B,C\), also for repeated roots, by triangularizing multiplication by \(X\).
+In particular, putting \(t=u+v\) gives \(C=t^3(t^2+uv)\).
+Since \(C=1\), we have \(t\ne0\). With \(b=u/t\), the first equation becomes
+\[
+              u=tb,\qquad v=t(b+1),\qquad b^2+b=1+t^{-5}.
+\]
+Reduce the other two equations in
+\(\F[t,t^{-1}][b]/(b^2+b+1+t^{-5})\).
+The norm of \(a+db\) is \(a^2+ad+(1+t^{-5})d^2\), its product with
+\(a+d(b+1)\). A zero at the alleged solution gives a zero of its norm.
+Normalize each norm to lowest exponent zero. For
+\(E\circ\Phi\) and \(E\circ\Phi^2\) the normalizing factors are
+\(t^{57}\) and \(t^{321}\), and the resulting polynomials \(N_1,N_2\)
+have degrees 95 and 535. Encoding the coefficient of \(t^i\) as bit \(i\),
+the matrix operations above give the following hexadecimal values:
+\[
+\begin{aligned}
+ N_1 &= \mathtt{ceea1726aa3d6e9d01a0b261},\\
+ N_2\bmod N_1 &= \mathtt{5126499684e6d15d7a2a7ed4}.
+\end{aligned}
+\]
+The Euclidean algorithm gives \(\gcd(N_1,N_2)=1\). Thus there is no common
+nonzero \(t\). The complete calculation from the matrix is reproduced by
+\texttt{scripts/check\_dyadic\_triples.py}.
+
+The derivative \(F_Q'=X^2(X+1)^2\) has no root in common with \(F_Q\),
+since \(F_Q(0)=F_Q(1)=1\). Odd substitution preserves simple roots,
+by the chain rule and the nonzero constant term. It also preserves the
+exclusion of triples, since raising a product-one triple to its \(m\)-th
+powers would give one for \(F_Q\). Root 1 is already excluded. An inverse
+pair \(r,r^{-1}\) would give the forbidden triple \(r,r,r^{-2}\),
+since squaring preserves binary roots. This proves the three tests.
+\end{proof}
+The degree \(Q\) supports have exponent gcd 1. The examples \(F_8\)
+and \(F_{16}\) are primitive. If \(m>1\), a root of \(F_Q(X^m)\)
+has order at most \(m(2^Q-1)<2^{mQ}-1\), since its \(m\)-th power
+has degree at most \(Q\). The substitutions therefore settle the three
+tests even in degrees where further tests necessarily fail.
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is
