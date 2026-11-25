@@ -19,6 +19,7 @@ import GF2Sparse.OreNormObstructions
 import GF2Sparse.OreNorms
 import GF2Sparse.OrePrimitiveExamples
 import GF2Sparse.OreReciprocalExamples
+import GF2Sparse.OreSubsetProducts
 import GF2Sparse.ParityExamples
 import GF2Sparse.PrimeGrid
 import GF2Sparse.Progressions

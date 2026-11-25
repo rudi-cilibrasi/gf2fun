@@ -17,7 +17,9 @@ private theorem product_vanishes {ι : Type*} (G : ι → BinaryPoly) (z : K) (s
   | empty => simp
   | cons i s ih => simp [ih, mul_eq_zero]
 
-private theorem products_equal {ι : Type*} (G : ι → BinaryPoly) (rank : ι → ℕ)
+/-- Cancel a common factor of maximal rank, using a root that can only
+be shared with higher ranks. -/
+theorem multiset_eq_of_ranked_root_products {ι : Type*} (G : ι → BinaryPoly) (rank : ι → ℕ)
     (hn : ∀ i, G i ≠ 0)
     (mark : ∀ i, ∃ z : K, aeval z (G i) = 0 ∧
       ∀ j, aeval z (G j) = 0 → i = j ∨ rank i < rank j)
@@ -47,7 +49,7 @@ private theorem products_equal {ι : Type*} (G : ι → BinaryPoly) (rank : ι �
     rw [← Multiset.cons_erase hs, ← Multiset.cons_erase ht] at he
     simp only [Multiset.map_cons, Multiset.prod_cons] at he
     exact mul_left_cancel₀ (hn i) he
-  have hst' := products_equal G rank hn mark (s.erase i) (t.erase i) hc
+  have hst' := multiset_eq_of_ranked_root_products G rank hn mark (s.erase i) (t.erase i) hc
   rw [← Multiset.cons_erase hs, ← Multiset.cons_erase ht, hst']
 termination_by s.card + t.card
 decreasing_by
@@ -67,7 +69,7 @@ theorem oreLift_multiset_injective {ι : Type*} (g : ι → BinaryPoly) (gi : Fu
   let G : Option ι → BinaryPoly := fun j => j.elim X (fun i => oreLift (g i))
   let rank : Option ι → ℕ := fun j => j.elim 0 (fun i => (g i).natDegree)
   have gn (i : ι) : g i ≠ 0 := fun e => by have := gc i; simp [e] at this
-  apply products_equal G rank
+  apply multiset_eq_of_ranked_root_products G rank
   · intro i
     cases i with
     | none => exact X_ne_zero
