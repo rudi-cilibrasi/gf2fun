@@ -69,6 +69,8 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+In odd degree $n$, a single inverse modulo $Y^{(u+v)/2}+1$ determines whether $X^n+(1+X^u)(1+X^v)$ is squarefree and, if so, the parity of its factor count when both taps are odd. If $(u+v)/2$ is odd, raising the degree by $2(u+v)$ reverses that parity. Together with the even-tap formulas, this covers every product support in odd degree. The checker agrees with direct factorization on all 21,327 two-odd-tap supports through degree 128. [Proof](results.pdf#page=88) · [Cyclic inverse checker](scripts/check_odd_tap_parity.py)
+
 The divisor enumerator lists every odd-factor product pentanomial with an even tap in degrees congruent to 3 or 5 modulo eight. Its running time is $n^{1+o(1)}$. At degree 100,003 it finds 1,341,358 candidates among 1,875,025,000 supports. The exhaustive C++ scan produces the same sorted CSV. [Enumeration proof](results.pdf#page=87) · [Divisor enumerator](scripts/enumerate_even_tap_parity.py) · [Exhaustive comparison](scripts/check_even_tap_enumeration.cpp)
 
 ~~~sh

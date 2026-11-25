@@ -6779,4 +6779,158 @@ scan computes the coefficient by looping over one exponent of the
 trinomial and testing the other by division.
 \end{proof}
 
+\section{One cyclic inverse for two odd taps}
+\label{sec:odd-tap-parity}
+\begin{theorem}\label{thm:odd-tap-parity}
+Let \(n,u,v\) be odd with \(0<u<v<u+v<n\), and put
+\[
+ f=X^n+(1+X^u)(1+X^v),\quad h=(u+v)/2,\quad
+ d=(v-u)/2,\quad a=(n-u)/2,\quad P=1+Y^d+Y^a .
+\]
+Write \(R_j=\mathbb F_2[Y]/(Y^j+1)\) and let \(\operatorname{ct}_j\)
+denote its constant coefficient. Then \(f\) is squarefree if and only
+if \(P\) is a unit in \(R_h\). For a unit, let \(H=P^{-1}\) in
+\(R_h\), with coefficient indices read modulo \(h\). Put
+\[
+ S=\sum_{w\in\{u,v\},\ 4\mid n+w}Y^w,\qquad
+ t=\operatorname{ct}_{2h}\big(S\,(YP')\,P\,H^2\big).
+\]
+Here \(H^2\) in \(R_{2h}\) is independent of the representative of
+\(H\). Define a bit
+\[
+ b=\begin{cases}
+ t & h\text{ even},\\
+ t+H_{-d/2}+(a\bmod2)(1+H_{-a}) & h\text{ odd}.
+ \end{cases}
+\]
+In the second case \(d\) is even. The number of irreducible factors
+of \(f\) is odd precisely when
+\( (-1)^{(n^2-1)/8+b}=1\). Each even exponent \(k\) of \(S(YP')P\) contributes \(H_{-k/2}\) to \(t\).
+\end{theorem}
+\begin{proof}
+At a root \(x\) of \(f\) one has \(xf'(x)=1+x^{2h}\).
+If \(x^{2h}=1\), then \(f(x)=x^uP(x^2)\). This gives the
+squarefreeness assertion. Assume it holds and put \(m=(n-1)/2\).
+
+We first record a sign calculation modulo four. If \(F\) is the
+monic integer lift with coefficients zero and one, let \(T\) be the
+monic polynomial whose roots are the squares of the roots of \(F\).
+Write \(T=A(X^2)+XB(X^2)\), so \(B\) is monic of degree \(m\).
+The sign of Frobenius on the binary roots is congruent modulo four to
+\[
+ (-1)^{m(m-1)/2}\operatorname{Res}(B,A).
+\]
+Indeed, lift the distinct roots to an unramified extension of
+\(\mathbb Z_2\) by Hensel's lemma. A lift of each nonzero residue
+differs from its Teichm\"uller representative by a multiple of two,
+so their squares agree modulo four. Consequently squaring permutes
+the roots \(r_i\) of \(T\) modulo four by the Frobenius permutation.
+Dividing the Vandermonde of the \(r_i^2\) by that of the \(r_i\),
+a unit, gives \(\prod_{i<j}(r_i+r_j)\), congruent to that sign.
+For any monic odd-degree \(T\), the square of this product is
+\(\operatorname{Res}(T,B(X^2))=\operatorname{Res}(B,A)^2\), since
+at a root \(r_i\), evaluation of \(T(-r_i)\) gives
+\(B(r_i^2)=\prod_{j\ne i}(r_i+r_j)\).
+The two polynomial expressions therefore agree up to a fixed sign.
+At \(T=X^n-1\), doubling the indices \(0,\ldots,2m\) of its
+roots has \(m(m+1)/2\) inversions, while
+\(\operatorname{Res}(Y^m,-1)=(-1)^m\). This fixes the sign.
+
+For the product support let \(D=1+Y^h\) and \(W=Y^{(u-1)/2}P\).
+Taking the squared roots gives the exact integer identity
+\[
+ T=XW(X)^2-D(X)^2
+   =X^n+X^u+X^v-1-X^{2h}
+     +2X^{(n+u)/2}+2X^{(n+v)/2}.
+\]
+Thus \(A=-D+2A_1,\ B=W+2B_1\), where the term from \(w=u,v\)
+goes to \(A_1\) as \(Y^{(n+w)/4}\) if \(4\mid n+w\), and
+otherwise to \(B_1\) as \(Y^{(n+w-2)/4}\).
+Write \(\operatorname{Tr}_V\) for a sum over the binary roots of
+\(V\), with multiplicities. Expanding the unit resultant to first
+order modulo four gives its sign contribution as
+\[
+ (-1)^{m(m+1)/2}\operatorname{Res}(W,D)
+ \left(1+2\operatorname{Tr}_{W}(A_1/D)
+         +2\operatorname{Tr}_{D}(B_1/W)\right).
+\]
+For the first trace use the product over the roots of monic \(B\)
+and reduce its linear term modulo two. For the second, interchange
+\(W,D\) in the base resultant and vary \(W\) by \(2B_1\).
+These determinant expansions also hold for repeated roots of \(W\)
+or \(D\), since both denominators are units at the respective roots.
+
+The first trace equals \(t\). The zero roots of \(W\) contribute
+zero. On the roots of \(P\) use \(Y^a=1+Y^d\) and square inside
+the trace. A term from \(u\) has squared numerator
+\(Y^{u+a}=Y^u+Y^h\), and one from \(v\) has squared numerator
+\(Y^{h+a}=Y^h+Y^v\). Each extra \(Y^h/D^2=1/D+1/D^2\) has
+trace zero. This leaves \(\operatorname{Tr}_P(S/D^2)\).
+The rational differential \(SP'\,dY/(D^2P)\) has no residue at
+infinity since \(\deg S<2h\). Its residues at the roots of \(P\)
+give the requested trace. At the roots of \(D\), their sum is the
+coefficient of \(Y^{2h-1}\) in \(SP'/P\bmod D^2\). Dividing that
+remainder by the monic \(D^2\) gives this sum as the coefficient of
+\(Y^{-1}\) at infinity. In characteristic two the signs agree.
+As \(P^{-1}=PH^2\bmod D^2\), this coefficient equals \(t\).
+
+If \(h\) is even, \(D\) has even root multiplicities, so the second
+trace vanishes. Over the Gaussian integers \(D\) splits as
+\((Y^{h/2}+i)(Y^{h/2}-i)\). Hence \(\operatorname{Res}(W,D)\) is
+an odd sum of two squares and is one modulo four.
+
+Suppose \(h\) is odd. Put \(c=a-d\), \(E=1+Z^a+Z^c\), and
+\(K=E^{-1}\) in \(R_h\). Dividing \(W(Y)\) by \(Y^m\) and setting
+\(Z=Y^{-1}\) gives \(E\). Over the integer \(h\)-th roots of unity,
+interchanging resultant arguments and factoring out the leading
+monomial give
+\[
+ \operatorname{Res}(W,D)=\prod_{z^h=1}
+      (1+(-1)^a z^a+(-1)^c z^c).
+\]
+The signs from the interchange and the monomials cancel.
+In \(R_h\) division of an exponent by two is well defined. The three
+constant coefficients of \(Z^{a/2}K, Z^{c/2}K, Z^{(a+c)/2}K\)
+are equal. For instance the sum of the last two is the constant
+coefficient of \(Z^c(1+Z^a)/E^2=Z^c/E+(Z^c/E)^2\),
+after squaring under the constant coefficient. Call the common bit
+\(\beta\). Since \(K(Y^{-1})=Y^a H(Y)\), it is \(H_{-d/2}\)
+and \(K_0=H_{-a}\).
+
+For the unsigned product \(N=\prod_{z^h=1} E(z)\), squaring its
+factors and using the permutation \(z\mapsto z^2\) yields
+\[
+ N^2\equiv N\left(1+2\sum_{z^h=1}
+       \frac{z^a+z^c+z^{a+c}}{E(z)^2}\right)\pmod4.
+\]
+The sum is evaluated in characteristic two. Summing over the roots
+extracts a cyclic constant coefficient, and taking the square root
+gives three copies of \(\beta\). Dividing by the odd \(N\) thus gives
+\(N\equiv1+2\beta\pmod4\). When \(a,c\) are both odd, negating
+the two terms adds the bit \(\operatorname{ct}_h((Z^a+Z^c)/E)
+=1+K_0\), and \(B_1=0\). When both are even, the two terms of
+\(B_1/W\) contribute the constant coefficients of \(Z^{a/2}K\)
+and \(Z^{c/2}K\), which cancel. These are all cases since \(d\)
+is even. Finally an odd-degree squarefree polynomial has an odd
+number of irreducible factors exactly when its Frobenius permutation
+has positive sign.
+\end{proof}
+
+\begin{corollary}\label{cor:odd-tap-period}
+Fix two odd taps \(0<u<v\) and let \(h=(u+v)/2\).
+In odd degrees \(n>2h\), squarefreeness and factor parity repeat
+with period \(\mathop{\rm lcm}(8,4h)\). For odd \(h\), increasing
+\(n\) by \(4h\) preserves squarefreeness and reverses factor parity
+on every squarefree support. In a complete period, exactly half
+of the squarefree degrees therefore have odd factor count.
+\end{corollary}
+\begin{proof}
+Increasing \(n\) by \(4h\) increases \(a\) by \(2h\). This fixes
+the cyclic inverse, every exponent used in \(R_{2h}\), and the choice
+of terms in \(S\). For even \(h\) it also fixes \(n\bmod 8\).
+For odd \(h\) it changes the sign \((-1)^{(n^2-1)/8}\).
+Squarefree classes exist, for instance \(n\equiv u\pmod{2h}\)
+makes \(P=Y^d\) in \(R_h\).
+\end{proof}
+
 \end{document}
