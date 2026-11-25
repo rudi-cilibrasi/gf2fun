@@ -1144,7 +1144,9 @@ The nonzero roots of either cubic have order 7.
 \end{proof}
 The same script gives exact periods 45 and 24 in \(s\) for the
 offsets 2 and 5, respectively. The degree \(265=2^8+9\) member
-\(X^{265}+X^5+X^3+X^2+1\) is primitive.
+\(X^{265}+X^5+X^3+X^2+1\) is primitive. Lean checks its root order and the
+primality certificates for the seven prime factors of \(2^{265}-1\) in
+\texttt{GF2Sparse/ShiftedExample.lean}.
 
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
