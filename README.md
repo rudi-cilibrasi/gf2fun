@@ -78,6 +78,15 @@ OMP_NUM_THREADS=16 /tmp/gf2-1229-weights
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_subgroup_traces.py
 ~~~
 
+The degree-1229 search splits into 614 ranges by smallest tap. The first program tests divisibility by $X^K+1$ with NTL. The second tests irreducibility and the five order projections for each irreducible. Each program accepts an inclusive interval, and omitting it selects the full search. These commands replay the last 15 ranges. [NTL power search](scripts/check_1229_known_subgroup.cpp) · [Irreducibility and order census](scripts/census_1229_pentanomials.cpp)
+
+~~~sh
+g++ -O3 -std=c++17 -fopenmp scripts/check_1229_known_subgroup.cpp -lntl -lgmp -o /tmp/gf2-known-subgroup
+g++ -O3 -std=c++17 -march=native -fopenmp scripts/census_1229_pentanomials.cpp -lntl -lgmp -o /tmp/gf2-1229-census
+/tmp/gf2-known-subgroup 600 614
+/tmp/gf2-1229-census 600 614
+~~~
+
 The five other gaps through 1280 each have an irreducible product pentanomial with a partially certified order. The public JSON records its taps, the known prime factors, the exact remaining cofactor, and a divisor-search residue. For each candidate the checker proves that the root order includes the full known part and at least one cofactor prime above $10^{13}$. The five degrees can be investigated independently. [Open-degree candidates and cofactors](data/open-degrees-1231-1259.json) · [Checker](scripts/check_open_degrees.py)
 
 ~~~sh
