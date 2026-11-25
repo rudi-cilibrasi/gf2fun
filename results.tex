@@ -638,6 +638,105 @@ degree-92 factors. The examples in degrees 16, 20 and 184 are checked in
 \texttt{GF2Sparse/NormExamples.lean}.
 Existence of a passing primitive pentanomial in each degree remains open.
 
+\section{Which degrees admit a sparse quadratic lift?}
+Substituting \(X^2+X\) doubles the degree. A binary polynomial is of
+this form precisely when \(f(X+1)=f(X)\). Indeed, putting \(T=X^2+X\),
+one has \(\F[X]=\F[T]\oplus X\F[T]\). The relation \(X^2=T+X\)
+gives spanning, and the two summands have different degree parities.
+Translation fixes \(T\) and sends \(A(T)+XB(T)\) to
+\(A(T)+(X+1)B(T)\). Translation invariants of irreducible
+polynomials over finite fields have been studied more generally.
+\href{https://arxiv.org/abs/1608.03915}{Reis, \emph{The action of
+\(\mathrm{GL}_2(\mathbb F_q)\) on irreducible polynomials over \(\mathbb F_q\)}}.
+
+\begin{theorem}\label{thm:translation}
+If a translation-invariant irreducible binary polynomial has at most
+five terms and degree \(n\), then
+\[
+       n\in\{2,4,6,8\}\quad\text{or}\quad n=2^u+4\quad(u\ge3).
+\]
+For each of the latter degrees, every possible support occurs in one
+of the following two families, where \(Q=2^u\):
+\[
+\begin{aligned}
+ &1+X^5+X^{2^j}+X^{Q+1}+X^{Q+4},
+                    &&0\le j\le u,\quad j\text{ odd},\\
+ &1+(X^Q+X^{2^j})(X^4+X),
+                    &&0<j<u,\quad j\ne2.
+\end{aligned}
+\]
+These are necessary conditions. Primitive examples occur in degrees
+2, 4, 6, 8, 12 and 20.
+\end{theorem}
+\begin{proof}
+A translation invariant of positive degree has even degree. An
+irreducible of such degree has constant term 1 and odd weight.
+Write \(Y_i=X^{2^i}\). The binary digits of each exponent specify a
+distinct squarefree monomial in the \(Y_i\). Translation replaces
+each \(Y_i\) by \(Y_i+1\). The resulting multilinear expressions
+can be compared term by term since different subsets give different
+exponents of \(X\).
+
+Suppose the largest monomial has \(w\ge2\) variables. In its
+translation difference each of its \(w\) faces obtained by deleting
+one variable must cancel against a face of a different top monomial.
+One other monomial can cover at most one such face. Thus at least
+\(w+1\) nonconstant monomials are needed. For \(w=3\) all four
+would be triples. Starting with \(abc\), the other three would have
+to be \(bcd,ace,abg\). Cancelling the pairs \(cd\) and \(bd\)
+forces \(d=e=g\). Each vertex now occurs in three triples, so its
+linear coefficient in the translation difference is 1. This rules
+out \(w=3\), and hence every exponent has at most two binary digits
+equal to 1.
+
+For \(w=2\), form the simple graph whose edges are the quadratic
+monomials. Cancellation of every linear coefficient means all vertex
+degrees are even. With at most four edges this is either a triangle
+or a four-cycle. At weight five the triangle has one additional
+linear monomial. Both shapes are invariant: a triangle contributes
+constant 1 to the translation difference, which the linear monomial
+cancels; a four-cycle contributes 0. The other weight-five shape is
+four linear monomials. A trinomial has only two nonconstant terms,
+so they are linear. Irreducibility forces one to be \(X\), since
+otherwise it is a square. The resulting \(X^{2^s}+X+1\) is
+irreducible only in degrees 2 and 4 by the preceding section.
+
+Write \(f(X)=H(T)\) and \(n=2m\). Irreducibility forces \(H\) to
+be irreducible. If \(\beta\) is a root of \(H\) in
+\(K=\mathbb F_{2^m}\), then \(Z^2+Z+\beta\) must be irreducible
+over \(K\), or \(f\) would have a root in \(K\). The image of
+\(z\mapsto z^2+z\) in \(K\) is the trace-zero hyperplane: its
+kernel has size two, and the absolute trace vanishes on the image
+and is nonzero as a map. Hence \(\operatorname{Tr}(\beta)=1\), so
+the coefficient of degree \(m-1\) in \(H\) is 1. The two highest
+coefficients below the leading term of \(f\) are therefore
+\[
+       [X^{n-1}]f=m\bmod2,\qquad
+       [X^{n-2}]f=1+\binom m2\bmod2.
+\]
+If \(8\mid n\), the term \(X^{n-2}\) must occur. For \(n>8\)
+divisible by eight with at most two set bits, \(n-2\) has at least
+three, which is impossible. For \(n>8\) with \(n\equiv2\bmod8\),
+one must have \(n=Q+2\), \(Q=2^u\). Both \(Q+1\) and \(Q\) must
+occur. The graph must be a triangle with edges of exponents
+\(Q+2,Q+1,3\) and linear monomial \(X^Q\). But then
+\[
+ f=X^{Q+2}+X^{Q+1}+X^Q+X^3+1=(X^2+X+1)(X^Q+X+1).
+\]
+The only possible degree congruent to 6 modulo 8 is 6 itself.
+
+The remaining degrees above 8 are \(Q+4\). The coefficient of
+\(X^{Q+2}\) is zero. The vertex \(u\) must therefore have neighbors
+2 and 0: its largest neighbor is 2 and 1 is forbidden. A triangle
+gives the first displayed shape. Evaluating at a nontrivial cube
+root of unity rules out even \(j\), since \(X^4+X\) vanishes
+there and \(1+X^5+X^{2^j}=0\) for even \(j\).
+A four-cycle gives the second shape, with \(j\) opposite \(u\).
+The small primitive examples have respective supports
+\(\{0,1,2\},\{0,1,4\},\{0,2,3,5,6\},\{0,3,5,6,8\},
+\{0,5,8,9,12\},\{0,3,6,17,20\}\).
+\end{proof}
+
 \section{Counting primitive witnesses}
 For any set \(\mathcal A\) of monic degree-\(n\) candidates, put \(N=2^n-1\).
 An exact expression for the number of primitive witnesses is
