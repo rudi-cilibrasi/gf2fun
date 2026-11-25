@@ -319,4 +319,60 @@ theorem check_sound {n f : ℕ} {factors : List ℕ}
     rw [← residue_xPow n f]
     exact residue_ne_one hf hne (hdeg ▸ hlt) (hdeg ▸ hn)
 
+/-- Append the low k bits of e to an exponent whose residue is already a. -/
+def appendBits (n f a : ℕ) : ℕ → ℕ → ℕ
+  | 0, _ => a
+  | k + 1, e =>
+    let sq := squareMod n f (appendBits n f a k (e / 2))
+    if e % 2 = 1 then step n f sq else sq
+
+private theorem residue_appendBits (n f a k e : ℕ) (he : e < 2 ^ k) :
+    residue f (appendBits n f a k e) =
+      residue f a ^ (2 ^ k) * AdjoinRoot.root (decode f) ^ e := by
+  induction k generalizing e with
+  | zero =>
+    have : e = 0 := by simpa using he
+    simp [this, appendBits]
+  | succ k ih =>
+    have hdiv : e / 2 < 2 ^ k := by rw [pow_succ] at he; omega
+    by_cases h : e % 2 = 1
+    · rw [appendBits, if_pos h, residue_step, residue_squareMod, ih _ hdiv]
+      nth_rw 3 [show e = e / 2 + e / 2 + 1 by omega]
+      rw [pow_succ 2, pow_mul, pow_succ (AdjoinRoot.root _) (_ + _), pow_add]
+      ring
+    · rw [appendBits, if_neg h, residue_squareMod, ih _ hdiv]
+      nth_rw 3 [show e = e / 2 + e / 2 by omega]
+      rw [pow_succ 2, pow_mul, pow_add]
+      ring
+
+/-- The list gives earlier residues in reverse order, ending at 1.
+Each check starts from the supplied previous residue, bounding evaluation depth. -/
+def powerBlocks (n f bits : ℕ) : ℕ → ℕ → List ℕ → Bool
+  | e, r, [] => e == 0 && r == 1
+  | e, r, a :: rest =>
+    appendBits n f a bits (e % 2 ^ bits) == r &&
+      powerBlocks n f bits (e / 2 ^ bits) a rest
+
+private theorem powerBlocks_sound (n f bits e r : ℕ) (blocks : List ℕ)
+    (h : powerBlocks n f bits e r blocks = true) :
+    residue f r = AdjoinRoot.root (decode f) ^ e := by
+  induction blocks generalizing e r with
+  | nil =>
+    simp only [powerBlocks, Bool.and_eq_true, beq_iff_eq] at h
+    simp [h.1, h.2, residue]
+  | cons a rest ih =>
+    obtain ⟨hb, ht⟩ := Bool.and_eq_true_iff.1 h
+    rw [← beq_iff_eq.1 hb, residue_appendBits _ _ _ _ _ (Nat.mod_lt _ (by positivity)),
+      ih _ _ ht, ← pow_mul, ← pow_add, Nat.mul_comm, Nat.div_add_mod]
+
+theorem root_pow_one_of_blocks (n f bits e : ℕ) (blocks : List ℕ)
+    (h : powerBlocks n f bits e 1 blocks = true) : AdjoinRoot.root (decode f) ^ e = 1 := by
+  simpa [residue] using (powerBlocks_sound n f bits e 1 blocks h).symm
+
+theorem root_pow_ne_one_of_blocks (n f bits e r : ℕ) (blocks : List ℕ)
+    (h : powerBlocks n f bits e r blocks = true) (hf : f ≠ 0) (hr : r ≠ 1)
+    (hs : r < 2 ^ f.log2) (hn : 0 < f.log2) : AdjoinRoot.root (decode f) ^ e ≠ 1 := by
+  rw [← powerBlocks_sound n f bits e r blocks h]
+  exact residue_ne_one hf hr hs hn
+
 end GF2Sparse

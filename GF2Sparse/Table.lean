@@ -112,4 +112,24 @@ theorem covers_range {P : ℕ → Prop} (rows : List {k : ℕ // P k}) (start le
   obtain ⟨c, _, rfl⟩ := List.mem_map.1 hm
   exact c.property
 
+/-- Each prime divisor may carry a separate proof for its proper power.
+This allows large exponentiations to be replayed one at a time. -/
+theorem primitive_of_certified_powers {n f : ℕ} (hn : 0 < n) (hd : f.log2 = n)
+    (hfull : AdjoinRoot.root (decode f) ^ (2 ^ n - 1) = 1)
+    (factors : List {p : ProvenPrime //
+      AdjoinRoot.root (decode f) ^ ((2 ^ n - 1) / p.val) ≠ 1})
+    (hprod : (factors.map (fun c => c.val.val)).prod = 2 ^ n - 1) : Primitive (decode f) := by
+  have hf : f ≠ 0 := by rintro rfl; simp at hd; omega
+  have hdeg := (natDegree_decode f).trans hd
+  apply primitive_of_prime_checks (monic_decode hf) (hdeg ▸ hn)
+  · rwa [hdeg]
+  · rw [hdeg]
+    intro p hp hdvd
+    have hall : ∀ q ∈ factors.map (fun c => c.val.val), Prime q := by
+      intro q hq
+      obtain ⟨c, _, rfl⟩ := List.mem_map.1 hq
+      exact c.val.property.prime
+    obtain ⟨c, _, rfl⟩ := List.mem_map.1 (mem_list_primes_of_dvd_prod hp.prime hall (hprod.symm ▸ hdvd))
+    exact c.property
+
 end GF2Sparse
