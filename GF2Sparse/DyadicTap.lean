@@ -73,4 +73,49 @@ theorem dyadic_tap_triple_iff {x : K} {i m : ℕ}
     rw [hp', (root_eq _).1 hx, (root_eq _).1 hy]
     exact ht'.symm
 
+/-- Removing a common Frobenius power from the exponent difference leaves
+one binary derivative and one product equation. -/
+theorem dyadic_tap_scaled_triple_iff (x : K) (i b m : ℕ) :
+    let f := trinomial (2^i+2^b*m) (2^i)
+    (aeval x f = 0 ∧ ∃ y z : K, aeval y f = 0 ∧ aeval z f = 0 ∧ x*y*z = 1) ↔
+      (x+1)^m = x^m+1 ∧ x^(2^i)*(x^m+1)^(2^b) = 1 := by
+  dsimp only
+  have eval_iff := tap_root_iff x i (2^b*m)
+  have powers (v : K) : v^(2^b*m) = (v^m)^(2^b) := by rw [Nat.mul_comm, pow_mul]
+  have shift (v : K) : (v+1)^(2^b) = v^(2^b)+1 := by rw [add_pow_expChar_pow, one_pow]
+  rw [powers, ← shift] at eval_iff
+  have diff : (x+1)^(2^b*m) = x^(2^b*m)+1 ↔ (x+1)^m = x^m+1 := by
+    rw [powers, powers, ← shift]
+    exact (iterateFrobenius_inj K 2 b).eq_iff
+  exact ⟨fun ⟨hx,h⟩ => ⟨diff.1 ((dyadic_tap_triple_iff hx).1 h), eval_iff.1 hx⟩,
+    fun ⟨hd,hv⟩ => ⟨eval_iff.2 hv,(dyadic_tap_triple_iff (eval_iff.2 hv)).2 (diff.2 hd)⟩⟩
+
+/-- An irreducible dyadic-tap trinomial passes the three-root test whenever
+the exponent difference has an odd factor greater than one. -/
+theorem irreducible_dyadic_tap_no_root_triple {i b m : ℕ} (hm : Odd m) (hm1 : 1 < m)
+    (hf : Irreducible (trinomial (2^i+2^b*m) (2^i))) :
+    NoRootTriple (trinomial (2^i+2^b*m) (2^i)) := by
+  intro x y z hx hy hz h
+  have hd := ((dyadic_tap_scaled_triple_iff x i b m).1 ⟨hx,y,z,hy,hz,h⟩).1
+  let d : BinaryPoly := (X+1)^m+(X^m+1)
+  have heval : aeval x d = 0 := by
+    simpa only [d, map_add, map_pow, aeval_X, map_one, CharTwo.add_eq_zero] using hd
+  have hdvd := minpoly.dvd (ZMod 2) x heval
+  rw [← minpoly.eq_of_irreducible_of_monic hf hx (binary_monic hf.ne_zero)] at hdvd
+  have hcoeff : d.coeff 1 = 1 := by
+    simp [d, coeff_X_add_one_pow, coeff_X_pow, hm1.ne, coeff_one, hm.natCast_zmod_two]
+  have hne : d ≠ 0 := by rintro he; simp [he] at hcoeff
+  have hdeg : d.natDegree ≤ m := by
+    apply natDegree_add_le_of_degree_le
+    · have hc : (X+1 : BinaryPoly).natDegree = 1 := by
+        simpa only [C_1] using natDegree_X_add_C (1 : ZMod 2)
+      exact natDegree_pow_le.trans (by rw [hc, mul_one])
+    · exact natDegree_add_le_of_degree_le (by simp) (by simp)
+  have hmle : m ≤ 2^b*m := Nat.le_mul_of_pos_left _ (Nat.two_pow_pos _)
+  have hlt : 2^i < 2^i+2^b*m := Nat.lt_add_of_pos_right (by positivity)
+  have hle := (natDegree_le_of_dvd hdvd hne).trans hdeg
+  rw [trinomial_degree (Nat.two_pow_pos _) hlt] at hle
+  have := Nat.two_pow_pos i
+  omega
+
 end GF2Sparse

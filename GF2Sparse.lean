@@ -7,6 +7,7 @@ import GF2Sparse.DyadicTap
 import GF2Sparse.FibreBound
 import GF2Sparse.Grid
 import GF2Sparse.IterateOrder
+import GF2Sparse.KasamiTriples
 import GF2Sparse.Linearized
 import GF2Sparse.Many
 import GF2Sparse.MersenneExamples

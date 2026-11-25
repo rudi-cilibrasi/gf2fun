@@ -118,6 +118,32 @@ def excludesTwistedPeriod (m h : ℕ) : Prop := m.gcd (3*h) ∣ h ∧ (m.gcd h).
 instance (m h : ℕ) : Decidable (excludesTwistedPeriod m h) :=
   inferInstanceAs (Decidable (_ ∧ _))
 
+/-- A point in the degree-m field cannot satisfy the shifted product equation
+when the coprimality and divisibility tests exclude an order-three shift. -/
+theorem excludesTwistedPeriod.no_shifted_product {m i b : ℕ}
+    (he : excludesTwistedPeriod m (i.dist b)) {x : AlgebraicClosure (ZMod 2)}
+    (hx : x ≠ 0) (hx1 : x ≠ 1) (hm : x^(2^m) = x) :
+    x^(2^i)*(x^(2^b)+1) ≠ 1 := by
+  intro hp
+  have hd : F b x + 1 ≠ 0 := by
+    rintro hz
+    change F i x * (F b x+1) = 1 at hp
+    simp [hz] at hp
+  have hrel : F i x = phi (F b x) := by
+    simpa [phi] using (eq_div_iff hd).2 hp
+  apply twisted_period_impossible hx hx1 hm _ he.1 he.2
+  rcases le_total i b with hle | hle
+  · rw [Nat.dist_eq_sub_of_le hle]
+    right
+    apply iterateFrobenius_inj K 2 i
+    rw [phi_comm, ← iterateFrobenius_add_apply, Nat.add_sub_of_le hle]
+    exact hrel
+  · rw [Nat.dist_eq_sub_of_le_right hle]
+    left
+    apply iterateFrobenius_inj K 2 b
+    rw [← iterateFrobenius_add_apply, Nat.add_sub_of_le hle, phi_comm]
+    exact hrel
+
 /-- The two integer tests suffice for the signed degree 2^s-2^t-1. -/
 theorem signed_dyadic_no_root_triple {s t i n : ℕ} (hts : t ≤ s) (hn : n+2^t+1 = 2^s)
     (hfirst : excludesTwistedPeriod s (i.dist t)) (hsecond : excludesTwistedPeriod (s-t) i) :
