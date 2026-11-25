@@ -118,7 +118,8 @@ private theorem layer_products {k s : ℕ} (r : Fin k → K)
     simpa only [iteratePoly, eval_mul, Finset.prod_mul_distrib, mul_pow, hi j, one_mul,
       layer] using h
 
-private theorem eval_root_products (g : K[X]) (hg : g.Monic) {k : ℕ} (r : Fin k → K) :
+/-- Interchange the two products defining a binary polynomial resultant. -/
+theorem eval_root_products (g : K[X]) (hg : g.Monic) {k : ℕ} (r : Fin k → K) :
     (g.roots.map (fun a => (∏ i, (X - C (r i))).eval a)).prod = ∏ i, g.eval (r i) := by
   have swap (m : Multiset K) : (m.map (fun a => ∏ i, (r i - a))).prod =
       ∏ i, (m.map (r i - ·)).prod := by
@@ -146,7 +147,8 @@ private theorem mem_candidateRoots {k s : ℕ} (r : Fin k → K)
   simp only [H, eval_prod, eval_sub, eval_X, eval_C]
   exact Finset.prod_eq_zero (Finset.mem_univ t) (sub_self _)
 
-private theorem common_frobenius_period (S : Set K) (hS : S.Finite) :
+/-- A finite set of algebraic elements lies in a common finite binary field. -/
+theorem common_frobenius_period (S : Set K) (hS : S.Finite) :
     ∃ M : ℕ, 0 < M ∧ ∀ x ∈ S, x ^ (2 ^ M) = x := by
   classical
   let d (x : K) := (minpoly (ZMod 2) x).natDegree
@@ -156,7 +158,8 @@ private theorem common_frobenius_period (S : Set K) (hS : S.Finite) :
   apply (degree_dvd_iff_frobenius (hi x) (minpoly.aeval _ _) M).1
   exact Finset.dvd_prod_of_mem d (hS.mem_toFinset.2 hx)
 
-private theorem fixed_at_multiple {x : K} {M : ℕ} (h : x ^ (2 ^ M) = x) (l : ℕ) :
+/-- Every multiple of a Frobenius period also fixes the point. -/
+theorem fixed_at_multiple {x : K} {M : ℕ} (h : x ^ (2 ^ M) = x) (l : ℕ) :
     x ^ (2 ^ (M * l)) = x := by
   induction l with
   | zero => simp

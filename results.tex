@@ -2250,4 +2250,86 @@ Lucas--Lehmer tests are checked by the Lean kernel.
 \nolinkurl{GF2Sparse/MersenneExamples.lean}.
 \end{proof}
 
+\section{Translating finite families of sparse witnesses}
+\begin{theorem}\label{thm:tail-transfer}
+Fix \(r>0\) and a binary polynomial \(h\) of degree \(d>0\) with
+\(h(0)=1\). Set \(f_s=X^{2^s-r}+h\) for \(2^s>r\), and \(D=r+d\).
+If a selection of \(k\ge1\) roots of \(f_s\) has product 1, each
+selected root has field degree at most
+\[
+                      A_k=k d^{k-1}D^{\binom{k-1}{2}}.
+\]
+In particular, for any fixed \(k\) the outcomes of all tests through
+length \(k\), including repetitions, are periodic in \(s\).
+\end{theorem}
+\begin{proof}
+Write \(g=X^r h\). At a root \(x\ne0\) the equation for \(f_s\)
+is equivalent to \(x^{2^s}=g(x)\). Thus \(g^{\circ j}(x)=x^{2^{sj}}\).
+For a product-one selection \((x_i)_{1\le i\le k}\),
+\(\prod_i g^{\circ j}(x_i)=1\) for every \(j\).
+Applying the identity \(g(y)=y^r h(y)\) gives
+\(\prod_i h(g^{\circ j}(x_i))=1\) as well.
+
+Take \(g_0=X\) and \(g_j=h\circ g^{\circ(j-1)}\) for \(1\le j<k\).
+Each root of \(g_j\) first reaches zero after exactly \(j\) applications
+of \(g\). Indeed \(g(0)=0\), and \(h(0)=1\) rules out arriving at
+zero before the final application. The root sets are therefore disjoint.
+For \(H=\prod_i(X-x_i)\) the products of \(H\) at the roots of
+each \(g_j\), with multiplicities, equal 1 by interchanging the two
+products in characteristic two. The degrees are 1 and
+\(d D^{j-1}\) for \(1\le j<k\).
+Lemma~\ref{lem:disjoint-fibres} gives the field-degree bound.
+In a field of degree \(b\) the equation \(x^{2^s}=g(x)\) depends only
+on \(s\bmod b\). Taking a common multiple of all degrees through
+\(A_k\) proves periodicity. Lean verifies the existence of a period
+for every tail and rank in \nolinkurl{GF2Sparse/ShiftedPeriods.lean}.
+\end{proof}
+
+\begin{corollary}\label{cor:translate-primitive-seeds}
+Given any finite collection of primitive binary polynomials of degrees
+\(n_i>1\), there are arbitrarily large common translations \(T\)
+with the following property. Replacing just the leading term \(X^{n_i}\)
+in each polynomial by \(X^{T+n_i}\) gives a squarefree polynomial
+of the same weight, with exponent gcd one. Its first product-one
+selection has length exactly \(n_i\), with or without repetitions.
+\end{corollary}
+\begin{proof}
+Choose \(s_0\) with \(2^{s_0}>\max_i n_i\) and write the seeds as
+\(X^{n_i}+h_i\). Each tail has constant term 1 and positive degree.
+Apply Theorem~\ref{thm:tail-transfer} with \(r_i=2^{s_0}-n_i\) and
+\(k=n_i-1\). For a direct proof that a primitive seed has no shorter product,
+write \(N=2^{n_i}-1\). A product of \(k\) conjugates equals 1 only
+if the sum of their \(k\) exponents \(2^a\) is a positive multiple
+of \(N\). Cyclically rotating all the bit positions modulo \(n_i\)
+preserves divisibility by \(N\). Each of the \(n_i\) rotated sums is
+at least \(N\), while their total is \(kN\), since each summand runs
+once through every bit position. Hence \(k\ge n_i\), including with
+repetitions. Lean verifies this argument and the preservation of the
+exact first failing length in \nolinkurl{GF2Sparse/ShiftedPeriods.lean}.
+
+Take \(s\equiv s_0\) modulo all these periods and all \(n_i\), and
+put \(T=2^s-2^{s_0}\). All \(n_i\) seed roots are retained, since
+they belong to \(\mathbb F_{2^{n_i}}\). Their product is 1.
+
+For squarefreeness, the parity of each leading exponent stays fixed.
+In even degree all multiple roots would be roots of the fixed \(h_i'\),
+which is nonzero since the seed is squarefree. In odd degree they
+would be roots of \(h_i+Xh_i'\), which has constant term 1.
+Enlarge the period by the field degrees of the roots of these fixed
+polynomials. A multiple root would then already be a multiple root of
+the seed, by equality of the two Frobenius evaluations.
+Finally, for each odd prime dividing every positive tail exponent,
+include the multiplicative order of 2 modulo that prime in the period.
+Divisibility of the leading exponent by each such prime is then unchanged,
+as is parity. The seed has exponent gcd one by the substitution obstruction.
+\end{proof}
+
+With the 316 product pentanomials in Theorem~1, this gives arbitrarily
+high intervals of 316 consecutive degrees. At degree \(T+j\), for
+\(5\le j\le320\), the first failure is exactly rank \(j\).
+The two primitive pentanomials of Theorem~\ref{thm:mersenne-examples}
+likewise give arbitrarily high degrees with first failures exactly
+1279 and 2203, respectively, retaining the displayed lower terms in
+each case. Every translated polynomial contains its seed as a factor.
+
 \end{document}
