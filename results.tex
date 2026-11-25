@@ -991,6 +991,33 @@ three. Its one product-one triple is the root set of \(X^3+X^2+1\).
 The script \texttt{scripts/check\_trinomial\_triples.py} compares both
 counts against the nullities of the actual exterior-power matrices.
 
+\begin{corollary}\label{cor:cubic-triples}
+For every \(Q=2^s\), the trinomial \(X^{Q+3}+X^Q+1\) has no
+product-one triple of roots, including repetitions. The reciprocal
+trinomial \(X^{Q+3}+X^3+1\) and odd substitutions of either polynomial
+also pass the first three product tests.
+\end{corollary}
+\begin{proof}
+For a root \(x\), write \(u=x^3\). Then \(x^Q(u+1)=1\), giving
+\(u^Q(u+1)^3=1\). If \(x,y,z\) were a product-one triple, their
+cubes \(u,v,w\) and their translates by 1 would each have product 1.
+As in Theorem~\ref{thm:triple-orbits}, we may interchange \(v,w\) so
+that \(v(u+1)=1\). Then \((v+1)(u+1)=u\), and hence
+\[
+ v^Q u^3=(u+1)^3=v^Q\bigl(1+(u+1)^3\bigr).
+\]
+The first equality follows from \(v^Q(v+1)^3=1\).
+For the second multiply \(v^Q(u^Q+1)=1\) by \((u+1)^3\).
+Canceling \(v^Q\) gives \(u^3=1+(u+1)^3\), or \(u(u+1)=0\),
+contrary to \(u^Q(u+1)^3=1\).
+Inversion and powering preserve products. A root at 1 gives a
+triple, and an inverse pair \(r,r^{-1}\) gives the triple
+\(r,r,r^{-2}\). The trinomials are squarefree since their positive
+exponents are relatively prime, and odd substitution preserves simple
+nonzero roots. The triple exclusion and its preservation under
+substitution are proved in \texttt{GF2Sparse/TripleRoots.lean}.
+\end{proof}
+
 \section{Five terms passing three tests in every multiple of eight}
 Write \(h(X)=(1+X^2)(1+X^3)\).
 \begin{theorem}\label{thm:dyadic-triples}

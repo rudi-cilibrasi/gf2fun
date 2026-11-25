@@ -85,7 +85,71 @@ theorem trinomial_triple_order_dvd {x y z : K} {n a : ℕ} (ha : a ≤ n)
   · exact order_from_trinomial_orbit ha hx0 hxn hyn horb
   · exact order_from_trinomial_orbit ha hx0 hxn hzn horb
 
+omit [Algebra (ZMod 2) K] in
+private theorem cubic_orbit_impossible {u v : K} (s : ℕ)
+    (hu : u ^ (2 ^ s) * (u + 1) ^ 3 = 1)
+    (hv : v ^ (2 ^ s) * (v + 1) ^ 3 = 1) (ho : v * (u + 1) = 1) : False := by
+  have h₁ : v ^ (2 ^ s) * u ^ 3 = (u + 1) ^ 3 := by
+    calc
+      _ = (v ^ (2 ^ s) * (v + 1) ^ 3) * (u + 1) ^ 3 := by
+        rw [mul_assoc, ← mul_pow, orbit_translate ho]
+      _ = _ := by rw [hv, one_mul]
+  have h₂ : v ^ (2 ^ s) * (1 + (u + 1) ^ 3) = (u + 1) ^ 3 := by
+    calc
+      _ = (v ^ (2 ^ s) * (u ^ (2 ^ s) + 1)) * (u + 1) ^ 3 := by
+        rw [mul_assoc, add_mul, hu, one_mul]
+      _ = _ := by rw [orbit_frobenius ho s, one_mul]
+  have hv0 : v ≠ 0 := by rintro rfl; simp at ho
+  have he := mul_left_cancel₀ (pow_ne_zero (2 ^ s) hv0) (h₁.trans h₂.symm)
+  have hf : u * (u + 1) = 0 := by grind
+  rcases mul_eq_zero.1 hf with h | h
+  · rw [h, zero_pow (by positivity), zero_mul] at hu
+    exact zero_ne_one hu
+  · rw [h, zero_pow (by decide), mul_zero] at hu
+    exact zero_ne_one hu
+
+/-- A trinomial in every degree 2^s + 3 whose roots have no product-one
+triple, even when repetitions are allowed. -/
+theorem frobenius_cubic_no_root_triple (s : ℕ) :
+    NoRootTriple (trinomial (2 ^ s + 3) (2 ^ s)) := by
+  intro x y z hx hy hz h
+  let Q := 2 ^ s
+  have root_eq (w : AlgebraicClosure (ZMod 2))
+      (hw : aeval w (trinomial (Q + 3) Q) = 0) : w ^ Q * (w ^ 3 + 1) = 1 := by
+    rw [mul_add, ← pow_add, trinomial_root_power hw, mul_one, add_right_comm,
+      CharTwo.add_self_eq_zero, zero_add]
+  have powers (w : AlgebraicClosure (ZMod 2))
+      (hw : aeval w (trinomial (Q + 3) Q) = 0) :
+      (w ^ 3) ^ Q * (w ^ 3 + 1) ^ 3 = 1 := by
+    rw [← pow_mul, Nat.mul_comm, pow_mul, ← mul_pow, root_eq w hw, one_pow]
+  have hsum : (x ^ 3 + 1) * (y ^ 3 + 1) * (z ^ 3 + 1) = 1 := by
+    calc
+      _ = (x ^ Q * y ^ Q * z ^ Q) * ((x ^ 3 + 1) * (y ^ 3 + 1) * (z ^ 3 + 1)) := by
+        rw [product_powers h, one_mul]
+      _ = (x ^ Q * (x ^ 3 + 1)) * (y ^ Q * (y ^ 3 + 1)) * (z ^ Q * (z ^ 3 + 1)) := by ring
+      _ = 1 := by rw [root_eq x hx, root_eq y hy, root_eq z hz, one_mul, one_mul]
+  rcases triple_translate_orbit (product_powers h 3) hsum with ho | ho
+  · exact cubic_orbit_impossible s (powers x hx) (powers y hy) ho
+  · exact cubic_orbit_impossible s (powers x hx) (powers z hz) ho
+
 end Field
+
+theorem NoRootTriple.no_root_one {f : BinaryPoly} (hf : NoRootTriple f) :
+    aeval (1 : AlgebraicClosure (ZMod 2)) f ≠ 0 := by
+  intro h
+  exact hf 1 1 1 h h h (by simp)
+
+/-- A product-one pair would give a triple by duplicating one root and
+squaring the other. -/
+theorem NoRootTriple.no_root_pair {f : BinaryPoly} (hf : NoRootTriple f)
+    {x y : AlgebraicClosure (ZMod 2)} (hx : aeval x f = 0) (hy : aeval y f = 0) :
+    x * y ≠ 1 := by
+  intro h
+  have hsq : aeval (y ^ (2 ^ 1)) f = 0 := by rw [aeval_dyadic, hy]; simp
+  apply hf x x _ hx hx hsq
+  calc
+    _ = (x * y) ^ 2 := by ring
+    _ = 1 := by rw [h, one_pow]
 
 /-- Substituting a power preserves the exclusion, including when several
 roots upstairs have the same image under the power map. -/
