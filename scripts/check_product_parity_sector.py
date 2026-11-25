@@ -192,8 +192,9 @@ if __name__ == "__main__":
                     u, v = v, u
                 if not sector_odd(n, u, v):
                     raise ArithmeticError("published irreducible has incorrect predicted parity")
-            print(f"Degree {n}: {counts[1]:,} odd among {counts[0]:,} supports, "
-                  f"including {counts[3]:,} among {counts[2]:,} with the odd tap smaller. "
+            breakdown = (f", including {counts[3]:,} among {counts[2]:,} with the odd tap smaller"
+                         if 0 < counts[2] < counts[0] else "")
+            print(f"Degree {n}: {counts[1]:,} odd among {counts[0]:,} supports{breakdown}. "
                   f"The complete support list contains {len(published)} irreducibles.")
             if args.joint:
                 joint_counts(n, args.sector)

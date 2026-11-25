@@ -80,6 +80,12 @@ cmp /tmp/gf2-divisors-100003.csv /tmp/gf2-direct-100003.csv
 
 In odd degrees congruent to 3 or 5 modulo eight, among the $\Theta(n^2)$ product pentanomials with at least one even tap, only $n^{1+o(1)}$ have an odd number of factors. At degree 1229, parity rules exclude 274,649 of the 282,133 such supports. The remaining 7,484 contain 56 irreducibles, all of which pass the known order tests. Of the 449 irreducibles in the full product census, 393 have two odd taps. For prime degrees in these two classes, at least $c_B n\log n$ supports with an odd smaller tap pass the simultaneous sieve at each fixed cutoff $B$. [All even-tap formulas and six-degree counts](results.pdf#page=85) · [Odd smaller tap](results.pdf#page=83) · [Counting proof](results.pdf#page=82) · [Independent factorization checker](scripts/check_product_parity_sector.py)
 
+FLINT independently factored all 282,133 degree-1229 supports in that calculation and agreed on every parity and every irreducible. The four disjoint sector values for distributing the replay across computers are `four`, `two-smaller`, `two-larger` and `both-even`. The combined replay is
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_product_parity_sector.py --degree 1229 --sector even-tap --factor --jobs 16
+~~~
+
 The simultaneous sieve also works with a cutoff that grows with the degree. For every fixed $0<\epsilon<1$, at least $n^{1-o(1)}$ candidates in each sufficiently large degree avoid every factor through $(1-\epsilon)\log\log n$, have odd factor count, and pass the inverse-root test. When $8\nmid n$, the cutoff can reach $\frac1{32}\sqrt{\log n/\log\log n}$. The proof uses natural logarithms. [Proof and parameters](results.pdf#page=80) · [Verify the seven classes with --gap-slices](scripts/check_joint_product_sieve.py)
 
 For degrees divisible by eight, the simultaneous sieve has an exact factor-parity table. For $q=8$, its 63 exponent classes split into 21 with odd factor count, 21 with even count and 21 with repeated roots. Negating a squarefree class reverses its parity for every power of two $q\ge8$. The checker compares all 318 classes at $q=8,16$ with full factorizations. Lean proves the constructed examples in degrees 56 and 152 are primitive. [Parity formula](results.pdf#page=79) · [Lean certificates](GF2Sparse/ReciprocalSieve.lean) · [Reproduce with the --residues option](scripts/check_joint_product_sieve.py)
