@@ -3695,4 +3695,57 @@ through degree ten suffices for this example. The implementation is
 \nolinkurl{scripts/find_period_relations.py}. The same search accepts
 the published degree-1229 rows as a starting set.
 
+\section{A sharp order bound for the roots of a trinomial}
+\begin{theorem}\label{thm:trinomial-root-quotients}
+Let \(T=X^n+X^a+1\), where \(0<a<n\) and \(\gcd(n,a)=1\).
+If \(T\mid X^h-1\) with \(h>0\), then \(h\ge n(n-1)+1\).
+If \(T\) is irreducible, every root has order at least \(n(n-1)+1\).
+If also \(1<a<n-1\), no three roots have product one, even with repetition.
+\end{theorem}
+\begin{proof}
+Write \(R\) for the set of roots of \(T\). The squarefreeness argument in
+Theorem~\ref{thm:triple-orbits} gives \(|R|=n\).
+Suppose \(xy=uv\) for \(x,y,u,v\in R\).
+The pairs \((x^a,y^a)\) and \((u^a,v^a)\) have the same product.
+Raising \(xy=uv\) to the \(n\)-th power and using
+\(x^n=x^a+1\) gives equality of their sums as well.
+They are therefore the same unordered pair, with multiplicity.
+The map \(x\mapsto x^a\) is injective on \(R\), since equal \(a\)-th
+powers imply equal \(n\)-th powers and \(\gcd(a,n)=1\).
+Thus \(xy=uv\) determines the unordered pair \(\{x,y\}\).
+
+The \(n(n-1)\) quotients \(x/y\) with \(x\ne y\) are distinct.
+Together with 1 they belong to the group of \(h\)-th roots of unity.
+For irreducible \(T\), all roots are Frobenius powers of any one root
+and lie in its cyclic subgroup. This gives both order bounds.
+The subgroup counting argument also follows from
+\href{https://arxiv.org/pdf/1510.01758}{Kelley and Owen, Lemma 2.2}.
+By Theorem~\ref{thm:triple-orbits}, a product-one triple forces its
+members to have order dividing \(D=n^2-na+a^2\). The difference
+\[
+       n(n-1)+1-D=(a-1)(n-a-1)
+\]
+is positive for every interior tap in the statement.
+The pair uniqueness, the irreducible order bound, and the interior-tap
+consequence are formalized in \nolinkurl{GF2Sparse/TrinomialOrder.lean}.
+\end{proof}
+
+\begin{corollary}\label{cor:sharp-linear-tap}
+For \(n\ge2\) the least positive \(h\) with \(X^n+X+1\mid X^h-1\)
+equals \(n(n-1)+1\) exactly when \(n-1\) is a power of two.
+\end{corollary}
+\begin{proof}
+Let \(q=2^j=n-1\). A root \(x\) satisfies \(x^q=(x+1)/x\),
+so \(x^{q^2}=1/(x+1)\) and \(x^{1+q+q^2}=1\).
+Squarefreeness and Theorem~\ref{thm:trinomial-root-quotients} give equality.
+Conversely, if the bound is attained, every root satisfies \(x^D=1\)
+for \(D=n(n-1)+1\). Theorem~\ref{thm:triple-orbits} places each root in a
+product-one triple, with repetitions allowed. Theorem~\ref{thm:tap-derivative}
+therefore gives \(D_{n-1}(x)=0\) at all \(n\) roots. This polynomial
+has degree at most \(n-1\), so it is identically zero.
+In characteristic two, \((1+X)^m\) is the product of the
+\(1+X^{2^i}\) over the set bits of \(m\).
+For \(m>0\) this equals \(1+X^m\) precisely when \(m\) has one set bit.
+\end{proof}
+
 \end{document}
