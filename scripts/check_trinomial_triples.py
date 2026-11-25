@@ -79,15 +79,64 @@ def check_irreducible_trinomials(limit):
           f"Found {len(found)} with a product-one triple in degrees {sorted({n for n, _ in found})}.")
 
 
+def progression_masks(n):
+    """Five-element supports containing 0, n and a four-term arithmetic progression."""
+    masks = set()
+    for step in range(1, n // 3 + 1):
+        block = sum(1 << (j * step) for j in range(4))
+        gap = n - 3 * step
+        if gap:
+            masks.update((block | (1 << n), (block << gap) | 1))
+        else:
+            for a in range(1, n):
+                if not (block >> a) & 1:
+                    masks.add(block | (1 << a))
+    return masks
+
+
+def exceptional_progressions(n):
+    d = 1
+    while 9 * d < n:
+        d *= 73
+    if 9 * d != n:
+        return set()
+    block = sum(1 << (3 * j * d) for j in range(4))
+    return {block | (1 << d), block | (1 << (8 * d))}
+
+
+def check_odd_progressions(limit):
+    from check_factor_base import irreducible, polynomial
+
+    checked = 0
+    exceptional = 0
+    for n in range(5, limit + 1, 2):
+        found = set()
+        for f in progression_masks(n):
+            if irreducible(polynomial(f)):
+                checked += 1
+                if has_irreducible_root_triple(f):
+                    found.add(f)
+        if found != exceptional_progressions(n):
+            raise ArithmeticError(f"progression classification disagreement at degree {n}")
+        exceptional += len(found)
+    print(f"Checked all {checked} irreducible odd-degree progression pentanomials "
+          f"through degree {limit}. Found {exceptional} with a product-one triple.")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("limit", type=int, nargs="?", default=16)
-    parser.add_argument("--irreducibles", action="store_true",
-                        help="check the classification using FLINT and direct Frobenius orbits")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--irreducibles", action="store_true",
+                      help="check the trinomial classification using FLINT and Frobenius orbits")
+    mode.add_argument("--progressions", action="store_true",
+                      help="check the classification for irreducible odd-degree four-term progressions")
     args = parser.parse_args()
     if args.limit < 3:
         parser.error("the degree limit must be at least three")
     if args.irreducibles:
         check_irreducible_trinomials(args.limit)
+    elif args.progressions:
+        check_odd_progressions(args.limit)
     else:
         check_exterior_counts(args.limit)

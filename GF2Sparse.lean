@@ -34,6 +34,7 @@ import GF2Sparse.PackedMersenneExamples
 import GF2Sparse.ParityExamples
 import GF2Sparse.PrimeGrid
 import GF2Sparse.Progressions
+import GF2Sparse.ProgressionTriples
 import GF2Sparse.QuadraticLift
 import GF2Sparse.ReciprocalSieve
 import GF2Sparse.RootProducts
