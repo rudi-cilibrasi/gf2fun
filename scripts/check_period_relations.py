@@ -10,8 +10,8 @@ from math import lcm
 from pathlib import Path
 
 from check_factor_base import DATA, irreducible, irreducible_counts, modulus, moment_bound, polynomial
-from find_factor_base_logs import insert
-from period_coordinate import CANDIDATES, DEGREE, PRIME, coordinate, frobenius_indices, mask_of, period_polynomial
+from find_factor_base_logs import insert, recover
+from period_coordinate import CANDIDATES, DEGREE, coordinate, frobenius_indices, mask_of, period_polynomial
 
 
 ORDER = (1 << DEGREE) - 1
@@ -20,30 +20,32 @@ TARGETS = DATA / "degree-1229-period-targets.csv"
 INDEX_FLOOR = 86483186594349058
 
 
-def small_irreducibles():
-    masks = {p for p in range(2, 1 << 17) if irreducible(polynomial(p))}
-    if Counter(p.bit_length()-1 for p in masks) != irreducible_counts(16):
+def small_irreducibles(limit=16):
+    masks = {p for p in range(2, 1 << (limit+1)) if irreducible(polynomial(p))}
+    if Counter(p.bit_length()-1 for p in masks) != irreducible_counts(limit):
         raise ArithmeticError("incomplete enumeration of small irreducibles")
     return masks
 
 
-def read_relations(masks):
+def read_relations(masks, n=DEGREE, path=RELATIONS):
     """Each triple (m,b,e) contributes B_b(D_m(a))^e to a product equal to one."""
-    indices = frobenius_indices(DEGREE)
-    psi = period_polynomial(DEGREE)
+    p = 2*n + 1
+    order = (1 << n) - 1
+    indices = frobenius_indices(n)
+    psi = period_polynomial(n)
     x = polynomial(2)
     dickson = [polynomial(0), x]
-    for _ in range(2, DEGREE+1):
+    for _ in range(2, n+1):
         dickson.append((x*dickson[-1] + dickson[-2]) % psi)
 
     @lru_cache(maxsize=32768)
     def value(m, b):
-        if min(m, PRIME-m) == 1:
+        if min(m, p-m) == 1:
             return polynomial(b)
-        return polynomial(b).compose_mod(dickson[min(m, PRIME-m)], psi)
+        return polynomial(b).compose_mod(dickson[min(m, p-m)], psi)
 
     pivots = {}
-    with RELATIONS.open() as rows:
+    with path.open() as rows:
         for line, raw in enumerate(rows, 1):
             left = right = polynomial(1)
             row = Counter()
@@ -60,7 +62,7 @@ def read_relations(masks):
                 row[b] += e << indices[m]
             if left != right:
                 raise ValueError(f"polynomial identity failed on relation line {line}")
-            if not insert(row, pivots, ORDER, fixed_x=False):
+            if not insert(row, pivots, order, fixed_x=False):
                 raise ValueError(f"no new unit pivot on relation line {line}")
     return pivots
 
@@ -186,12 +188,45 @@ def verify_submissions(name, paths, pivots, masks):
         print(f"Full order proved for the {name} candidate.")
 
 
+def example89():
+    n = 89
+    order = (1 << n) - 1
+    f = modulus(n, (3, 5, 6))
+    a = coordinate(f)
+    r = polynomial(2)
+    anchor = 237608358309219314788467309
+    if r.pow_mod(anchor, f) != a:
+        raise ArithmeticError("the supplied degree-89 period logarithm failed")
+    pivots = read_relations(small_irreducibles(10), n, DATA / "degree-89-period-relations.jsonl")
+    powers = recover(pivots, order)
+    needed = small_irreducibles(8)
+    if not needed <= powers.keys():
+        raise ArithmeticError("the degree-89 identities did not cover all requested irreducibles")
+    for p in needed:
+        v = polynomial(p).compose_mod(a, f)
+        if a.pow_mod(powers[p], f) != v or r.pow_mod(anchor*powers[p] % order, f) != v:
+            raise ArithmeticError(f"degree-89 exponentiation failed for mask {p}")
+    counts = Counter(p.bit_length()-1 for p in needed)
+    score = moment_bound(counts, 1024, 30)
+    if any(order % d == 0 for d in range(2, 1024)) or score <= n-2:
+        raise ArithmeticError("the degree-89 proper-index exclusion failed")
+    print(f"Degree 89: {len(pivots)} identities and one supplied logarithm establish "
+          f"all {len(needed)} powers through degree eight. Moment score {score} > 87.")
+    print("Full order proved for the degree-89 Gauss period and the sparse root.")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--list-targets", action="store_true", help="emit the target CSV")
+    parser.add_argument("--example-89", action="store_true", help="replay the complete one-logarithm example")
     parser.add_argument("--candidate", choices=CANDIDATES, help="sparse modulus used for submitted exponents")
     parser.add_argument("--logs", nargs="+", type=Path, help="verify supplied powers of the sparse root")
     args = parser.parse_args()
+    if args.example_89:
+        if args.list_targets or args.logs or args.candidate:
+            parser.error("--example-89 is a standalone certificate")
+        example89()
+        sys.exit(0)
     if bool(args.logs) != bool(args.candidate) or (args.list_targets and args.logs):
         parser.error("log submissions require a candidate and at least one CSV")
     small = small_irreducibles()

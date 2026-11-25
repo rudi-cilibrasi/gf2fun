@@ -77,6 +77,14 @@ uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_period_relations.py --candidate seroussi --logs /path/to/period-logs.csv
 ~~~
 
+The period method has a complete degree-89 example. One supplied exponent and 214 polynomial identities recover all 71 values through degree eight and prove full order for both the Gauss period and the sparse root. The first command checks it. The second regenerates the relations. The search can also extend the degree-1229 relation file with `--seed`. [Working relation search](scripts/find_period_relations.py) · [Degree-89 certificate](data/degree-89-period-relations.jsonl)
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_period_relations.py --example-89
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/find_period_relations.py 89 --factor-degree 10 --target-degree 8 --spans 16 20 24 28 32 36 40 > /tmp/gf2-period89.jsonl
+cmp /tmp/gf2-period89.jsonl data/degree-89-period-relations.jsonl
+~~~
+
 The power-basis route for Seroussi’s polynomial has a separate list of 4,993 masks evaluated at $r$. [Download the power-basis targets](data/degree-1229-seroussi-targets.csv)
 
 Encode a monic binary polynomial by its coefficient bits. A row `mask,exponent` asserts that this polynomial equals the indicated power of $X$ in the field. The checker accepts independent partial lists, verifies each equality, and reports whether their combined degree counts force full order. To reproduce a complete smaller example and check a partial degree-1229 submission, run

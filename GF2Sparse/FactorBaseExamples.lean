@@ -47,4 +47,14 @@ theorem checked61 : logs61.length = 71 ∧ (logs61.map Prod.fst).Nodup ∧
 theorem checked89 : logs89.length = 71 ∧ (logs89.map Prod.fst).Nodup ∧
     checkLogs 89 3 [89,6,5,3,0] logs89 = true := by decide +kernel
 
+
+/-- The exponent connecting the degree-89 sparse root to its Gauss period coordinate. -/
+theorem period_power89 :
+    let f := decode (xorShifts [89,6,5,3,0] 1)
+    AdjoinRoot.mk f (decode 0x1df48cb4ae9eca599f5eb5e) =
+      AdjoinRoot.root f ^ 237608358309219314788467309 :=
+  checkLogs_sound (n := 89) (fuel := 3) (js := [89,6,5,3,0])
+    (rows := [(0x1df48cb4ae9eca599f5eb5e,237608358309219314788467309)])
+    (by decide +kernel) (by simp)
+
 end GF2Sparse.FactorBase

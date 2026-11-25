@@ -3620,4 +3620,42 @@ and recovery of subgroup membership from a unit coefficient in
 \nolinkurl{GF2Sparse/GaussPeriod.lean}.
 \end{proof}
 
+
+For a complete one-logarithm example, take \(n=89\), \(p=179\), and
+\(r\) a root of \(X^{89}+X^6+X^5+X^3+1\). The same trace construction
+gives the explicit period
+\[
+ a=B_{\mathtt{0x1df48cb4ae9eca599f5eb5e}}(r)
+   =r^{237608358309219314788467309}.
+\]
+The last equality is kernel-checked in
+\nolinkurl{GF2Sparse/FactorBaseExamples.lean}. The logarithm was found
+using rational reconstruction in the sparse quotient. For shifted
+values \(r^j a\), the extended Euclidean algorithm gives representations
+\(A(r)/B(r)\). A pair supported on factors with known logarithms then
+gives \(\log_r a=\log_r A(r)-\log_r B(r)-j\).
+
+The 214 identities in \nolinkurl{data/degree-89-period-relations.jsonl}
+express all 71 irreducible values of degrees through eight as powers
+of \(a\), starting with \(a^1=a\). The checker independently
+exponentiates all 71 in the sparse quotient with both bases. Trial
+division of \(2^{89}-1\) through 1023 and
+Theorem~\ref{thm:factor-moments} with \(L=30\) give
+\(Q=14023228315675237/154659929194496>87\). Therefore \(a\)
+generates the field's multiplicative group. Since \(a\) is the
+displayed power of \(r\), the sparse root also generates it.
+
+To find the identities, put \(N_F(a)=F(z)F(z^{-1})\).
+For a binary polynomial \(F\) with exponent set \(S\),
+\[
+ N_F(T)=(|S|\bmod2)+\sum_{i<j,\ i,j\in S}D_{j-i}(T).
+\]
+If \(G\) has exponent set \(mS+b\bmod p\), the two factors
+\(z^b,z^{-b}\) cancel, giving
+\(N_G(a)=N_F(a)^{2^{k(m)}}\). Factoring both sides gives relations.
+Searching support spans through 40 and using auxiliary irreducibles
+through degree ten suffices for this example. The implementation is
+\nolinkurl{scripts/find_period_relations.py}. The same search accepts
+the published degree-1229 rows as a starting set.
+
 \end{document}
