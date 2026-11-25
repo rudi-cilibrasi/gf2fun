@@ -18,14 +18,15 @@ theorem aeval_dyadic {R : Type*} [CommRing R] [Algebra (ZMod 2) R] [CharP R 2]
     (Subsingleton.elim _ _) p r
   simpa [iterateFrobenius_def] using h.symm
 
-variable {K : Type*} [Field K] [Algebra (ZMod 2) K]
-
-theorem orderOf_root_at {f : BinaryPoly} (hf : Irreducible f) {z : K}
+theorem orderOf_root_at {K : Type*} [CommRing K] [Nontrivial K] [Algebra (ZMod 2) K]
+    {f : BinaryPoly} (hf : Irreducible f) {z : K}
     (hz : aeval z f = 0) : orderOf z = orderOf (AdjoinRoot.root f) := by
   letI : Fact (Irreducible f) := ⟨hf⟩
   let φ := AdjoinRoot.liftAlgHom f (Algebra.ofId _ _) z hz
   simpa [φ, AdjoinRoot.liftAlgHom_root] using
     orderOf_injective φ.toMonoidHom φ.injective (AdjoinRoot.root f)
+
+variable {K : Type*} [Field K] [Algebra (ZMod 2) K]
 
 private theorem frobenius_degree {f : BinaryPoly} (hf : Irreducible f) {z : K}
     (hz : aeval z f = 0) : z ^ (2 ^ f.natDegree) = z := by

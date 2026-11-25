@@ -94,4 +94,76 @@ theorem norm_congruence_of_irreducible_comp {H h : BinaryPoly} (hH : Irreducible
   rw [← AdjoinRoot.aeval_eq]
   simpa only [normExponent, pow_mul, Fin.sum_univ_eq_sum_range] using hval.symm
 
+private theorem norm_at_factor {f p h : BinaryPoly} {D : ℕ} (hp : p ∣ f)
+    (hnorm : f ∣ X ^ D - h) : AdjoinRoot.root p ^ D = aeval (AdjoinRoot.root p) h := by
+  have he := AdjoinRoot.mk_eq_zero.2 (hp.trans hnorm)
+  simpa only [map_sub, map_pow, AdjoinRoot.mk_X, sub_eq_zero, AdjoinRoot.aeval_eq] using he
+
+private theorem inner_order_at_factor {H h p : BinaryPoly} [Nontrivial (AdjoinRoot p)]
+    (hH : Primitive H) (hd : p ∣ H.comp h) :
+    orderOf (aeval (AdjoinRoot.root p) h) = 2 ^ H.natDegree - 1 := by
+  have he : aeval (aeval (AdjoinRoot.root p) h) H = 0 := by
+    rw [← aeval_comp, AdjoinRoot.aeval_eq]
+    exact AdjoinRoot.mk_eq_zero.2 hd
+  exact (orderOf_root_at hH.2.1 he).trans hH.2.2
+
+private theorem root_pow_of_norm {H h p : BinaryPoly} [Nontrivial (AdjoinRoot p)]
+    (hH : Primitive H) (hd : p ∣ H.comp h)
+    (hnorm : H.comp h ∣ X ^ normExponent (2 ^ H.natDegree) h.natDegree - h) :
+    AdjoinRoot.root p ^ ((2 ^ H.natDegree) ^ h.natDegree - 1) = 1 := by
+  rw [← normExponent_mul (Nat.two_pow_pos H.natDegree), pow_mul, norm_at_factor hd hnorm,
+    ← inner_order_at_factor hH hd, pow_orderOf_eq_one]
+
+private theorem pow_ne_one_div_prime {M : Type*} [Monoid M] {x : M} {N p : ℕ}
+    (ho : orderOf x = N) (hN : 0 < N) (hp : p.Prime) (hd : p ∣ N) : x ^ (N / p) ≠ 1 := by
+  intro he
+  have h := orderOf_dvd_of_pow_eq_one he
+  rw [ho] at h
+  exact (Nat.div_lt_self hN hp.one_lt).not_ge
+    (Nat.le_of_dvd (Nat.div_pos (Nat.le_of_dvd hN hd) hp.pos) h)
+
+/-- A single norm congruence supplies the maximal order at all primes of
+the outer field's multiplicative group, even before irreducibility is known. -/
+theorem primitive_comp_iff_norm_and_prime_checks {H h : BinaryPoly} (hH : Primitive H)
+    (hm : 0 < h.natDegree) (hc : h.coeff 0 = 0) :
+    let q := 2 ^ H.natDegree
+    let N := q ^ h.natDegree - 1
+    Primitive (H.comp h) ↔
+      H.comp h ∣ X ^ normExponent q h.natDegree - h ∧
+      ∀ p : ℕ, p.Prime → p ∣ N → ¬ p ∣ q - 1 →
+        AdjoinRoot.root (H.comp h) ^ (N / p) ≠ 1 := by
+  let f := H.comp h
+  let q := 2 ^ H.natDegree
+  let R := q - 1
+  let D := normExponent q h.natDegree
+  let N := q ^ h.natDegree - 1
+  let x := AdjoinRoot.root f
+  have hn : 0 < f.natDegree := by
+    rw [show f = H.comp h from rfl, natDegree_comp]
+    exact Nat.mul_pos hH.2.1.natDegree_pos hm
+  have hsize : 2 ^ f.natDegree - 1 = N := by simp only [f, natDegree_comp, pow_mul, N, q]
+  have hN : 0 < N := hsize ▸ Nat.sub_pos_of_lt (Nat.one_lt_two_pow hn.ne')
+  have hq : 1 < q := Nat.one_lt_two_pow hH.2.1.natDegree_pos.ne'
+  have hR : 0 < R := Nat.sub_pos_of_lt hq
+  have hDR : D * R = N := normExponent_mul hq.le _
+  change Primitive f ↔ f ∣ X ^ D - h ∧ ∀ p : ℕ, p.Prime → p ∣ N → ¬p ∣ R → x ^ (N / p) ≠ 1
+  constructor
+  · intro hf
+    exact ⟨norm_congruence_of_irreducible_comp hH.2.1 hm hc hf.2.1,
+      fun _ hp hd _ => pow_ne_one_div_prime (hf.2.2.trans hsize) hN hp hd⟩
+  · rintro ⟨hnorm, hrest⟩
+    letI := AdjoinRoot.nontrivial f (degree_ne_of_natDegree_ne hn.ne')
+    have ho := inner_order_at_factor hH (dvd_refl f)
+    have he := norm_at_factor (dvd_refl f) hnorm
+    apply primitive_of_prime_checks (binary_monic (fun hzero => by simp [hzero] at hn)) hn
+    · rw [hsize]
+      exact root_pow_of_norm hH (dvd_refl f) hnorm
+    · rw [hsize]
+      intro p hp hd
+      by_cases hbase : p ∣ R
+      · change x ^ (N / p) ≠ 1
+        rw [← hDR, Nat.mul_div_assoc _ hbase, pow_mul, he]
+        exact pow_ne_one_div_prime ho hR hp hbase
+      · exact hrest p hp hd hbase
+
 end GF2Sparse
