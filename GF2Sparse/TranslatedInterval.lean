@@ -60,4 +60,7 @@ theorem translated_product_interval_upto_640 : TranslatedProductInterval 640 :=
 theorem translated_product_interval_upto_656 : TranslatedProductInterval 656 :=
   translated_product_interval_of_coverage primitiveProduct_upto_656
 
+theorem translated_product_interval_upto_672 : TranslatedProductInterval 672 :=
+  translated_product_interval_of_coverage primitiveProduct_upto_672
+
 end GF2Sparse
