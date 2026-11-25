@@ -1058,7 +1058,7 @@ Normalize each norm to lowest exponent zero. For
 \(E\circ\Phi\) and \(E\circ\Phi^2\) the normalizing factors are
 \(t^{57}\) and \(t^{321}\), and the resulting polynomials \(N_1,N_2\)
 have degrees 95 and 535. Encoding the coefficient of \(t^i\) as bit \(i\),
-the matrix operations above give the following hexadecimal values:
+the matrix operations above give the hexadecimal values
 \[
 \begin{aligned}
  N_1 &= \mathtt{ceea1726aa3d6e9d01a0b261},\\
@@ -1078,7 +1078,10 @@ pair \(r,r^{-1}\) would give the forbidden triple \(r,r,r^{-2}\),
 since squaring preserves binary roots. This proves the three tests.
 \end{proof}
 The degree \(Q\) supports have exponent gcd 1. The examples \(F_8\)
-and \(F_{16}\) are primitive. If \(m>1\), a root of \(F_Q(X^m)\)
+and \(F_{16}\) are primitive. Lean verifies the Bézout identity in
+\texttt{GF2Sparse/DyadicCertificate.lean} and proves the theorem, the
+odd dilations and both primitive examples in \texttt{GF2Sparse/DyadicTriples.lean}.
+If \(m>1\), a root of \(F_Q(X^m)\)
 has order at most \(m(2^Q-1)<2^{mQ}-1\), since its \(m\)-th power
 has degree at most \(Q\). The substitutions therefore settle the three
 tests even in degrees where further tests necessarily fail.
