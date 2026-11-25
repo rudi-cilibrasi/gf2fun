@@ -204,9 +204,10 @@ def prime_refs(factors):
     return "[" + ", ".join(f"p{q}" for q in factors) + "]"
 
 
-def prime_certificates(primes):
+def prime_certificates(primes, extra_factors=None):
     # Postorder the Lucas proof tree and share each proof across all rows.
     proofs = {}
+    known_factors = {**LUCAS_FACTORS, **(extra_factors or {})}
 
     def certify(p):
         if p in proofs:
@@ -214,8 +215,8 @@ def prime_certificates(primes):
         if p < 1024:
             proofs[p] = f"⟨{p}, by norm_num1⟩"
             return
-        if p in LUCAS_FACTORS:
-            factors = LUCAS_FACTORS[p]
+        if p in known_factors:
+            factors = known_factors[p]
             if prod(factors) != p - 1 or not all(isprime(q) for q in set(factors)):
                 raise ValueError(f"invalid Lucas factorization for {p}")
         else:
