@@ -2800,4 +2800,62 @@ all \(z_{W_b}\), at a cost of at most \(s(s+1)/2\) multiplications
 in \(K\). The script \nolinkurl{scripts/check_ore_bases.py} checks the
 ranks and normality by direct binary elimination in the lifted field.
 
+
+\section{Full multiplicative orders in degree 4095}\label{sec:ore4095}
+
+\begin{theorem}\label{thm:ore4095}
+Of the eighteen primitive binary trinomials and pentanomials of degree
+twelve, twelve have primitive Ore lifts and six have lifts of exact
+index seven. In particular,
+\[
+             X^{4095}+X^{255}+X^3+X+1
+\]
+is primitive. The six exceptions are precisely the seeds listed in
+Section~\ref{sec:ore-norms}.
+\end{theorem}
+\begin{proof}
+Put \(M=2^{4095}-1\). The checked factor list has 51 distinct primes,
+with 7 appearing twice and each other prime appearing once.
+To obtain the list, combine the factorizations for the four maximal
+proper subfield degrees \(1365,819,585,315\) with the factors of
+\(\Phi_{4095}(2)\). The latter cyclotomic value has 521 digits and
+five prime factors, of which the largest has 425 digits. The complete
+list multiplies to \(M\). The proper-subfield factors are from the
+\href{https://github.com/postvakje/Reformatted-Cunningham-Project-tables/blob/dff2e282ff15399b16b4fb840a410aa2a37076b7/pmain422_table2-.json}
+{Cunningham table transcription}, and the last five are from the
+\href{https://factordb.com/index.php?id=1100000000853413115}
+{FactorDB record for \(\Phi_{4095}(2)\)}.
+
+Enumerate the seed supports as in Theorem~\ref{thm:primitive-lifts}.
+For each primitive seed the quotient by its lift is a field, by
+Theorem~\ref{thm:ore-equivalence}. Starting with \(h=M\), for each
+prime factor \(p\) with multiplicity, replace \(h\) by \(h/p\) when
+\(r^{h/p}=1\). A division that fails cannot succeed after further divisions, so the
+remaining integer is the exact order. The two observed
+values are \(M\) (twelve seeds) and \(M/7\) (six seeds).
+One representative of each full-order reciprocal seed pair has
+interior exponents
+\[
+ (1,2,8),\ (1,2,10),\ (2,3,9),\ (3,4,7),\ (3,5,6),\ (4,6,7).
+\]
+The displayed example comes from \(Y^{12}+Y^8+Y^2+Y+1\).
+
+Two independent computations give all eighteen orders.
+\nolinkurl{scripts/check_ore_lifts.py} calls FLINT's
+\href{https://flintlib.org/doc/fmpz/fmpz_is_prime.html}
+{proved primality test} on every distinct factor and checks the
+polynomial modular powers. \nolinkurl{scripts/check_ore_4095.gp}
+enumerates the seeds again in PARI/GP, tests irreducibility directly
+and computes the field-element orders with \texttt{fforder}.
+It checks the largest prime using the included elliptic-curve
+primality certificate and proves primality for every other factor.
+Both computations use \nolinkurl{data/mersenne-4095-factors.json}.
+\end{proof}
+
+Applying the Ore equivalence once more gives twelve distinct
+irreducible pentanomials of degree \(2^{4095}-1\), each passing all
+root-product tests of lengths through 4094. For the other six seeds,
+each second lift has exactly seven irreducible factors, all of degree
+\((2^{4095}-1)/7\), by Theorem~\ref{thm:ore-largest-factor}.
+
 \end{document}

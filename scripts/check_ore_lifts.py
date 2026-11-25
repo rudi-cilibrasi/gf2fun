@@ -1,10 +1,10 @@
-"""Test full multiplicative order after Ore lifting every sparse primitive seed through degree ten."""
+"""Test exact multiplicative orders of Ore lifts of sparse primitive binary seeds."""
 
 import argparse
 import json
 from itertools import combinations
 
-from flint import nmod_poly
+from flint import fmpz, nmod_poly
 
 from make_witnesses import emit_block_powers, emit_certified_powers, prime_certificates, primitive, table_factors
 
@@ -31,24 +31,28 @@ def order_index(support, factors):
     return size // order
 
 
-def survey(table):
-    for s in range(2, 11):
+def survey(table, degrees, show_all):
+    for s in degrees:
+        if s < 2:
+            raise ValueError("expected a seed degree of at least two")
         factors = table_factors(s, table)
         lift_factors = table_factors((1 << s) - 1, table)
-        count = 0
-        exceptional = []
+        if not all(fmpz(p).is_prime() for p in set(factors + lift_factors)):
+            raise ArithmeticError("FLINT could not prove a supplied factor prime")
+        rows = []
         for interior_count in (1, 3):
             for interior in combinations(range(1, s), interior_count):
                 support = (0, *interior, s)
                 if not primitive(s, sum(1 << i for i in support), factors):
                     continue
-                count += 1
                 index = order_index(lifted_support(support), lift_factors)
-                if index > 1:
-                    exceptional.append((support, index))
-        print(f"seed degree {s}, primitive lifts {count - len(exceptional)}/{count}")
-        for support, index in exceptional:
-            print(f"  seed {support}, multiplicative index {index}")
+                rows.append((support, index))
+        print(f"seed degree {s}, primitive lifts {sum(index == 1 for _, index in rows)}/{len(rows)}")
+        for support, index in rows:
+            if show_all:
+                print(f"  seed {support}, lift {lifted_support(support)}, multiplicative index {index}")
+            elif index > 1:
+                print(f"  seed {support}, multiplicative index {index}")
 
 
 def emit(table):
@@ -79,13 +83,21 @@ def emit(table):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--factor-table", required=True, type=argparse.FileType("r"),
-                        help="Cunningham table2-_data JSON or a map of degrees to prime factors")
-    parser.add_argument("--lean", action="store_true", help="emit the two large primitive certificates")
+                        help="Cunningham JSON, a degree-to-factors map, or one lift factor list with --seed-degree")
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument("--lean", action="store_true", help="emit the degree-511 and degree-1023 Lean certificates")
+    action.add_argument("--seed-degree", type=int, help="report every seed and exact lift index in this degree")
     args = parser.parse_args()
     with args.factor_table as source:
         data = json.load(source)
-    table = data.get("table2-_data", data)
+    if isinstance(data, list):
+        if args.seed_degree is None or args.seed_degree < 2:
+            parser.error("a single lift factor list requires --seed-degree of at least two")
+        table = {str((1 << args.seed_degree) - 1): data}
+    else:
+        table = data.get("table2-_data", data)
     if args.lean:
         emit(table)
     else:
-        survey(table)
+        survey(table, [args.seed_degree] if args.seed_degree is not None else range(2, 11),
+               args.seed_degree is not None)
