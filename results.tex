@@ -12962,4 +12962,62 @@ seeds with masks \(7\) and \(11\), through class degrees 64 and 128
 respectively.
 \end{proof}
 
+\section{An invertible power map between reciprocal Ore lifts}\label{sec:ore-trace-coordinate}
+Let \(P\) be primitive of degree \(s\ge2\), \(\theta=Y\bmod P\),
+\(E=\F(\theta)\), \(n=2^s-1\), \(M=2^n-1\).
+Put \(P^*(Y)=Y^sP(1/Y)\) and
+\[
+ D=\{j\in\mathbb Z/n:\operatorname{Tr}_{E/\F}(\theta^j)=0\},
+\qquad e(P)=\sum_{j\in D}2^{[j]_n},
+\]
+where \([j]_n\) is the representative between \(0\) and \(n-1\).
+
+\begin{theorem}
+For any root \(r\) of \(O_P\), the power \(r^{e(P)}\) is a root
+of \(O_{P^*}\), and
+\[
+                e(P)e(P^*)\equiv2^{s-2}\pmod M .
+\]
+Thus the two exponents, computed entirely in the seed fields, specify
+inverse coordinate changes after one Frobenius correction. They act by
+units modulo the full field group size even when the lifted root has
+smaller order.
+\end{theorem}
+\begin{proof}
+Index the roots of \(L_P\) by the binary linear bijection \(v:E\to V\)
+of Section~\ref{sec:ore-norms}, with \(v(1)=r\) and
+\(v(\theta a)=v(a)^2\). The proof of Theorem~\ref{thm:ore-reciprocal-orders}
+assigns to each root \(u\) of \(O_{P^*}\) a monic linearized polynomial
+whose roots form a hyperplane in \(V\) and whose nonzero roots have
+product \(u\). Distinct \(u\) require distinct hyperplanes. There are
+\(n\) roots and exactly \(n\) hyperplanes, so every hyperplane occurs.
+For the image of the trace-zero hyperplane the nonzero product is
+\(\prod_{j\in D}r^{2^{[j]_n}}=r^{e(P)}\).
+
+Identifying the reciprocal seed root with \(\theta^{-1}\) replaces \(D\)
+by \(-D\). The set has \(k=2^{s-1}-1\) members. Each nonzero translate
+meets \(D\) in \(\lambda=2^{s-2}-1\) members, since
+\(\operatorname{Tr}(a)\) and \(\operatorname{Tr}(\theta^i a)\) are
+independent binary linear forms for \(i\not\equiv0\pmod n\), by
+nondegeneracy of the trace pairing. This is the hyperplane construction
+of a \href{https://doi.org/10.1090/S0002-9947-1938-1501951-4}{Singer
+difference set}. In the product of the two integer exponents, use
+\(2^n\equiv1\pmod M\) to collect terms by differences modulo \(n\).
+The zero difference occurs \(k\) times and every other difference
+\(\lambda\) times. Since \(\sum_{j=0}^{n-1}2^j=M\), the residue is
+\(k-\lambda=2^{s-2}\), a unit modulo \(M\).
+\end{proof}
+
+In degree 2047 let \(x\) be the residue of \(X\) for \(X^{2047}+X^3+1\)
+and \(y\) the residue for \(X^{2047}+X^{511}+1\). The file
+\nolinkurl{data/degree-2047-ore-coordinate.json} gives both \(y=x^e\)
+and \(x=y^{e^{-1}\bmod M}\), as exponents and as polynomial residues.
+The composition of the two uncorrected trace powers is ninth Frobenius,
+since \(s-2=9\). The verifier checks every cyclic intersection, both
+trinomial equations, and both compositions of the polynomial
+substitutions in \nolinkurl{scripts/check_ore_trace_coordinate.py}.
+For instance a logarithm \(G(y)=y^b\) from the second representation
+now gives \(G(x^e)=x^{eb}\) in the first representation, independently
+of the unresolved exact order.
+
 \end{document}

@@ -9,15 +9,16 @@ open Polynomial
 
 private def positions (g : ℕ) := (List.range (g.log2 + 1)).filter g.testBit
 
-private theorem linearized_decode (js : List ℕ) :
-    decode (xorShifts (js.map (fun j => 2^j)) 1) = X * oreLift (decode (xorShifts js 1)) := by
+private theorem linearized_decode (js : List ℕ) (w : ℕ) :
+    decode (xorShifts (js.map (fun j => 2^j)) w) =
+      X * oreLift (decode (xorShifts js 1)) * decode w := by
   induction js with
   | nil =>
     have hz : oreLift 0 = 0 := toFinsupp_injective (Finsupp.embDomain_zero oreIndex)
     simp [xorShifts, hz]
   | cons j js ih =>
     simp only [List.map_cons, xorShifts, decode_xor, decode_shift_by, decode_one,
-      mul_one, oreLift_add, oreLift_X_pow, mul_add, ih]
+      mul_one, oreLift_add, oreLift_X_pow, mul_add, add_mul, ih]
     rw [← pow_succ', Nat.sub_add_cancel (Nat.two_pow_pos j)]
 
 /-- Multiply a mask by the linearized polynomials for a list of binary seed labels. -/
@@ -42,7 +43,7 @@ private theorem multiplyLabels_eval {n p : ℕ} {z : K}
   | cons g gs ih =>
     have hg := dvd_X_pow_sub_decode (beq_iff_eq.1 (h g List.mem_cons_self))
     have hv := ore_conjugate_of_seed_remainder hz hg
-    rw [multiplyLabels, decode_xorShifts, linearized_decode, map_mul, map_mul, aeval_X,
+    rw [multiplyLabels, linearized_decode, map_mul, map_mul, aeval_X,
       ← hv, ih (fun u hu => h u (List.mem_cons_of_mem _ hu))]
     simp [exponent, pow_add, mul_assoc]
 

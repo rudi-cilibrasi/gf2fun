@@ -646,6 +646,8 @@ uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check
 uv run --no-project --with python-flint==0.9.0 python scripts/check_ore_uniform_order.py
 ~~~
 
+The roots of $X^{2047}+X^3+1$ and $X^{2047}+X^{511}+1$ can be converted in either direction by exponentiation or polynomial substitution. The trace in the degree-11 seed field supplies the exponents. [Coordinate file](data/degree-2047-ore-coordinate.json) · [Verifier](scripts/check_ore_trace_coordinate.py) · [Proof](results.pdf#page=169)
+
 To verify all eighteen degree-4095 orders, run either of these independent checks from the repository root. Both use the checked-in factors.
 
 ~~~sh
