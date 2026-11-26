@@ -132,6 +132,8 @@ relativecheck((rep*one)%basepol,{relative_low},{coefficients});
     pari(gp, body)
     if quotients:
         print(f"Verified {len(quotients)} norm quotients of optimal degree 16.", flush=True)
+        print(f"Verified {len(quotients)} single linear norms over the degree-7410 constant field.",
+              flush=True)
     if quotients_only:
         return
     print(f"At degree {n} with q={q}, each sparse root has two verified lifts. "
@@ -147,15 +149,15 @@ def quotient_checks(record, rows):
     if record["constant_degree"] != 6:
         raise ValueError("the quotient certificates use the degree-six constant field")
     body = """
-quotientcheck(residue,shift,seed,top,bottom)={
+quotientcheck(residue,shift,seed,top,bottom,linearseed)={
   check(poldegree(residue)==1228);
   my(p0=basepol,p1=residue,b0=0*zz,b1=one,qr,bb);
   while(poldegree(p1)>poldegree(b1),
     qr=divrem(p0,p1); bb=b0+qr[1]*b1; p0=p1; p1=qr[2]; b0=b1; b1=bb);
   my(d0=max(poldegree(p0),poldegree(b0)), d1=max(poldegree(p1),poldegree(b1)));
-  check(d0+d1==1229 && max(d0,d1)<=624);
+  check(d0==615 && d1==614);
   my(mat=[polcoef(p0,d0),polcoef(p1,d1);polcoef(b0,d0),polcoef(b1,d1)]);
-  check(p0*b1-b0*p1==basepol && matdet(mat)!=0 && min(d0,d1)>39*15);
+  check(p0*b1-b0*p1==basepol && matdet(mat)!=0);
   check((p0-residue*b0)%basepol==0 && (p1-residue*b1)%basepol==0);
   my(c=matsolve(mat,[one,one]~), s=Pol(apply(a->value(a,zz),digits(seed,64))));
   check(poldegree(s)<624-d0);
@@ -163,6 +165,10 @@ quotientcheck(residue,shift,seed,top,bottom)={
   my(num=u*p0+v*p1, den=u*b0+v*b1);
   check(den%basepol!=0 && (num-residue*den)%basepol==0);
   normcheck(num,top,16); normcheck(den,bottom,16);
+  my(low=Pol(apply(a->value(a,zz),digits(linearseed,64))));
+  check(poldegree(low)<6);
+  my(g=residue+basepol*(x^6+low), absolute=binarynorm(g));
+  check(poldegree(g)==1235 && pollead(g)==1 && poldegree(absolute)==7410 && polisirreducible(absolute));
 };
 """
     for item in rows:
@@ -175,7 +181,8 @@ quotientcheck(residue,shift,seed,top,bottom)={
             raise ValueError(f"unknown quotient target {target}")
         top = [int(mask, 16) for mask in item["numerator_hex"]]
         bottom = [int(mask, 16) for mask in item["denominator_hex"]]
-        body += f"quotientcheck({residue},{int(item['shift'])},{int(item['seed'])},{top},{bottom});\n"
+        body += (f"quotientcheck({residue},{int(item['shift'])},{int(item['seed'])},"
+                 f"{top},{bottom},{int(item['linear_norm_seed'])});\n")
     return body
 
 

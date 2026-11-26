@@ -40,7 +40,8 @@
       "0x2f0fac127098d123ac06610bf3b4a5300a54df054ac6a4ecd6b2c5fdbdb",
       "0x33007f67848ba58549fe93c6a35e4566fe96c930e786a7a23ccfa991819",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 668
   },
   {
     "target": "seroussi",
@@ -83,7 +84,8 @@
       "0x12fa4d825f38ccb47459759a08c620a338db78f476be7d4d58321c20ba6",
       "0x260205e94af0562ca709b7f9ea5fbe18f3f732f1ad6519d6bff24c4d750",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 2028
   },
   {
     "target": 2,
@@ -126,7 +128,8 @@
       "0x21f3e5f3026ac770aec8871aa55d7cab8646a494887ab1b5f5f950136e5",
       "0x3b1c4b67e8e013ac447e41ad1bb85528b741d2c4c1b9c1aa3e0ca4ee331",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 5964
   },
   {
     "target": 19,
@@ -169,7 +172,8 @@
       "0x55e6fbac4bbe28468aed745fbb280fd8cf4c388b313b15d209c47cd194",
       "0x3f128cc2418d29ac03ef52dafd635aadc5f3f876b46c9a89b877cf28af9",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 532
   },
   {
     "target": 37,
@@ -212,7 +216,8 @@
       "0x262536fb9debbb7e5d8baf9037c8e1178ef2009c1549d37d0877fa33713",
       "0x1653966aeb839a4f5f5615fa7935ec3faa3309e90d41dc4d8e0c39b41c5",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 371
   },
   {
     "target": 41,
@@ -255,7 +260,8 @@
       "0x25b4f7ace5ed1422058449b09b5e83147b04cbefd7c4c9b78149338e817",
       "0x252a1af4034b1c271686b3633bb75e42e17214ffa7ac348a24f2e1fa8d6",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 2073
   },
   {
     "target": 47,
@@ -298,7 +304,8 @@
       "0x23c71cf23b08651b2beaccf2d03f5ba50c594b0ccd79127c1504d57a2b1",
       "0x29405027347a24c8aab956f8412f38d83ea49d0bacd1b1b76a6e279c0aa",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 2224
   },
   {
     "target": 67,
@@ -341,7 +348,8 @@
       "0x3351f1113b7cecb69c7dae32c8bf432b18b3be61730bcd5bbe084f30798",
       "0x20c4bbe32f8d73f10494569d924a3b191803a2206a6ea6daefcbe88e",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 60
   },
   {
     "target": 73,
@@ -384,7 +392,8 @@
       "0x1a5369aeae6aa0f134efaa5b22b4e0bfd9f22d40d39a797fd82fb3b83bf",
       "0x15c4b796116c91245c441a0b15605e16df94f96539285717e09539e1c2d",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 1244
   },
   {
     "target": 87,
@@ -427,7 +436,8 @@
       "0xcfe8ed134cd19281c73da3ce0d6992bf38702fc9348f41e4c345ee36d3",
       "0x6955b6b7bf0c416b9d52c270c5957140bd5632a01b7fcd799a7ce28645",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 3264
   },
   {
     "target": 91,
@@ -470,7 +480,8 @@
       "0x3ad6577bb0f66c4605fc94b8b18e186fc0c5cc75d5f6af8f952cd64da2f",
       "0x25d603319cd37f88831b658fbb27d0f4d9bb0e883316a0b54e10ce72121",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 708
   },
   {
     "target": 109,
@@ -513,6 +524,7 @@
       "0x202ff80fa5076920445d441723f8ff034a05a798ea7b11e802f23ec7045",
       "0x357bfd668479013911283b30242775f1a3107507480b8afb202595d4d75",
       "0x1"
-    ]
+    ],
+    "linear_norm_seed": 665
   }
 ]

@@ -47,4 +47,14 @@ theorem modulus_degree_le {f ρ p₀ b₀ p₁ b₁ A B : K[X]}
     _ = b₀ * (p₁ * B) := by rw [e₁]; ring
     _ = (p₁ * b₀) * B := by ring
 
+/-- Rounding the degree bounds to a multiple of the degree-13 Frobenius parameter. -/
+theorem frobenius_degree_bounds {D : ℕ} (hq : 13 ∣ D) :
+    (614 ≤ D → 624 ≤ D) ∧ (1228 ≤ D → 1235 ≤ D) := by
+  omega
+
+/-- An even polynomial degree makes the norm degree a multiple of 26. -/
+theorem even_single_degree_bound {D : ℕ} (hq : 26 ∣ D) (degree : 1228 ≤ D) :
+    1248 ≤ D := by
+  omega
+
 end GF2Sparse.NormQuotients

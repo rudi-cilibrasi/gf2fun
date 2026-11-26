@@ -8757,4 +8757,55 @@ the full line of parameters \(\lambda\in K\). The fraction for which
 If \(r\) is primitive, every parameter gives a member of \(H\).
 The exact order of either prescribed root remains open.
 
+\section{Least constant-field degrees for linear norms}\label{sec:linear-norm-constants}
+In the \(q=8192\) model let \(K'=\mathbb F_{2^{m'}}\) contain
+\(C=\mathbb F_{64}\) and \(\mathbb F_q\), with \(t\) still of degree
+1229 over \(K'\). For each of the twelve targets \(a\) in
+Section~\ref{sec:norm-quotients}, the table gives the least \(m'\)
+for two representations by norms from \(K'(t)\) to \(C(t)\).
+In the quotient, both degrees are at most \(h\). For a single
+polynomial the degree is exactly \(h\). Monic irreducibles attain
+every entry and are good for \(h>1\).
+\[
+\begin{array}{l|rrrrrr}
+ h&1&2&4&8&16&32\\ \hline
+ \text{quotient}&3744&1872&936&468&234&156\\
+ \text{single polynomial}&7410&3744&1872&936&468&234
+\end{array}
+\]
+For the quotient lower bound put \(j=m'/6\). The two Euclidean columns
+of Section~\ref{sec:norm-quotients} have degrees 615 and 614 for
+each of the twelve targets. Their determinant shows that every
+polynomial quotient representing \(a\) over \(C\) has maximum degree
+at least \(1229-615=614\). Taking coefficient norms of the numerator
+and denominator over \(K'\) produces such a pair of degrees at most
+\(jh\). Since \(13\mid j\), it follows that \(jh\ge624\).
+For a single polynomial, its norm has degree \(jh\) and reduces to
+the unique representative \(\rho_a\) of degree 1228 modulo \(I\).
+Thus \(jh\ge1235\), and \(jh\ge1248\) if \(h\) is even.
+
+To attain the quotient entries through \(h=16\), extend \(\mathbb F_{2^{234}}\) by
+degree \(16/h\). Either certified degree-16 polynomial splits into
+\(16/h\) conjugate factors of degree \(h\). Taking the norm of one
+factor gives the original polynomial on evaluation at \(t\). Norm
+transitivity proves the claim for the quotient. At \(h=32\) the
+degree-624 numerator and denominator over \(C\) each split over
+\(\mathbb F_{2^{156}}\) into 26 conjugate degree-24 factors. If the
+descent algorithm's hypothesis \([K':\mathbb F_q]\ge18\) is also imposed,
+the least \(m'\) at this last entry is 234, attained by the degree-16
+pair. For the even single
+entries apply the same argument to the degree-32 norm factors of
+Section~\ref{sec:single-norm-lifts}, using an extension of degree
+\(32/h\). For \(h>1\) the absolute root field and its index-two
+subfield stay fixed under these factorizations, so the trap tests
+from Section~\ref{sec:forward-descent} still hold.
+
+For a single linear norm take \(G_a=\rho_a+I(T)(T^6+S_a)\).
+The base-64 digits of \texttt{linear\_norm\_seed} in the quotient
+data give the coefficients of \(S_a\), lowest degree first.
+The checker verifies that the product of the six coefficient conjugates
+of \(G_a\) is binary irreducible of degree 7410. Hence \(G_a\) is
+monic irreducible of degree 1235 over \(C\). Any root \(\lambda\)
+in \(\mathbb F_{2^{7410}}\) gives \(\operatorname{Norm}(t-\lambda)=G_a(t)=a\).
+
 \end{document}
