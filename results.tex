@@ -10787,4 +10787,51 @@ factors, and checked their products with multiplicities. The inputs are
 \nolinkurl{data/mersenne-2561-2688.json}. Both checks use
 \nolinkurl{scripts/check_product_range.py}.
 
+\section{Logarithms from affine directions in the degree-1229 field}
+\label{sec:1229-direction-logs}
+Write \(q=1024\), \(y=x^q\), and \(x=R(y)=h_0(y)/h_1(y)\) in the
+certified model of Theorem~\ref{thm:1229-q1024-primitive}. Write
+\(L(v)\) for the logarithm of \(v^K\) to the base \(x^K\), modulo
+\(C=(2^{1229}-1)/K\). For the three charts
+\[
+ \phi(T)=T,\quad T+1,\quad (T+1)/T
+\]
+consider the fibers of \(\phi(T)^{q-1}\) above the \((q+1)\)-st roots
+of unity in \(\mathbb F_{q^2}\). Each fiber consists of \(q-1\)
+distinct projective points over this field. Indeed, the solutions for
+\(\phi(T)\) form a coset of \(\mathbb F_q^\times\), and each of the
+three charts is invertible. The directions have 53 binary Frobenius
+orbits, giving 159 equations.
+
+For \(\phi=f/g\), put \(u/v=\phi(T)/\phi(R(T))\) in lowest terms.
+Then \(u(y)/v(y)=\phi(x)^{q-1}\). For the degree-\(d\) minimal
+polynomial \(B\) of a direction, write \(B_h(U,V)=V^dB(U/V)\).
+All factors of the source
+\(S=B_h(f^{q-1},g^{q-1})\) are in the original binary base.
+The identity in the model field gives
+\[
+ L(B_h(u,v)) = q^{-1}\bigl(L(S)-d(q-1)L(g)\bigr)+dL(v)\pmod C.
+\]
+Factoring the left side and isolating single unknown factors
+recovers 107 logarithms outside the starting table of 90,839.
+Their binary degrees \(12,40,60,80,100,120\) have counts
+\(1,8,17,40,33,8\), respectively. The eight degree-40 factors
+also occur in the terminal quadratic catalogue. Direct powering
+checks all 107 logarithms, their coprimality to \(C\), and all four
+known prime-index powers for each value. Every value has full order.
+
+For instance, let \(B=\Phi_5\) and \(\phi(T)=T\).
+The binary mask \(\mathtt{154b}\) has degree 12 and splits into
+cubics over \(\mathbb F_{q^2}\). With the mask convention
+\(P_m(T)=\sum_{i:\,\mathrm{bit}_i(m)=1}T^i\), one has
+\[
+ B_h(Th_1,h_0)=P_{\mathtt{13}}P_{\mathtt{19}}P_{\mathtt{154b}}.
+\]
+The source \(\Phi_5(T^{1023})\) has three quartic factors and
+204 factors of degree 20. This identity determines the cubic
+logarithm using only the original table. The exponents and
+a checker for both the orbit computation and this explicit identity
+are in \nolinkurl{data/degree-1229-direction-logs.csv} and
+\nolinkurl{scripts/check_1229_direction_logs.py}.
+
 \end{document}
