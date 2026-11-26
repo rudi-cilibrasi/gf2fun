@@ -7565,8 +7565,10 @@ Take \((d,a,B)=(411,54,329)\). The integer part of the displayed
 bound exceeds \(2^{619}\). The four known prime factors and the
 bound of 15 on the remaining cofactor give \(w=19\).
 Taking \((d,a,B)=(414,55,327)\) gives an integer part exceeding
-\(2^{613}\). Both evaluations use integer arithmetic in
-\nolinkurl{scripts/check_primitive_weight_bound.py}.
+\(2^{613}\). The integer calculations in
+\nolinkurl{scripts/check_primitive_weight_bound.py} use odd binomial tails.
+Lean independently checks both inequalities by summing over the free
+weight first in \nolinkurl{GF2Sparse/WeightBounds.lean}.
 \end{proof}
 
 \end{document}
