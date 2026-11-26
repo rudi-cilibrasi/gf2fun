@@ -10950,4 +10950,79 @@ The option \nolinkurl{--factors-1229} of
 \nolinkurl{data/degree-1229-product-ratio-factors.csv} and verifies each
 factor by binary division. Their degrees range from 2 through 568.
 
+
+\section{Four support patterns for pentanomials and their cubed roots}
+\label{sec:cubed-supports}
+For a monic binary polynomial \(P\), let \(C(P)\) be the monic polynomial
+whose roots are the cubes of those of \(P\), counting multiplicity.
+Its degree is \(\deg P\). If \(P=A(X^3)+XB(X^3)+X^2D(X^3)\), then
+\[
+ C(P)(Y)=A(Y)^3+YB(Y)^3+Y^2D(Y)^3+Y A(Y)B(Y)D(Y).
+\]
+Indeed, multiply \(P(X),P(\omega X),P(\omega^2 X)\) for a nontrivial
+cube root of unity \(\omega\). The product is \(C(P)(X^3)\), since the
+three leading coefficients multiply to one. For odd \(n\), cubing is
+a permutation of \(\mathbb F_{2^n}^{\times}\) commuting with Frobenius.
+It follows that for an irreducible \(P\) of odd degree \(n\), \(C(P)\)
+is the minimal polynomial of a cube and has the same root order.
+
+\begin{theorem}\label{thm:cubed-supports}
+Let \(P\) have five terms, constant coefficient one and exponent gcd one.
+Suppose \(C(P)\) has odd weight at most five. Apart from exactly 130
+supports of degrees five through seventeen, its support is the set of
+exponents of one of the following Laurent polynomials, multiplied by a
+monomial. Here \(U=X^u,V=X^v\), with integer steps and five distinct
+exponents. The indicated residues are taken up to simultaneous sign
+modulo three.
+\[
+\begin{array}{c|l|c}
+ &\text{polynomial}&(u,v)\bmod 3\\\hline
+1&1+U+U^2+U^3+V&(0,1)\\
+2&1+U+U^3+U^4+V&(1,-1)\\
+3&1+U+U^2+V+V^2&(1,1)\\
+4&1+U+U^2+V+UV&(1,-1)
+\end{array}
+\]
+Conversely each displayed support has a cube image of odd weight at most
+five. In a fixed degree \(n>17\), the complete list takes \(O(n)\)
+integer pairs to enumerate.
+\end{theorem}
+\begin{proof}[Finite classification]
+With exponents \(e_i\), the numerators of the exponents in the cube
+formula are \(2e_i+e_j\) for all ordered pairs in the same residue
+class, and \(e_i+e_j+e_k\) for one index from each of the three
+classes. Divide each numerator by three and retain odd multiplicities.
+If all exponents agree modulo three their gcd is divisible by three.
+If all three class sizes are odd then \(P(\omega)=0\) and
+\(C(P)(1)=0\). The remaining possibilities have class sizes
+\(4+1,3+2,2+2+1\). Translating and negating exponents realize every
+permutation of the three residues.
+
+For each of the three cases, translate one exponent to zero and take the
+other four to be independent coordinates over \(\mathbb Q\). Drop a
+space where two of the five original points coincide identically.
+Cancel identical numerator forms in pairs. If more than five odd forms
+remain, select any six. At least one must coincide with another odd
+form in a qualifying specialization. For each such pair restrict to
+their equality hyperplane. This lowers the dimension and exhausts all
+possible specializations. In a one-dimensional space the integer
+exponents with gcd one are determined up to simultaneous sign. Check
+that sign against the assigned residues. For a space with at most five
+remaining odd forms, try each ordered choice of origin and the two
+steps from the five points and test equality with each template,
+including its residues. Template membership then holds on all its
+specializations with five distinct original points.
+
+The exact integer elimination in \nolinkurl{scripts/check_cubed_supports.py}
+leaves zero, 36 and 94 normalized exceptional supports respectively,
+counting reciprocals and translating the least exponent back to zero.
+All exceptions have degree at most 17. Direct enumeration through 17
+reproduces the same set. Substitution in the cube formula gives five
+formal image terms in each of the four templates. Coincidences remove
+terms in pairs. Finally, choose the two positions attaining the extreme
+exponents. Their difference is \(i u+j v=n\) for fixed small integers
+\(i,j\), and \(|u|,|v|\le n\) since both steps join points of the
+support. This proves the stated enumeration bound.
+\end{proof}
+
 \end{document}
