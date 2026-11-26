@@ -6,6 +6,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Two degree-1229 pentanomial roots have the same order as a product of two linear values.** The candidates with interior exponents $(256,461,922)$ and $(29,58,400)$ each have an explicit coordinate $w$ in which a power of the sparse root equals $w^2(w+1)$. If $A,B$ are the projected logarithms of $w,w+1$ to the certified primitive base and $C$ is the 943-bit cofactor, the exact index of the sparse root is $\gcd(2A+B,C)$. The two exponents remain open in each coordinate. [Proof](results.pdf#page=136) · [Export or verify a logarithm task](scripts/check_1229_rational_cubics.py) · [Lean certificates](GF2Sparse/SparseRootModels.lean)
 - **A second system tests the order of the same base.** In the same quaternary coordinate, the 104,968 norms at $q=1024$ generate the full multiplicative group. Two implementations reconstructed 172,222 circle equations. Full rank after adding the base coordinate would prove the base primitive and give every projection in the smaller table exact order equal to the 943-bit cofactor. The rank is open. [Proof](results.pdf#page=135) · [Circle parameters](data/degree-1229-q1024-quaternary-pencils.bin.gz) · [Matrix checker](scripts/check_1229_quaternary_pencils.py)
 - **A 29,144-variable logarithm system is solved in a degree-1229 model over $\mathbb F_4$.** With $q=512$, 124,252 distinct circle orbits yield a system of exact corank one modulo the unfactored cofactor. Direct powering checks every exponent. All 29,144 projected norms generate the same subgroup. The model embeds the previously certified primitive generator and both pentanomial roots. The order of the norm used to normalize this table is still open. [Proof](results.pdf#page=134) · [29,144 exponents](data/degree-1229-q512-quaternary-logs.csv.gz) · [Field and embedding certificates](data/degree-1229-quaternary-models.json) · [Circle identifiers](data/degree-1229-q512-quaternary-pencils.bin.gz)
 - **262,144 specified norms generate the full multiplicative group in each of the five degree-1229 models.** Their labels are the conjugate pairs with no preimage under the rational map. The checker expresses all 524,800 linear norms as explicit products of these values. The pullbacks give 262,656 independent equations over the full group order, and the 1,023 zero-center circles add independent constraints. [Proof](results.pdf#page=133) · [Leaf list and reduction exporter](scripts/check_1229_height_two_pullback.py)
@@ -94,6 +95,12 @@ The Lean target for an all-degree proof is `GF2Sparse.Conjecture`. The gap is to
 The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ for every $s>0$, using at most five exponents of the form $2^i-1$. The Lean theorem `conjecture_iff_sparseOreIrreducible` converts a proof of this target directly into the original conjecture. [Formal equivalence](GF2Sparse/OreConjecture.lean)
 
 ## Contributing
+
+To work directly on either cubic value, choose `--v 256` or `--v 400`. The command exports the field modulus, the projected primitive base, the projected cubic and its two linear components. Submit either a single exponent with `--cubic-log` or both exponents with `--linear-logs` to verify the sparse root's exact index. [Rational coordinate checker](scripts/check_1229_rational_cubics.py)
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_rational_cubics.py --v 400
+~~~
 
 To verify the quaternary logarithm table, compile the NTL backend and run the model checker. The same checker exports either pentanomial as a discrete logarithm to the previously certified primitive base. [Model checker](scripts/check_1229_quaternary_models.py) · [Independent binary-field verification](scripts/degree_1229_quaternary_logs.cpp)
 

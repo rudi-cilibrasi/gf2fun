@@ -2,9 +2,10 @@ import GF2Sparse.Degree1229
 import GF2Sparse.PackedOrder
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.ReduceModChar
 import Mathlib.Tactic.Ring
 
-/-! Two changes of coordinate for five-term binary equations of degree 1229. -/
+/-! Changes of coordinate for five-term binary equations of degree 1229. -/
 
 namespace GF2Sparse.SparseRootModels
 
@@ -56,6 +57,28 @@ theorem quadratic_frobenius (z : K) :
     (z^5)^1229 + (z^5)^922 + (z^5)^461 + (z^5)^256 + 1 =
       (z^256)^18*z^2 + ((z^256)^9 + (z^256)^24)*z + 1 + (z^256)^5 := by
   ring
+
+/-- A rational parameter expresses the two powers on a pentanomial curve as a cubic
+and a quadratic ratio. -/
+theorem rational_cubic_coordinate {b t : K} (hd : t^2+t+1 ≠ 0)
+    (curve : b^2+(t^3+1)*b+t+1 = 0) :
+    let w := (b+t)/(t^2+t+1)
+    w^2*(w+1) = b ∧ t*w = w^2+w+1 := by
+  let w := (b+t)/(t^2+t+1)
+  change w^2*(w+1) = b ∧ t*w = w^2+w+1
+  have lin : (t^2+t+1)*w = b+t := by
+    dsimp only [w]
+    rw [mul_comm, div_mul_cancel₀ _ hd]
+  have quadratic : w^2+(t+1)*w+1 = 0 := by
+    apply (mul_eq_zero.mp ?_).resolve_right (pow_ne_zero 2 hd)
+    calc
+      _ * (t^2+t+1)^2 = ((t^2+t+1)*w)^2 + (t+1)*((t^2+t+1)*w)*(t^2+t+1) + (t^2+t+1)^2 := by ring
+      _ = 0 := by
+        rw [lin]
+        linear_combination (norm := (try ring_nf; reduce_mod_char!)) curve
+  constructor
+  · linear_combination (norm := (try ring_nf; reduce_mod_char!)) (w+t)*quadratic + lin
+  · linear_combination (norm := (try ring_nf; reduce_mod_char!)) -quadratic
 
 open Polynomial PackedSquare
 open GF2Sparse.Degree1229 (knownPart cofactor)
@@ -127,5 +150,12 @@ theorem frobenius_model_order :
       ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
         orderOf (AdjoinRoot.root (pentanomial 256 461 922)) = knownPart*t :=
   of_certified 256 461 922 6 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- Irreducibility and the four known prime projections for the second rational cubic model. -/
+theorem rational_cubic_order :
+    Irreducible (pentanomial 29 58 400) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 29 58 400)) = knownPart*t :=
+  of_certified 29 58 400 4 (by decide) (by decide) (by decide) (by decide +kernel)
 
 end GF2Sparse.SparseRootModels

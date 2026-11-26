@@ -10437,4 +10437,57 @@ vanish, contrary to generation. The same conclusion would give
 exact order \(C\) for every projection in the \(q=512\) table,
 since \(9\) and every published exponent are coprime to \(C\).
 
+\section{Two pentanomial orders from cubic values in a rational coordinate}
+\label{sec:rational-cubics}
+For \(u+3v=1229\), \(u,v>0\), \(2u<1229\), consider
+\[
+       F(S)=S^{1229}+S^{2u}+S^u+S^v+1 .
+\]
+There are 205 choices, \(205\le v\le409\). Exactly two give
+irreducibles, at \((u,v)=(461,256)\) and \((29,400)\). The former
+appeared in Section~\ref{sec:quadratic-frobenius-support}.
+The latter has interior exponents \(29,58,400\). Both pass the four
+known prime-index tests and the extra cofactor test of
+Theorem~\ref{thm:1229-cofactor-bound}.
+
+In either field put \(b=s^u\), \(t=s^v\) for a root \(s\) of \(F\).
+The sparse equation is the curve \(b^2+(t^3+1)b+t+1=0\).
+Its rational parameter and the inverse formulas are
+\[
+   w=\frac{b+t}{t^2+t+1},\qquad
+   b=w^2(w+1),\qquad t=\frac{w^2+w+1}{w}.
+\]
+The denominator \(t^2+t+1\) has no root in this odd-degree binary field.
+Substituting for \(w\) in \(w^2+(t+1)w+1\) and clearing denominators
+gives the original curve equation. Thus \(w\ne0\). Reducing \(w^3+w^2\)
+by this quadratic gives \((t^2+t+1)w+t=b\). Since \(\gcd(u,v)=1\),
+Bézout's identity recovers \(s\) from \(b,t\), so \(w\) has degree
+1229. Equating \(b^v=t^u\) gives its monic minimal polynomial
+\[
+        W^{u+2v}(W+1)^v+(W^2+W+1)^u .
+\]
+It has 167 terms at \(v=256\) and 41 terms at \(v=400\).
+The two powers \(u,v\) are each coprime to \(M=2^{1229}-1\).
+Consequently both the cubic value and the quadratic ratio have
+exactly the order of the pentanomial root in each case.
+
+There is also a transfer between two pairs of generators. Since
+\(t+1=(w+1)^2/w\), one has
+\[
+           w^5=b^2/(t+1),\qquad (w+1)^5=b(t+1)^2 .
+\]
+Here \(t+1\ne0\) and \(5\) is coprime to \(M\), so
+\(\langle w,w+1\rangle=\langle b,t+1\rangle\). At \(v=256\) this
+is \(\langle s,s+1\rangle\). At \(v=400=16\cdot25\) it is
+\(\langle s,1+s^{25}\rangle\).
+
+The checker \nolinkurl{scripts/check_1229_rational_cubics.py} tests all
+205 supports and both rational maps. In either \(w\)-coordinate it
+embeds the certified primitive base \(g\) from
+Section~\ref{sec:1229-q1024-primitivity} using the common Gauss period.
+If \(A,B\) are the logarithms of \(w^K,(w+1)^K\) to \(g^K\), the exact
+index of \(s\) is \(\gcd(2A+B,C)\). Equivalently, one can submit the
+logarithm of the projected cubic alone. The checker verifies submissions
+by direct powering. The two indices remain open.
+
 \end{document}
