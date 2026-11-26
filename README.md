@@ -127,6 +127,12 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+The degree-1229 pentanomial with interior taps $(136,683,819)$ and its reciprocal have an elliptic model. Ten projected logarithms determine their exact root order. The factors have degrees $7,9,11,12,13,14,17,19,19,20$ over $\mathbb F_{2^{20}}$. The command exports the field modulus, base, target masks, and relative polynomial factors. Add `--logs answers.csv` with columns `mask,exponent` to verify any subset. The complete set gives the common index, and index one proves both primitive. [Ten inputs](data/degree-1229-elliptic-split.json) · [Elliptic model](results.pdf#page=180)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_power_images.py --split elliptic
+~~~
+
 Four degree-1229 candidates share one discrete logarithm task. The JSON gives the binary field modulus, a base of order $C$, and the target as hexadecimal polynomial masks with bit $i$ as the coefficient of $X^i$. Find an integer $0\le e<C$ with $\mathrm{base}^e=\mathrm{target}$ in that field. Replace `--task` with `--log E` to check an answer. The checker computes the exact index of all four roots, and an index of one proves all four primitive. [Download the task](data/degree-1229-seventh-power-task.json)
 
 ~~~sh

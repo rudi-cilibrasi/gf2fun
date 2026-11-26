@@ -13898,4 +13898,31 @@ substitution. PARI/GP independently checked the projected orders and
 the norm equations.
 \end{proof}
 
+\section{Ten logarithms for the degree-1229 elliptic pair}
+\label{sec:elliptic-ten-logs}
+Let \(r\) be the root with interior taps \((136,683,819)\) from
+Theorem~\ref{thm:1229-elliptic-family}. Write \(2^{1229}-1=KC\)
+for the known coprime parts of \nolinkurl{GF2Sparse/Degree1229.lean},
+with \(C\) the remaining composite, and let \(g\) be the certified
+primitive element from Section~\ref{sec:1229-q1024-primitivity}.
+The ten remaining projected logarithms in
+\nolinkurl{data/degree-1229-elliptic-split.json} determine
+\(\ord(r)\) and the order of every root of its reciprocal.
+
+The archive gives coprime binary polynomials \(U,V\) in the power
+basis of \(g\). Direct substitution in the field gives
+\(r^{2^{180}}=U(g)/V(g)\). Factor both sides of the quotient into
+binary irreducibles and subtract the verified exponents of its known
+factors to base \(g^K\), after raising to \(K\). The remaining
+factors have relative degrees \(7,9,11,12,13,14,17,19,19,20\)
+over \(\mathbb F_{2^{20}}\). The verifier checks each relative
+factor by irreducibility and its coefficient norm, the known offset
+by field powering, and the projected product directly against
+\(r^K\). Inverting \(2^{180}\bmod C\) gives an explicit affine
+linear expression \(e\bmod C\) in the ten submitted logarithms
+such that \(r^K=(g^K)^e\). The four known prime projections of
+\(r\) are full, so its exact index is \(\gcd(C,e)\).
+\nolinkurl{scripts/check_1229_power_images.py} checks the published
+split and accepts partial submissions with \texttt{--split elliptic}.
+
 \end{document}

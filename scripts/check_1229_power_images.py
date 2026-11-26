@@ -10,6 +10,7 @@ from collections import Counter
 from math import gcd
 from pathlib import Path
 
+from check_1229_frobenius_curves import ELLIPTIC_TAPS
 from check_1229_frobenius_models import primitive_generator_in
 from check_1229_sparse_frobenius import support_table
 from check_degree_1229 import COFACTOR, GROUP, KNOWN, N, check_known_order
@@ -21,7 +22,8 @@ from power_images import norm_pattern
 SOURCE = (166, 249, 332)
 TARGET = (332, 726, 1089)
 SPLITS = {"6": "degree-1229-seventh-power-split-six.json", "9": "degree-1229-seventh-power-split.json",
-          "degree-20": "degree-1229-seventh-power-degree20.json"}
+          "degree-20": "degree-1229-seventh-power-degree20.json",
+          "elliptic": "degree-1229-elliptic-split.json"}
 
 
 def census(m, taps):
@@ -88,10 +90,10 @@ def split_log_table():
     return field_mask, table
 
 
-def split_coefficients(row, field, root):
+def split_coefficients(row, field, root, source=SOURCE):
     from check_1229_log_descent import sparse_quotient
 
-    if tuple(row["source_taps"]) != SOURCE:
+    if tuple(row["source_taps"]) != source:
         raise ValueError("incorrect sparse source in the split")
     j, shift = row["frobenius"], row["base_shift"]
     if not 0 <= j < N or not 0 <= shift < GROUP:
@@ -110,12 +112,16 @@ def split_task(row, logs=None):
     from check_1229_norm_height import checked_norm
     from prepare_1229_single_log import prepare
 
-    _, field, _, root = prepare(SOURCE)
+    source = tuple(row["source_taps"])
+    names = {SOURCE: "seventh-power", ELLIPTIC_TAPS: "elliptic"}
+    if source not in names:
+        raise ValueError("unsupported source in the factor split")
+    _, field, _, root = prepare(source)
     field_mask, table = split_log_table()
     if mask_of(field) != field_mask:
         raise ValueError("the sparse root uses a different logarithm basis")
     base = polynomial(2).pow_mod(KNOWN, field)
-    coefficients = split_coefficients(row, field, root)
+    coefficients = split_coefficients(row, field, root, source)
     known = {p: checked_exponent(p, table[p], base, field) for p in coefficients.keys() & table.keys()}
     masks = coefficients.keys()-known.keys()
     if "logarithms" in row:
@@ -131,7 +137,7 @@ def split_task(row, logs=None):
         if piece["norm_multiplicity"] != 20//gcd(d, 20):
             raise ArithmeticError("incorrect coefficient-norm multiplicity")
         checked_norm(piece, d//gcd(d, 20), piece["norm_multiplicity"])
-    task = reduce_task("seventh-power", root, coefficients, known, base, field, logs)
+    task = reduce_task(names[source], root, coefficients, known, base, field, logs)
     for item in task["remaining"]:
         piece = pieces[int(item["mask_hex"], 16)]
         item.update(relative_factor=piece["relative_factor"], norm_multiplicity=piece["norm_multiplicity"])
@@ -146,25 +152,29 @@ def main():
     options.add_argument("--task", action="store_true", help="export the common-index logarithm task")
     options.add_argument("--log", type=int, metavar="EXPONENT", help="verify the common-index logarithm")
     options.add_argument("--split", nargs="?", choices=SPLITS, const="9",
-                         help="export a factor split; degree-20 gives six inputs, each of relative degree at most 20")
+                         help="export a factor split for the seventh-power or elliptic source")
     options.add_argument("--check-split", type=Path, help="verify a finder row and export its individual logarithms")
     parser.add_argument("--logs", type=Path, help="check a partial or complete mask,exponent CSV for a split")
     args = parser.parse_args()
     if args.logs and not (args.split or args.check_split):
         parser.error("--logs requires --split or --check-split")
-    f = verify_pair()
     if args.split or args.check_split:
         if args.check_split:
             row = {"source_taps": list(SOURCE), **json.loads(args.check_split.read_text())}
         else:
             row = json.loads((DATA / SPLITS[args.split]).read_text())
-            if len(row["logarithms"]["remaining"]) != (9 if args.split == "9" else 6):
-                raise ArithmeticError("unexpected number of factor tasks")
+            expected_source = ELLIPTIC_TAPS if args.split == "elliptic" else SOURCE
+            expected_count = {"6": 6, "9": 9, "degree-20": 6, "elliptic": 10}[args.split]
+            if tuple(row["source_taps"]) != expected_source or len(row["logarithms"]["remaining"]) != expected_count:
+                raise ArithmeticError("unexpected source or number of factor tasks")
+        if tuple(row["source_taps"]) == SOURCE:
+            verify_pair()
         task = split_task(row, args.logs)
         if not args.logs and "logarithms" in row and task != row["logarithms"]:
             raise ArithmeticError("the published logarithm split differs from the field calculation")
         print(json.dumps(row | {"logarithms": task} if args.check_split and not args.logs else task, indent=2))
         return
+    f = verify_pair()
     if args.task or args.log is not None:
         base = primitive_generator_in(f).pow_mod(KNOWN, f)
         target = polynomial(2).pow_mod(KNOWN, f)
