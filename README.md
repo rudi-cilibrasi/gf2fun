@@ -144,7 +144,7 @@ g++ -O3 -std=c++17 scripts/degree_1229_dyadic.cpp -lntl -o /tmp/gf2-dyadic
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh_descent.py --audit-branches --backend /tmp/gf2-dyadic
 ~~~
 
-The interpolated root task has 4,014 factors. Of these, 2,438 have individual certificates reducing them to relative degree at most five. This leaves 198 larger inputs, including just one of degree eleven. The command below lists all 198 with their binary masks and degrees. Add `--real-pencils` to the branch audit above to replay all 2,438 certificates. [Interpolation proof](results.pdf#page=163) · [Interpolants and additional indices](data/degree-1229-seventh-power-real-pencils.json) · [Reproduce the two interpolants by index](scripts/find_1229_hermitian_descent.py)
+The interpolated root task has 4,278 factors. Of these, 2,438 have individual certificates reducing them to relative degree at most five. The remaining larger inputs consist of 147 of degree seven, 49 of degree nine and one of degree eleven. The command below lists all 197 with their binary masks and degrees. Add `--real-pencils` to the branch audit above to replay all 2,438 certificates. [Interpolation proof](results.pdf#page=163) · [Three interpolants and the additional indices](data/degree-1229-seventh-power-real-pencils.json) · [Reproduce the odd-degree interpolants by index](scripts/find_1229_hermitian_descent.py)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh_descent.py --real-pencils --json |

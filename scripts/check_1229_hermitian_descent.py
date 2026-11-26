@@ -135,6 +135,11 @@ def binary_factors(p):
 
 def relation(mask, row):
     h = matrix([element(v) for v in row["hermitian"]])
+    return matrix_relation(mask, row, h)
+
+
+def matrix_relation(mask, row, h):
+    """Factor an explicit Hermitian matrix pencil and check its target and degree bound."""
     m = len(h)-1
     t = K([element(v) for v in row["relative_factor"]])
     if t.degree() != m+1 or not t.is_irreducible() or not t.leading_coefficient().is_one():

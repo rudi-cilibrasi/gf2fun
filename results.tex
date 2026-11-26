@@ -12519,12 +12519,25 @@ checks the resulting exponent identity in the degree-1229 field.
 Substituting both expressions gives 4,014 distinct logarithms for
 the sparse root. Exactly 2,438 of these have binary degree
 120, 160 or 200. Each has a verified degree-halving pencil, reducing
-it to relative degree at most five. After those substitutions the
-only inputs above degree five are one of degree six, 147 of degree
-seven, 49 of degree nine and one of degree eleven. Thus contributors
-can isolate any of these 198 larger logarithms. All counts use the
-same projected primitive base as the six-factor certificate.
-The two interpolants and 380 additional pencil indices are in
+it to relative degree at most five. The only remaining sextic is the
+binary degree-24 mask \(\mathtt{12339ef}_{16}\). Its relative factor
+\(t\) has coefficients in \(\mathbb F_{16}\). With
+\(\bar c=c^q=c^4\) on this field, choose degree-five \(g,h\) so
+\[
+  t\mid D=\widetilde g\,\bar h+\widetilde h\,\bar g,\qquad
+  S=g h^q+h g^q=g\prod_{c\in\mathbb F_q}(h+cg).
+\]
+For the given \(g\), divisibility is linear in the coefficients of
+\(h\) over \(\mathbb F_4\). The recorded pair is coprime, and \(D/t\)
+splits into four linears and ten quadratics over \(\mathbb F_{q^2}\).
+The norm identity gives 265 logarithms of degrees two through five.
+
+After this last substitution the expression has 4,278 inputs. Once
+the 2,438 indexed halvings have been applied, exactly 197 logarithms
+above relative degree five remain, comprising 147 of degree seven,
+49 of degree nine and one of degree eleven. All counts use the same projected
+primitive base as the six-factor certificate.
+The three interpolants and 380 additional pencil indices are in
 \nolinkurl{data/degree-1229-seventh-power-real-pencils.json}.
 
 \end{document}

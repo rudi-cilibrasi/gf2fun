@@ -58,6 +58,17 @@ def real_pencil_relation(mask, row):
     return terms
 
 
+def sextic_relation(mask, row):
+    from check_1229_hermitian_descent import K, Q, element, matrix_relation
+
+    g, h = ([element(c) for c in row[key]] for key in ("g", "h"))
+    if (len(g) != 6 or len(h) != 6 or any(c**16 != c for c in [*g, *h])
+            or K(g).gcd(K(h)).degree() != 0):
+        raise ValueError("invalid quintic pencil over F_16")
+    matrix = [[g[i]*h[j]**Q+h[i]*g[j]**Q for j in range(6)] for i in range(6)]
+    return matrix_relation(mask, row, matrix)
+
+
 def halving_data():
     with gzip.open(HALVINGS, "rt") as stream:
         parents = {int(p, 16): row for p, row in json.load(stream).items()}
@@ -111,6 +122,8 @@ def main():
     forms = json.loads(PENCILS.read_text())
     interpolation = json.loads(REAL_PENCILS.read_text())
     real = {int(row["mask_hex"], 16): row for row in interpolation["forms"]}
+    sextic = interpolation["sextic"]
+    sextic_mask = int(sextic["mask_hex"], 16)
     extra = {int(p, 16): i for p, i in interpolation["halving_indices"]}
     quintic = int(forms["quintic_hex"], 16)
     cubics = {int(row["mask_hex"], 16): row for row in forms["cubics"]}
@@ -155,6 +168,7 @@ def main():
         if args.real_pencils:
             for p, row in real.items():
                 substitute(weights, p, real_pencil_relation(p, row))
+            substitute(weights, sextic_mask, sextic_relation(sextic_mask, sextic))
             even = {p for p, c in weights.items() if c % COFACTOR and p not in table and p.bit_length()-1 in (120, 160, 200)}
             if even != children.keys() | extra.keys():
                 raise ArithmeticError("the archived pencils do not cover the even-degree factors")
@@ -171,6 +185,8 @@ def main():
         target, weights = polynomial(mask), relation(mask, cubics[mask])
     elif mask in real:
         target, weights = polynomial(mask), real_pencil_relation(mask, real[mask])
+    elif mask == sextic_mask:
+        target, weights = polynomial(mask), sextic_relation(mask, sextic)
     elif mask == int(TORUS["target_hex"], 16):
         target, weights = norm_pencil(TORUS)
     elif mask in parents:
