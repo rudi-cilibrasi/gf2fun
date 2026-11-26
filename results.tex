@@ -13241,6 +13241,19 @@ moment and recurrence digests together with the two constant terms.
 The GPU calculation and CPU polynomial reduction are reproducible
 from the public circle generator.
 
+A second proof is directly reproducible on a CPU. The files
+\nolinkurl{data/degree-2047-q512-projected.bin.gz} and
+\nolinkurl{data/degree-2047-q1024-projected.bin.gz} supply exponents
+\(e_P\) for all 14,602 and 52,488 masks. The NTL verifier checks each
+irreducible polynomial and the equality \(P(r)^A=(r^A)^{e_P}\) by
+field powering. Their three common masks have identical exponents.
+The projection argument of Theorem~\ref{thm:2047-first-table} gives
+membership in \(H\) for all 67,087 distinct evaluations. The exact
+character inequality in Section~\ref{sec:ore-circles} then proves
+\(r\) primitive using these two archives alone. The product of all supplied
+exponents is coprime to \(B\), so every projected value \(P(r)^A\)
+has exact order \(B\).
+
 The invertible reciprocal-seed power of Section~\ref{sec:ore-trace-coordinate}
 transfers this order to the tap 3 trinomial. Ordinary reciprocal
 polynomials give taps 1536 and 2044. Both 3 and 5 are coprime to

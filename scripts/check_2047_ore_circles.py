@@ -1,9 +1,12 @@
 """Check the degree-2047 character bound and reconstruct its two anchored matrices."""
 
 import argparse
+import csv
+import gzip
 import hashlib
 import mmap
 import struct
+import subprocess
 from collections import Counter
 from math import gcd, prod
 from pathlib import Path
@@ -107,6 +110,68 @@ def pack(q, path, folder):
     print(f"q={q}: {count} circles, {n} rows and columns, {len(packed)} nonzero entries.")
 
 
+def check_archives(verifier, jobs, data):
+    """Independently verify every field identity and the shared logarithms."""
+    shared = []
+    exponent_product = 1
+    for q, m in FIELD_DEGREES.items():
+        path = data / f"degree-2047-q{q}-projected.bin.gz"
+        with gzip.open(path, "rb") as source:
+            raw = source.read()
+        magic, base, count = struct.unpack_from("<4sII", raw)
+        expected = sum(c for d, c in irreducible_counts(m).items() if m % d == 0)
+        if magic != b"G2O1" or base != q or count != expected or len(raw) != 12+232*count:
+            raise ValueError(f"wrong or incomplete projected-log archive at {path}")
+        subprocess.run([str(verifier), str(jobs)], input=raw, check=True)
+        common = {}
+        for offset in range(12, len(raw), 232):
+            mask, = struct.unpack_from("<I", raw, offset)
+            exponent = int.from_bytes(raw[offset+4:offset+232], "little")
+            exponent_product = exponent_product*exponent % COFACTOR
+            if mask in (2, 3, 7):
+                common[mask] = exponent
+        shared.append(common)
+    if set(shared[0]) != {2, 3, 7} or shared[0] != shared[1]:
+        raise ArithmeticError("the two archives disagree on their common factor base")
+    if gcd(exponent_product, COFACTOR) != 1:
+        raise ArithmeticError("a recorded exponent is a nonunit modulo the cofactor")
+    print("Both archives passed direct powering and agree on the three common polynomials.")
+    print("Every recorded exponent is coprime to the cofactor.")
+
+
+def check_sparse_images(data):
+    from check_cubed_parity import polynomial
+    from check_ore_trace_coordinate import coordinate
+    from check_trinomial_decimations import power_support
+
+    # The reciprocal-seed power and its unit inverse connect taps 3 and 511.
+    maps = coordinate(0x805)
+    if maps["source_taps"] != [0, 3, DEGREE] or maps["target_taps"] != [0, 511, DEGREE]:
+        raise ArithmeticError("unexpected reciprocal-seed pair")
+    images = set()
+    rows = []
+    for tap in (3, 511, DEGREE-511, DEGREE-3):
+        support = (0, tap, DEGREE)
+        source = polynomial(support)
+        rows.append((tap, 1, str(tap)))
+        for exponent in (3, 5):
+            target = power_support(support, exponent)
+            image = polynomial(target)
+            if (gcd(exponent, GROUP_ORDER) != 1 or len(target) != 5 or target in images
+                    or not image.is_irreducible() or image.compose_mod(X**exponent, source) != 0):
+                raise ArithmeticError(f"incorrect sparse image at tap {tap}, exponent {exponent}")
+            images.add(target)
+            rows.append((tap, exponent, " ".join(map(str, target[1:-1]))))
+            print(f"Tap {tap}, root power {exponent}, pentanomial interior exponents {target[1:-1]}.")
+    with (data / "degree-2047-sparse-witnesses.csv").open(newline="") as source:
+        reader = csv.DictReader(source)
+        if reader.fieldnames != ["source_tap", "power", "interior_exponents"]:
+            raise ValueError("unexpected sparse-witness header")
+        recorded = [(int(row["source_tap"]), int(row["power"]), row["interior_exponents"]) for row in reader]
+    if rows != recorded:
+        raise ArithmeticError("the published sparse witnesses differ from the power formulas")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--q", choices=FIELD_DEGREES, type=int)
@@ -114,10 +179,22 @@ def main():
     parser.add_argument("--work-dir", type=Path, default=Path(".lake/ore-2047"))
     parser.add_argument("--fraction-bound", action="store_true",
                         help="compute the order bound from just the degree-18 field")
+    parser.add_argument("--verify-logs", type=Path, metavar="NTL_CHECKER",
+                        help="verify both published log archives by direct exponentiation")
+    parser.add_argument("--data-dir", type=Path, default=Path(__file__).resolve().parents[1]/"data")
+    parser.add_argument("--jobs", type=int, default=1)
+    parser.add_argument("--sparse-images", action="store_true", help="verify four trinomials and their eight power images")
     args = parser.parse_args()
+    if args.jobs < 1:
+        parser.error("--jobs must be positive")
     if (args.q is None) != (args.relations is None):
         parser.error("--q and --relations are used together")
     check_bound()
+    if args.verify_logs:
+        check_archives(args.verify_logs.resolve(), args.jobs, args.data_dir)
+        print("The trinomial T^2047 + T^511 + 1 has order 2^2047-1 at its root.")
+    if args.sparse_images:
+        check_sparse_images(args.data_dir)
     if args.fraction_bound:
         counts = {d: n for d, n in irreducible_counts(18).items() if 18 % d == 0}
         lower = ratio_bound(DEGREE, counts)

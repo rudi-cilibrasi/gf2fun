@@ -6,7 +6,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **Four primitive trinomials and eight primitive pentanomials in degree 2047.** The roots of $X^{2047}+X^{511}+1$ have order $2^{2047}-1$. A trace power gives $X^{2047}+X^3+1$, reciprocation gives two more trinomials, and cubes and fifth powers give eight pentanomials, including $X^{2047}+X^3+X^2+X+1$. Two matrix-rank certificates establish the full order while leaving a 549-digit cofactor unfactored. [Proof](results.pdf#page=172) · [Twelve witnesses](data/degree-2047-sparse-witnesses.csv) · [Rank certificates](data/degree-2047-ore-rank.json) · [Lean algebra and arithmetic](GF2Sparse/OreCircle2047.lean)
+- **Four primitive trinomials and eight primitive pentanomials in degree 2047.** The roots of $X^{2047}+X^{511}+1$ have order $2^{2047}-1$. A trace power gives $X^{2047}+X^3+1$, reciprocation gives two more trinomials, and cubes and fifth powers give eight pentanomials, including $X^{2047}+X^3+X^2+X+1$. The certificate uses 67,087 distinct polynomial logarithms. A CPU can verify the full order while leaving a 549-digit cofactor unfactored. [Proof](results.pdf#page=172) · [Twelve witnesses](data/degree-2047-sparse-witnesses.csv) · [CPU verification](#verify-degree-2047) · [Rank certificates](data/degree-2047-ore-rank.json) · [Lean algebra and arithmetic](GF2Sparse/OreCircle2047.lean)
 - **A quadratic index bound applies in every degree $n\ge24$.** Choose the least $d$ with $n\le2^{d+1}+2$ and put $q=2^{d-1}$. For any element $a$ of degree $n$, the values $P(a)$ for irreducibles of degrees dividing $2d-2$ or $2d$ generate a subgroup of index at most $33q^2$. Once those values lie in a proposed root subgroup, prime-index tests only through $33q^2$ suffice. [Proof](results.pdf#page=172)
 - **A uniform order bound for sparse Ore lifts.** If a primitive binary seed has degree $s\ge40$, every root of its lift of degree $n=2^s-1$ has order greater than $2^{5\sqrt{n+1}}$. A three- or five-term seed gives a lift with the same number of terms. [Proof](results.pdf#page=168) · [Integer certificate](scripts/check_ore_uniform_order.py)
 - **Explicit logarithms at roots of irreducible Ore lifts.** Logarithms in the seed field determine products of binary irreducibles with prescribed Frobenius annihilator. For each of two degree-2047 trinomials, Lean and direct powering verify 47 identities through factor degree 31, including 38 individual irreducibles. Counting reduced fractions through degree 1023 gives an order bound above $2^{218}$ for every primitive degree-11 seed. [Proof](results.pdf#page=167) · [Lean certificate](GF2Sparse/OreClassLogs2047.lean) · [Reproduce the logarithms and bounds](scripts/check_ore_logarithms.py)
@@ -658,12 +658,13 @@ c++ -O3 -fopenmp scripts/census_2047_trace_powers.cpp -lntl -lgmp -o /tmp/gf2-or
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_ore_trace_coordinate.py --census /tmp/gf2-ore-trace --jobs 4
 ~~~
 
-The degree-2047 logarithm archive contains binary polynomial masks and exponents. Each identity can be checked directly with NTL on a CPU. The character and reduced-fraction bounds use exact rational and integer arithmetic.
+<a id="verify-degree-2047"></a>
+
+**Verify degree 2047 on a CPU.** The two archives contain 14,602 and 52,488 polynomial masks with their projected logarithms. The command checks every identity by direct field powering, checks the character bound and verifies the twelve sparse witnesses. It uses NTL, GMP, a C++17 compiler and Python. [Degree-18 archive](data/degree-2047-q512-projected.bin.gz) · [Degree-20 archive](data/degree-2047-q1024-projected.bin.gz)
 
 ~~~sh
 c++ -O3 -std=c++17 -fopenmp scripts/verify_2047_ore_logs.cpp -lntl -lgmp -o /tmp/gf2-ore-logs
-gzip -dc data/degree-2047-q512-projected.bin.gz | /tmp/gf2-ore-logs 4
-uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_2047_ore_circles.py --fraction-bound
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_2047_ore_circles.py --verify-logs /tmp/gf2-ore-logs --sparse-images --jobs 4
 ~~~
 
 To reconstruct the two matrices for the degree-2047 trinomial, run
