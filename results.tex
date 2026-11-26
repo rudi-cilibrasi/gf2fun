@@ -12024,4 +12024,26 @@ The complete computations are in
 \nolinkurl{scripts/check_seventh_power_supports.py}.
 \end{proof}
 
+\section{Primitive pentanomials in 44 degrees from 2817 through 2944}
+\label{sec:products-2944}
+For 34 even degrees and ten odd degrees in this interval we verify
+a primitive polynomial of the form \(X^n+(1+X^u)(1+X^v)\). The odd
+degrees are \(2817,2837,2865,2871,2873,2887,2901,2909,2927,2929\).
+For example, \(X^{2929}+X^{41}+X^{21}+X^{20}+1\) is primitive.
+The largest new witness is \(X^{2940}+X^{173}+X^{112}+X^{61}+1\).
+Together with Section~\ref{sec:products-2816}, the tables give
+primitive polynomials of weight at most five in at least 2211 of the
+first 2944 degrees.
+
+The exponents appear in \nolinkurl{data/product-witnesses-2817-2944.csv}
+and the complete factorizations in \nolinkurl{data/mersenne-2817-2944.json}.
+The \href{https://github.com/postvakje/Reformatted-Cunningham-Project-tables/tree/dff2e282ff15399b16b4fb840a410aa2a37076b7}{Cunningham tables}
+supply 30 group factorizations and
+\href{https://factordb.com/index.php?query=2\%5E2929-1}{FactorDB}
+supplies the other 14. PARI/GP checked irreducibility and the order of
+the residue of \(X\). FLINT independently proved all 1098 distinct
+integer factors prime. After verifying their multiplicities against
+\(2^n-1\), the checker verified each full power and all 1315 distinct
+prime-index powers across the 44 degrees.
+
 \end{document}
