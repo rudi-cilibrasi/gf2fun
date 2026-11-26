@@ -10592,4 +10592,124 @@ Both new candidates pass the four known prime-index tests and the extra
 cofactor test. Lean certifies these order statements and product
 identities in \nolinkurl{GF2Sparse/SparseRootModels.lean}.
 
+\section{When a polynomial and its translate can both be sparse}
+\label{sec:shift-weight}
+Write \(w(P)\) for the number of nonzero coefficients, \(s(k)\) for the
+number of ones in the binary expansion of \(k\), and \(P_1(X)=P(X+1)\).
+\begin{theorem}
+For every \(k\) in the support of \(P\in\F[X]\),
+\[
+        s(k)\le \lfloor\log_2 w(P)\rfloor+\lfloor\log_2 w(P_1)\rfloor .
+\]
+The product \(w(P)w(P_1)\) equals \(2^{s(k)}\) if and only if
+\(P=X^i(X+1)^j\), where \(i+j=k\) and the binary digits of \(i,j\)
+are disjoint.
+\end{theorem}
+\begin{proof}
+Induct on \(k\). Write \(P=A(X^2)+XB(X^2)\). Its translate has
+even and odd parts \((A+B)_1\) and \(B_1\), so that
+\[
+ w(P)=w(A)+w(B),\qquad w(P_1)=w((A+B)_1)+w(B_1).
+\]
+Also \(w(A_1)\le w(P_1)\). The bound at \(k=0\) is immediate.
+For \(k=2m>0\) apply induction to \(A\) at \(m\).
+For \(k=2m+1\), the coefficient of \(X^m\) in \(B\) is one.
+If it is also one in \(A\), choose the smaller support of \(A,B\).
+It has at most \(w(P)/2\) terms and its translate has at most \(w(P_1)\).
+Otherwise \(X^m\) occurs in both \(B\) and \(A+B\). Choose the one
+with smaller translated support. Its translate has at most \(w(P_1)/2\)
+terms and it has at most \(w(P)\). In either case \(s(k)=1+s(m)\)
+and the halving supplies the extra unit in the logarithmic bound.
+
+For equality in the product bound put \(D=2^{s(m)}\).
+At \(k=0\) equality gives \(P=1\). At an even index the bound on
+\(w(A)w(A_1)\) forces \(w(A)=w(P)\), hence \(B=0\).
+At an odd index in the first case above,
+\[
+ 2D\le w(A)w(P_1)+w(B)w(B_1)\le w(P)w(P_1)=2D .
+\]
+Since \(B\ne0\), equality forces \(w(B_1)=w(P_1)\), so \(A=B\).
+In the second case,
+\[
+ 2D\le w(P)w((A+B)_1)+w(B)w(B_1)\le w(P)w(P_1)=2D .
+\]
+Now \(w(B)=w(P)\), so \(A=0\). In the three cases the polynomial
+is respectively \(A(X^2)\), \((1+X)B(X^2)\), or \(XB(X^2)\).
+The smaller polynomial attains equality at \(m\). Induction assigns
+each one-bit of \(k\) to exactly one of the two exponents \(i,j\).
+Conversely \(X^i(X+1)^j\) and its translate have weights
+\(2^{s(j)}\) and \(2^{s(i)}\) by binary expansion.
+\end{proof}
+
+In particular, bounds \(w(P)\le a,\ w(P_1)\le b\) in degree \(n\)
+are attainable exactly when
+\(s(n)\le\lfloor\log_2 a\rfloor+\lfloor\log_2 b\rfloor\)
+for positive \(a,b\). Partition the one-bits of \(n\) between \(i,j\)
+to witness sufficiency. If \(n\) has five or more one-bits, then
+a polynomial and its translate cannot both have at most five terms.
+For the minimal polynomial of a degree-\(n\) element \(r\), translation
+gives the minimal polynomial of \(1+r\). Applying the same result to
+the reciprocal also covers \(1+1/r\).
+
+\paragraph{Primitive pairs in degrees with four binary ones.}
+An irreducible polynomial \(F\) of degree greater than one takes the
+value one at 0 and 1. If \(s(n)=4\) and \(F,F_1\) both have at most
+five terms, \(P=F+1\) and \(P_1=F_1+1\) each have at most four terms.
+Their product of weights must therefore be 16. By the equality
+theorem the pair has the form
+\[
+ F=1+X^i(1+X)^j,\qquad F_1=1+X^j(1+X)^i,\qquad
+ i+j=n,\quad s(i)=s(j)=2
+\]
+with disjoint digits. If \(\gcd(i,j)>1\), then \(F=1+H^d\) with
+\(d>1\) and nonconstant \(H\), so \(1+H\) is a proper factor.
+This excludes all even \(n\) in this case.
+
+For coprime positive \(i,j\), set \(T=Z^{i+j}+Z^j+1\).
+The roots of \(T\) and \(F\) are in bijection with the same fields
+of definition. A root \(z\) of \(T\) gives
+\(r=z^{-j}\) and \(1+r=z^i\). Conversely take \(Aj+Bi=1\). Since
+\(r^i(1+r)^j=1\), the element \(z=r^{-A}(1+r)^B\) satisfies both
+formulas. Consequently \(F\) is irreducible exactly when \(T\) is.
+Both \(F\) and \(F_1\) are primitive exactly when \(T\) is primitive
+and \(\gcd(ij,2^n-1)=1\), by the order formula for a power.
+
+Among degrees \(n<65{,}536\) with \(s(n)\ge4\), precisely 23 and 71
+admit such a pair of irreducibles. Both pairs are primitive. At 23
+their interior exponents are \((18,19,22)\) and \((5,7,21)\).
+At 71 they are \((65,67,69)\) and \((6,7,70)\).
+For completeness enumerate \(n=1+2^a+2^b+2^c\) with
+\(1\le a<b<c<16\), and use the odd member of each partition as the
+trinomial tap. Up to reciprocity there are 840 coprime cases.
+The file \nolinkurl{data/four-bit-translated-pairs.csv} gives a
+proper factor for each of the 838 exclusions. The other two taps are
+5 and 65, respectively. The checker verifies all divisibilities,
+the four primitive pentanomials, and their two primitive trinomials.
+Lean proves the support inequality for every exponent and the necessary
+form in the equality case in \nolinkurl{GF2Sparse/ShiftWeight.lean}.
+
+\paragraph{Sharp minimum in degree 1229.}
+Here \(s(1229)=6\). For a pentanomial \(F\) with constant one,
+the theorem applied to \(F+1\) gives \(w(F_1)\ge17\).
+The fifteen degree-1229 polynomials attaining 17 arise by putting
+two of the six binary digits into \(j\). None is irreducible.
+In fact the least translated weight of an irreducible pentanomial
+is exactly 33. Across all \(\binom{1228}{3}=307{,}880{,}476\) supports
+with endpoints \(0,1229\), the complete counts up to 33 are
+\[
+\begin{array}{c|rrrrr}
+ w(F_1)&17&25&29&31&33\\ \hline
+ \text{supports}&15&120&330&390&9830\\
+ \text{irreducibles}&0&0&0&0&5
+\end{array}
+\]
+The five minimizing triples are \((10,72,1165)\), \((10,1101,1225)\),
+\((74,205,1101)\), \((1026,1036,1225)\), and \((1030,1101,1156)\).
+The C++ census builds \((1+X)^a\) recursively and counts bits of the
+sum of the five translated monomials, then applies NTL's irreducibility
+test to all 10,685 supports at or below the threshold. FLINT
+independently checked this last set. All five roots pass the four
+known prime-index tests and the extra cofactor test. Their full orders
+remain open.
+
 \end{document}
