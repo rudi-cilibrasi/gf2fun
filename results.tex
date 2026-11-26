@@ -13465,4 +13465,78 @@ and \nolinkurl{GF2Sparse/FactorFieldIndex.lean} check the weight inequalities
 using exact rational arithmetic.
 \end{proof}
 
+\section{Positive-genus obstructions to rational Frobenius models in degree 1229}
+\label{sec:1229-frobenius-curves}
+The circle calculation in degree 2047 uses rational functions of a
+single parameter for a sparse root and its Frobenius image. The
+following test concerns the degree-1229 sparse root itself.
+
+\begin{theorem}\label{thm:1229-frobenius-curves}
+Let \(r\) be a root of any irreducible binary pentanomial of degree
+1229. For \(q=256,512,1024,2048\), respectively, the smallest
+\(b\) attainable among all such roots with a nonzero binary relation
+\(F(r,r^q)=0\) of bidegree at most \((b,b)\) is
+\(20,12,14,13\). For every one of the four \(q\), there is no
+parametrization \(r=x(t),\ r^q=y(t)\) by rational functions each
+of degree at most 20 over a finite constant field of degree coprime
+to 1229 over \(\F\).
+\end{theorem}
+\begin{proof}
+Use the complete support census in Section~\ref{sec:sparse-frobenius-height}
+and work in \(\F[X]/f\) for each reciprocal representative.
+Test the 441 columns \(r^{i+qj}\), \(0\le i,j\le20\), by binary
+elimination in the power basis. Reciprocation reverses each axis of a
+relation, after multiplying by a monomial. There are 319,583
+representatives. The numbers with a nonzero kernel are
+\[
+\begin{array}{c|rrrr}
+q &256&512&1024&2048\\\hline
+\text{reciprocal representatives} &1&57&15&2 .
+\end{array}
+\]
+For each of these 75 pairs the archive supplies a polynomial \(F\)
+of bidegree \((u,v)\). Direct evaluation gives zero. Independent
+elimination from the opposite end of the power basis gives nullity
+\((21-u)(21-v)\). This is exactly the dimension of the subspace of
+multiples of \(F\) in the square: the bounded monomial shifts of \(F\)
+are linearly independent. Thus every relation there is a multiple of
+\(F\), and its minimum square size is \(\max(u,v)\). Minimizing the
+recorded sizes gives the first assertion.
+
+Each \(F\) is irreducible over \(\F\), since any proper factor
+vanishing at the point would itself be a multiple of \(F\).
+Over a finite extension \(E\) with degree coprime to 1229 the power
+basis stays independent by linear disjointness. Hence the kernel
+over \(E\) is still spanned by the same multiples. This also proves
+absolute irreducibility: the field of definition of a monic absolute
+factor has degree equal to its Frobenius orbit length, at most
+\(u+v\le40<1229\). A proper vanishing factor after that extension
+would contradict the kernel description.
+
+For every \(F\), a direct point count gives more than \(2^h+1\)
+smooth torus points for an explicitly recorded \(h\le13\). For
+example the curve with \(q=512\) and taps \((99,716,1125)\) has
+8,424 such points over \(\mathbb F_{8192}\). At each nonzero \(x\),
+take \(D=\gcd(F(x,Y),Y^{2^h-1}-1)\). Its degree counts distinct
+nonzero roots. Subtract \(\deg\gcd(D,F_X(x,Y),F_Y(x,Y))\) to count
+smooth points. Each lifts to a distinct rational point on the smooth
+projective normalization. A smooth projective genus-zero curve over
+this finite field has exactly \(2^h+1\) points, so each curve has
+positive geometric genus.
+
+If two rational functions of degrees \(a,b\) gave the claimed values,
+their image curve would have a nonzero equation of bidegree at most
+\((b,a)\), by eliminating the parameter from the two cleared
+equations. Both functions are nonconstant because \(r,r^q\notin E\).
+The irreducible equation of the image would belong to the evaluated
+kernel in the square, and hence would define one of the listed curves.
+A curve dominated by the projective line has genus zero by L\"uroth's
+theorem, contradicting its point count.
+\end{proof}
+The C++ census and the independent polynomial and point-count checks
+are in \nolinkurl{scripts/census_1229_frobenius_curves.cpp} and
+\nolinkurl{scripts/check_1229_frobenius_curves.py}. The coefficients in
+\nolinkurl{data/degree-1229-frobenius-curves.json} are binary masks in
+\(X\), indexed by ascending powers of \(Y\).
+
 \end{document}
