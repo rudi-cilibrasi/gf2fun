@@ -11373,4 +11373,101 @@ map. Thus verifying \(B(r)^K=(r^K)^e\) proves \(B(r)\in\langle r\rangle\),
 as required by the moment theorem.
 \end{proof}
 
+\section{The smallest Frobenius bidegrees for the five original terms}
+\label{sec:sparse-frobenius-boxes}
+Let \(r\) be a root of an irreducible degree-\(n\) pentanomial with
+support \(S\), and write \(H=\langle r\rangle\). Choose any generator
+\(z\) of \(H\) and put \(y=z^{2^s}\). To rewrite the five terms, choose
+integer pairs \((i_e,j_e)\) and a common scalar \(\lambda\) such that
+\[
+                   z^{i_e}y^{j_e}=\lambda r^e\qquad(e\in S).
+\]
+Translation gives minimum zero on both axes. Let \(h=\max i_e\) and
+\(d=\max j_e\). The resulting equation is
+\(\sum_{e\in S} Z^{i_e}Y^{j_e}=0\) at \((z,y)\).
+
+\begin{theorem}
+For the 639,166 irreducible pentanomials of degree \(1229\), the least
+possible \(\max(h,d)\) is 12. Exactly 24 pentanomials attain it.
+The least \(h+d\) is 18, and the least \(hd\) with \(h,d>0\) is 45.
+Both of the latter minima occur only for the pentanomial with taps
+\((3,410,822)\) and its reciprocal. For this pentanomial take
+\(z^5=r\) and \(y=z^{2048}\). The equation is
+\[
+                  zy^3+z^{14}y^2+z^2y+z^{15}+1=0.
+\]
+Among equations of degree two in one variable, the least degree in the
+other is 24, attained only by the reciprocal pair in
+Section~\ref{sec:quadratic-frobenius-support}.
+\end{theorem}
+\begin{proof}
+Put \(n=1229\). Interchanging \(z,y\) replaces \(s\) by \(n-s\)
+modulo \(n\), so it suffices to consider \(0\le s\le614\).
+The squares and rectangles of interest are contained in the union
+of the \(24\)-by-\(24\), \(1\)-by-\(45\), and \(45\)-by-\(1\) boxes.
+Indeed, if \(hd\le45\) and both dimensions are at least two, neither
+exceeds 22. An equation in a single variable of degree below \(n\)
+cannot vanish at a generator of \(H\), which has degree \(n\).
+
+The largest known prime \(p_4\) in Theorem~\ref{thm:1229-all-orders}
+divides every root order. For each interior exponent \(e\), put
+\[
+ A_e=ni_e-(n-e)i_0-ei_n,\qquad
+ B_e=nj_e-(n-e)j_0-ej_n.
+\]
+Writing \(r=z^m\) gives \(A_e+2^sB_e\equiv0\bmod p_4\), with
+\(|A_e|\le nh,\ |B_e|\le nd\).
+There is a nonzero pair. Otherwise \(n\mid e(i_n-i_0)\) and
+\(n\mid e(j_n-j_0)\), so primality of \(n\) and \(h,d<n\) force
+the two endpoints to coincide. This would imply \(r^n=1\).
+
+Set \(B=45n\). For every \(16\le s\le614\) the Euclidean algorithm on
+\(p_4,\,2^s\bmod p_4\) supplies a pair of coprime integers \(u,v\)
+with
+\[
+ u\equiv 2^s v\bmod p_4,\qquad
+ \max(|u|,|v|)>B,\qquad B(|u|+|v|)<p_4.
+\]
+The checker verifies all three conditions for every \(s\).
+For any other pair \(a\equiv 2^s b\bmod p_4\) with \(|a|,|b|\le B\),
+the determinant \(av-bu\) is a multiple of \(p_4\) of absolute value
+less than \(p_4\). Coprimality makes \((a,b)\) an integer multiple of
+\((u,v)\), hence zero. Applying this to \((-A_e,B_e)\) excludes all
+these \(s\), even when the sparse root has proper order.
+
+For \(0\le s\le15\) set \(q=2^s\), \(t_e=i_e+qj_e\).
+The absolute value of \(A_e+qB_e\) is at most \(45n(1+2^{15})<p_4\).
+Thus \(n(t_e-t_0)=e(t_n-t_0)\) in the integers. An interior \(e\)
+is coprime to \(n\), giving \(t_e=t_0+ke\) for an integer \(k\).
+The congruences at the endpoints give \(k\equiv m\bmod p_4\), so
+\(k\ne0\). Inverting \(z\) and reflecting both axes allows \(k>0\).
+For \(q\le h\) the three boxes each have \(h+qd<n\), excluding a
+positive step. For \(q>h\) the rows of the box are disjoint and
+in increasing order. Its first occupied point therefore has
+\(j_0=0\), \(0\le t_0\le h\), and \(1\le k\le(h+qd)/n\).
+
+Enumerate these starts and steps. Intersect the eligible interior
+exponents with the published census of irreducibles. For every tested
+step with three eligible taps, \(\gcd(k,2^n-1)=1\), so conversely
+each hit gives an actual field coordinate \(z=r^{k^{-1}\bmod(2^n-1)}\).
+Reversal of \(S\) reflects the box and preserves both dimensions.
+Within the \(24\)-by-\(24\) square the coordinatewise minimal bidegrees,
+up to interchange, are \((2,24),(3,15),(6,14),(8,12)\), attained by
+respectively \(1,1,2,2\) reciprocal pairs. Neither of the two extra
+boxes adds a solution. The square of side 12 contains twelve distinct
+reciprocal pairs, with exact bidegrees \((8,12),(10,12),(11,12),(12,12)\)
+in counts \(2,3,6,1\).
+
+For example, the taps \((101,614,818)\) give
+\[
+                  z^8y^{12}+zy^8+z^5y^6+y+z^7=0,
+                  \qquad z^5=r,\quad y=z^{512}.
+\]
+With \texttt{--list}, \nolinkurl{scripts/check_1229_frobenius_boxes.py}
+prints the twelve representatives. It also verifies the
+displayed equations directly in their sparse fields. Lean checks both
+identities and proves irreducibility and order \(Kt\), with \(1<t\mid C\),
+for both examples in \nolinkurl{GF2Sparse/SparseRootModels.lean}.
+\end{proof}
+
 \end{document}

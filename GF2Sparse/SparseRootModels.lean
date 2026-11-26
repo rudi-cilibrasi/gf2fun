@@ -58,6 +58,20 @@ theorem quadratic_frobenius (z : K) :
       (z^256)^18*z^2 + ((z^256)^9 + (z^256)^24)*z + 1 + (z^256)^5 := by
   ring
 
+omit [CharP K 2] in
+/-- The five terms of the minimum-sum model have bidegree (15,3). -/
+theorem cubic_frobenius (z : K) :
+    (z^5)^1229 + (z^5)^822 + (z^5)^410 + (z^5)^3 + 1 =
+      z*(z^2048)^3 + z^14*(z^2048)^2 + z^2*(z^2048) + z^15 + 1 := by
+  ring
+
+omit [CharP K 2] in
+/-- A monomial shift of seven places the five terms in a box of bidegree (8,12). -/
+theorem balanced_frobenius (z : K) :
+    z^7*((z^5)^1229 + (z^5)^818 + (z^5)^614 + (z^5)^101 + 1) =
+      z^8*(z^512)^12 + z*(z^512)^8 + z^5*(z^512)^6 + z^512 + z^7 := by
+  ring
+
 /-- A rational parameter expresses the two powers on a pentanomial curve as a cubic
 and a quadratic ratio. -/
 theorem rational_cubic_coordinate {b t : K} (hd : t^2+t+1 ≠ 0)
@@ -198,5 +212,19 @@ theorem translate_product_order :
       ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
         orderOf (AdjoinRoot.root (pentanomial 310 609 919)) = knownPart*t :=
   of_certified 310 609 919 6 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- The cubic model has all four known prime factors and a nontrivial cofactor part. -/
+theorem cubic_frobenius_order :
+    Irreducible (pentanomial 3 410 822) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 3 410 822)) = knownPart*t :=
+  of_certified 3 410 822 5 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- The (8,12) example also passes the four known prime and cofactor tests. -/
+theorem balanced_frobenius_order :
+    Irreducible (pentanomial 101 614 818) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 101 614 818)) = knownPart*t :=
+  of_certified 101 614 818 5 (by decide) (by decide) (by decide) (by decide +kernel)
 
 end GF2Sparse.SparseRootModels
