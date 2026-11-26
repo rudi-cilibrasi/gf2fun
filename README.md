@@ -144,6 +144,13 @@ g++ -O3 -std=c++17 scripts/degree_1229_dyadic.cpp -lntl -o /tmp/gf2-dyadic
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh_descent.py --audit-branches --backend /tmp/gf2-dyadic
 ~~~
 
+The interpolated root task has 4,014 factors. Of these, 2,438 have individual certificates reducing them to relative degree at most five. This leaves 198 larger inputs, including just one of degree eleven. The command below lists all 198 with their binary masks and degrees. Add `--real-pencils` to the branch audit above to replay all 2,438 certificates. [Interpolation proof](results.pdf#page=163) · [Interpolants and additional indices](data/degree-1229-seventh-power-real-pencils.json) · [Reproduce the two interpolants by index](scripts/find_1229_hermitian_descent.py)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh_descent.py --real-pencils --json |
+  jq -r '.remaining[] | select(.relative_degree > 5 and .halving_index == null) | [.mask_hex, .relative_degree] | @tsv'
+~~~
+
 To reproduce the six-factor discovery, build the NTL finder and search index 6618. The three arguments after `--smooth` specify the maximum relative factor degree, the starting index, and the number of indices. Different computers can search disjoint intervals. Each output line is a quotient that the Python checker can certify on its own. [Finder](scripts/find_1229_known_offset.cpp)
 
 ~~~sh

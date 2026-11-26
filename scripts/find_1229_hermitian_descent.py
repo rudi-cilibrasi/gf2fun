@@ -3,6 +3,7 @@
 import argparse
 import gzip
 import json
+import random
 import sys
 from collections import Counter
 from itertools import permutations, product
@@ -166,6 +167,51 @@ def search(mask):
     return best and best[2]
 
 
+def real_pencil_search(mask, start, count):
+    """Interpolate the second polynomial of a trace-one pencil over F_1024."""
+    from check_1229_hermitian_descent import H0, H1, T
+
+    t = relative_factor(mask)
+    d = t.degree()
+    if d < 3 or any(c**Q != c for c in t.coeffs()):
+        raise ValueError("the designated factor must have degree at least three and coefficients in F_1024")
+    m = d-1
+    homogeneous = [H0**i * H1**(m-i) for i in range(d)]
+    x = [power % t for power in homogeneous]
+    y = [T**i for i in range(d)]
+    _, real = scalar_groups()
+    rng = random.Random(mask)
+    binary_count = 1 << m
+    for _ in range(max(0, start-binary_count)*m):
+        rng.choice(real)
+    for index in range(start, start+count):
+        if index < binary_count:
+            gs = [F((index >> i) & 1) for i in range(m)]
+        else:
+            gs = [rng.choice(real) for _ in range(m)]
+        gs.append(F.one())
+        g = K(gs)
+        gx = sum((c*p for c, p in zip(gs, x)), K.zero())
+        gy = g % t
+        columns = [(gx*b + gy*a) % t for a, b in zip(x, y)] + [gx*gy % t]
+        rows = [[p[i] for p in columns] for i in range(d)]
+        for vector in nullspace(rows, d+1):
+            if vector[-1].is_zero():
+                continue
+            hs = [c/vector[-1] for c in vector[:-1]]
+            h = K(hs)
+            if g.gcd(h).degree():
+                continue
+            g_homogeneous = sum((c*p for c, p in zip(gs, homogeneous)), K.zero())
+            h_homogeneous = sum((c*p for c, p in zip(hs, homogeneous)), K.zero())
+            residual, rem = divmod(g_homogeneous*(g+h)+h_homogeneous*g, t)
+            if not rem.is_zero():
+                raise ArithmeticError("the interpolated numerator misses its target")
+            if not residual.is_zero() and all(p.degree() <= m for p, _ in residual.factor()[1]):
+                return {"mask_hex": hex(mask), "index": index, "g": [bits(c) for c in gs], "h": [bits(c) for c in hs]}
+    return None
+
+
 def audit_cubics():
     count = 0
     for mask, row in records().items():
@@ -197,6 +243,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     modes = parser.add_mutually_exclusive_group(required=True)
     modes.add_argument("mask", nargs="?", type=lambda x: int(x, 0))
+    modes.add_argument("--real-mask", type=lambda x: int(x, 0), help="interpolate a real odd-degree pencil")
+    parser.add_argument("--start", type=int, default=0, help="starting pencil index for --real-mask")
+    parser.add_argument("--count", type=int, default=1, help="number of pencil indices for --real-mask")
     modes.add_argument("--audit-cubics", action="store_true", help="check all published determinant planes")
     modes.add_argument("--audit-quadratics", type=Path, metavar="TASK",
                        help="count Hermitian nullities for the quadratic masks in a JSON or gzip task")
@@ -206,6 +255,12 @@ def main():
             audit_cubics()
         elif args.audit_quadratics:
             audit_quadratics(args.audit_quadratics)
+        elif args.real_mask is not None:
+            if args.start < 0 or args.count < 1:
+                parser.error("use a nonnegative start and positive count")
+            row = real_pencil_search(args.real_mask, args.start, args.count)
+            if row is not None:
+                print(json.dumps(row, indent=2))
         else:
             row = search(args.mask)
             if row is not None:
@@ -216,4 +271,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    finally:
+        # Keep the owning module in control of the FLINT contexts at interpreter shutdown.
+        del K, F

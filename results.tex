@@ -12486,4 +12486,45 @@ the projected equality and the weight count are reproducible with
 \nolinkurl{scripts/check_1229_quaternary_models.py} and the
 option \texttt{--orders}.
 
+\section{Interpolating smaller factors for the degree-nine and degree-eleven logarithms}
+\label{sec:real-pencil-interpolation}
+Two of the degree-nine and degree-eleven factors in
+Section~\ref{sec:seventh-descent} have relative irreducible factors
+\(t\) with all coefficients in \(\mathbb F_q\), where \(q=1024\).
+Their binary degrees are 90 and 110. They admit signed decompositions
+into 883 logarithms of relative degree at most eight and 989
+logarithms of relative degree at most ten, respectively.
+
+For \(d=\deg t\), choose a monic \(g\in\mathbb F_q[T]\) of degree
+\(m=d-1\), and write \(\widetilde f=H_1^m f(H_0/H_1)\). The
+condition on \(h\in\mathbb F_q[T]\) of degree at most \(m\) is
+\[
+           \widetilde g\,h+g\,\widetilde h
+                  = \widetilde g\,g \pmod{t}.
+\]
+For fixed \(g\) this is a linear system over \(\mathbb F_q\).
+In the basis \(1,T,\ldots,T^{d-1}\) of the residue field, the
+column for \(h_i\) is the remainder of
+\(\widetilde g T^i +g H_0^i H_1^{m-i}\). After finding a solution,
+check \(\gcd(g,h)=1\) and factor
+\((\widetilde g(g+h)+\widetilde h g)/t\) over \(\mathbb F_{q^2}\).
+The trace-one product of Section~\ref{sec:seventh-descent} works for
+every \(m\), with \(10mL(H_1)\) in the norm equation. Hence if every
+residual factor has degree at most \(m\), the entire input reduces
+to logarithms of relative degree at most \(m\). The recorded choices
+of \(g\) have indices 55,349 for \(d=9\) and 28,132 for \(d=11\).
+The finder reconstructs each \(h\) from \(g\), and the verifier
+checks the resulting exponent identity in the degree-1229 field.
+
+Substituting both expressions gives 4,014 distinct logarithms for
+the sparse root. Exactly 2,438 of these have binary degree
+120, 160 or 200. Each has a verified degree-halving pencil, reducing
+it to relative degree at most five. After those substitutions the
+only inputs above degree five are one of degree six, 147 of degree
+seven, 49 of degree nine and one of degree eleven. Thus contributors
+can isolate any of these 198 larger logarithms. All counts use the
+same projected primitive base as the six-factor certificate.
+The two interpolants and 380 additional pencil indices are in
+\nolinkurl{data/degree-1229-seventh-power-real-pencils.json}.
+
 \end{document}
