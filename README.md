@@ -648,6 +648,13 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_ore_uniform_
 
 The roots of $X^{2047}+X^3+1$ and $X^{2047}+X^{511}+1$ can be converted in either direction by exponentiation or polynomial substitution. The trace in the degree-11 seed field supplies the exponents. [Coordinate file](data/degree-2047-ore-coordinate.json) · [Verifier](scripts/check_ore_trace_coordinate.py) · [Proof](results.pdf#page=169)
 
+Across all 176 primitive degree-11 seeds and all 176 trace exponents, the 30,800 off-diagonal minimal polynomials have 941 to 1,121 terms. To reproduce the census with NTL, run
+
+~~~sh
+c++ -O3 -fopenmp scripts/census_2047_trace_powers.cpp -lntl -lgmp -o /tmp/gf2-ore-trace
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_ore_trace_coordinate.py --census /tmp/gf2-ore-trace --jobs 4
+~~~
+
 To verify all eighteen degree-4095 orders, run either of these independent checks from the repository root. Both use the checked-in factors.
 
 ~~~sh

@@ -13020,4 +13020,30 @@ For instance a logarithm \(G(y)=y^b\) from the second representation
 now gives \(G(x^e)=x^{eb}\) in the first representation, independently
 of the unresolved exact order.
 
+\begin{theorem}
+Let \(P,Q\) range independently over all 176 primitive binary seeds
+of degree 11 and let \(r\) be a root of \(O_P\).
+If \(P\ne Q\), the minimal polynomial of \(r^{e(Q)}\) has between
+941 and 1,121 terms, with both endpoints attained. When \(P\) has
+at most five terms, every such off-diagonal image has at least 945
+terms. Therefore exactly 46 of the 30,976 images have weight at
+most five. All are the reciprocal-seed lifts on the diagonal.
+\end{theorem}
+\begin{proof}
+The units \(e(Q)\) preserve the degree 2047 because the inverse power
+recovers \(r\). Enumerate the monic constant-one seeds and test the
+order of \(Y\) using \(2047=23\cdot89\). Their number also equals
+\(\varphi(2047)/11=176\). Their trace exponents are pairwise distinct.
+For each source field and each exponent, compute the minimal polynomial
+with NTL. Independently of the algorithm used to construct it, its
+degree and its vanishing by modular composition certify the monic
+polynomial uniquely. On the diagonal, also compare the polynomial
+itself with \(O_{P^*}\). There are two trinomial and 44 pentanomial
+seeds. In binary coefficient masks, the extremal ordered pairs
+\((P,Q)\) off the diagonal are \((\mathtt{b6f},\mathtt{b65})\) and
+\((\mathtt{b5f},\mathtt{949})\) in hexadecimal. The calculation is
+reproduced by \nolinkurl{scripts/check_ore_trace_coordinate.py}
+and \nolinkurl{scripts/census_2047_trace_powers.cpp}.
+\end{proof}
+
 \end{document}

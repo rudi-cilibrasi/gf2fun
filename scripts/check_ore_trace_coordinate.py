@@ -2,12 +2,14 @@
 
 import argparse
 import json
+import subprocess
+from math import gcd
 from pathlib import Path
 
 from check_cubed_parity import X, polynomial
 from check_ore_logarithms import ore_power_table
 from check_ore_norms import support
-from make_witnesses import square_mod
+from make_witnesses import primitive, square_mod
 from period_coordinate import mask_of
 
 
@@ -72,15 +74,52 @@ def coordinate(seed):
     }
 
 
+def trace_power_census(executable, jobs):
+    seeds = [p for p in range(2049, 4096, 2) if primitive(11, p, (23, 89))]
+    exponents = [trace_exponent(p) for p in seeds]
+    if (len(seeds) != 176 or len(set(exponents)) != 176
+            or any(gcd(e, (1 << 2047) - 1) != 1 for e in exponents)):
+        raise ArithmeticError("incomplete seed or trace-power enumeration")
+    request = "".join(f"{p} {e}\n" for p, e in zip(seeds, exponents))
+    result = subprocess.run([executable, str(jobs)], input=request, text=True,
+                            check=True, stdout=subprocess.PIPE)
+    off_diagonal = []
+    sparse = 0
+    for seed, line in zip(seeds, result.stdout.splitlines(), strict=True):
+        source, *weights = map(int, line.split())
+        if source != seed:
+            raise ArithmeticError("incorrect source seed")
+        for target, weight in zip(seeds, weights, strict=True):
+            if target == seed and weight != seed.bit_count():
+                raise ArithmeticError("incorrect reciprocal lift weight")
+            if target != seed:
+                off_diagonal.append((weight, source, target))
+            sparse += weight <= 5
+    low, high = min(off_diagonal), max(off_diagonal)
+    sparse_source_low = min(w for w, p, _ in off_diagonal if p.bit_count() <= 5)
+    if (sparse != 46 or low != (941, 0xb6f, 0xb65) or high != (1121, 0xb5f, 0x949)
+            or sparse_source_low != 945):
+        raise ArithmeticError("incorrect weight extrema or sparse-image count")
+    return low, high, sparse
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed", type=lambda value: int(value, 0), default=0x805)
-    parser.add_argument("--emit", action="store_true", help="emit the checked coordinate in JSON")
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument("--emit", action="store_true", help="emit the checked coordinate in JSON")
+    action.add_argument("--census", metavar="EXECUTABLE", help="check all degree-2047 trace powers with NTL")
+    parser.add_argument("--jobs", type=int, default=1, help="thread count for the NTL census")
     args = parser.parse_args()
-    result = coordinate(args.seed)
-    if args.emit:
-        print(json.dumps(result, indent=2))
+    if args.census:
+        low, high, sparse = trace_power_census(args.census, args.jobs)
+        print(f"176 by 176 trace powers: {sparse} sparse images; "
+              f"off-diagonal minimum (weight, source, seed) {low}, maximum {high}")
     else:
-        if args.seed == 0x805 and result != json.loads(DATA.read_text()):
-            raise ArithmeticError("the published degree-2047 coordinates differ")
-        print(f"degree {result['degree']}: both trace exponents and both field substitutions verified")
+        result = coordinate(args.seed)
+        if args.emit:
+            print(json.dumps(result, indent=2))
+        else:
+            if args.seed == 0x805 and result != json.loads(DATA.read_text()):
+                raise ArithmeticError("the published degree-2047 coordinates differ")
+            print(f"degree {result['degree']}: both trace exponents and both field substitutions verified")
