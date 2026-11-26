@@ -359,6 +359,35 @@ long mask(const GF2X &f) {
             r |= 1L << j;
     return r;
 }
+// In the charts T, 1/T and 1/(T+1), a pair with sum u and product v has sums
+// u, u/v and u/(v+u+1). Their binary minimal polynomials identify each trace orbit.
+void fiber_traces() {
+    long p;
+    while (std::cin >> p) {
+        if (p <= 0)
+            throw std::invalid_argument("invalid quadratic mask");
+        GF2X f = binary(p), x(1, 1), conjugate = x;
+        long n = deg(f);
+        if ((n != 8 && n != 40) || !IterIrredTest(f))
+            throw std::invalid_argument("expected a relative quadratic irreducible");
+        GF2XModulus field(f);
+        for (int i = 0; i < 20; ++i)
+            SqrMod(conjugate, conjugate, field);
+        GF2X u = x+conjugate, v = MulMod(x, conjugate, field);
+        auto trace_mask = [&](const GF2X& denominator) {
+            GF2X t = MulMod(u, InvMod(denominator, f), field);
+            GF2X minimal = MinPolyMod(t, field);
+            if (deg(minimal) <= 0 || (n/2) % deg(minimal) || 20 % deg(minimal))
+                throw std::logic_error("unexpected relative trace degree");
+            return mask(minimal);
+        };
+        std::cout << p << ' ' << trace_mask(GF2X(0, 1)) << ' ' << trace_mask(v)
+                  << ' ' << trace_mask(v+u+1) << '\n';
+    }
+    if (!std::cin.eof())
+        throw std::invalid_argument("invalid mask input");
+}
+
 std::pair<long, int> quadratic_norm(const GF2EX &target) {
     GF2EX prod(1), qb = target;
     int s = 0;
@@ -445,13 +474,15 @@ int main(int argc, char **argv) {
             supplement(Field(), argv[2]);
         else if (mode == "factor" && argc == 2)
             factor(nullptr);
+        else if (mode == "traces" && argc == 2)
+            fiber_traces();
         else if (mode == "logs" && argc == 3) {
             Field field;
             SourceLogs logs(field, argv[2]);
             factor(&logs);
         } else
             throw std::invalid_argument(
-                "use scan or supplement with PENCIL_FILE, factor, or logs FACTOR_BASE");
+                "use scan or supplement with PENCIL_FILE, factor, traces, or logs FACTOR_BASE");
         return 0;
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';

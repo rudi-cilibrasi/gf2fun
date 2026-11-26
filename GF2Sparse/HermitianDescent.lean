@@ -1,5 +1,6 @@
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
 namespace GF2Sparse.HermitianDescent
@@ -189,5 +190,82 @@ theorem common_pencil_artinSchreier {K : Type*} [CommRing K] [CharP K 2] (v w : 
   calc
     _ = (v^2+v^2)+v*w := by ring
     _ = _ := by rw [CharTwo.add_self_eq_zero, zero_add]
+
+/-- If the relative trace of z²+z is the Artin--Schreier value of a fixed scalar,
+then z belongs to the quadratic fixed field of the endomorphism. -/
+theorem fixed_after_two_of_artinSchreier_trace {K : Type*} [Field K] [CharP K 2]
+    (σ : K →+* K) (z t : K) (ht : σ t = t)
+    (h : σ (z^2+z)+(z^2+z) = t^2+t) : σ (σ z) = z := by
+  let y := σ z+z+t
+  have hy : y*(y+1) = 0 := by
+    calc
+      y*(y+1) = y^2+y := by ring
+      _ = (σ (z^2+z)+(z^2+z))+(t^2+t) := by
+        simp only [y, CharTwo.add_sq, map_add, map_pow]; ring
+      _ = 0 := by rw [h, CharTwo.add_self_eq_zero]
+  have fixed : σ y = y := by
+    rcases mul_eq_zero.mp hy with he | he
+    · simp [he]
+    · have one : y = 1 := by
+        calc
+          y = (y+1)+1 := by rw [add_assoc, CharTwo.add_self_eq_zero, add_zero]
+          _ = 1 := by rw [he, zero_add]
+      simp [one]
+  have hsum : (σ (σ z)+σ z)+t = (σ z+z)+t := by
+    simpa only [y, map_add, ht] using fixed
+  have hpair := add_right_cancel hsum
+  rw [add_comm (σ z) z] at hpair
+  exact add_right_cancel hpair
+
+/-- A quadratic whose normalized constant has Artin--Schreier relative trace
+has all its roots in the quadratic fixed field. -/
+theorem fixed_quadratic_root_of_trace {K : Type*} [Field K] [CharP K 2]
+    (σ : K →+* K) (a b c z t : K) (ha : a ≠ 0) (hb : b ≠ 0)
+    (hfa : σ (σ a) = a) (hfb : σ (σ b) = b) (ht : σ t = t)
+    (hz : a*z^2+b*z+c = 0)
+    (h : σ (a*c/b^2)+(a*c/b^2) = t^2+t) : σ (σ z) = z := by
+  have polynomial_value : a*z^2+b*z = c := by
+    calc
+      _ = (a*z^2+b*z+c)+c := by rw [add_assoc, CharTwo.add_self_eq_zero, add_zero]
+      _ = c := by rw [hz, zero_add]
+  have value : (a*z/b)^2+(a*z/b) = a*c/b^2 := by
+    calc
+      _ = a*(a*z^2+b*z)/b^2 := by field_simp
+      _ = _ := by rw [polynomial_value]
+  have fixed := fixed_after_two_of_artinSchreier_trace σ (a*z/b) t ht (by rw [value]; exact h)
+  have equal : a*σ (σ z)/b = a*z/b := by simpa only [map_div₀, map_mul, hfa, hfb] using fixed
+  field_simp at equal
+  exact equal
+
+/-- A quadratic with middle coefficient v+w and outer-coefficient trace v*w
+cannot have a root outside the quadratic fixed field. These are the coefficients
+obtained by cross-multiplying two distinct binary Hermitian projectivities. -/
+theorem fixed_common_pencil_root {K : Type*} [Field K] [CharP K 2]
+    (σ : K →+* K) (a c v w z : K) (hfa : σ (σ a) = a) (hfc : σ (σ c) = c)
+    (hv : σ v = v) (hw : σ w = w) (nonzero : a ≠ 0 ∨ v+w ≠ 0)
+    (hz : a*z^2+(v+w)*z+c = 0) (htrace : σ (a*c)+a*c = v*w) :
+    σ (σ z) = z := by
+  have conjugate := congrArg (fun x => σ (σ x)) hz
+  simp only [map_add, map_mul, map_pow, map_zero, hfa, hfc, hv, hw] at conjugate
+  by_cases ha : a = 0
+  · have hb := nonzero.resolve_left (by simp [ha])
+    simp only [ha, zero_mul, zero_add] at hz conjugate
+    exact mul_left_cancel₀ hb (add_right_cancel (conjugate.trans hz.symm))
+  by_cases hb : v+w = 0
+  · simp only [hb, zero_mul, add_zero] at hz conjugate
+    have hs := mul_left_cancel₀ ha (add_right_cancel (conjugate.trans hz.symm))
+    have zero : (σ (σ z)+z)^2 = 0 := by
+      rw [CharTwo.add_sq, hs, CharTwo.add_self_eq_zero]
+    have diff : σ (σ z)+z = 0 := eq_zero_of_pow_eq_zero zero
+    calc
+      _ = (σ (σ z)+z)+z := by rw [add_assoc, CharTwo.add_self_eq_zero, add_zero]
+      _ = z := by rw [diff, zero_add]
+  have mid : σ (v+w) = v+w := by rw [map_add, hv, hw]
+  apply fixed_quadratic_root_of_trace σ a (v+w) c z (v/(v+w)) ha hb hfa
+      (by rw [mid, mid]) (by rw [map_div₀, hv, mid]) hz
+  calc
+    _ = (σ (a*c)+a*c)/(v+w)^2 := by rw [map_div₀, map_pow, mid, add_div]
+    _ = (v^2+v*(v+w))/(v+w)^2 := by rw [htrace, common_pencil_artinSchreier]
+    _ = _ := by field_simp
 
 end GF2Sparse.HermitianDescent

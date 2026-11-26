@@ -9715,7 +9715,9 @@ Section~\ref{sec:1229-norm-height}, the two unknown factors can be
 replaced by 2058 distinct logarithms of relative degree 16. Every one
 of these factors admits a second halving. This gives exactly
 2,117,682 distinct logarithms of relative degree eight for each
-pentanomial. All degrees in this count are over \(k=\mathbb F_{2^{20}}\).
+pentanomial. A third halving for each of these factors reduces both
+complete pentanomial orders to logarithms of relative degree dividing
+four. All degrees in this count are over \(k=\mathbb F_{2^{20}}\).
 The identities hold in the model with the certified generator \(x\) and
 its verified table of linear-factor logarithms.
 
@@ -9827,6 +9829,22 @@ takes their binary norms, and checks the unprojected identity for
 every parent. FLINT independently verifies the four first-level
 products. The two complete second levels are encoded by their matrices
 in \nolinkurl{data/degree-1229-dyadic-level2.json.gz}.
+
+For all 4,235,364 relative-degree-eight factors, the checker
+reconstructs a matrix from one index of the affine line search
+above. The largest index is 937. It checks the fixed-field
+coefficients, the nonsingular determinant, divisibility by the
+designated quadratic, and splitting of the cofactor by modular
+Frobenius. Each projective source splits over its half field by
+construction. The indices are unsigned 16-bit integers in
+little-endian order, grouped by increasing degree-16 binary mask and
+then by increasing degree-eight binary mask. The compressed file
+\nolinkurl{data/degree-1229-dyadic-level3.bin.gz} has 5,032,101 bytes.
+In every case there are 1025 finite source points and four cofactor
+roots. For each pentanomial this gives 2,179,094,778 finite
+occurrences before taking binary norms or identifying repetitions.
+An individual branch can also be expanded and its unprojected
+product checked in the binary degree-1229 field.
 
 One of the product candidate's degree-eight factors has binary mask
 \[
@@ -9943,7 +9961,9 @@ The relative trace of the product of its outer coefficients is
 \(vw\). For \(v+w\ne0\), dividing by \((v+w)^2\) gives the
 Artin--Schreier value of \(v/(v+w)\), of absolute trace zero.
 The quadratic therefore cannot be irreducible over \(k\).
-The two numerator identities are checked in
+Lean checks these identities and proves that every root of the
+resulting nonzero quadratic is fixed by the square of the
+Frobenius endomorphism in
 \nolinkurl{GF2Sparse/HermitianDescent.lean}.
 
 Factoring the 157,469 additional representatives consisting of
@@ -9960,5 +9980,74 @@ logarithms. Their intersection with the previous tables has size
 209, bringing the verified or constructible set to 1,304,685
 distinct logarithms. None of the 126, 534, or 8,996 open rows
 from Section~\ref{sec:hermitian-descent} belongs to these catalogues.
+
+This list also exhausts the individual quadratic logarithms
+determined by combining rows whose nonlinear factors are all
+quadratic, starting with the linear table. Indeed a rank-one form
+containing a quadratic root \(\alpha\) requires
+\(R(\alpha)=\bar b\in k\), which determines the form, and a
+nonsingular projectivity cannot take \(\alpha\) into \(k\).
+By the uniqueness theorem, each binary quadratic mask therefore
+occurs in at most one row up to binary Frobenius. Conjugate rows
+give the same binary norm identity. In a row with two or more
+distinct unknown masks, each coefficient is a positive
+multiplicity at most \(20\deg D\le120\), hence a unit modulo
+\(C\). Changing any one exponent and compensating with another
+preserves all the rows. In particular only 1,214,005 of the
+27,487,764,474 binary irreducibles of degree forty can be solved
+individually by these relations, about \(0.00442\%\).
+
+\paragraph{Quadratic fibers outside the catalogue.}
+Consider a pencil of quadratics
+\(Q_s(T)=L(s)T^2+U(s)T+V(s)\) in which \(L,U,V\) are homogeneous
+linear forms over \(k\) in the two parameters of
+\(s\in\mathbb P^1(\mathbb F_q)\).
+There is a homogeneous form of degree twenty over \(\mathbb F_q\)
+whose vanishing is necessary for an irreducible fiber to have a
+linear Hermitian reduction. Indeed for \(j\ge1\), reduce
+\(L^{j-1}T^j=U_jT+V_j\bmod Q_s\). The initial pair is \((1,0)\)
+and the recurrence is
+\[
+ (U_{j+1},V_{j+1})=(U U_j+L V_j,V U_j).
+\]
+Both coefficients are homogeneous of degree \(j-1\).
+Thus the remainder of \(L^5D\) has two coefficients of degree five
+in \(s\), each linear over \(\mathbb F_q\) in the four scalar
+coordinates of the Hermitian form. Expanding them in a basis of
+\(k/\mathbb F_q\) gives a four-by-four matrix. Its determinant is
+the claimed form. For an irreducible quadratic \(L\ne0\), so
+divisibility implies that the matrix has a nonzero kernel.
+Unless the determinant vanishes identically, at most twenty
+parameter values can therefore have a catalogue entry. In the
+degree-1229 model, a separable quadratic pencil with this
+nonvanishing determinant and at least one nonsplit fiber leaves
+at least \(481-20=461\) nonsplit fibers outside the catalogue,
+by Section~\ref{sec:split-quadratic-pencils}.
+
+For three possible fixed points of the degree-two deck involution
+there is an unconditional count. Use coordinates \(Z=T,1/T,1/(T+1)\)
+at fixed points \(\infty,0,1\), respectively. In each such coordinate
+the involution fixes infinity, so it is \(Z\mapsto Z+u\) for some
+\(u\in k^\times\). The roots of each nonsplit fiber have sum \(u\).
+For a quadratic in the original coordinate with root sum \(v\) and
+product \(w\), their three sums are
+\[
+       v,\qquad v/w,\qquad v/(w+v+1).
+\]
+The full catalogue accounts for 24,280,108 monic irreducible
+quadratics over \(k\). A binary mask of degree \(n=8\) or \(40\)
+has \(n/2\) such conjugates. If its sum has binary degree \(e\),
+it contributes \(n/(2e)\) to each individual sum in that orbit.
+The maxima over all \(u\ne0\) are respectively 46, 45 and 52.
+They are attained when the binary minimal polynomial of \(u\)
+has mask \(\mathtt{41d},\mathtt{13d2b7},\mathtt{25}\),
+respectively. Thus any nonsplit pencil with a binary fixed point
+leaves at least \(481-52=429\) nonsplit fibers outside the entire
+catalogue, even if the degree-twenty determinant vanishes identically.
+For a degree-two rational map defined over \(\F\) itself, its
+involution is defined over \(\F\), its unique fixed point is binary,
+and the translation in the indicated coordinate is by one.
+Exactly forty catalogue quadratics have sum one in each of the
+three coordinates, improving the last bound to 441.
 
 \end{document}
