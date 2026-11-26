@@ -2,6 +2,8 @@
 
 import argparse
 import gzip
+import hashlib
+import json
 import os
 import struct
 import time
@@ -20,6 +22,27 @@ def words(values):
 
 def integer(row):
     return int.from_bytes(row.astype("<u4", copy=False).tobytes(), "little")
+
+
+def rank_record(q, folder, moments, coefficients):
+    """Hash all residues in their canonical 228-byte little-endian cofactor representation."""
+    def residue_digest(values):
+        digest = hashlib.sha256()
+        for v in values:
+            digest.update((v % COFACTOR).to_bytes(228, "little"))
+        return digest.hexdigest()
+
+    record = {
+        "columns": len(coefficients)-1,
+        "moment_count": len(moments),
+        "moments_sha256": residue_digest(map(integer, moments)),
+        "monic_recurrence_sha256": residue_digest(coefficients),
+        "recurrence_constant_hex": hex(coefficients[0]),
+    }
+    for key in ("masks", "ptr", "entries"):
+        array = np.load(folder / f"q{q}-{key}.npy", mmap_mode="r")
+        record[f"{key}_sha256"] = hashlib.sha256(array.astype("<u4", copy=False)).hexdigest()
+    return record
 
 
 def vectors(q, n):
@@ -171,6 +194,9 @@ def main():
         if moments.shape != (2*n, 64):
             raise ValueError("incomplete moment sequence")
         coeffs = half_gcd_minpoly([integer(row) % COFACTOR for row in moments], COFACTOR, certify_rank=True)
+        published = Path(__file__).resolve().parents[1] / "data" / "degree-2047-ore-rank.json"
+        if rank_record(q, folder, moments, coeffs) != json.loads(published.read_text())[str(q)]:
+            raise ArithmeticError("the reconstruction differs from the published rank certificate")
         np.save(folder / f"poly{q}.npy", words(coeffs))
     else:
         gpu_phase(q, folder, args.chunk, args.phase == "recover", args.output)

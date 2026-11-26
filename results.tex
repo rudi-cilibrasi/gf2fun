@@ -13018,7 +13018,7 @@ trinomial equations, and both compositions of the polynomial
 substitutions in \nolinkurl{scripts/check_ore_trace_coordinate.py}.
 For instance a logarithm \(G(y)=y^b\) from the second representation
 now gives \(G(x^e)=x^{eb}\) in the first representation, independently
-of the unresolved exact order.
+of prior knowledge of their common order.
 
 \begin{theorem}
 Let \(P,Q\) range independently over all 176 primitive binary seeds
@@ -13200,5 +13200,64 @@ for \(d\ge5\) one has \(n\ge2^d+3\ge6d\).
 Thus the criterion applies in all these degrees and needs trial
 division only to a bound quadratic in \(n\). It leaves the subgroup
 membership of the specified evaluations as the field-dependent step.
+
+
+\section{Four primitive trinomials and eight primitive pentanomials of degree 2047}
+\label{sec:primitive2047}
+\begin{theorem}\label{thm:primitive2047}
+The four polynomials \(T^{2047}+T^a+1\) for
+\(a=3,511,1536,2044\) are primitive over \(\mathbb F_2\).
+The cubes and fifth powers of their roots have eight distinct primitive
+pentanomial minimal polynomials. In particular,
+\[
+                     T^{2047}+T^3+T^2+T+1
+\]
+is primitive. This adds a degree to the count in
+Section~\ref{sec:products-3072}, giving at least 2,250 of the first
+3,072 degrees.
+\end{theorem}
+\begin{proof}
+Apply Theorem~\ref{thm:2047-circle-criterion} to a root \(r\) of
+\(T^{2047}+T^{511}+1\). For each anchored matrix \(R\), form
+\(V=DR\), where \(D\) is the reproducible diagonal with entries from
+1 through 65,535 in \nolinkurl{scripts/solve_2047_ore_circles.py}.
+Every entry is coprime to \(B\) by the prime-divisor bound.
+For \(N=14{,}602,52{,}488\), the \(2N\) scalar moments are
+\(s_i=u^\top V^{i+1}v\), \(0\le i<2N\). Integer matrix products
+are evaluated modulo \(M=2^{2047}-1\), then reduced modulo \(B\mid M\).
+The two circle enumerations, one by individual
+splitting tests over the constants and one by root incidences, give
+identical integer matrices after normalization and selection.
+
+For each sequence, the extended polynomial Euclidean algorithm modulo
+\(B\) verifies a degree-\(N\) monic recurrence with unit constant term
+and the complete unit-determinant Padé identities of
+Section~\ref{sec:quaternary-rank}. In that argument the starting
+vector is \(Vv\) for the present shift of the moments. Thus both
+\(\det V\) are units modulo every prime of \(B\), and so are both
+\(\det R\). The matrix theorem gives \(\operatorname{ord}(r)=2^{2047}-1\).
+The file \nolinkurl{data/degree-2047-ore-rank.json} specifies the matrix,
+moment and recurrence digests together with the two constant terms.
+The GPU calculation and CPU polynomial reduction are reproducible
+from the public circle generator.
+
+The invertible reciprocal-seed power of Section~\ref{sec:ore-trace-coordinate}
+transfers this order to the tap 3 trinomial. Ordinary reciprocal
+polynomials give taps 1536 and 2044. Both 3 and 5 are coprime to
+\(2^{2047}-1\), so the cube and fifth power preserve full order.
+The interior exponents of their minimal polynomials are
+\[
+\begin{array}{r|l|l}
+ a&\text{cube}&\text{fifth power}\\ \hline
+ 3&(1,2,3)&(3,410,820)\\
+ 511&(511,1023,1535)&(511,716,921)\\
+ 1536&(512,1024,1536)&(1126,1331,1536)\\
+ 2044&(2044,2045,2046)&(1227,1637,2044).
+\end{array}
+\]
+Each listed monic polynomial has degree 2047 and vanishes at the
+stated power by direct substitution. The supports are recorded in
+\nolinkurl{data/degree-2047-sparse-witnesses.csv}.
+\end{proof}
 
 \end{document}
