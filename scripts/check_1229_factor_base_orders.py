@@ -20,6 +20,7 @@ METADATA = DATA / "degree-1229-q1024-certificate.json"
 LOGS = DATA / "degree-1229-q1024-projected-logs.csv.gz"
 ISOGENY_LOGS = DATA / "degree-1229-isogeny-logs.csv.gz"
 CIRCLE_LOGS = DATA / "degree-1229-partial-circle-logs.csv"
+DIRECTION_LOGS = DATA / "degree-1229-direction-logs.csv"
 EXTENDED_CENSUS = DATA / "degree-1229-extended-order-census.json"
 EXPECTED_DEGREES = {1: 2, 2: 1, 4: 3, 5: 6, 10: 99, 20: 52377}
 LIGHTEST = {0x11C4B7, 0x193377}

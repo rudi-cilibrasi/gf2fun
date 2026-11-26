@@ -9,16 +9,15 @@ from pathlib import Path
 import numpy as np
 
 from check_1229_circle_relations import homogeneous
-from check_1229_factor_base_orders import extended_table, read_logs, read_table
+from check_1229_factor_base_orders import DIRECTION_LOGS, extended_table, read_logs, read_table
 from check_1229_isogeny_logs import H0, H1, Q
 from check_1229_partial_circles import binary_orbits
 from check_1229_translated_circles import Constants, SIZE
 from check_degree_1229 import COFACTOR, GROUP, KNOWN, PRIMES
-from check_factor_base import DATA, polynomial
+from check_factor_base import polynomial
 from period_coordinate import mask_of
 
 
-LOGS = DATA / "degree-1229-direction-logs.csv"
 CHARTS = ((2, 1), (3, 1), (3, 2))
 
 
@@ -133,7 +132,7 @@ if __name__ == "__main__":
             writer = csv.writer(stream, lineterminator="\n")
             writer.writerow(("mask", "exponent"))
             writer.writerows(rows)
-    elif rows != list(read_logs(LOGS)):
+    elif rows != list(read_logs(DIRECTION_LOGS)):
         raise ArithmeticError("regenerated exponents differ from the published table")
     print(f"{count} direction equations determine {len(rows)} logarithms outside the starting table.")
     print("Binary degrees and counts:", dict(sorted(Counter(p.bit_length()-1 for p in extra).items())))

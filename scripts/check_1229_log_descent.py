@@ -8,7 +8,9 @@ from math import gcd
 from pathlib import Path
 
 from check_1229_dyadic import halve_parents
-from check_1229_factor_base_orders import CIRCLE_LOGS, ISOGENY_LOGS, check_examples, read_logs, read_table
+from check_1229_factor_base_orders import (
+    CIRCLE_LOGS, DIRECTION_LOGS, ISOGENY_LOGS, check_examples, read_logs, read_table,
+)
 from check_1229_hermitian_descent import records as hermitian_records, relation as hermitian_relation
 from check_1229_isogeny_logs import H0, H1, Q
 from check_1229_norm_height import FORMS, known_offset_quotient, norm_quotient, sparse_root
@@ -170,6 +172,7 @@ def main():
     field_mask, table = read_table()
     extra_logs = dict(read_logs(CIRCLE_LOGS))
     extra_logs.update(read_logs(ISOGENY_LOGS))
+    extra_logs.update(read_logs(DIRECTION_LOGS))
     terminal = {p: int(row["log_mod_C"]) for p, row in forms.items() if "log_mod_C" in row}
     if terminal.keys() & (extra_logs.keys() | table.keys()):
         raise ValueError("a terminal logarithm was already in the earlier tables")
