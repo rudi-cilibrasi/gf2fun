@@ -1,0 +1,13 @@
+{
+  "indices": {
+    "1": 29143,
+    "46703": 1
+  },
+  "imprimitive_labels": {
+    "0x87f": "46703"
+  },
+  "minimum_primitive_weight": 549,
+  "lightest_primitive_labels": [
+    "0x3d02"
+  ]
+}

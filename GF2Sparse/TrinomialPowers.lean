@@ -6,7 +6,8 @@ import Mathlib.Algebra.Polynomial.FieldDivision
 namespace GF2Sparse.TrinomialPowers
 open Polynomial
 
-private def powerSum {R : Type*} [Semiring R] (m d : ℕ) (a b c : R) : R :=
+/-- The three pure powers and the two mixed monomials in the midpoint case. -/
+def powerSum {R : Type*} [Semiring R] (m d : ℕ) (a b c : R) : R :=
   a^m + b^m + c^m + a*b^(m-2)*c + a^d*b*c^d
 
 private theorem midpoint_identity {R : Type*} [CommRing R] [CharP R 2] (a c : R)
@@ -172,5 +173,25 @@ theorem midpoint_exponent_bound {d : ℕ} (hd : 2 ≤ d)
   · have h₃ := odd_binomial_multiplicity_le_one hpar
     simp only [Nat.succ_eq_add_one] at *
     omega
+
+/-- The interior five-term identity on the line B = A+C holds exactly
+in degrees five and seven. -/
+theorem midpoint_identity_iff {d : ℕ} (hd : 2 ≤ d) :
+    (∀ a c : BinaryPoly, powerSum (2*d+1) d a (a+c) c = 0) ↔ d = 2 ∨ d = 3 := by
+  constructor
+  · intro h
+    have hx := h X 1
+    simp only [powerSum, one_pow, mul_one] at hx
+    have h₁ : ((X : BinaryPoly)+1)^(2*d+1) = (X+1)^(2*d-1)*(X+1)^2 := by
+      rw [← pow_add, show 2*d-1+2 = 2*d+1 by omega]
+    have h₂ : (X : BinaryPoly)^(2*d+1) = X^d*X^(d+1) := by
+      rw [← pow_add, show d+(d+1) = 2*d+1 by omega]
+    rw [h₁, h₂, show 2*d+1-2 = 2*d-1 by omega, CharTwo.add_sq, one_pow] at hx
+    apply midpoint_exponent_bound hd
+    apply CharTwo.add_eq_zero.mp
+    rw [pow_succ X d] at hx ⊢
+    convert hx using 1
+    ring
+  · rintro (rfl | rfl) a c <;> apply midpoint_identity <;> decide
 
 end GF2Sparse.TrinomialPowers

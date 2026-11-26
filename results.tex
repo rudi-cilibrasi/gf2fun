@@ -12300,7 +12300,8 @@ differentiation, and the other binomial has degree at most \(d+1\).
 Hence \(2d-1\le d+2\), giving \(d=2,3\) and \(m=5,7\).
 For these primes a repeated residue satisfying the midpoint
 condition would force all three equal, contrary to \(\gcd(a,n)=1\).
-Lean checks the exponent injectivity and the multiplicity bound in
+Lean checks the exponent injectivity and proves that the interior
+five-term identity holds exactly for \(d=2,3\) in
 \nolinkurl{GF2Sparse/TrinomialPowers.lean}.
 
 Conversely, in the equal-residue case write the pair \(u,u+mh\)
@@ -12387,7 +12388,7 @@ For a cubic \(f\) put \(\widetilde f=H_1^3 f(H_0/H_1)\), and form
 \]
 Then \(D(y)=H_1(y)^3 S(x)\). One can split \(S\) using only real
 coefficients. The \(q\) roots of \(t^q+t=1\) form pairs
-\(\{t,t+1\}\); their values \(u=t^2+t\) run through the elements
+\(\{t,t+1\}\). Their values \(u=t^2+t\) run through the elements
 of \(\mathbb F_q\) of absolute trace one. Consequently
 \[
   S=g\prod_{\operatorname{Tr}(u)=1}(h^2+hg+ug^2).
@@ -12409,7 +12410,7 @@ All 149 substituted numerators leave only linear and quadratic factors
 after removal of the designated cubic. Combining these relations
 and applying two directly verified exponents from the quadratic
 catalogue leaves 76,921 distinct quadratics. Either expression for
-\(L(P)\) can be checked by powering in the binary field; the checker
+\(L(P)\) can be checked by powering in the binary field. The checker
 also accepts logarithms for any individual cubic branch.
 See \nolinkurl{scripts/check_1229_seventh_descent.py}.
 
@@ -12431,7 +12432,7 @@ as the last row, and scale rows by the reproducible diagonal in the
 Wiedemann solver. Denote this square matrix by \(A\). The archived
 \(2N=209{,}936\) moments are \(s_i=u^\top A^i b\), with the vectors
 and row selection determined by the solver. FLINT and NTL reconstructed
-identical full circle matrices; recomputing these moments starts
+identical full circle matrices. Recomputing these moments starts
 from that matrix. The compressed moment file allows a separate
 verification of the following polynomial identities.
 
@@ -12467,5 +12468,22 @@ digests, and the constant coefficient of the monic recurrence are in
 \nolinkurl{data/degree-1229-q1024-quaternary-rank.json}. The model
 checker verifies its degree, irreducibility and value at \(a\).
 \end{proof}
+
+For each of the 29,144 labels in the \(q=512\) table we also determined
+the order of the unprojected norm \(U_t\). Exactly 29,143 are primitive.
+The sole exception, labelled \(\mathtt{87f}_{16}\) in the constant
+basis \(z^{18}+z^{12}+z^{10}+z+1=0\), has index 46,703. The
+least weight of a primitive minimal polynomial in the table is 549,
+attained only at label \(\mathtt{3d02}_{16}\).
+
+Indeed \(U_t^K\) has order \(C\) by the theorem, so the index can
+contain only the four distinct known prime factors of \(K\). The
+checker forms \(U_t=N_{E/H}(p_t(x))^{9/\deg p_t}\) in the degree-2458
+field and tests \((U_t^C)^{K/p}=1\) for each \(p\mid K\). For every
+label it also computes the binary minimal polynomial, checks its
+degree and evaluates it at \(U_t\). The four prime-index tests,
+the projected equality and the weight count are reproducible with
+\nolinkurl{scripts/check_1229_quaternary_models.py} and the
+option \texttt{--orders}.
 
 \end{document}

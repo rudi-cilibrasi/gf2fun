@@ -4,6 +4,7 @@
 #include <array>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 using NTL::GF2X;
@@ -84,9 +85,20 @@ GF2X evaluate_power(const Powers& powers, const ZZ& e, const GF2XModulus& field)
 }
 }
 
-int main() {
+int main(int argc, char** argv) {
+    const bool orders = argc == 2 && std::string(argv[1]) == "--orders";
+    if (argc != 1 && !orders) return 1;
     ZZ modulus, z_mask, known, cofactor;
     if (!(std::cin >> modulus >> z_mask >> known >> cofactor)) return 1;
+    std::array<ZZ,4> primes;
+    if (orders) {
+        ZZ product(1);
+        for (auto& p : primes) {
+            if (!(std::cin >> p) || p <= 1 || !NTL::ProbPrime(p) || NTL::GCD(product,p) != 1) return 1;
+            product *= p;
+        }
+        if (product != known || NTL::GCD(known,cofactor) != 1) return 1;
+    }
     const GF2X f = binary(modulus), z = binary(z_mask);
     const GF2XModulus field(f);
     if (NTL::deg(f) != 2*n || !NTL::IterIrredTest(f) ||
@@ -120,6 +132,7 @@ int main() {
     }
     if (!std::cin.eof() || rows.empty()) return 1;
     bool valid = true;
+    std::vector<int> missing(orders ? rows.size() : 0), weights(orders ? rows.size() : 0);
     #pragma omp parallel reduction(&&:valid)
     {
         const GF2XModulus local(f);
@@ -136,11 +149,26 @@ int main() {
             const GF2X norm = NTL::MulMod(v,w,local);
             if (NTL::PowerMod(norm,known*(9/d),local) != evaluate_power(powers,rows[i].second,local))
                 valid = false;
+            if (orders) {
+                const GF2X value = NTL::PowerMod(norm,9/d,local);
+                const GF2X small = NTL::PowerMod(value,cofactor,local);
+                for (size_t j=0; j<primes.size(); ++j)
+                    if (NTL::IsOne(NTL::PowerMod(small,known/primes[j],local))) missing[i] |= 1 << j;
+                GF2X minimal = NTL::MinPolyMod(value,local,n);
+                if (NTL::deg(minimal) != n || !NTL::IsZero(NTL::CompMod(minimal,value,local)))
+                    valid = false;
+                weights[i] = NTL::weight(minimal);
+            }
         }
     }
     if (!valid) {
         std::cerr << "A full-field projected norm identity failed.\n";
         return 1;
     }
-    std::cout << "Direct binary powering verified " << rows.size() << " projected norm identities.\n";
+    if (orders) {
+        for (size_t i=0; i<rows.size(); ++i)
+            std::cout << rows[i].first << ' ' << missing[i] << ' ' << weights[i] << '\n';
+    } else {
+        std::cout << "Direct binary powering verified " << rows.size() << " projected norm identities.\n";
+    }
 }
