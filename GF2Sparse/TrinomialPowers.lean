@@ -1,4 +1,5 @@
 import GF2Sparse.SeventhImage
+import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-! Fifth and seventh powers for trinomials with a midpoint modulo the exponent. -/
 
@@ -121,5 +122,55 @@ theorem complementary_taps_injective {n h j a b : ℕ} (hn : Odd n)
   have m₄ := mem (n-j)
   have m₅ := mem a
   omega
+
+/-- Distinct terms of a homogeneous norm of degree less than the source degree
+stay distinct under the substitution `(A,B,C) = (1,X^a,X^n)`. -/
+theorem norm_exponents_injective {a n i j k l : ℕ} (hcop : n.Coprime a)
+    (hi : i < n) (hk : k < n) (he : a*i+n*j = a*k+n*l) : i = k ∧ j = l := by
+  have hm : a*i ≡ a*k [MOD n] := by
+    simpa [Nat.add_mod] using congrArg (· % n) he
+  have hik := (Nat.ModEq.cancel_left_of_coprime hcop hm).eq_of_lt_of_lt hi hk
+  subst k
+  exact ⟨rfl, Nat.eq_of_mul_eq_mul_left (by omega : 0 < n) (Nat.add_left_cancel he)⟩
+
+private theorem binomial_ne_zero {k : ℕ} (hk : 0 < k) : (X : BinaryPoly)^k+1 ≠ 0 := by
+  intro h
+  simpa [zero_pow hk.ne'] using congrArg (eval (0 : ZMod 2)) h
+
+private theorem binomial_multiplicity_le {k : ℕ} (hk : 0 < k) :
+    rootMultiplicity 1 ((X : BinaryPoly)^k+1) ≤ k := by
+  let p : BinaryPoly := X^k+1
+  have h := natDegree_le_of_dvd (p.pow_rootMultiplicity_dvd 1) (binomial_ne_zero hk)
+  have hdeg : p.natDegree ≤ k := by
+    exact (natDegree_add_le _ _).trans (by simp)
+  simpa only [natDegree_pow, natDegree_X_sub_C, Nat.mul_one] using h.trans hdeg
+
+private theorem odd_binomial_multiplicity_le_one {k : ℕ} (hk : Odd k) :
+    rootMultiplicity 1 ((X : BinaryPoly)^k+1) ≤ 1 := by
+  by_contra! h
+  have hder := ((one_lt_rootMultiplicity_iff_isRoot (binomial_ne_zero hk.pos)).mp h).2
+  simp [Polynomial.IsRoot, derivative_X_pow, hk.natCast_zmod_two] at hder
+
+/-- The identity forced by two interior mixed monomials is possible only in
+homogeneous degrees five and seven. -/
+theorem midpoint_exponent_bound {d : ℕ} (hd : 2 ≤ d)
+    (he : ((X : BinaryPoly)+1)^(2*d-1)*(X^2+X+1) = (X^d+1)*(X^(d+1)+1)) :
+    d = 2 ∨ d = 3 := by
+  have hn := mul_ne_zero (binomial_ne_zero (by omega : 0 < d))
+    (binomial_ne_zero (Nat.succ_pos d))
+  have hdvd : ((X : BinaryPoly) - C 1)^(2*d-1) ∣ (X^d+1)*(X^(d+1)+1) := by
+    rw [← he, CharTwo.sub_eq_add, C_1]
+    exact dvd_mul_right _ _
+  have h := (le_rootMultiplicity_iff hn).2 hdvd
+  rw [rootMultiplicity_mul hn] at h
+  have h₁ := binomial_multiplicity_le (by omega : 0 < d)
+  have h₂ := binomial_multiplicity_le (Nat.succ_pos d)
+  rcases Nat.even_or_odd d with hpar | hpar
+  · have h₃ := odd_binomial_multiplicity_le_one hpar.add_one
+    simp only [Nat.succ_eq_add_one] at *
+    omega
+  · have h₃ := odd_binomial_multiplicity_le_one hpar
+    simp only [Nat.succ_eq_add_one] at *
+    omega
 
 end GF2Sparse.TrinomialPowers

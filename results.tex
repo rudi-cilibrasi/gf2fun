@@ -12219,4 +12219,121 @@ primitive pentanomials. The checker
 counts, divisibility and full orders. Its \texttt{--blocks} option
 accepts an odd degree above eleven.
 
+\section{Which powers up to the degree of a primitive trinomial stay sparse?}
+\label{sec:short-trinomial-powers}
+
+\begin{theorem}
+Let \(1+X^a+X^n\) be primitive over \(\F\), with \(0<a<n\) and
+\(n>7\), and let \(r\) be a root. Write the positive exponent \(e\)
+as \(2^s m\), with \(m\) odd. Assume \(m\le n\). The minimal polynomial
+of \(r^e\) is the source trinomial for \(m=1\). For \(m>1\) it has
+exactly five terms if and only if at least one of the following holds.
+\begin{enumerate}
+\item \(m=2^k+1\) for some \(k\ge1\), and two of \(0,a,n\) agree modulo \(m\).
+\item \(m=5\) or \(7\), and \(0,a,n\) have three distinct residues modulo
+\(m\), one of which is the midpoint of the other two.
+\end{enumerate}
+In every other case it has at least seven terms. Its degree is always \(n\).
+\end{theorem}
+
+\begin{proof}
+The factor \(2^s\) acts by Frobenius. The order of \(r^m\) is at least
+\((2^n-1)/n>2^{\lfloor n/2\rfloor}-1\), since
+\(2^{\lfloor n/2\rfloor}+1>n\) for \(n\ge8\). Every proper subfield
+has size at most \(2^{\lfloor n/2\rfloor}\), so \(r^m\) has degree
+\(n\). Write \(G\) for its minimal polynomial. Its weight is odd
+since \(G(1)=1\). The source has \(\gcd(a,n)=1\) by the primitive
+order argument in Section~\ref{sec:frobenius-box-density}.
+
+Take \(1<m<n\) and choose a primitive \(m\)-th root of unity \(\zeta\)
+in an algebraic closure. Form the homogeneous polynomial
+\[
+ H(A,B,C)=\prod_{j=0}^{m-1}(A+\zeta^{ja}B+\zeta^{jn}C).
+\]
+Squaring the coefficients permutes the factors, so \(H\) has binary
+coefficients. It is divisible by \(A+B+C\) and contains the pure
+powers \(A^m,B^m,C^m\). Replacing \((B,C)\) by
+\((\zeta^a B,\zeta^n C)\) also permutes the factors. Thus
+\(A^{m-i-j}B^i C^j\) can occur only if \(ai+nj\equiv0\bmod m\).
+The specialization \(H(1,X^a,X^n)\) equals \(G(X^m)\), since its
+factors are the source polynomials at \(\zeta^jX\), giving every
+\(m\)-th root of every conjugate of \(r^m\) exactly once. Both sides
+are monic. Distinct monomials in \(H\) remain distinct under this
+specialization. Indeed \(ai+nj=ai'+nj'\) implies \(n\mid i-i'\),
+and \(0\le i,i'\le m<n\) forces \(i=i'\) and \(j=j'\).
+We can therefore count terms before specializing.
+
+Suppose \(H\) has at most five terms. Its three pure powers alone
+cannot vanish at \(C=A+B\), since the coefficient of \(A B^{m-1}\)
+in \((A+B)^m\) is one. Thus there are exactly two mixed monomials.
+Setting one variable to zero and the other two equal shows that both
+mixed terms involve precisely the same subset of variables. If both
+are supported on \(A,B\), up to permutation, then \((A+B)^m\) has
+exactly four terms. Its factorization as the product of
+\(A^{2^i}+B^{2^i}\) over the set bits of \(m\) gives
+\(m=2^k+1\). The mixed terms are \(A^{2^k}B\) and \(AB^{2^k}\).
+The weight congruence for the first forces the two source exponents
+on this edge to agree modulo \(m\).
+
+Now suppose both mixed monomials involve all three variables.
+On the line \(A+B+C=0\), the sum \(A^m+B^m+C^m\) has a simple
+zero at each coordinate point. For example, setting \(B=1\),
+\(C=1+A\) gives coefficient one at \(A^1\). At \(A=0\) each mixed
+term with \(A\)-exponent one has leading coefficient one, so exactly
+one of the two terms has \(A\)-exponent one. The same holds for
+\(B,C\). One term must have at least two exponents one. If all three
+were one, \(m=3\) and the other term would have all exponents at
+least two. Up to permutation the two terms are consequently
+\(AB C^{m-2}\) and \(A^i B^{m-1-i} C\), with both \(i,m-1-i\ge2\).
+After substituting \(C=A+B\), symmetry in \(A,B\) forces
+\(i=m-1-i=d\). The first term gives the midpoint congruence for the
+source exponent corresponding to \(C\).
+
+Substitute \(A=T,B=1,C=1+T\) and collect terms. The vanishing on
+the line gives
+\[
+       (1+T)^{2d-1}(T^2+T+1)=(T^d+1)(T^{d+1}+1).
+\]
+The left side has a zero of multiplicity \(2d-1\) at one. Of the
+two exponents \(d,d+1\), the odd one gives a simple zero by
+differentiation, and the other binomial has degree at most \(d+1\).
+Hence \(2d-1\le d+2\), giving \(d=2,3\) and \(m=5,7\).
+For these primes a repeated residue satisfying the midpoint
+condition would force all three equal, contrary to \(\gcd(a,n)=1\).
+Lean checks the exponent injectivity and the multiplicity bound in
+\nolinkurl{GF2Sparse/TrinomialPowers.lean}.
+
+Conversely, in the equal-residue case write the pair \(u,u+mh\)
+and the remaining exponent \(v\). The block formula of
+Section~\ref{sec:all-trinomial-blocks} gives \(G=X^v+X^u(1+X^h)^m\).
+In the midpoint case use the five-term identity from
+Section~\ref{sec:trinomial-decimations}. Both formulas come from
+five distinct homogeneous monomials of degree \(m\), so the
+specialization is collision-free for \(m<n\).
+
+It remains to handle \(m=n\), where the endpoints agree modulo \(m\).
+Here \(G(Y)=Y^a+(1+Y)^n\) since \(r^a=1+r^n\). Its weight is
+\(2^{\mathrm{wt}_2(n)}\pm1\), where \(\mathrm{wt}_2\) counts binary
+ones. As \(n\) is odd and exceeds seven, weight at most five
+requires \(n=2^k+1\). Cancellation in this case requires \(a=1\)
+or \(n-1\). In either case Section~\ref{sec:all-trinomial-blocks}
+gives a root order dividing \(2^{2k}+2^k+1<2^n-1\), contradicting
+primitivity. Thus the weight is five exactly as stated.
+\end{proof}
+
+\begin{corollary}
+For odd \(n>11\), the exact number of distinct primitive pentanomials
+obtained by raising roots of primitive degree-\(n\) trinomials to
+powers \(1\le e\le n\) is
+\[
+          2T_n+U_n+\sum_{k\ge3}T_n(2^k+1).
+\]
+\end{corollary}
+\begin{proof}
+Section~\ref{sec:all-trinomial-blocks} counts these outputs without
+overlap. Every nonzero summand has \(2^k+1\le n\), and the theorem
+exhausts the remaining powers. In degree 153 this gives precisely
+sixteen outputs over the full range \(1\le e\le153\).
+\end{proof}
+
 \end{document}

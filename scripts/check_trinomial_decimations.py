@@ -1,4 +1,4 @@
-"""Verify the support overlaps for third, fifth and seventh powers of primitive trinomial roots."""
+"""Check which powers of primitive trinomial roots have sparse minimal polynomials."""
 
 import argparse
 from collections import Counter
@@ -126,11 +126,55 @@ def check_all_blocks(n):
     return len(sources), dict(sorted(counts.items()))
 
 
+def short_power_support(support, exponent):
+    m = exponent // (exponent & -exponent)
+    if m == 1:
+        return support
+    residues = {e % m for e in support}
+    if len(residues) == 2 and (m-1).bit_count() == 1:
+        return block_image(support, m)
+    if m in (5, 7) and len(residues) == 3:
+        if any((a+c-2*b) % m == 0 for a, b, c in permutations(residues)):
+            return power_support(support, m)
+    return None
+
+
+def check_short_powers(n):
+    from power_images import power_characteristic
+
+    sources = [(0, a, n) for a in range(1, n) if primitive(polynomial((0, a, n)), n)]
+    images = set()
+    for support in sources:
+        for exponent in range(1, n+1):
+            actual = power_characteristic(support, exponent)
+            predicted = short_power_support(support, exponent)
+            if (actual if len(actual) <= 5 else None) != predicted:
+                raise ArithmeticError(f"incorrect power-{exponent} prediction at {support}: {actual}")
+            if len(actual) == 5 and gcd(exponent, 2**n-1) == 1:
+                images.add(actual)
+    if n > 11 and n % 2:
+        _, counts = check_all_blocks(n)
+        if len(images) != sum(counts.values()):
+            raise ArithmeticError("the exact count disagrees with the characteristic polynomials")
+    return len(sources), len(images)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--blocks", type=int, metavar="DEGREE", help="verify all binary block powers in one odd degree above 11")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--blocks", type=int, metavar="DEGREE", help="verify all binary block powers in one odd degree above 11")
+    group.add_argument("--all-powers", type=int, metavar="DEGREE",
+                       help="compute every characteristic polynomial for exponents up to the degree")
     args = parser.parse_args()
     check_patterns()
+    if args.all_powers is not None:
+        n = args.all_powers
+        if n <= 7:
+            parser.error("--all-powers requires a degree above seven")
+        total, outputs = check_short_powers(n)
+        print(f"Degree {n}: {total} primitive trinomials, {n*total} powers checked, "
+              f"{outputs} distinct primitive pentanomials.")
+        raise SystemExit(0)
     if args.blocks is not None:
         if args.blocks <= 11 or args.blocks % 2 == 0:
             parser.error("--blocks requires an odd degree above 11")
