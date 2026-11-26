@@ -11238,4 +11238,71 @@ In degree eleven one such sequence has interior tap sets
 \]
 \end{proof}
 
+\section{Rational Frobenius maps on the pentanomial roots of degree 1229}
+\label{sec:sparse-frobenius-height}
+The certified generator of Section~\ref{sec:1229-direction-logs} satisfies
+\(x=R(x^{1024})\) with \(R=(T^5+T^2+1)/(T^3+T)\). For a reduced
+fraction \(U/V\), call \(\max(\deg U,\deg V)\) its height.
+
+\begin{theorem}
+Let \(r\) be a root of any irreducible binary pentanomial of degree 1229.
+Over any constant field \(k=\mathbb F_{2^m}\) with \(1229\nmid m\),
+the rational functions of height at most five sending \(r\) to one of
+its binary Frobenius conjugates are exactly \(T,T^2,T^4\).
+For the pentanomials with interior taps \((2,6,15)\) and \((27,50,77)\)
+the least height of a separable such function other than \(T\) is 205.
+\end{theorem}
+\begin{proof}
+The degree of \(r\) over \(k\) is still 1229. Two reduced fractions of
+height at most \(h\) agreeing at \(r\) coincide if \(2h<1229\), by
+cross multiplication. There is an automorphism of \(k(r)\) which fixes
+\(r\) and squares constants. It fixes the image \(r^{2^j}\) and so
+fixes the fraction, by uniqueness. Normalizing the denominator to be
+monic gives binary coefficients. Each inseparable binary fraction is a
+square, and taking a square root permutes the conjugates of \(r\).
+It suffices to check separable binary fractions.
+
+Enumerating coprime pairs of binary polynomials of height one through
+five and discarding squares gives respectively \(6,18,96,360,1536\)
+fractions. For a monic irreducible \(f\) with root \(r\), if
+\(U(r)/V(r)\) is a conjugate of \(r\), then
+\[
+             \operatorname{Res}_X(f,U+YV)=f(Y).
+\]
+Indeed the resultant is the product over the roots of \(f\), and the
+leading scalar is the nonzero binary norm of \(V(r)\), hence is one.
+Use the two fields \(\mathbb F_{2^{12}}\) and \(\mathbb F_{2^{16}}\).
+In each, evaluate at points \(t\) for which \(U+tV\) has its full
+degree and distinct roots in that field. Writing \(l\) for its leading
+coefficient, the necessary equality is
+\[
+             f(t)=l^{1229}\prod_{U(s)+tV(s)=0} f(s).
+\]
+All these sparse evaluations require only the three interior exponents.
+For each surviving pair the checker evaluates \(f(U(r)/V(r))\) in the
+original field. It tests the 319,583 reciprocal representatives from
+the pentanomial census. Inversion conjugates a rational map by \(T\mapsto1/T\)
+and preserves height and separability, so the test covers all 639,166
+irreducibles. The two resultant tests exclude every nonidentity map on the sparse
+list. With the dense control included, exactly one pair reaches the
+original-field check, which recovers \(R\) and the exponent \(j=1219\).
+
+For the second assertion fix one of the two sparse moduli \(f\). For
+each \(w=T^{2^j}\bmod f\), take the first remainder \(b\) of degree at
+most 205 in the Euclidean algorithm on \(f,w\), writing \(b=dw\bmod f\).
+If \(w\) already qualifies take \(d=1\). Otherwise the preceding
+remainder \(a\) has degree greater than 205 and the Euclidean recurrence
+gives \(\deg d=1229-\deg a\). Consecutive rows have determinant \(f\),
+so \(b,d\) are coprime. For any competing \(U/V\) of height at most
+205, the polynomial \(bV-Ud\) is divisible by \(f\) and has degree
+below 1229, so \(b/d=U/V\). Thus \(\deg d\le205\) is an exact test.
+
+For each modulus the complete list of successful exponents is
+\(0,1,\ldots,7,10\). The first eight give \(T^{2^j}\). At \(j=10\),
+put \(g=f+T^{1229}\). The function is \(g(T)/T^{205}\), since
+\(1229-205=1024\). Its odd-order pole at zero gives separability.
+The public input is \nolinkurl{data/degree-1229-irreducible-supports.csv.gz}.
+The checker \nolinkurl{scripts/check_1229_sparse_frobenius.py} verifies both assertions.
+\end{proof}
+
 \end{document}
