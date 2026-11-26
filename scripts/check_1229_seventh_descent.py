@@ -142,6 +142,7 @@ def main():
             or new_indices.keys() & (extra.keys() | children.keys())
             or any(p.bit_length()-1 not in (120, 160, 200) or i < 1 for p, i in new_indices.items())):
         raise ValueError("invalid decic halving index list")
+    available = children | extra | new_indices
     use_real = args.real_pencils or args.decic_pencil
     indexed = dict(children)
     if use_real:
@@ -211,10 +212,10 @@ def main():
         target, weights = norm_pencil(TORUS)
     elif mask in parents:
         target, weights = polynomial(mask), halving_relation(mask, parents[mask]["children"], field)
-    elif mask in children or mask in extra or mask in new_indices:
+    elif mask in available:
         if not args.backend:
             parser.error("select --backend to expand an indexed factor")
-        index = (children | extra | new_indices)[mask]
+        index = available[mask]
         edges = expand_index(args.backend, field_mask, mask, index)
         target, weights = polynomial(mask), halving_relation(mask, edges, field)
     else:
@@ -223,8 +224,8 @@ def main():
     if mask is None:
         for row in result["remaining"]:
             p = int(row["mask_hex"], 16)
-            if p in indexed:
-                row.update(halving_index=indexed[p], halving_relative_degree_bound=(p.bit_length()-1)//40)
+            if p in available:
+                row.update(halving_index=available[p], halving_relative_degree_bound=(p.bit_length()-1)//40)
     degrees = Counter(r["relative_degree"] for r in result["remaining"])
     if mask == quintic and args.quadratics and any(d > 2 for d in degrees):
         raise ArithmeticError("a cubic survived the descent to quadratics")
