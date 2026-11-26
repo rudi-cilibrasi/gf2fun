@@ -9298,4 +9298,183 @@ expansion in \nolinkurl{scripts/check_1229_factor_base_orders.py}.
 The complete list of exceptions is in
 \nolinkurl{data/degree-1229-extended-order-census.json}.
 
+\section{Hermitian pencils for the cubic logarithms in degree 1229}
+\label{sec:hermitian-descent}
+
+The two eleven-factor tasks each contain one factor of degree three
+over \(k=\mathbb F_{2^{20}}\). A pencil of quadratics reduces either
+of these factors to logarithms of relative degree two. The same
+construction eliminates all 18 cubics in the earlier reduction of
+the Seroussi factor with binary mask \(\mathtt{d3}\).
+
+Put \(q=1024\), write \(\bar u=u^q\) on \(k\), and retain the
+certified generator \(x\) and \(y=x^q\) from the preceding section.
+Then \(x=h_0(y)/h_1(y)\), where \(h_0=T^5+T^2+1\) and \(h_1=T^3+T\).
+Given a Hermitian matrix \(H=(h_{ij})_{0\le i,j\le m}\) over \(k\)
+with \(1\le m<q\), put
+\[
+ S_H(X)=\sum_{i,j}h_{ij}X^{i+qj},
+ \qquad D_H(T)=\sum_{i,j}h_{ij}h_0(T)^i h_1(T)^{m-i}T^j .
+\]
+Substitution gives \(D_H(y)=h_1(y)^mS_H(x)\).
+
+\begin{lemma}\label{lem:hermitian-pencil}
+If \(H\) has rank two, then up to a scalar \(S_H\) is a product
+of \(q+1\) members of a pencil of polynomials over \(k\), each of
+degree at most \(m\).
+\end{lemma}
+\begin{proof}
+Choose two coordinate vectors whose images span the quotient by the
+radical. The corresponding principal minor
+\(A=\left(\begin{smallmatrix}a&u\\\bar u&c\end{smallmatrix}\right)\)
+is nonsingular. For its pair of indices \(J\) we have
+\(H=H_{:,J}A^{-1}H_{J,:}\). Let \(f,g\) be the two column polynomials
+obtained by multiplying \(H_{:,J}\) on the left by
+\((1,X,\ldots,X^m)\). The row polynomials on the other side are
+\(f^q,g^q\). Thus \(\det(A)S_H\) equals
+\[
+ c f^{q+1}+u f g^q+\bar u g f^q+a g^{q+1}.
+\]
+For \(c\ne0\) the slopes of its linear factors in \(f,g\) satisfy
+\(\operatorname{N}(\gamma+\bar u/c)=a/c+\operatorname{N}(\bar u/c)\)
+with \(\operatorname{N}(z)=z^{q+1}\). The right side is nonzero
+since \(A\) is nonsingular. Every nonzero norm fiber has \(q+1\)
+distinct elements of \(k\). If \(c=0\), the factor \(g\) accounts for
+infinity, and \(\operatorname{Tr}(u\gamma)=a\) supplies the other
+\(q\) slopes. Substitution gives the claimed factors. A member of
+the pencil can specialize to a nonzero constant.
+\end{proof}
+
+For \(B\in k[T]\), let \(N(B)\in\F[T]\) be the product of its
+20 coefficient conjugates. Since \(\gcd(20,1229)=1\), these
+conjugations extend while fixing \(x\). The norm of a nonzero
+constant belongs to \(\F^\times=\{1\}\). We obtain
+\[
+ N(D_H)(y)=h_1(y)^{20m}N(S_H)(x).
+\]
+Write \(L(B)\) for the projected logarithm of a binary polynomial,
+so \((x^K)^{L(B)}=B(x)^K\). For a binary target \(P\) with
+\(v=v_P(N(D_H))\) invertible modulo \(C\), the preceding identity gives
+\[
+ vL(P)=q^{-1}L(N(S_H))+20mL(h_1)
+       -\sum_{B\ne P}v_B(N(D_H))L(B)\pmod C ,
+\]
+where the sum runs over binary irreducibles. If a chosen factor
+\(t\mid P\) over \(k\) has degree \(m+1\), and all irreducible
+factors of \(D_H/t\) over \(k\) have degree at most \(m\), every
+logarithm on the right has relative degree at most \(m\).
+
+\begin{theorem}\label{thm:hermitian-plane}
+For a fixed monic cubic \(t\in k[T]\), let \(V\) be the space over
+\(\mathbb F_q\) of Hermitian \(3\times3\) matrices with \(t\mid D_H\).
+Then \(\dim V\ge3\). If equality holds and \(\det H=0\) defines a
+smooth cubic in \(\mathbb P(V)\), the number of projective rank-two
+matrices in \(V\) lies between \(q+1-2\sqrt q\) and \(q+1+2\sqrt q\).
+\end{theorem}
+\begin{proof}
+A Hermitian matrix has three diagonal entries in \(\mathbb F_q\)
+and three free entries in \(k\). Reduction of \(D_H\) modulo \(t\)
+imposes at most six linear conditions on these nine coordinates.
+The determinant is a cubic with coefficients in \(\mathbb F_q\).
+At rank at most one every cofactor vanishes, so all partial derivatives
+of its restriction to \(V\) vanish there as well. Under the smoothness
+hypothesis every point of the curve therefore has rank two. A smooth
+plane cubic is geometrically integral of genus one. Applying the
+Hasse--Weil bound gives the stated interval. See
+\href{https://denisevellachemla.eu/Weil-courbes-varietes.pdf}{A. Weil,
+\emph{Sur les courbes algébriques et les variétés qui s'en déduisent}}.
+\end{proof}
+
+For both original cubics the divisibility space has dimension three.
+To check smoothness, multiply each of the three partial derivatives
+by the six quadratic monomials. The resulting 18 quartics span the
+15-dimensional space of all ternary quartics in each case. Thus the
+partials have no common projective zero even over an algebraic closure.
+Enumerating \(\mathbb P^2(\mathbb F_q)\) and factoring \(D_H/t\) at
+every rank-two point gives the following counts. The middle columns
+count matrices for which the largest residual degree is at most the
+indicated bound. The last column counts distinct unknown logarithms
+in one selected relation after taking coefficient norms.
+\[
+\begin{array}{l|c|r|r|r|r}
+ \text{pentanomial}&\text{binary mask}&\text{rank two}&
+     \le2&\le1&\text{unknown quadratics}\\\hline
+ \text{product}&\mathtt{93f1}&1080&113&7&126\\
+ \text{Seroussi}&\mathtt{144f}&964&5&0&534
+\end{array}
+\]
+The point count alone gives no condition on the residual degrees.
+The verifier reconstructs the product of all \(1025\) pencil members
+up to scalar, factors the norms and checks the resulting equation in
+\(\mathbb F_{2^{1229}}\). Lean checks the substitution, principal
+minor and norm-completion identities in
+\nolinkurl{GF2Sparse/HermitianDescent.lean}.
+
+\paragraph{Three reductions of the degree-seven factor.}
+The 44 unknowns for \(\mathtt{d3}\) consist of 26 quadratics and
+18 cubics. Choosing a certified quadratic pencil for each cubic and
+collecting equal binary masks yields \(8{,}996\) distinct unknowns,
+all of relative degree exactly two. There is also a short relation
+with two higher-degree terms. Set \(w=T+1\). Then
+\[
+ (h_0+h_1)^{36}+h_1^{36}w^5
+  = P_{\mathtt{d3}} P_{\mathtt{f005f1}}\,
+    P_{\mathtt{4b627c561101de95bda7aad5023e274f01bdcf}},
+\]
+where \(P_s\) denotes the binary polynomial with hexadecimal mask \(s\).
+At \(y\), divide the left side by \(h_1(y)^{36}w(y)^5\). The result
+is \(1+w(x)^{-5084}\), since \(36-5q=-5084\). Here
+\(5084=4\cdot1271\) and \(1271\mid 2^{20}-1\), so
+\(1+w^{1271}\) splits over \(k\). All the logarithms needed for this
+side are in the linear factor base. The two other factors on the
+right have absolute degrees 23 and 150, hence relative degrees 23
+and 15. All three reductions can be checked against the same field element.
+
+\paragraph{Three quadratic logarithms with exact values.}
+Using alternative pencils for three of the cubic targets gives
+the following degree-40 binary factors. For each, setting \(m=1\)
+produces a nonsingular Hermitian form for which the residual
+quartic splits completely over \(k\). The formula above then computes
+its exact projected logarithm in terms of the original linear base.
+Each exponent is coprime to \(C\), and each value passes the four
+order tests for the known primes. The last column gives the weight of
+the minimal polynomial of its value at \(x\).
+\[
+\begin{array}{c|c|r}
+ \text{parent cubic mask}&\text{solved quadratic mask}&\text{weight}\\\hline
+ \mathtt{93f1}&\mathtt{17fa03989a9}&637\\
+ \mathtt{1284dfe9150a4111}&\mathtt{1fa68c42f7f}&605\\
+ \mathtt{129772184b5e49a5}&\mathtt{1dee64e3c0d}&625
+\end{array}
+\]
+This raises the total to \(90{,}842\) distinct projected logarithms,
+of which \(90{,}838\) represent primitive elements. For the quadratic
+in the original Seroussi task (mask \(\mathtt{14175ff6b27}\)), the
+four \(m=1\) divisibility conditions have rank four over \(\mathbb F_q\).
+Thus a single Hermitian pencil of linear forms in this model cannot
+eliminate that particular factor. The matrices and the three numerical
+logarithms are in \nolinkurl{data/degree-1229-hermitian-descents.json}.
+
+\section{Primitive pentanomials in 64 further degrees through 2560}
+\label{sec:products-2560}
+For 64 degrees between 2417 and 2560 we give a primitive polynomial
+of the form \(X^n+(1+X^u)(1+X^v)\). This raises the number of degrees
+with explicit witnesses among the first 2560 to at least \(2069\).
+The new rows cover 57 even and seven odd degrees. Examples include
+\[
+ X^{2441}+X^{33}+X^{27}+X^6+1,\qquad
+ X^{2520}+X^{199}+X^{177}+X^{22}+1 .
+\]
+The other six odd degrees are 2447, 2497, 2499, 2527, 2529 and 2549.
+PARI/GP checked irreducibility and computed the order of \(X\) in
+each field. FLINT independently checked all 64 full powers, all
+1818 prime-index powers, and primality of the 1440 distinct primes in
+the complete factorizations of \(2^n-1\). The factors were taken from
+\href{https://factordb.com/index.php?query=2%5E2441-1}{FactorDB}.
+The integer products, taps
+and modular powers can all be checked offline using
+\nolinkurl{data/mersenne-2417-2560.json},
+\nolinkurl{data/product-witnesses-2417-2560.csv}
+and \nolinkurl{scripts/check_product_range.py}.
+
 \end{document}
