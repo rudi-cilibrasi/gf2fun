@@ -9,7 +9,7 @@ from pathlib import Path
 
 from check_1229_factor_base_orders import read_table
 from check_degree_1229 import COFACTOR, PRIMES
-from check_factor_base import irreducible, polynomial
+from check_factor_base import polynomial
 from period_coordinate import mask_of
 
 
@@ -60,15 +60,18 @@ def irreducible_fibers(m):
     return count
 
 
-def derive(logs):
+def derive(frontier, logs):
     inverse = pow(Q, -1, COFACTOR)
     denominator_log = logs[2] + 2*logs[3]
     result = {}
     counts = Counter()
-    for p, e in logs.items():
+    t = polynomial(2)
+    for p, e in frontier.items():
         d = p.bit_length()-1
         target = pullback(p)
-        if not irreducible(polynomial(target)):
+        u = polynomial(target)
+        # Every reducible fiber of this isogeny has a rational point over F_(2^d).
+        if u.gcd(t.pow_mod(1 << d, u) + t) != 1:
             continue
         counts[d] += 1
         new_log = (e*inverse + d*denominator_log) % COFACTOR
@@ -79,10 +82,7 @@ def derive(logs):
             raise ArithmeticError("two distinct irreducibles gave one pullback")
         else:
             result[target] = new_log
-    for d in {p.bit_length()-1 for p in logs}:
-        if counts[d] != irreducible_fibers(d):
-            raise ArithmeticError(f"the degree-{d} fiber count disagrees with the isogeny")
-    return result
+    return result, counts
 
 
 def verify_powers(executable, modulus_mask, logs):
@@ -95,11 +95,18 @@ def verify_powers(executable, modulus_mask, logs):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--export", type=Path, help="write new mask,exponent rows in decimal")
+    parser.add_argument("--second-step", action="store_true", help="also pull back the new irreducibles once")
     parser.add_argument("--verify-powers", metavar="NTL_EXECUTABLE", type=Path,
                         help="independently check every projected identity in the model field")
     args = parser.parse_args()
     modulus_mask, table = read_table()
-    new_logs = derive(table)
+    new_logs, fibers = derive(table, table)
+    for d in {p.bit_length()-1 for p in table}:
+        if fibers[d] != irreducible_fibers(d):
+            raise ArithmeticError(f"the degree-{d} fiber count disagrees with the isogeny")
+    if args.second_step:
+        second, _ = derive(new_logs, table | new_logs)
+        new_logs.update(second)
     counts = Counter(m.bit_length()-1 for m in new_logs)
     print(f"Derived {len(new_logs):,} new projected logarithms. Counts by degree: {dict(sorted(counts.items()))}.", flush=True)
     if args.verify_powers:

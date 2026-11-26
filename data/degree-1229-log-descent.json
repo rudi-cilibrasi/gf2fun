@@ -1,0 +1,24 @@
+{
+  "quotients": {
+    "product": {
+      "numerator_hex": "0x1e290c120f4688b7e9501baacc404b83d64ed80e5bfa93da00b7cd651a2d82c5fdf9370a194a142d8e16e899938efbeb298f4bcfebe9b181d516beadba89e1f87ecfac2f6a94cec28a52170526e02af",
+      "denominator_hex": "0x6d9e648376008a6f1cb9b41ceea5dc72fd281a12fe8dc24f9b2c753567c432c6de098ff32f0b93d1fa31f48add553e828904f55e7b51ea00dca1875fe5202ddd3558335a257ebf76894e6c673438c"
+    },
+    "seroussi": {
+      "numerator_hex": "0x2f7eadd9659985e5f66a91cc1c6fb4edf128dd02cfbb782ca96dec5ed59f550cda8ae00a3bcdc6c522774be202f768f858b110598f990d5b3b8ec094658ba64b89fe714193f339659c132b63f83c428",
+      "denominator_hex": "0x1da229e23099134511d2b50d8945a8b243e3dcb13417c4908f3ff680cfba7b8396e1d9f0c846a7e58f9f7c3d3d7db4fe5b2ecc8dbdfa7b767b0a9691c3d3d20d8b8d3f0c4557d13af2068f33f7c3f"
+    }
+  },
+  "pencils": [
+    {
+      "target_hex": "0x91",
+      "f_hex": "0x17",
+      "g_hex": "0xe"
+    },
+    {
+      "target_hex": "0xc19",
+      "f_hex": "0x2f",
+      "g_hex": "0x29"
+    }
+  ]
+}
