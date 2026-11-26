@@ -7,6 +7,7 @@ from functools import cache
 from math import gcd
 from pathlib import Path
 
+from check_1229_dyadic import halve_parents
 from check_1229_factor_base_orders import CIRCLE_LOGS, ISOGENY_LOGS, check_examples, read_logs, read_table
 from check_1229_hermitian_descent import records as hermitian_records, relation as hermitian_relation
 from check_1229_isogeny_logs import H0, H1, Q
@@ -146,12 +147,18 @@ def main():
                               help="use one or two irreducible norms for a whole pentanomial")
     norm_options.add_argument("--offset-certificate", type=Path,
                               help="check and export a new single-factor task from the known-offset finder")
+    parser.add_argument("--halve", action="store_true",
+                        help="replace both degree-32 norms of a pentanomial by degree-16 factors")
     parser.add_argument("--expand-cubics", action="store_true", help="substitute all available cubic descents")
     parser.add_argument("--alternate-pencils", action="store_true",
                         help="use the three alternative pencils containing solved quadratic logarithms")
     parser.add_argument("--terminal-orders", action="store_true",
                         help="also verify the orders and minimal-polynomial weights of the solved quadratics")
     args = parser.parse_args()
+    if args.halve:
+        if args.offset_certificate or args.norm_form not in (None, "pair32"):
+            parser.error("--halve uses the pair32 norm quotient")
+        args.norm_form = "pair32"
     if args.offset_certificate:
         if args.task not in CANDIDATES:
             parser.error("--offset-certificate requires a product or seroussi task")
@@ -204,11 +211,15 @@ def main():
             for p in sorted(relation.keys() & cubics):
                 weight = relation.pop(p)
                 relation.update({m: weight*c for m, c in hermitian(p).items()})
+        if args.halve:
+            relation = halve_parents(relation, field)
         for p in (relation.keys() & extra_logs.keys()) - table.keys():
             table[p] = checked_exponent(p, extra_logs[p], base, field)
         result = reduce_task(name, target, relation, table, base, field, args.logs)
         if args.norm_form:
             result["norm_form"] = args.norm_form
+        if args.halve:
+            result["dyadic_depth"] = 1
         if name in form_names and "log_mod_C" in forms[form_names[name]]:
             if result["remaining"] or result["known_exponent_mod_C"] != forms[form_names[name]]["log_mod_C"]:
                 raise ArithmeticError("the circle does not reconstruct the published terminal exponent")
