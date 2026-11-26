@@ -10761,4 +10761,30 @@ retaining leading exponent \(n\) therefore lists every eligible
 polynomial. The script \nolinkurl{scripts/check_translated_supports.py}
 prints all 28 types or the exact supports in a requested degree.
 
+\section{Primitive pentanomials in fifty further degrees through 2688}
+\label{sec:products-2688}
+For 50 degrees in the interval \(2561\) through \(2688\), the
+residue of \(X\) has order \(2^n-1\) modulo a pentanomial
+\(X^n+(1+X^u)(1+X^v)\). The witnesses cover 44 even degrees
+and the six odd degrees \(2583,2587,2637,2651,2667,2677\).
+For example, the polynomials
+\[
+ X^{2574}+X^5+X^4+X+1,\qquad
+ X^{2583}+X^{53}+X^{49}+X^4+1
+\]
+are primitive. Together with Section~\ref{sec:products-2560} this
+gives at least 2119 distinct degrees with witnesses among the first 2688.
+
+The \href{https://github.com/postvakje/Reformatted-Cunningham-Project-tables/blob/dff2e282ff15399b16b4fb840a410aa2a37076b7/pmain422_table2-.json}{Cunningham table transcription}
+supplied 43 complete integer factorizations.
+\href{https://factordb.com/index.php?query=2\%5E2583-1}{FactorDB}
+supplied the other seven, including degree 2576 and the six odd degrees.
+PARI/GP checked irreducibility and computed each root order. An
+independent FLINT run verified all 50 full powers and all 1541
+prime-index powers, proved primality of the 1253 distinct integer
+factors, and checked their products with multiplicities. The inputs are
+\nolinkurl{data/product-witnesses-2561-2688.csv} and
+\nolinkurl{data/mersenne-2561-2688.json}. Both checks use
+\nolinkurl{scripts/check_product_range.py}.
+
 \end{document}
