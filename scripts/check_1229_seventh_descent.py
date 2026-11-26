@@ -20,6 +20,7 @@ from prepare_1229_single_log import prepare
 HALVINGS = DATA / "degree-1229-seventh-power-halvings.json.gz"
 PENCILS = DATA / "degree-1229-seventh-power-cubic-pencils.json"
 REAL_PENCILS = DATA / "degree-1229-seventh-power-real-pencils.json"
+DECIC = DATA / "degree-1229-seventh-power-decic.json"
 TORUS = {"target_hex": "0x2413", "f_hex": "0xf1", "g_hex": "0xc0"}
 
 
@@ -58,14 +59,15 @@ def real_pencil_relation(mask, row):
     return terms
 
 
-def sextic_relation(mask, row):
+def trace_zero_relation(mask, row, constant_degree=20):
     from check_1229_hermitian_descent import K, Q, element, matrix_relation
 
-    g, h = ([element(c) for c in row[key]] for key in ("g", "h"))
-    if (len(g) != 6 or len(h) != 6 or any(c**16 != c for c in [*g, *h])
-            or K(g).gcd(K(h)).degree() != 0):
-        raise ValueError("invalid quintic pencil over F_16")
-    matrix = [[g[i]*h[j]**Q+h[i]*g[j]**Q for j in range(6)] for i in range(6)]
+    g, h = (K([element(c) for c in row[key]]) for key in ("g", "h"))
+    m = len(row["relative_factor"])-2
+    if (m < 1 or max(g.degree(), h.degree()) != m or g.gcd(h).degree() != 0
+            or any(c.frobenius(constant_degree) != c for c in g.coeffs()+h.coeffs())):
+        raise ValueError("invalid trace-zero pencil")
+    matrix = [[g[i]*h[j]**Q+h[i]*g[j]**Q for j in range(m+1)] for i in range(m+1)]
     return matrix_relation(mask, row, matrix)
 
 
@@ -114,6 +116,7 @@ def main():
                         help="export the full root task, the quintic, or one binary factor mask")
     parser.add_argument("--quadratics", action="store_true", help="expand all 149 cubics of the quintic")
     parser.add_argument("--real-pencils", action="store_true", help="expand the real odd-degree factors of the root task")
+    parser.add_argument("--decic-pencil", action="store_true", help="also expand the last degree-eleven factor of the root task")
     parser.add_argument("--backend", type=Path, help="compiled scripts/degree_1229_dyadic.cpp")
     parser.add_argument("--audit-branches", action="store_true", help="replay all 2,058 second halvings")
     parser.add_argument("--logs", type=Path, help="verify any subset of a task, as mask,exponent CSV")
@@ -125,12 +128,26 @@ def main():
     sextic = interpolation["sextic"]
     sextic_mask = int(sextic["mask_hex"], 16)
     extra = {int(p, 16): i for p, i in interpolation["halving_indices"]}
+    decic_data = json.loads(DECIC.read_text())
+    decic = decic_data["pencil"]
+    decic_mask = int(decic["mask_hex"], 16)
+    new_indices = {int(p, 16): i for p, i in decic_data["halving_indices"]}
     quintic = int(forms["quintic_hex"], 16)
     cubics = {int(row["mask_hex"], 16): row for row in forms["cubics"]}
     parents, children = halving_data()
     if (len(extra) != 380 or len(extra) != len(interpolation["halving_indices"]) or extra.keys() & children.keys()
             or any(p.bit_length()-1 not in (120, 160, 200) or i < 1 for p, i in extra.items())):
         raise ValueError("invalid interpolation halving index list")
+    if (len(new_indices) != 402 or len(new_indices) != len(decic_data["halving_indices"])
+            or new_indices.keys() & (extra.keys() | children.keys())
+            or any(p.bit_length()-1 not in (120, 160, 200) or i < 1 for p, i in new_indices.items())):
+        raise ValueError("invalid decic halving index list")
+    use_real = args.real_pencils or args.decic_pencil
+    indexed = dict(children)
+    if use_real:
+        indexed.update(extra)
+    if args.decic_pencil:
+        indexed.update(new_indices)
     field_mask, table = split_log_table()
     field = polynomial(field_mask)
     base = polynomial(2).pow_mod(KNOWN, field)
@@ -140,7 +157,6 @@ def main():
     if args.audit_branches:
         if not args.backend:
             parser.error("--audit-branches requires --backend")
-        indexed = children | extra if args.real_pencils else children
         count = audit_branches(args.backend, field_mask, parents, indexed)
         print(f"Verified {len(indexed)} degree halvings with {count} linear factors before norms.")
         return
@@ -152,8 +168,8 @@ def main():
         mask = int(args.task, 0)
     if args.quadratics and mask != quintic:
         parser.error("--quadratics applies to --task quintic")
-    if args.real_pencils and mask is not None:
-        parser.error("--real-pencils applies to the root task")
+    if use_real and mask is not None:
+        parser.error("--real-pencils and --decic-pencil apply to the root task")
     if mask is None:
         verify_pair()
         _, model, _, target = prepare(SOURCE)
@@ -165,12 +181,14 @@ def main():
         substitute(weights, mask_of(torus), terms)
         for parent, row in parents.items():
             substitute(weights, parent, halving_relation(parent, row["children"], field))
-        if args.real_pencils:
+        if use_real:
             for p, row in real.items():
                 substitute(weights, p, real_pencil_relation(p, row))
-            substitute(weights, sextic_mask, sextic_relation(sextic_mask, sextic))
+            substitute(weights, sextic_mask, trace_zero_relation(sextic_mask, sextic, 4))
+            if args.decic_pencil:
+                substitute(weights, decic_mask, trace_zero_relation(decic_mask, decic))
             even = {p for p, c in weights.items() if c % COFACTOR and p not in table and p.bit_length()-1 in (120, 160, 200)}
-            if even != children.keys() | extra.keys():
+            if even != indexed.keys():
                 raise ArithmeticError("the archived pencils do not cover the even-degree factors")
     elif mask == quintic:
         target = polynomial(mask)
@@ -186,22 +204,23 @@ def main():
     elif mask in real:
         target, weights = polynomial(mask), real_pencil_relation(mask, real[mask])
     elif mask == sextic_mask:
-        target, weights = polynomial(mask), sextic_relation(mask, sextic)
+        target, weights = polynomial(mask), trace_zero_relation(mask, sextic, 4)
+    elif mask == decic_mask:
+        target, weights = polynomial(mask), trace_zero_relation(mask, decic)
     elif mask == int(TORUS["target_hex"], 16):
         target, weights = norm_pencil(TORUS)
     elif mask in parents:
         target, weights = polynomial(mask), halving_relation(mask, parents[mask]["children"], field)
-    elif mask in children or mask in extra:
+    elif mask in children or mask in extra or mask in new_indices:
         if not args.backend:
             parser.error("select --backend to expand an indexed factor")
-        index = children[mask] if mask in children else extra[mask]
+        index = (children | extra | new_indices)[mask]
         edges = expand_index(args.backend, field_mask, mask, index)
         target, weights = polynomial(mask), halving_relation(mask, edges, field)
     else:
         parser.error("no pencil for this mask")
     result = reduce_task(args.task, target, weights, table, base, field, args.logs)
     if mask is None:
-        indexed = children | extra
         for row in result["remaining"]:
             p = int(row["mask_hex"], 16)
             if p in indexed:

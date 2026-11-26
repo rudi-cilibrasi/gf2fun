@@ -152,6 +152,14 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh
   jq -r '.remaining[] | select(.relative_degree > 5 and .halving_index == null) | [.mask_hex, .relative_degree] | @tsv'
 ~~~
 
+A degree-ten pencil over $\mathbb F_{2^{20}}$ eliminates the last degree-eleven input. The resulting root task has 6,278 logarithms. Applying its 2,840 indexed halvings leaves 296 logarithms of degree seven and 169 of degree nine above degree five. A contributor can export this task, verify one factor by its mask, or reconstruct the degree-ten pencil at search plane 1,864. [Proof](results.pdf#page=165) · [Pencil and halving indices](data/degree-1229-seventh-power-decic.json) · [Finder](scripts/find_1229_trace_pencil.py)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh_descent.py --decic-pencil --json
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh_descent.py --decic-pencil --audit-branches --backend /tmp/gf2-dyadic
+uv run --no-project --with numpy --with python-flint==0.9.0 python scripts/find_1229_trace_pencil.py 0x151b5b924e9b7af9a64c4bc701f2cd3b7fad0fa96c74a542124af1f9 --start 1864
+~~~
+
 To reproduce the six-factor discovery, build the NTL finder and search index 6618. The three arguments after `--smooth` specify the maximum relative factor degree, the starting index, and the number of indices. Different computers can search disjoint intervals. Each output line is a quotient that the Python checker can certify on its own. [Finder](scripts/find_1229_known_offset.cpp)
 
 ~~~sh

@@ -150,7 +150,10 @@ def matrix_relation(mask, row, h):
     rest, remainder = divmod(d, t)
     partner = int(row["quadratic_partner_hex"], 16) if "quadratic_partner_hex" in row else None
     bound = 2 if partner is not None and m == 1 else m
-    if not remainder.is_zero() or any(p.degree() > bound for p, _ in rest.factor()[1]):
+    residual_degrees = sorted(p.degree() for p, e in rest.factor()[1] for _ in range(e))
+    if "residual_degrees" in row and row["residual_degrees"] != residual_degrees:
+        raise ArithmeticError("the residual degrees differ from the certificate")
+    if not remainder.is_zero() or any(degree > bound for degree in residual_degrees):
         raise ArithmeticError("a factor exceeds the proposed descent bound")
     pieces = pencil(h)
     source = sum((c * T**(i+Q*j) for i, row in enumerate(h) for j, c in enumerate(row)), K.zero())

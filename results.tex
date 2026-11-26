@@ -12621,4 +12621,61 @@ characteristic polynomials are checked by
 \texttt{--midpoints 64}.
 \end{proof}
 
+\section{A trace-zero pencil over the quadratic constant field}
+\label{sec:decic-pencil}
+For the four sparse roots of Section~\ref{sec:seventh-pair}, the last
+relative degree-eleven logarithm in Section~\ref{sec:real-pencil-interpolation}
+admits a decomposition into 2,001 logarithms of relative degree at
+most ten. After substitution the common order task has 6,278 inputs.
+Exactly 2,840 have degree-halving certificates to relative degree at
+most five. All the other inputs have relative degree at most nine.
+
+Write \(q=1024\), \(K=\mathbb F_{q^2}\), and \(\bar c=c^q\) for
+\(c\in K\). The target polynomial \(t\in K[T]\) has degree \(d=11\)
+and binary norm of degree 220. Put \(E=K[\alpha]=K[T]/(t)\),
+\(\gamma^q=\alpha\) in \(E\), and \(\beta=H_0(\alpha)/H_1(\alpha)\).
+Their minimal polynomials over \(K\) are \(\phi=\bar t\) and
+\(\psi=\operatorname{minpoly}_K(\beta)\). Both have degree \(d\)
+and are distinct in this computation. For \(g,h\) of degree at most
+\(m=d-1\), take the trace-zero pencil \(S=g h^q+h g^q\). If
+\(R=h/g\) satisfies \(R(\beta)=R(\gamma)^q\), then
+\[
+ t\mid D=\widetilde g\,\bar h+\widetilde h\,\bar g,\qquad
+ \widetilde f=H_1^m f(H_0/H_1).
+\]
+Indeed \(f(\gamma)^q=\bar f(\alpha)\). The homogeneous identity
+also handles poles by cross multiplication.
+
+Choose \(v\in K[T]_{<d}\) for the value \(R(\gamma)=v(\gamma)\).
+Write \(w\in K[T]_{<d}\) for the coordinates of
+\(v(\gamma)^q=\bar v(\alpha)\) in the power basis at \(\beta\).
+The two desired remainders for \(h\) are \(vg\bmod\phi\) and
+\(wg\bmod\psi\). Their difference defines a \(d\)-square matrix
+\(M(v)\) over \(K\), linear in \(v\) over \(\mathbb F_q\). A nonzero
+kernel vector gives \(g\), and either remainder gives \(h\). We check
+that the pair is coprime. For \(c\in K\) with \(c+\bar c=1\),
+\(M(c)=I\). Thus on the plane \(v=v_0+s v_1+\lambda c\),
+\(s,\lambda\in\mathbb F_q\), the determinant is
+\(\det(M(v_0)+sM(v_1)+\lambda I)\). Its degree in each variable is
+at most \(d\). Interpolating from a \((d+1)\)-square grid finds all
+its rational zeros on this plane. The finder uses integer polynomial-basis
+labels for \(K\) and \(c=z/(z+\bar z)\), where \(z^{20}+z^3+1=0\).
+
+At plane 1,864, scalar labels \((612450,37118)\) give two decics.
+Factoring \(D/t\) over \(K\) gives degrees
+\(1,2,3,3,3,3,4,5,5,6,7,7\). The other side factors as
+\(S=g\prod_{u\in\mathbb F_q}(h+ug)\); every fibre has degree at
+most ten. The checker verifies the full product, takes coefficient
+norms to \(\mathbb F_2\), and checks the projected identity by
+powering in the degree-1229 field. The 402 new inputs of relative
+degrees six, eight and ten have degree-halving certificates, all of
+which replay against their binary masks. Across the assembled root
+task, the 2,840 indexed pencils give 2,922,360 linear factors before
+norms. After these halvings the only larger inputs are 296 logarithms
+of relative degree seven and 169 of relative degree nine. This is a
+degree bound on the outstanding logarithms. Computing the common
+order still requires their signed sum and the lower-degree contributions.
+The interpolant and indices are in
+\nolinkurl{data/degree-1229-seventh-power-decic.json}.
+
 \end{document}
