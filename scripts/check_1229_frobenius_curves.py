@@ -1,4 +1,4 @@
-"""Verify every positive-genus curve in the degree-1229 Frobenius square census."""
+"""Verify the genera zero and one classification in the degree-1229 Frobenius census."""
 
 import argparse
 import csv
@@ -9,13 +9,14 @@ import subprocess
 from collections import Counter
 from pathlib import Path
 
-from flint import fq_default_ctx, fq_default_poly_ctx
+from flint import fq_default_ctx, fq_default_poly_ctx, nmod_poly
 
 from check_1229_sparse_frobenius import SUPPORTS, support_table
 from check_factor_base import DATA
 
 SIDE = 20
 EXPECTED = {256: (1, 20), 512: (57, 12), 1024: (15, 14), 2048: (2, 13)}
+ELLIPTIC_TAPS = (136, 683, 819)
 
 
 def remainder(bits, modulus):
@@ -83,6 +84,60 @@ def smooth_torus_points(rows, m):
     return count
 
 
+def closed_places(rational, previous, m):
+    points = rational - sum(d * previous[d] for d in previous if m % d == 0)
+    places, remainder = divmod(points, m)
+    if places < 0 or remainder:
+        raise ArithmeticError("invalid closed-place count")
+    return places
+
+
+def elliptic_places(trace):
+    """Closed places through degree eight for an elliptic curve of this trace."""
+    result = {}
+    previous, current = 2, trace
+    for m in range(1, 9):
+        result[m] = closed_places(2**m + 1 - current, result, m)
+        previous, current = current, trace * current - 2 * previous
+    return result
+
+
+def exclude_elliptic(rows, known_degree, known_count, possibilities):
+    traces = set(possibilities)
+    places = {}
+    for m in range(1, 9):
+        points = known_count if m == known_degree else smooth_torus_points(rows, m)
+        places[m] = closed_places(points, places, m)
+        traces = {t for t in traces if places[m] <= possibilities[t][m]}
+        if not traces:
+            return
+    raise ArithmeticError(f"remaining elliptic traces: {sorted(traces)}")
+
+
+def elliptic_identity(rows, q):
+    """Substitute X=(v/u^2)^s and Y=v^8/u into the displayed curve identically."""
+    s = {1024: 2, 2048: 1}[q]
+    terms = [(i, j) for j, mask in enumerate(rows)
+             for i in range(mask.bit_length()) if mask >> i & 1]
+    top = max(2*s*i + j for i, j in terms)
+    v = nmod_poly([0, 1], 2)
+    zero, one = 0*v, v**0
+    # u^2 = (v^3+1)u + v^3(v+1)^2 in the quadratic function field.
+    linear, constant = v**3 + 1, v**3 * (v+1)**2
+    powers = [(one, zero)]
+    for _ in range(top):
+        a, b = powers[-1]
+        powers.append((constant*b, a + linear*b))
+    left, right = zero, zero
+    for i, j in terms:
+        a, b = powers[top - 2*s*i - j]
+        coefficient = v**(s*i + 8*j)
+        left += coefficient*a
+        right += coefficient*b
+    if left or right:
+        raise ArithmeticError("elliptic functions do not satisfy the curve equation")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--census", type=Path, help="also recompute the full NTL scan")
@@ -96,6 +151,8 @@ def main():
         raise ValueError("unsupported square")
     keys = []
     minima = {}
+    elliptic = []
+    possibilities = {trace: elliptic_places(trace) for trace in range(-2, 3)}
     for row in archive["curves"]:
         q, taps, coeffs = row["q"], tuple(row["taps"]), row["coefficients"]
         if q not in EXPECTED or taps not in supports:
@@ -108,11 +165,19 @@ def main():
         count = smooth_torus_points(coeffs, m)
         if count != row["smooth_points"] or count <= (1 << m)+1:
             raise ArithmeticError(f"insufficient smooth point count for {q}, {taps}")
+        if taps == ELLIPTIC_TAPS:
+            elliptic_identity(coeffs, q)
+            elliptic.append(q)
+        else:
+            exclude_elliptic(coeffs, m, count, possibilities)
         keys.append((q, *taps))
     counts = Counter(key[0] for key in keys)
     if keys != sorted(set(keys)) or {q: (counts[q], minima[q]) for q in EXPECTED} != EXPECTED:
         raise ArithmeticError("unexpected curve census")
     print(f"Verified the relations, kernel dimensions and positive genus for all {len(keys)} curves.")
+    if elliptic != [1024, 2048]:
+        raise ArithmeticError("unexpected elliptic models")
+    print("Verified two elliptic models and excluded genus one for the other 73 curves.")
     if args.census:
         with gzip.open(SUPPORTS, "rb") as f:
             result = subprocess.run([str(args.census.resolve()), str(SIDE), str(args.jobs)],

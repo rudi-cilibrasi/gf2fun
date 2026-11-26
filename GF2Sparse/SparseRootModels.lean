@@ -251,4 +251,12 @@ theorem seventh_pair_order :
   exact ⟨(SeventhImage.irreducible_target_iff (by decide) (by decide) (by decide +kernel)).2 hf,
     SeventhImage.target_root_order (by decide) (by decide) (by decide +kernel) hf⟩
 
+/-- The unique reciprocal pair in the small elliptic Frobenius census passes all four
+known prime projections and has a nontrivial component in the remaining cofactor. -/
+theorem elliptic_model_order :
+    Irreducible (pentanomial 136 683 819) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 136 683 819)) = knownPart*t :=
+  of_certified 136 683 819 5 (by decide) (by decide) (by decide) (by decide +kernel)
+
 end GF2Sparse.SparseRootModels

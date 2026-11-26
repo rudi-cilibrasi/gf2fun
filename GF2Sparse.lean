@@ -10,6 +10,7 @@ import GF2Sparse.Degree1229
 import GF2Sparse.DyadicExample1024
 import GF2Sparse.DyadicFactors
 import GF2Sparse.DyadicTap
+import GF2Sparse.EllipticFrobenius
 import GF2Sparse.EllipticPentanomial
 import GF2Sparse.EllipticRay
 import GF2Sparse.FactorBaseExamples
