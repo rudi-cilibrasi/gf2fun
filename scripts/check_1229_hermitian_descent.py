@@ -15,6 +15,7 @@ from period_coordinate import mask_of
 
 
 CERTIFICATES = DATA / "degree-1229-hermitian-descents.json"
+DYADIC_TERMINALS = DATA / "degree-1229-dyadic-quadratic-logs.json"
 F = fq_default_ctx(modulus=fmpz_mod_poly_ctx(2)([1, 0, 0, 1] + [0]*16 + [1]), var="z")
 K = fq_default_poly_ctx(F)
 T = K.gen()
@@ -32,7 +33,7 @@ def bits(c):
 
 
 def records():
-    rows = json.loads(CERTIFICATES.read_text())
+    rows = json.loads(CERTIFICATES.read_text()) + json.loads(DYADIC_TERMINALS.read_text())
     result = {int(r["mask_hex"], 16): r for r in rows}
     if len(rows) != len(result):
         raise ValueError("repeated Hermitian target")

@@ -106,4 +106,41 @@ theorem torus_trace_exponents (h i : ℕ) (hi : i < 2*h)
     have impossible : 0 = 1+2^j := (Nat.mod_eq_zero_of_dvd multiple).symm.trans nonzero
     exact (Nat.succ_ne_zero (2^j) (by simpa [Nat.add_comm] using impossible.symm)).elim
 
+/-- The two-by-two bracket controlling the cross-ratio is scaled by the determinant. -/
+theorem mobius_bracket {K : Type*} [CommRing K] (a b c d x y : K) :
+    (a*x+b)*(c*y+d) - (a*y+b)*(c*x+d) = (a*d-b*c)*(x-y) := by ring
+
+/-- Writing the two conjugates as θ and θ+1 turns their norm into an Artin--Schreier
+equation. This also covers a nonunit scaling δ without division. -/
+theorem scaled_quadratic_norm {K : Type*} [CommRing K] [CharP K 2] (θ w δ : K) :
+    (δ*(θ+w)) * (δ*(θ+1+w)) = δ^2 * (θ^2+θ+(w^2+w)) := by
+  calc
+    _ = δ^2 * ((θ+w)^2 + (θ+w)) := by ring
+    _ = _ := by rw [CharTwo.add_sq]; ring
+
+/-- The two linear equations used by the pencil finder give the prescribed difference
+of t = vθ+u and its Frobenius image. -/
+theorem frobenius_difference {K : Type*} [CommRing K] [CharP K 2]
+    (σ : K →+* K) (v θ u w δ ξ : K) (hv : v+σ v = δ) (hθ : σ θ = θ+ξ)
+    (hu : σ u+u = δ*w+σ v*ξ) :
+    σ (v*θ+u) + (v*θ+u) = δ*(θ+w) := by
+  rw [map_add, map_mul, hθ]
+  calc
+    _ = (v+σ v)*θ + (σ u+u) + σ v*ξ := by ring
+    _ = δ*θ + δ*w + (σ v*ξ+σ v*ξ) := by rw [hv, hu]; ring
+    _ = _ := by rw [CharTwo.add_self_eq_zero]; ring
+
+/-- Translating v by a fixed-field scalar s keeps v+σ(v) constant and gives a
+binary-linear perturbation of vσ(v). -/
+theorem translate_norm_on_line {K : Type*} [CommRing K] [CharP K 2]
+    (σ : K →+* K) (v s : K) (hs : σ s = s) :
+    (v+s) + σ (v+s) = v+σ v ∧
+    (v+s)*σ (v+s) = v*σ v + (s^2 + (v+σ v)*s) := by
+  rw [map_add, hs]
+  constructor
+  · calc
+      _ = (v+σ v)+(s+s) := by ring
+      _ = _ := by rw [CharTwo.add_self_eq_zero, add_zero]
+  · ring
+
 end GF2Sparse.HermitianDescent
