@@ -6,6 +6,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **An exhaustive census gives 1,187,645 distinct quadratic logarithms in the degree-1229 field.** Each can be recovered from the linear-factor table. Across all 1,073,742,848 projective sublines, the substituted polynomial leaves a single irreducible quadratic in 23,752,900 cases. Binary Frobenius identifies these in groups of twenty. The catalogue records the factor and the pencil, so contributors can check a mask or export its exponent. [Compressed catalogue](data/degree-1229-terminal-catalogue.bin.gz) · [Lookup and exhaustive audit](scripts/check_1229_terminal_census.py)
 - **Both degree-1229 pentanomials reduce to logarithms of degree at most eight over $\mathbb F_{2^{20}}$.** For each candidate the two degree-32 factors reduce to 2,058 factors of degree 16, then to 2,117,682 distinct factors of degree eight. One degree-eight factor of the product candidate now reduces all the way to quadratics. Among its 1,058,819 distinct terminal masks, two were already known and 45 have new, directly verified logarithms. All 45 elements are primitive. [Identities and counts](results.pdf#page=126) · [Degree-eight reductions](data/degree-1229-dyadic-level2.json.gz) · [45 quadratic logarithms](data/degree-1229-dyadic-quadratic-logs.json)
 - **One logarithm now determines the exact order of either degree-1229 pentanomial.** In the certified $q=1024$ model, the remaining irreducible factor has degree 57 over $\mathbb F_{2^{20}}$ for the Seroussi polynomial, and degree 58 for the product polynomial. Every other factor has a verified logarithm. The task files contain the subgroup base, field modulus, target, coefficient and known offset needed to check an answer. [Seroussi single-factor task](data/degree-1229-seroussi-known-offset-task.json) · [Product single-factor task](data/degree-1229-product-known-offset-task.json) · [Polynomial identities](data/degree-1229-known-offset-quotients.json)
 - **All 126 product-cubic quadratics resist a completely split quadratic Hermitian pencil.** For every binary $q\ge4$, a separable quadratic pencil that splits on an entire projective $\mathbb F_q$-subline pulls it back to two sublines. At $q=1024$, every other target subline gives at least 481 nonsplit quadratic fibers. The same linear equations that rule out the linear pencils then rule out the completely split quadratic pencils for all 126 targets. [Proof](results.pdf#page=125) · [Exact count](scripts/check_1229_quadratic_pencils.py) · [Lean trace obstruction](GF2Sparse/HermitianDescent.lean)
@@ -89,6 +90,13 @@ The Lean target for an all-degree proof is `GF2Sparse.Conjecture`. The gap is to
 The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ for every $s>0$, using at most five exponents of the form $2^i-1$. The Lean theorem `conjecture_iff_sparseOreIrreducible` converts a proof of this target directly into the original conjecture. [Formal equivalence](GF2Sparse/OreConjecture.lean)
 
 ## Contributing
+
+To check whether the linear pencil method solves a quadratic, look up its binary mask. Add the NTL backend to obtain a directly verified `mask,exponent` CSV row. Use `--task task.json` to check a contributor task or `--rebuild` to repeat the complete census. [Census checker](scripts/check_1229_terminal_census.py) · [Finite-field arithmetic and factorization](scripts/degree_1229_terminal_census.cpp)
+
+~~~sh
+g++ -O3 -std=c++17 scripts/degree_1229_terminal_census.cpp -lntl -o /tmp/gf2-terminal
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_terminal_census.py --backend /tmp/gf2-terminal --mask 0x1025e3100bf
+~~~
 
 To work on a single branch of the degree-1229 problem, export a degree-16 task with `--halve --json`, then pass any of its remaining masks to the NTL checker. It produces a smaller task with the same `mask,exponent` CSV submission format. The product branch in the example below already extends to quadratics. Adding `--census` to the sample command enumerates the linear Hermitian pencils for all 1,058,817 quadratic masks. [Degree-halving checker](scripts/check_1229_dyadic.py) · [NTL backend](scripts/degree_1229_dyadic.cpp) · [Sample branch certificates](data/degree-1229-dyadic-sample.json.gz)
 
