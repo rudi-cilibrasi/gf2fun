@@ -8170,4 +8170,84 @@ evaluates seven full norm identities in the target field. See
 \nolinkurl{scripts/enumerate_1229_translated_circles.cpp} and
 \nolinkurl{scripts/check_1229_translated_circles.py}.
 
+\section{Generation by low-degree values in prime extension degree}
+\label{sec:prime-factor-generation}
+\begin{theorem}
+Let \(n\) be an odd prime and \(x\) an element of degree \(n\) over
+\(\F\). If \(m\ge1\), \(2m<n\), and \(2n^2\le3\cdot2^m\), then
+\[
+ \big\langle B(x): B\text{ monic irreducible over }\F,\
+                  \deg B\mid m\big\rangle=\mathbb F_{2^n}^{\times}.
+\]
+\end{theorem}
+\begin{proof}
+Write \(H\) for the displayed subgroup. If its index \(I\) is proper
+(\(I>1\)), take a prime \(\ell\mid I\). The order of \(2\bmod\ell\)
+divides \(n\) and exceeds one, so \(2n\mid\ell-1\). Thus \(I\ge2n+1\).
+The character proof of Theorem~\ref{thm:factor-moments} works for
+this subgroup by taking the characters of \(\mathbb F_{2^n}^\times/H\)
+modulo the minimal polynomial of \(x\).
+
+Set \(Q=2^m,\ s=\sqrt Q,\ t=2s/n\). Take weights \(1,t,1\) at
+indices \(0,m,2m\), and zero elsewhere. The known degrees contribute
+mass \(Q\) at both \(m\) and \(2m\), since
+\(\sum_{d\mid m}d\,\#\{B:\deg B=d\}=2^m\), summing over irreducibles.
+With \(J=2n+1\), the resulting moment bound times \(2+t^2\) is
+\[
+ 4t(1+Q)/s+2\left(1+1/Q-(Q-1)/(2n)\right)
+   >4ts-Q/n=7Q/n .
+\]
+The hypothesis gives \(7Q/n\ge 2n+4Q/n=(2+t^2)n\). This contradicts
+the upper bound \(n-2\) for a proper subgroup.
+\end{proof}
+For every prime \(n\ge17\) one may take
+\(m=\lceil\log_2(2n^2/3)\rceil\), since
+\(2^{(n-1)/2}\ge2n^2/3\) at 17 and the inequality persists on
+increasing \(n\) by two.
+
+In degree 1229 and at \(m=20\), even a subset of the degree-20 values
+suffices in \emph{every} coordinate \(x\) of full degree. Any 51,555
+of the 52,377 monic irreducibles of degree 20 give generators.
+Fourteen trial exclusions improve the sufficient number to 44,919.
+Indeed any prime index divisor is \(2458k+1\). The product of these
+integers for \(1\le k\le14\) is coprime to \(2^{1229}-1\), giving
+\(J=36871\). For \(h\) chosen polynomials put \(b=20h,\ Q=2^{20}\)
+and
+\[
+ A=\frac{1+b-(Q-b)/(J-1)}{\sqrt Q},\qquad
+ D=\frac{1+b-(Q^2-b)/(J-1)}{Q}.
+\]
+In the preceding three weights take \(t=2A/1227\). The moment bound
+exceeds 1227 exactly when \(2A^2+1227D>1227^2\). At \(J=2459\)
+and \(36871\) this strict rational inequality holds respectively
+at \(h=51555\) and \(44919\).
+
+For the specific \(q=1024\) coordinate of
+Section~\ref{sec:translated-circles}, \(x\) and \emph{any} 33,977
+degree-20 values generate the group. Direct powers show
+\(x^{(2^{1229}-1)/p}\ne1\) for each of the four known primes \(p\).
+Any proper index of a subgroup containing \(x\) is therefore at least
+\(818085338814611458\) by the cofactor sieve. Take weights
+\((38,71,92,100,92,71,38)\) at \(0,20,\ldots,120\).
+The degree-one value \(x\) and the chosen degree-20 values give mass
+at least \(1+20\cdot33977\) at each positive multiple of 20 through
+120. Substitution in Theorem~\ref{thm:factor-moments} gives a
+bound greater than \(1227.03\).
+
+\paragraph{Identities involving the sparse roots.}
+Let \(r\) be the stored root of \(X^{1229}+X^{77}+X^{50}+X^{27}+1\).
+The binary polynomial of degree below 1229 representing \(x^{6655}r\)
+has four distinct irreducible factors of degrees \(7,260,380,580\).
+Over \(\mathbb F_{2^{20}}\), an irreducible of binary degree \(d\)
+splits into \(\gcd(d,20)\) conjugate factors of degree \(d/\gcd(d,20)\).
+Thus the four degrees over the auxiliary field are \(7,13,19,29\).
+For the stored root \(r'\) of \(X^{1229}+X^{15}+X^6+X^2+1\), the
+representative of \(x^{23571}r'\) has a linear factor of multiplicity
+three and simple factors of degrees \(11,20,33,560,600\).
+Its largest factor degree over the auxiliary field is 33.
+These identities leave the descent to linear factors open.
+\nolinkurl{scripts/check_1229_factor_generation.py} verifies both
+sparse equations, factors the representatives, checks their products,
+and reproduces the rational generation bounds.
+
 \end{document}
