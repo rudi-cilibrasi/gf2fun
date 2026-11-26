@@ -13,10 +13,9 @@ import numpy as np
 from check_1229_factor_base_orders import extended_table, read_table
 from check_1229_hermitian_descent import (
     F, K, Q, binary_factors, bits, coefficient_norm, element, matrix,
-    numerator, records, relation, scalar_groups,
+    numerator, records, relation, relative_factor, scalar_groups,
 )
 from check_1229_translated_circles import Constants
-from check_factor_base import irreducible, polynomial
 
 
 def nullspace(a, columns):
@@ -117,13 +116,6 @@ def circle_candidates(basis):
         for coeffs in product(real, repeat=len(tail)):
             yield [bits(v + sum((a*row[j] for a, row in zip(coeffs, tail)), F.zero()))
                    for j, v in enumerate(lead)]
-
-
-def relative_factor(mask):
-    if mask < 2 or not irreducible(polynomial(mask)):
-        raise ValueError("choose a nonconstant binary irreducible mask")
-    binary = K([mask >> i & 1 for i in range(mask.bit_length())])
-    return min((p for p, _ in binary.factor()[1]), key=lambda p: tuple(bits(v) for v in p.coeffs()))
 
 
 def search(mask):

@@ -10,7 +10,7 @@ from flint import fmpz_mod_poly_ctx, fq_default_ctx, fq_default_poly_ctx
 
 from check_1229_isogeny_logs import Q
 from check_degree_1229 import COFACTOR
-from check_factor_base import DATA, polynomial
+from check_factor_base import DATA, irreducible, polynomial
 from period_coordinate import mask_of
 
 
@@ -30,6 +30,13 @@ def element(mask):
 
 def bits(c):
     return sum(int(b) << i for i, b in enumerate(c.to_list()))
+
+
+def relative_factor(mask):
+    if mask < 2 or not irreducible(polynomial(mask)):
+        raise ValueError("choose a nonconstant binary irreducible mask")
+    binary = K([mask >> i & 1 for i in range(mask.bit_length())])
+    return min((p for p, _ in binary.factor()[1]), key=lambda p: tuple(bits(v) for v in p.coeffs()))
 
 
 def records():

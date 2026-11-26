@@ -12065,7 +12065,7 @@ integer factors prime. After verifying their multiplicities against
 \(2^n-1\), the checker verified each full power and all 1315 distinct
 prime-index powers across the 44 degrees.
 
-\section{Nine factor logarithms for the four linked degree-1229 pentanomials}
+\section{Factor logarithms for the four linked degree-1229 pentanomials}
 \label{sec:seventh-split}
 Let \(r\) be the root with source taps \((166,249,332)\) from
 Section~\ref{sec:seventh-pair}, embedded in the certified binary
@@ -12112,6 +12112,25 @@ Consequently the common group index of all four sparse roots is
 Each submitted logarithm can be checked separately by modular powering
 with \nolinkurl{scripts/check_1229_power_images.py}. The nine values
 and the common index remain open.
+
+A second quotient reduces the number of required logarithms to six.
+For coprime binary polynomials \(A',B'\) of degrees 620 and 619 it gives
+\[
+                r^{2^{473}}x^{324085}B'(x)=A'(x).
+\]
+The numerator is \(X^2\) times one irreducible in each binary degree
+18, 220 and 380. The denominator is
+\((X+1)(X^2+X+1)(X^3+X+1)^2\) times one irreducible in each degree
+50, 140 and 420. The four small polynomial values have certified
+projected logarithms. The six remaining relative degrees are
+\(5,7,9,11,19,21\). The complete masks, coefficients, offset and
+irreducible relative factors appear in
+\nolinkurl{data/degree-1229-seventh-power-split-six.json}. Substituting
+these data into the same group-index formula gives the common index.
+The finder \nolinkurl{scripts/find_1229_known_offset.cpp} reconstructs
+the quotient at index \(6618=5\cdot1229+473\), using base shifts
+of \(64817\) per block of 1229 indices. A single-index replay and
+the independent FLINT verifier regenerate the complete six-factor task.
 
 \section{Counting primitive pentanomials from all powers of the form \texorpdfstring{\(2^k+1\)}{2\^k+1}}
 \label{sec:all-trinomial-blocks}

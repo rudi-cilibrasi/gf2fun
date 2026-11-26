@@ -1,4 +1,4 @@
-// Search for a sparse-root quotient with one unknown factor and known linear-base factors.
+// Find sparse-root quotients with one unknown factor or a bounded relative factor degree.
 #include <NTL/GF2XFactoring.h>
 
 #include <algorithm>
@@ -74,9 +74,74 @@ std::vector<Fraction> quotient_basis(const GF2X& field, const GF2X& w, long top,
     return basis;
 }
 
+std::vector<GF2X> conjugates(const GF2XModulus& mod, GF2X root, long n) {
+    std::vector<GF2X> orbit(n);
+    for (auto& w : orbit) {
+        w = root;
+        SqrMod(root, root, mod);
+    }
+    if (root != orbit.front()) throw std::logic_error("incorrect Frobenius orbit");
+    return orbit;
+}
+
+std::vector<GF2X> shift_powers(const GF2XModulus& mod, const GF2X& multiplier,
+                               long start, long count, long n) {
+    std::vector<GF2X> powers((start+count-1)/n - start/n + 1);
+    PowerMod(powers.front(), multiplier, start/n, mod);
+    for (size_t i = 1; i < powers.size(); ++i) MulMod(powers[i], powers[i-1], multiplier, mod);
+    return powers;
+}
+
+bool bounded_factors(const GF2X& p, long bound) {
+    for (const auto& piece : SquareFreeDecomp(p)) {
+        for (const auto& group : DDF(piece.a)) {
+            long d = group.b;
+            if (d / std::gcd(d, 20L) > bound) return false;
+        }
+    }
+    return true;
+}
+
+int smooth_search(long bound, long start, long count) {
+    const long n = 1229, stride = 64817;
+    GF2X field = read_mask(), root = read_mask();
+    if (deg(field) != n || !IterIrredTest(field) || IsZero(root) || deg(root) >= n ||
+        bound < 1 || start < 0 || count < 1 || start > std::numeric_limits<long>::max()-count ||
+        (start+count-1)/n > std::numeric_limits<long>::max()/stride)
+        throw std::invalid_argument("invalid model, relative degree or search interval");
+    GF2XModulus mod(field);
+    auto orbit = conjugates(mod, root, n);
+    auto powers = shift_powers(mod, PowerMod(GF2X(1,1), stride, mod), start, count, n);
+    #pragma omp parallel for schedule(dynamic, 1)
+    for (long step = 0; step < count; ++step) {
+        const long index = start+step, j = index%n, shift = index/n;
+        auto basis = quotient_basis(field, MulMod(orbit[j], powers[shift-start/n], mod), 620, 620);
+        // The first 1023 Gray-code combinations use the first ten basis vectors.
+        unsigned choices = 1u << std::min<size_t>(10, basis.size());
+        GF2X u, v;
+        for (unsigned i = 1; i < choices; ++i) {
+            const auto& delta = basis[__builtin_ctz(i)];
+            u += delta.u;
+            v += delta.v;
+            if (IsZero(u) || IsZero(v) || !IsOne(GCD(u, v)) ||
+                !bounded_factors(u, bound) || !bounded_factors(v, bound)) continue;
+            #pragma omp critical
+            {
+                std::cout << "{\"frobenius\": " << j << ", \"base_shift\": " << shift*stride
+                          << ", \"numerator_hex\": \"" << mask_hex(u)
+                          << "\", \"denominator_hex\": \"" << mask_hex(v) << "\"}" << std::endl;
+            }
+        }
+    }
+    return 0;
+}
+
 int main(int argc, char** argv) {
+    if (argc == 5 && std::string(argv[1]) == "--smooth")
+        return smooth_search(std::stol(argv[2]), std::stol(argv[3]), std::stol(argv[4]));
     if (argc != 6) {
         std::cerr << "Usage: find_1229_known_offset NUM_DEG DEN_DEG RELATIVE_DEG START COUNT\n"
+                  << "   or: find_1229_known_offset --smooth MAX_RELATIVE_DEG START COUNT\n"
                   << "Read the model modulus and sparse root as hexadecimal masks from stdin.\n";
         return 2;
     }
@@ -90,18 +155,11 @@ int main(int argc, char** argv) {
         top + bottom + 2 - n > 23)
         throw std::invalid_argument("invalid model, search interval or degree bounds");
     const GF2XModulus mod(field);
-    std::vector<GF2X> orbit(n);
-    for (auto& w : orbit) {
-        w = root;
-        SqrMod(root, root, mod);
-    }
-    if (root != orbit.front()) throw std::logic_error("incorrect Frobenius orbit");
+    auto orbit = conjugates(mod, root, n);
     GF2X multiplier(20, 1);
     SetCoeff(multiplier, 3);
     SetCoeff(multiplier, 0);
-    std::vector<GF2X> powers((count - 1 + start % n) / n + 1);
-    PowerMod(powers.front(), multiplier, start / n, mod);
-    for (size_t i = 1; i < powers.size(); ++i) MulMod(powers[i], powers[i-1], multiplier, mod);
+    auto powers = shift_powers(mod, multiplier, start, count, n);
     std::atomic<bool> found(false), oversized(false);
     #pragma omp parallel for schedule(dynamic, 4)
     for (long step = 0; step < count; ++step) {

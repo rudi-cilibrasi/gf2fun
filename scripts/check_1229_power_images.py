@@ -77,7 +77,7 @@ def verify_pair():
 
 def split_task(row, logs=None):
     from check_1229_factor_base_orders import DIRECTION_LOGS, extended_table, read_logs, read_table
-    from check_1229_hermitian_descent import records
+    from check_1229_hermitian_descent import bits, records, relative_factor
     from check_1229_log_descent import checked_exponent, reduce_task, sparse_quotient
     from check_1229_norm_height import checked_norm
     from prepare_1229_single_log import prepare
@@ -103,9 +103,15 @@ def split_task(row, logs=None):
     table.update(read_logs(DIRECTION_LOGS))
     table.update({p: int(r["log_mod_C"]) for p, r in records().items() if "log_mod_C" in r})
     known = {p: checked_exponent(p, table[p], base, field) for p in coefficients.keys() & table.keys()}
-    pieces = {int(p["mask_hex"], 16): p for p in row["logarithms"]["remaining"]}
-    if pieces.keys() != coefficients.keys()-known.keys() or len(pieces) != len(row["logarithms"]["remaining"]):
-        raise ArithmeticError("the supplied relative factors do not cover the unsolved masks")
+    masks = coefficients.keys()-known.keys()
+    if "logarithms" in row:
+        entries = row["logarithms"]["remaining"]
+        pieces = {int(p["mask_hex"], 16): p for p in entries}
+        if pieces.keys() != masks or len(pieces) != len(entries):
+            raise ArithmeticError("the supplied relative factors do not cover the unsolved masks")
+    else:
+        pieces = {p: {"mask_hex": hex(p), "norm_multiplicity": 20//gcd(p.bit_length()-1, 20),
+                      "relative_factor": [bits(c) for c in relative_factor(p).coeffs()]} for p in masks}
     for mask, piece in pieces.items():
         d = mask.bit_length()-1
         if piece["norm_multiplicity"] != 20//gcd(d, 20):
@@ -125,18 +131,27 @@ def main():
     options = parser.add_mutually_exclusive_group()
     options.add_argument("--task", action="store_true", help="export the common-index logarithm task")
     options.add_argument("--log", type=int, metavar="EXPONENT", help="verify the common-index logarithm")
-    options.add_argument("--split", action="store_true", help="export the independently verifiable factor logarithms")
-    parser.add_argument("--logs", type=Path, help="check a partial or complete mask,exponent CSV for --split")
+    options.add_argument("--split", nargs="?", type=int, choices=(6, 9), const=9,
+                         help="export a split into 6 or 9 factor logarithms (default with --split: 9)")
+    options.add_argument("--check-split", type=Path, help="verify a finder row and export its individual logarithms")
+    parser.add_argument("--logs", type=Path, help="check a partial or complete mask,exponent CSV for a split")
     args = parser.parse_args()
-    if args.logs and not args.split:
-        parser.error("--logs requires --split")
+    if args.logs and not (args.split or args.check_split):
+        parser.error("--logs requires --split or --check-split")
     f = verify_pair()
-    if args.split:
-        row = json.loads((DATA / "degree-1229-seventh-power-split.json").read_text())
+    if args.split or args.check_split:
+        if args.check_split:
+            row = {"source_taps": list(SOURCE), **json.loads(args.check_split.read_text())}
+        else:
+            filename = ("degree-1229-seventh-power-split-six.json" if args.split == 6
+                        else "degree-1229-seventh-power-split.json")
+            row = json.loads((DATA / filename).read_text())
+            if len(row["logarithms"]["remaining"]) != args.split:
+                raise ArithmeticError("unexpected number of factor tasks")
         task = split_task(row, args.logs)
-        if not args.logs and task != row["logarithms"]:
+        if not args.logs and "logarithms" in row and task != row["logarithms"]:
             raise ArithmeticError("the published logarithm split differs from the field calculation")
-        print(json.dumps(task, indent=2))
+        print(json.dumps(row | {"logarithms": task} if args.check_split and not args.logs else task, indent=2))
         return
     if args.task or args.log is not None:
         base = primitive_generator_in(f).pow_mod(KNOWN, f)
