@@ -7344,4 +7344,24 @@ of 1229 these determine \(0<a<W\) modulo \(W\). The prime start is
 reconstructs the progression, proves primality of this start with
 FLINT and checks each divisibility at the full degree.
 
+\section{Full orders in eighty further odd degrees}\label{sec:odd-1535}
+Among the 128 odd degrees from 1281 through 1535 the order tables
+give complete factorizations of \(2^n-1\) in 80 cases. Each of these
+degrees admits a primitive product pentanomial. In degree 1535 one is
+\[
+                   X^{1535}+X^{21}+X^{17}+X^4+1 .
+\]
+The file \nolinkurl{data/odd-product-witnesses-1281-1535.csv} gives the
+eighty pairs \((u,v)\). The pinned Cunningham transcription supplies
+69 complete group orders, and
+\nolinkurl{data/mersenne-odd-1281-1535-extra.json} supplies the other
+eleven from \href{https://factordb.com/index.php?query=2%5E1535-1}{FactorDB}.
+PARI/GP tested irreducibility and multiplicative order in the factor
+field. FLINT independently proved primality of the 741 distinct
+integer factors, multiplied each list back to \(2^n-1\), and checked
+the full power and each prime-index power in the polynomial quotient.
+The adjacent even degrees are covered by the even-degree table.
+Together with the six gaps through 1280 this leaves 54 degrees open
+in the project among the first 1536.
+
 \end{document}
