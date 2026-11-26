@@ -13273,4 +13273,44 @@ stated power by direct substitution. The supports are recorded in
 \nolinkurl{data/degree-2047-sparse-witnesses.csv}.
 \end{proof}
 
+\clearpage
+\section{Primitive pentanomials in 35 degrees from 3073 through 3200}
+\label{sec:products-3200}
+The product family \(X^n+(1+X^u)(1+X^v)\) supplies primitive
+pentanomials in 25 even degrees and ten odd degrees in this interval.
+The odd degrees are \(3079,3085,3089,3095,3099,3101,3135,3139,3147,3179\).
+At the upper endpoint \((u,v)=(14,27)\) gives
+\[
+                         X^{3200}+X^{41}+X^{27}+X^{14}+1 .
+\]
+\begin{center}
+\begin{tabular}{rrr@{\qquad}rrr@{\qquad}rrr}
+\(n\)&\(u\)&\(v\)&\(n\)&\(u\)&\(v\)&\(n\)&\(u\)&\(v\) \\ \hline
+3076 & 11 & 52 & 3108 & 33 & 55 & 3160 & 23 & 49 \\
+3078 & 17 & 53 & 3110 & 9 & 20 & 3164 & 23 & 61 \\
+3079 & 9 & 28 & 3116 & 30 & 39 & 3168 & 6 & 61 \\
+3084 & 34 & 57 & 3124 & 27 & 52 & 3172 & 12 & 15 \\
+3085 & 11 & 107 & 3132 & 9 & 158 & 3179 & 31 & 43 \\
+3089 & 5 & 28 & 3135 & 18 & 26 & 3180 & 33 & 56 \\
+3092 & 24 & 25 & 3139 & 6 & 64 & 3186 & 13 & 15 \\
+3095 & 24 & 37 & 3140 & 9 & 52 & 3188 & 1 & 26 \\
+3096 & 21 & 343 & 3147 & 7 & 10 & 3192 & 11 & 129 \\
+3099 & 7 & 33 & 3148 & 22 & 81 & 3196 & 25 & 54 \\
+3100 & 37 & 60 & 3150 & 17 & 20 & 3200 & 14 & 27 \\
+3101 & 3 & 7 & 3156 & 16 & 19 &  &  &  \\
+\end{tabular}
+\end{center}
+The supports and the complete integer factorizations with multiplicity
+are in \nolinkurl{data/product-witnesses-3073-3200.csv} and
+\nolinkurl{data/mersenne-3073-3200.json}.
+The \href{https://github.com/postvakje/Reformatted-Cunningham-Project-tables/tree/dff2e282ff15399b16b4fb840a410aa2a37076b7}{Cunningham tables}
+supply 16 factorizations and
+\href{https://factordb.com/index.php?query=2\%5E3200-1}{FactorDB} supplies 19.
+PARI/GP checked irreducibility and full order for each witness.
+FLINT independently proved all 897 distinct integer factors prime,
+recovered each \(2^n-1\) from its recorded factors, and checked
+\(X^{2^n-1}=1\) and all 1,068 prime-index powers in the binary
+quotients. The 35 degrees here and Theorem~\ref{thm:primitive2047}
+give witnesses in at least 2,285 of the first 3,200 positive degrees.
+
 \end{document}
