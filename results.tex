@@ -8076,4 +8076,22 @@ quotient. At \(h\le9\) the maximum factor and parent degrees to check
 are 98 and 428. See \nolinkurl{scripts/check_trinomial_multiples.py}
 and \nolinkurl{scripts/check_trinomial_multiples.cpp}.
 
+\section{Nineteen further odd degrees through 2047}\label{sec:odd-2047}
+For each of the 19 degrees in \nolinkurl{data/odd-product-witnesses-1793-2047.csv},
+PARI/GP found a primitive \(X^n+(1+X^u)(1+X^v)\).
+In degree 1999 one can take \(u=4,\ v=11\), giving
+\[
+ X^{1999}+X^{15}+X^{11}+X^4+1 .
+\]
+The orders used in the search have complete factorizations in
+\nolinkurl{data/mersenne-odd-1793-2047.json}.
+FLINT independently certifies all 198 distinct primes, checks that
+the factors with multiplicities multiply to \(2^n-1\), and verifies
+the full power and each prime-index power modulo each pentanomial.
+The 19 odd degrees and the 128 even degrees from 1794 through 2048
+extend the count in Section~\ref{sec:odd-1791} to 1790 of the first
+2048 positive degrees. The first open degree in this project is 1229.
+\href{https://factordb.com/index.php?query=2%5E1999-1}{FactorDB record
+for the degree-1999 group order}.
+
 \end{document}
