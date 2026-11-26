@@ -3,6 +3,10 @@
 from math import comb, factorial, isqrt, prod
 
 
+def odd_prime(n):
+    return n > 2 and all(n % k for k in range(2, isqrt(n) + 1))
+
+
 def max_factor_count(order, least_prime):
     count = 0
     while order >= least_prime:
@@ -34,7 +38,7 @@ def overweight_extensions(free, block, ones, cutoff):
 
 def polynomial_lower_bound(n, block, ones, cutoff, prime_count):
     """Use the prime-degree sieve with an upper bound on the distinct prime count."""
-    if n <= 2 or any(n % k == 0 for k in range(2, isqrt(n) + 1)):
+    if not odd_prime(n):
         raise ValueError("the degree must be an odd prime")
     if not 0 <= ones <= block or not 0 < 2 * block < n:
         raise ValueError("invalid block or subset size")
@@ -65,6 +69,10 @@ def krawtchouk_row(block, weight, radius):
 
 def fourier_count(n, block, radius, base, cutoff, prime_count):
     """Count primitive polynomials using the radial Fourier weights and the small-factor sieve."""
+    if not odd_prime(n) or n <= 4:
+        raise ValueError("the small-factor sieve requires an odd prime degree greater than four")
+    if not 0 < 2 * block < n or not 0 <= radius <= block or base < 1:
+        raise ValueError("invalid block, frequency radius or base")
     free = n - 1 - 2 * block
     frequency = [
         isqrt(base**(2 * (radius - j)) * (factorial(radius) // factorial(radius - j)))

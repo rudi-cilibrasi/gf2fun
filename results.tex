@@ -7753,7 +7753,11 @@ For \((509,15,14,313,19)\) it exceeds \(2^{616}+1\).
 The integer checker rounds both terms of \(T'_B\) upward and replaces
 its square-root denominator by a power of two no larger than that
 denominator. It also checks \(Q=2^d\sum_j\binom dj g_j^2\).
-The calculations are in \nolinkurl{scripts/check_primitive_weight_bound.py}.
+The Python checker uses the three-term recurrence for \(K_j\).
+Lean obtains the same strict bounds by expanding the two binomials
+in the defining generating function for each coefficient.
+See \nolinkurl{scripts/check_primitive_weight_bound.py} and
+\nolinkurl{GF2Sparse/FourierWeightBounds.lean}.
 \end{proof}
 
 \end{document}

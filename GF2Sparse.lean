@@ -9,6 +9,7 @@ import GF2Sparse.DyadicFactors
 import GF2Sparse.DyadicTap
 import GF2Sparse.FactorBaseExamples
 import GF2Sparse.FibreBound
+import GF2Sparse.FourierWeightBounds
 import GF2Sparse.GaussPeriod
 import GF2Sparse.Grid
 import GF2Sparse.IterateOrder
