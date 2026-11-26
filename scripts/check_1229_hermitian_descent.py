@@ -4,6 +4,7 @@ import json
 from collections import Counter
 from functools import cache
 from itertools import combinations
+from math import gcd
 
 from flint import fmpz_mod_poly_ctx, fq_default_ctx, fq_default_poly_ctx
 
@@ -76,6 +77,11 @@ def pencil(h):
         if not (a*c + u*u**Q).is_zero():
             break
     else:
+        if len(h) == 2:
+            for i in range(2):
+                if not h[i][i].is_zero():
+                    # Rank one gives the norm of one column, up to its diagonal entry.
+                    return [K([row[i] for row in h])] * (Q+1)
         raise ValueError("missing nonsingular principal minor")
     f = K([row[i] for row in h])
     g = K([row[j] for row in h])
@@ -125,7 +131,9 @@ def relation(mask, row):
         raise ArithmeticError("the target factor has the wrong binary norm")
     d = numerator(h)
     rest, remainder = divmod(d, t)
-    if not remainder.is_zero() or any(p.degree() > m for p, _ in rest.factor()[1]):
+    partner = int(row["quadratic_partner_hex"], 16) if "quadratic_partner_hex" in row else None
+    bound = 2 if partner is not None and m == 1 else m
+    if not remainder.is_zero() or any(p.degree() > bound for p, _ in rest.factor()[1]):
         raise ArithmeticError("a factor exceeds the proposed descent bound")
     pieces = pencil(h)
     source = sum((c * T**(i+Q*j) for i, row in enumerate(h) for j, c in enumerate(row)), K.zero())
@@ -136,6 +144,12 @@ def relation(mask, row):
         left.update(binary_factors(coefficient_norm(piece)))
     right = binary_factors(coefficient_norm(d))
     mult = right.pop(mask)
+    if partner is not None:
+        nonlinear = {p for p in right if 20 % (p.bit_length()-1) != 0}
+        degree = partner.bit_length()-1
+        if (m != 1 or nonlinear != {partner} or degree // gcd(degree, 20) != 2
+                or right[partner] != mult):
+            raise ArithmeticError("the circle does not give the claimed pair of quadratic factors")
     inverse_q = pow(Q, -1, COFACTOR)
     coeff = Counter({p: e*inverse_q for p, e in left.items()})
     coeff.subtract(right)

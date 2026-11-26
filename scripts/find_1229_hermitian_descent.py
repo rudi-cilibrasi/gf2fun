@@ -1,15 +1,20 @@
-"""Search rank-two Hermitian pencils for a binary mask of relative degree two or three."""
+"""Search Hermitian pencils for a binary mask of relative degree two or three."""
 
 import argparse
+import gzip
 import json
 import sys
 from collections import Counter
 from itertools import permutations, product
+from pathlib import Path
 
 import numpy as np
 
 from check_1229_factor_base_orders import extended_table, read_table
-from check_1229_hermitian_descent import F, K, Q, bits, element, matrix, numerator, records, relation, scalar_groups
+from check_1229_hermitian_descent import (
+    F, K, Q, binary_factors, bits, coefficient_norm, element, matrix,
+    numerator, records, relation, scalar_groups,
+)
 from check_1229_translated_circles import Constants
 from check_factor_base import irreducible, polynomial
 
@@ -114,11 +119,15 @@ def circle_candidates(basis):
                    for j, v in enumerate(lead)]
 
 
-def search(mask):
+def relative_factor(mask):
     if mask < 2 or not irreducible(polynomial(mask)):
         raise ValueError("choose a nonconstant binary irreducible mask")
     binary = K([mask >> i & 1 for i in range(mask.bit_length())])
-    t = min((p for p, _ in binary.factor()[1]), key=lambda p: tuple(bits(v) for v in p.coeffs()))
+    return min((p for p, _ in binary.factor()[1]), key=lambda p: tuple(bits(v) for v in p.coeffs()))
+
+
+def search(mask):
+    t = relative_factor(mask)
     if t.degree() not in (2, 3):
         raise ValueError("choose a mask of relative degree two or three")
     basis = divisibility_space(t)
@@ -135,38 +144,83 @@ def search(mask):
     _, table = read_table()
     known = extended_table(table)
     known.update({p: int(row["log_mod_C"]) for p, row in records().items() if "log_mod_C" in row})
-    best, counts = None, Counter()
+    best, counts = None, {1: Counter(), 2: Counter()}
     for h in candidates:
         a = matrix([element(v) for v in h])
-        if not any(not (a[i][i]*a[j][j]-a[i][j]*a[j][i]).is_zero()
-                   for i in range(len(a)) for j in range(i)):
+        nonsingular_minor = any(not (a[i][i]*a[j][j]-a[i][j]*a[j][i]).is_zero()
+                                for i in range(len(a)) for j in range(i))
+        if not nonsingular_minor and len(a) != 2:
             continue
         rest, rem = divmod(numerator(a), t)
         if not rem.is_zero():
             raise ArithmeticError("a linear divisibility equation failed")
         largest = max((p.degree() for p, _ in rest.factor()[1]), default=0)
-        counts[largest] += 1
-        if largest >= t.degree():
-            continue
+        counts[2 if nonsingular_minor else 1][largest] += 1
         row = {"mask_hex": hex(mask), "relative_factor": [bits(v) for v in t.coeffs()], "hermitian": h}
+        if largest >= t.degree():
+            if t.degree() != 2 or largest != 2:
+                continue
+            rhs = binary_factors(coefficient_norm(numerator(a)))
+            partners = [p for p in rhs if p != mask and 20 % (p.bit_length()-1)]
+            if len(partners) != 1 or rhs[partners[0]] != rhs[mask]:
+                continue
+            row["quadratic_partner_hex"] = hex(partners[0])
         score = len(relation(mask, row).keys()-known.keys())
         if best is None or (score, h) < best[:2]:
             best = (score, h, row)
-    print(f"Rank-two matrices by largest residual degree: {dict(sorted(counts.items()))}.", file=sys.stderr)
+    if counts[1]:
+        print(f"Rank-one matrices by largest residual degree: {dict(sorted(counts[1].items()))}.", file=sys.stderr)
+    print(f"Rank-two matrices by largest residual degree: {dict(sorted(counts[2].items()))}.", file=sys.stderr)
     return best and best[2]
+
+
+def audit_cubics():
+    count = 0
+    for mask, row in records().items():
+        if len(row["relative_factor"]) == 4:
+            t = K([element(v) for v in row["relative_factor"]])
+            basis = divisibility_space(t)
+            if len(basis) != 3 or not smooth_plane(basis):
+                raise ArithmeticError(f"failed determinant-plane check for {mask:#x}")
+            count += 1
+    print(f"Verified {count} smooth determinant cubics on three-dimensional divisibility spaces.")
+
+
+def audit_quadratics(path):
+    with (gzip.open(path, "rt") if path.suffix == ".gz" else path.open()) as stream:
+        rows = json.load(stream)["remaining"]
+    masks = [int(r["mask_hex"], 16) for r in rows]
+    if len(set(masks)) != len(masks):
+        raise ValueError("duplicate mask in the quadratic task")
+    counts = Counter()
+    for mask in masks:
+        t = relative_factor(mask)
+        if t.degree() != 2:
+            raise ValueError(f"task row {mask:#x} has relative degree {t.degree()}")
+        counts[len(divisibility_space(t))] += 1
+    print(f"Quadratic masks by Hermitian nullity: {dict(sorted(counts.items()))}.")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mask", type=lambda x: int(x, 0))
+    modes = parser.add_mutually_exclusive_group(required=True)
+    modes.add_argument("mask", nargs="?", type=lambda x: int(x, 0))
+    modes.add_argument("--audit-cubics", action="store_true", help="check all published determinant planes")
+    modes.add_argument("--audit-quadratics", type=Path, metavar="TASK",
+                       help="count Hermitian nullities for the quadratic masks in a JSON or gzip task")
     args = parser.parse_args()
     try:
-        row = search(args.mask)
+        if args.audit_cubics:
+            audit_cubics()
+        elif args.audit_quadratics:
+            audit_quadratics(args.audit_quadratics)
+        else:
+            row = search(args.mask)
+            if row is not None:
+                print(json.dumps(row, indent=2))
     finally:
         # Drop FLINT elements while their finite-field context is still live.
         scalar_groups.cache_clear()
-    if row is not None:
-        print(json.dumps(row, indent=2))
 
 
 if __name__ == "__main__":

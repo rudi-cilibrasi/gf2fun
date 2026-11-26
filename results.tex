@@ -9385,13 +9385,13 @@ Hasse--Weil bound gives the stated interval. See
 \emph{Sur les courbes algébriques et les variétés qui s'en déduisent}}.
 \end{proof}
 
-For both original cubics the divisibility space has dimension three.
+For all 20 cubic targets the divisibility space has dimension three.
 To check smoothness, multiply each of the three partial derivatives
 by the six quadratic monomials. The resulting 18 quartics span the
-15-dimensional space of all ternary quartics in each case. Thus the
+15-dimensional space of all ternary quartics for every target. Thus the
 partials have no common projective zero even over an algebraic closure.
-Enumerating \(\mathbb P^2(\mathbb F_q)\) and factoring \(D_H/t\) at
-every rank-two point gives the following counts. The middle columns
+For the two original cubics, enumerating \(\mathbb P^2(\mathbb F_q)\)
+and factoring \(D_H/t\) at every rank-two point gives the following counts. The middle columns
 count matrices for which the largest residual degree is at most the
 indicated bound. The last column counts distinct unknown logarithms
 in one selected relation after taking coefficient norms.
@@ -9447,12 +9447,32 @@ the minimal polynomial of its value at \(x\).
  \mathtt{129772184b5e49a5}&\mathtt{1dee64e3c0d}&625
 \end{array}
 \]
-This raises the total to \(90{,}842\) distinct projected logarithms,
+The published tables now contain \(90{,}842\) distinct projected logarithms,
 of which \(90{,}838\) represent primitive elements. For the quadratic
 in the original Seroussi task (mask \(\mathtt{14175ff6b27}\)), the
 four \(m=1\) divisibility conditions have rank four over \(\mathbb F_q\).
 Thus a single Hermitian pencil of linear forms in this model cannot
-eliminate that particular factor. The matrices and the three numerical
+eliminate that particular factor. The same full-rank obstruction holds
+for all 126 quadratic masks in the selected product relation, 533
+of the 534 in the selected Seroussi cubic relation and \(8{,}984\)
+of the \(8{,}996\) in the expanded degree-seven relation. Each of the
+remaining divisibility spaces has dimension one. For example, the
+exceptional mask \(\mathtt{11a5ea6b8e1}\) in the 534-row relation
+gives a rank-two form. Its cleared numerator has two linear factors
+and one further quadratic besides the target. After taking norms this
+determines \(L(P_{\mathtt{11a5ea6b8e1}})+L(P_{\mathtt{1cd82397595}})\)
+exactly. Four more such pair sums occur among the degree-seven
+descendants. Three come from rank-two forms. The fourth, for the
+octic masks \(\mathtt{13f}\) and \(\mathtt{1c3}\), already follows
+from the rank-one identity
+\[
+ h_1^4 P_{\mathtt{13}}(h_0/h_1)
+    =P_{\mathtt{19}}P_{\mathtt{13f}}P_{\mathtt{1c3}} .
+\]
+Here \(P_{\mathtt{13}}\) and \(P_{\mathtt{19}}\) have degree four,
+so their logarithms belong to the linear base. The checker recovers
+each pair sum as the known exponent in the task for its first mask.
+The matrices and the three numerical
 logarithms are in \nolinkurl{data/degree-1229-hermitian-descents.json}.
 
 \section{Primitive pentanomials in 64 further degrees through 2560}
@@ -9476,5 +9496,10 @@ and modular powers can all be checked offline using
 \nolinkurl{data/mersenne-2417-2560.json},
 \nolinkurl{data/product-witnesses-2417-2560.csv}
 and \nolinkurl{scripts/check_product_range.py}.
+For degree 2520, \nolinkurl{GF2Sparse/Witness2520.lean} also proves
+primitivity in Lean. The certificate proves primality of the integer
+factors and full order of \(X\) modulo the displayed pentanomial.
+It checks each of the 85 distinct prime-index powers in a separate
+kernel theorem.
 
 \end{document}
