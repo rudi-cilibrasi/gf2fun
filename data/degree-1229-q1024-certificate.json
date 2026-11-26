@@ -1,0 +1,17 @@
+{
+  "degree": 1229,
+  "q": 1024,
+  "h0_mask": 37,
+  "h1_mask": 10,
+  "modulus_hex": "0x21d62e5180c8b73c7c2288220d1b717048980641e64acd7b6bd5a2852a53e78289f997d535ca335aa10175cb30b8e3318ad973ccbcd09953f5854930da98a5fa95e1e6997396f1804434a9317b4eced8c5246ea4217390d68e46cb1a89e7f375efd931a2dbd867456e924662bf3f73a50f00b0c3a7a7d033ac28ac8c3ae2340f4842544ea9e3dfcd46077afd881dfbfef5cc0f7837dbb674ebd5",
+  "cofactor_bits": 943,
+  "cofactor_digits": 284,
+  "factor_base_size": 52488,
+  "relations_verified": 93656,
+  "direct_field_checks_verified": 52488,
+  "standalone_index_floor": 9833,
+  "standalone_weil_Q_float": 1294.9018316043887,
+  "wheel_index_floor": 818085338814611458,
+  "wheel_weil_Q_float": 1366.0013027191153,
+  "csv_gz_sha256": "7ac0ce3ff52dacd6fa239ad8d4389aeb2847608cddf64572224fa15d978f55b7"
+}

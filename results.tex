@@ -8808,4 +8808,121 @@ of \(G_a\) is binary irreducible of degree 7410. Hence \(G_a\) is
 monic irreducible of degree 1235 over \(C\). Any root \(\lambda\)
 in \(\mathbb F_{2^{7410}}\) gives \(\operatorname{Norm}(t-\lambda)=G_a(t)=a\).
 
+\section{Unconditional primitivity in degree 1229 from 52,488 projected logarithms}
+\label{sec:1229-q1024-primitivity}
+\begin{theorem}\label{thm:1229-q1024-primitive}
+Let \(I(X)\in\F[X]\) be the unique degree-\(1229\) irreducible factor of
+\(h_0(X^{1024})+Xh_1(X^{1024})\) from Section~\ref{sec:1229-frobenius-models},
+where \(h_0(T)=T^5+T^2+1\) and \(h_1(T)=T^3+T\). Then \(I(X)\) is primitive of
+exact multiplicative order \(2^{1229}-1\), without factoring the \(284\)-digit
+cofactor \(C\) of \(2^{1229}-1\). Consequently, proving primitivity of any
+degree-\(1229\) irreducible polynomial \(P(Y)\) passing the four known
+prime-factor tests reduces to exhibiting a single integer \(0\le e_r<C\) with
+\((Y^K)^{e_r}\equiv x_P^K\pmod{P(Y)}\), where \(I(x_P)\equiv0\pmod{P(Y)}\).
+\end{theorem}
+\begin{proof}
+Write \(q=2^{10}=1024\), \(x=X\bmod I(X)\), and \(y=x^q\). Since
+\(\gcd(20,1229)=1\), lift to \(\mathbb F_{q^2}(x)=\mathbb F_{2^{20\cdot1229}}\).
+For \(B\in\mathbb F_{q^2}\) and \(D\in\mathbb F_q\) with \(B^{q+1}+D\ne0\),
+the Hermitian circle \(T^{q+1}+BT^q+B^qT+D\) splits into \(q+1\) distinct
+linear factors over \(\mathbb F_{q^2}\), and evaluating at \(x=h_0(y)/h_1(y)\)
+gives
+\[
+  \prod_{\gamma}(x+\gamma)=\frac{(y+B^q)h_0(y)+(By+D)h_1(y)}{h_1(y)}
+  =\frac{R_{B,D}(y)}{h_1(y)},\qquad \deg R_{B,D}\le6.
+\]
+Whenever \(R_{B,D}\) splits completely over \(\mathbb F_{q^2}\), applying the
+field norm \(\operatorname{Norm}:\mathbb F_{2^{20\cdot1229}}^\times\to\mathbb F_{2^{1229}}^\times\)
+annihilates all \(\mathbb F_{q^2}^\times\)-constants and collapses each linear
+factor \((x+\gamma)\) to \(P_\gamma(x)^{20/\deg P_\gamma}\), where
+\(P_\gamma\in\F[T]\) is the binary minimal polynomial of \(\gamma\).
+
+Scanning all \(52{,}488\) Galois orbits of \(B\in\mathbb F_{2^{20}}\) against
+\(D\in\mathbb F_{2^{10}}\) in \nolinkurl{scripts/gen_1229_circle_relations.cpp}
+produces \(93{,}656\) exact multiplicative relations (\(92{,}910\) canonically
+unique) over all \(N=52{,}488\) binary irreducibles of degree dividing \(20\).
+The Wiedemann solver \nolinkurl{scripts/wiedemann_943.cpp} together with the
+FLINT Half-GCD recurrence finder \nolinkurl{scripts/phase2_minpoly.py} recovers
+the unique solution modulo the \(943\)-bit cofactor \(C\) (minimal polynomial
+degree \(L=52{,}488/52{,}488\)), exported to
+\nolinkurl{data/degree-1229-q1024-projected-logs.csv.gz}.
+
+The standalone checker \nolinkurl{scripts/check_1229_q1024_logs.py} directly
+verifies irreducibility of \(I(X)\) and of all \(52{,}488\) factor-base
+polynomials, checks \(x^{2^{1229}-1}=1\), \(x^K\ne1\), and
+\(x^{(2^{1229}-1)/p}\ne1\) for all four known prime divisors \(p\mid K\),
+verifies \(\gcd(e_P,C)=1\) and the projected discrete logarithm identity
+\((x^K)^{e_P}\equiv P(x)^K\pmod{I(X)}\) directly in \(\mathbb F_{2^{1229}}\)
+for every one of the \(52{,}488\) irreducibles \(P\), and therefore establishes
+\(P(x)\in H=\langle x\rangle\) for all \(P\) with \(\deg P\mid20\).
+Every prime divisor \(p\mid C\) satisfies \(p\equiv1\pmod{2458}\); since
+\(4917=3\cdot1639\), \(7375=5^3\cdot59\), and \(C\bmod 2459\ne0\), any proper
+index \(J=[\mathbb F_{2^{1229}}^\times:H]>1\) satisfies \(J\ge 9833\).
+Theorem~\ref{thm:factor-moments} with \(c_0=c_{20}=c_{40}=1\) gives
+\(Q(9833)=1294.9018\ldots>1227\) (and \(Q=1366.0013\ldots>1227\) with the
+sieved wheel floor \(J=818085338814611458\)), forcing \(J=1\) and
+\(\operatorname{ord}(x)=2^{1229}-1\). For any other degree-\(1229\)
+irreducible \(P(Y)\) passing the four known-prime tests,
+\((Y^K)^{e_r}\equiv x_P^K\pmod{P(Y)}\) implies \(x_P^K\in\langle Y^K\rangle\),
+forcing \(C=\operatorname{ord}(x_P^K)\mid\operatorname{ord}(Y^K)\mid C\) and
+hence \(\operatorname{ord}(Y)=KC=2^{1229}-1\).
+\end{proof}
+
+\section{Four exterior-power tests in six infinite shifted-dyadic trinomial families}
+\label{sec:shifted-trinomial-quartets}
+\begin{theorem}\label{thm:shifted-trinomial-quartets}
+Let \(d\in\mathbb Z\), \(a\ge1\), \(b=d-a\), and \(s\ge1\) with
+\(n=2^s+d>a\), and consider \(T_{s;d,a}(X)=X^{2^s+d}+X^a+1\). Whenever \(n\) is
+odd or \(a\) is odd, \(T_{s;d,a}\) is squarefree over \(\F\). Every member of
+each of the following infinite degree families has an explicit trinomial
+\(T_{s;d,a}\) passing the first four exterior-power tests:
+\begin{enumerate}
+\item Every Mersenne degree \(n=2^s-1\) (\(s\ge3\)), using \(a=1\) for
+\(s\not\equiv2\pmod3\) and \(a=3\) for \(s\not\equiv1\pmod3\).
+\item Every Fermat number \(n=2^{2^k}+1\) (\(k\ge1\)), using \(a=2\) for odd
+\(k\) and \(a=5\) for even \(k\ge2\).
+\item Every \(n=2^s+2\) (\(s\ge2\)), using \(a\in\{1,7\}\) (period \(12\)).
+\item Every \(n=2^s-3\) (\(s\ge4\)), \(2^s+1\) (\(s\ge2\)), \(2^s+3\)
+(\(s\ge1\)), and \(2^s+5\) (\(s\ge1\)), using three taps each:
+\(\{1,3,6\}\) (period \(12\)), \(\{3,5,9\}\) (period \(540\)), \(\{3,4,7\}\)
+(period \(84\)), and \(\{1,4,5\}\) (period \(252\)), respectively.
+\end{enumerate}
+Moreover, for every odd \(m\ge1\) and every odd degree \(n\) above, the dilated
+trinomial \(T_{s;d,a}(X^m)\) is squarefree and passes the first four
+exterior-power tests.
+\end{theorem}
+\begin{proof}
+Squarefreeness follows from \(\gcd(X^n+X^a+1,nX^{n-1}+aX^{a-1})=1\) whenever
+\(n\) or \(a\) is odd. Passing to the reciprocal
+\(F(X)=X^{2^s+d}+X^{2^s+b}+1\), suppose \(x_1,\ldots,x_m\) (\(m\in\{3,4\}\))
+are roots of \(F\) (allowing repetitions) with \(x_1\cdots x_m=1\). Put
+\(z_i=x_i^a\) and \(K(Z)=\prod_{i=1}^m(Z+z_i)=Z^m+\cdots+1\). Since
+\(F(x_i)=0\) excludes \(z_i=1\), we have \(x_i^{2^s+b}=(z_i+1)^{-1}\), so
+\[
+  K(1)=\prod_{i=1}^m(z_i+1)=\prod_{i=1}^m x_i^{-(2^s+b)}=(x_1\cdots x_m)^{-(2^s+b)}=1
+\]
+immediately, and \(z_i^{2^s}=z_i^{-b}(z_i+1)^{-a}\). Because both the companion
+matrix \(M\) of \(K(Z)\) and \(M+I\) have determinant \(1\), the matrix
+\(P=M^{-b}(M+I)^{-a}\) has purely polynomial entries over \(\F[u]\) (\(m=3\))
+or \(\F[u,w]\) (\(m=4\), where \(K=Z^4+uZ^3+(u+w+1)Z^2+wZ+1\)), and the
+Frobenius image \(K^{(2^s)}\) equals \(\operatorname{charpoly}(P)\).
+
+For example, when \((d,a)=(-1,1)\) (\(X^{2^s-1}+X+1\), \(b=-2\)), the quartet
+map gives \(a_1=w\), \(c_1=w^2+w\), \(E_1=u^2+uw+w^2+1\), and
+\(E_2=E_1(a_1,c_1)=w^4+w^3+w^2+1=(w+1)(w^3+w+1)=0\) directly; \(w=1\) gives
+\(c_1=0\ne1\), while \(w^3+w+1=0\) satisfies \(c_1=w^4=w^{2^2}\), forcing
+\(s\equiv2\pmod3\). Similarly, for \((d,a)=(3,3)\) (\(X^{2^s+3}+X^3+1\)),
+\(\operatorname{Res}_w(E_1,E_2)=u(u+1)^5(u^3+u+1)^2\) of degree \(12\) leaves
+only \(4\mid s\). For every constituent pair \((d,a)\) in the theorem,
+\nolinkurl{scripts/check_shifted_trinomial_quartets.py} computes the exact
+univariate triple condition \(E_1(u)=0\) and bivariate resultant
+\(\operatorname{Res}_w(E_1,E_2)=0\), checks root-level compatibility modulo
+every irreducible factor of \(K(Z)\) together with the \(x\)-lift condition
+\(z^{(2^s+b)/g}(z+1)^{a/g}=1\) for \(g=\gcd(a,2^s+b)\), verifies complete
+coverage of \(\mathbb Z/L\mathbb Z\) (and all \(2^k\bmod180\) for the Fermat
+pair \(\{2,5\}\)), and matches \nolinkurl{data/shifted-dyadic-trinomial-4test-certificates.json}
+and direct pair-product checks through \(s=7\) (plus \(s=8\) in
+\nolinkurl{scripts/check_trinomial_4test.cpp}).
+\end{proof}
+
 \end{document}
