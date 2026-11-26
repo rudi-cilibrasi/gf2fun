@@ -11652,4 +11652,126 @@ sources above. The census checker also verifies every minimum by
 substitution in its source field.
 See \nolinkurl{scripts/check_1229_power_images.py}.
 
+\section{Counting distinct pentanomials obtained from primitive trinomials}
+\label{sec:trinomial-decimations}
+Let \(T_n\) be the number of primitive binary trinomials of degree \(n\).
+Let \(U_n\) count those whose three exponents have distinct residues
+modulo seven. Cubing, fifth powering and seventh powering a root
+of such a trinomial give the decimations of the corresponding binary
+linear recurrence. The sampling formulas were studied by
+\href{https://doi.org/10.9746/sicetr1965.21.875}{Harada and Kashiwagi}
+and by \href{https://arxiv.org/pdf/cond-mat/9710104}{Ziff, equations (3)--(5)}.
+
+\begin{theorem}
+In every degree \(n>7\), the exact number of distinct primitive
+pentanomials obtained by these three maps on primitive trinomials is
+\[
+     {\bf1}_{2\nmid n} T_n + {\bf1}_{4\nmid n} T_n
+           + {\bf1}_{3\nmid n} U_n .
+\]
+Every output counted here determines both the power and the source
+trinomial uniquely. In particular the number of primitive pentanomials
+is at least twice the number of primitive trinomials in every odd
+degree above seven.
+\end{theorem}
+\begin{proof}
+Let \(r\) be a root of a primitive trinomial of degree \(n>7\). For
+\(m=3,5,7\), the element \(r^m\) has order
+\((2^n-1)/\gcd(2^n-1,m)>2^{\lfloor n/2\rfloor}-1\), so lies in no
+proper subfield. Its degree is \(n\), and it is primitive exactly when
+\(\operatorname{ord}_m(2)\nmid n\). These orders are \(2,4,3\).
+The positive source exponents have gcd one, as in
+Section~\ref{sec:frobenius-box-density}.
+
+If two exponents are \(i,i+mh\), with \(h>0\), and the third is \(k\),
+the image is \(X^k+X^i(1+X^h)^m\) by the difference-of-powers
+identity used in Theorem~\ref{thm:progression}. If \(k\) were an exponent of the expanded
+block, all differences of source exponents would be multiples of
+\(h\), so \(h=1\) and \(n=m\). The image therefore has five terms
+for \(m=3,5\) and nine for \(m=7\). Three distinct residues modulo
+three would give a quadratic factor.
+
+For distinct residues modulo five or seven there must be a midpoint
+\(b\), meaning the other exponents \(a,c\) satisfy
+\(a+c\equiv 2b\pmod m\). Indeed, apply an invertible affine change
+of residues to write the triple as \(\{0,1,j\}\). For \(m=5\) all
+three possible \(j\) have a midpoint. For \(m=7\) the exceptions
+are \(j=3,5\), interchanged by scaling and relabeling since
+\(3^{-1}=5\bmod7\). Such a triple gives a root of the source at a
+primitive seventh root of unity, using \(1+Z+Z^3=0\) in
+\(\mathbb F_8\). This would give a factor of degree three.
+
+Write \(t=(a+c-2b)/m\) and \(d=(m-1)/2\). The image support is
+\[
+                   a,\quad b,\quad c,\quad b+t,\quad b+dt .
+\]
+To see this, put \(A=r^a,\ B=r^b,\ D=r^c\). Substitution of \(B=A+D\)
+in either characteristic-two identity gives
+\[
+     A^m+B^m+D^m+AB^{m-2}D+A^d B D^d=0 \qquad(m=5,7).
+\]
+The five exponents before division by \(m\) are precisely those of
+this identity in \(r\). The two added exponents are weighted averages
+of the original three. If \(t=0\), the normalized source is a
+three-term arithmetic progression of degree two. If \(b+t\) or
+\(b+dt\) equals \(a\) or \(c\), the two endpoints relative to \(b\)
+are \(t,(m-1)t\) or \(dt,(m-d)t\). Normalizing gives \(n<m\).
+Thus all five exponents are distinct. The divisibility identities
+for both midpoints are formalized in
+\nolinkurl{GF2Sparse/TrinomialPowers.lean}.
+
+Each allowed power is bijective on primitive elements and commutes
+with Frobenius, so its images of different trinomials are distinct.
+For disjointness between powers, translate and scale the support
+over \(\mathbb Q\). A cube image contains four terms in arithmetic
+progression. A fifth-power image has one of two shapes
+\[
+   H_1=\{0,1,4,5,s\},\qquad H_2=\{0,1,2,s,5-s\}.
+\]
+A five-term seventh-power image has shape \(H_3=\{0,1,3,s,7-s\}\).
+The source triples in these coordinates are respectively
+\(\{0,5,s\}\), \(\{0,s,5-s\}\) and \(\{0,s,7-s\}\).
+The following finite calculation lists possible normalized source
+degrees. It allows all rational \(s\) giving five distinct points.
+\[
+\begin{array}{c|l|l}
+ \text{shape}&\text{condition on distinct points}&
+          \text{possible source degrees}\\\hline
+ H_1&\text{four in arithmetic progression}&\varnothing\\
+ H_2&\text{four in arithmetic progression}&7\\
+ H_3&\text{three in arithmetic progression}&2,5,9,11,13\\
+ H_3&\text{two pairs of the same sum}&5,9,11
+\end{array}
+\]
+To reproduce the table, take each ordered choice of the required
+points \(p_i(s)\). For three in progression solve
+\(p_1-2p_2+p_3=0\), and for four also impose \(p_2-2p_3+p_4=0\).
+For equal pair sums solve \(p_1+p_4=p_2+p_3\). These linear
+equations give at most one \(s\) per ordering. Clear denominators
+in the source triple, subtract its minimum and divide the largest
+entry by the gcd of the two positive entries. This recovers \(n\)
+because the original exponents have gcd one.
+
+The first two rows separate cubes from fifth powers for \(n>7\).
+Every cube or \(H_2\) contains three terms in progression, and \(H_1\)
+has equal pair sums. The last two rows therefore separate seventh
+powers as well, outside degrees \(9,11,13\). In degree nine seventh
+powering loses an order factor. Degree 13 has no primitive trinomial.
+In degree 11 the only primitive trinomials have taps 2 and 9. For
+tap 2 the three images have interior exponents
+\((2,5,8),(2,3,7),(2,3,5)\). These and their reciprocals are distinct.
+The checker verifies the finite table and the low degrees by
+factoring and direct powering in \(\F[X]\).
+See \nolinkurl{scripts/check_trinomial_decimations.py}.
+\end{proof}
+In degree seven cubing and fifth powering both produce
+\(X^7+X^3+X^2+X+1\) and its reciprocal, so the threshold matters.
+In degree 17 the six primitive trinomials yield sixteen distinct
+primitive pentanomials. Four source trinomials contribute under
+seventh powering. The primitive trinomial \(X^{17}+X^3+1\) illustrates
+the missing case in the discussion after Ziff's equation (5).
+Its exponents \(3,17\) agree modulo seven, and its seventh-power
+image \(1+X^3(1+X^2)^7\) has nine terms and is primitive.
+Lean checks the order, the weight and the divisibility for this example.
+
 \end{document}
