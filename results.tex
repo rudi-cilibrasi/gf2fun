@@ -12765,4 +12765,91 @@ it verified the full power and each distinct prime-index power, with
 Section~\ref{sec:products-2944}, this gives witnesses in at least 2,249
 of the first 3,072 degrees.
 
+\section{Explicit logarithms from exact Frobenius orders}\label{sec:ore-class-logs}
+Let \(P\) be a primitive binary seed of degree \(s\ge2\). Set \(n=2^s-1\),
+\(M=2^n-1\), and let \(r\) be a root of the degree-\(n\) Ore lift
+\(O_P(X)=L_P(X)/X\), where \(L_g(X)=\sum_i g_iX^{2^i}\).
+For monic \(g\) with \(g(0)=1\), let \(C_g(X)\) be the monic polynomial
+whose roots have exact Frobenius annihilator \(g\). In particular
+\(C_1=X\). Write \(\Phi_2(g)=|(\F[Y]/g)^\times|\), with \(\Phi_2(1)=1\).
+
+\begin{theorem}\label{thm:ore-class-logs}
+If \(P\nmid g\), then \(C_g(r)=r^{e_g}\), where
+\[
+ e_g=\sum_{d\mid g}\mu(g/d)\,2^{j(d)}\pmod M,\qquad
+ Y^{j(d)}\equiv d\pmod P,\quad 0\le j(d)<n .
+\]
+The exponents require logarithms only in the seed field of size \(2^s\).
+The polynomial \(C_g\) is irreducible precisely when all the distinct
+irreducibles \(p\mid g\) are primitive, their degrees are pairwise
+coprime, and the only repeated factor allowed is \(Y+1\) with
+multiplicity two or three.
+\end{theorem}
+\begin{proof}
+The derivative of \(L_g\) is 1. Partitioning its roots by their exact
+annihilator gives \(L_g=\prod_{d\mid g} C_d\).
+The count in Theorem~\ref{thm:ore-order} gives \(\deg C_g=\Phi_2(g)\).
+Since \(P(F)r=0\), equality of \(d\) and \(Y^{j(d)}\) modulo \(P\)
+gives \(L_d(r)=r^{2^{j(d)}}\). All these evaluations are nonzero.
+Multiplicative Möbius inversion now gives the stated exponent, including
+when the order of \(r\) is a proper divisor of \(M\).
+
+For \(g\ne1\), every root of \(C_g\) has Frobenius orbit length
+\(\ord_{(\F[Y]/g)^\times}(Y)\), since \(F^kz=z\) holds precisely when
+\(g\mid Y^k-1\). The root set is one orbit exactly when this order equals
+\(\Phi_2(g)\). For an irreducible \(p\) of degree \(a\), let \(o\) be the
+order of \(Y\bmod p\). Since \(o\) is odd, \(Y^o-1\) has simple roots.
+Hence the order modulo \(p^b\) is \(o\,2^{\lceil\log_2 b\rceil}\),
+whereas \(\Phi_2(p^b)=(2^a-1)2^{a(b-1)}\).
+Equality requires primitive \(p\) and \(a(b-1)=\lceil\log_2 b\rceil\).
+For \(b\ge2\) the only solutions are \(a=1\) and \(b\in\{2,3\}\).
+The Chinese remainder theorem takes the least common multiple of the local
+orders. Their odd parts are pairwise coprime exactly when their degrees
+are, by \(\gcd(2^a-1,2^c-1)=2^{\gcd(a,c)}-1\). At most one local
+order is even under the displayed conditions. The case \(g=1\) gives
+the irreducible polynomial \(X\) directly.
+\end{proof}
+
+\begin{corollary}\label{cor:ore-fraction-bound}
+Put \(h=(n-1)/2\) and form
+\[
+ S(T)=\prod_{\Phi_2(g)\le h}(1-T^{\Phi_2(g)})^{-1},\qquad
+ A_k=\sum_{i=0}^k[T^i]S(T),\qquad B_k=[T^k]S(T)^{-1}.
+\]
+Then \(\ord(r)\ge\sum_{k=0}^h B_k A_{h-k}^2\).
+For every primitive degree-11 seed this integer is
+\[
+ 484094750721129487677970496925614692445151661174565866513257440669
+ >2^{218}.
+\]
+For every primitive degree-12 seed the same bound exceeds \(2^{312}\).
+\end{corollary}
+\begin{proof}
+If \(P\mid g\), the product formula for \(\Phi_2\) gives
+\(\Phi_2(g)\ge\Phi_2(P)=n\). Hence every factor included in \(S\) has
+known logarithm. The polynomials \(C_g\) for different \(g\) have
+disjoint root sets. Reduced fractions made from these polynomials,
+with numerator and denominator degrees at most \(h\), therefore have
+unique signed exponent vectors. Two such fractions taking the same
+value at \(r\) give a cross-product difference of degree at most
+\(2h<n\), so the fractions are equal. Each value belongs to
+\(\langle r\rangle\). The bivariate generating function for numerator
+and denominator degrees is \(S(U)S(V)/S(UV)\), since each generator
+can occur on at most one side. Summing both degrees through \(h\)
+gives the formula.
+
+For the integer calculation, enumerate the irreducibles \(p\ne Y\)
+with \(2^{\deg p}-1\le h\) and form all products of their powers
+with \(\prod_{p^b\parallel g}(2^{\deg p}-1)2^{(b-1)\deg p}\le h\).
+This gives 1,535 labels for \(s=11\) and 3,071 for \(s=12\).
+The script \nolinkurl{scripts/check_ore_logarithms.py} computes the
+coefficients using integer arithmetic. For each of the trinomials
+\(X^{2047}+X^3+1\) and \(X^{2047}+X^{511}+1\), direct modular
+exponentiation checks all 47 class polynomials of degree at most 31.
+Of these, 38 give individual irreducible factors.
+The universal estimate here also covers dense seeds. The separate
+prime-divisor tests in Section~\ref{sec:ore2047} give larger order
+divisors for the 46 sparse degree-11 seeds.
+\end{proof}
+
 \end{document}
