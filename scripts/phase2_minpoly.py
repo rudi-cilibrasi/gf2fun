@@ -2,7 +2,8 @@
 using FLINT's subquadratic fmpz_mod_poly half-GCD (takes ~15 seconds for N=52488!).
 Also supports --selftest on a toy 200x200 matrix mod C to verify Phases 1, 2, 3 end-to-end!
 """
-import argparse, struct, time
+import argparse, gzip, struct, time
+from pathlib import Path
 from flint import fmpz, fmpz_mod_poly_ctx
 
 from math import prod
@@ -20,6 +21,17 @@ def read_u960(buf, off):
 def write_u960(val):
     limbs = [(val >> (64 * i)) & ((1 << 64) - 1) for i in range(15)]
     return struct.pack("<15Q", *limbs)
+
+def read_moments(raw):
+    if len(raw) < 8:
+        raise ValueError("missing scalar sequence header")
+    n, count = struct.unpack_from("<II", raw)
+    if not n or count != 2*n or len(raw) != 8+120*count:
+        raise ValueError("the sequence must supply exactly twice the matrix dimension in moments")
+    seq = [read_u960(raw, 8+120*i) for i in range(count)]
+    if any(v >= COFACTOR for v in seq):
+        raise ValueError("scalar moment outside the cofactor residue range")
+    return n, seq
 
 def half_gcd_minpoly(seq, C, certify_rank=False):
     """Compute minimal polynomial P(z) = sum_{j=0}^L p_j z^j (monic, p_L=1) of seq[0..2N-1] mod C
@@ -138,8 +150,8 @@ def half_gcd_minpoly(seq, C, certify_rank=False):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--selftest", action="store_true")
-    ap.add_argument("--seq", type=str)
-    ap.add_argument("--out", type=str)
+    ap.add_argument("--seq", type=Path, help="binary or gzip-compressed scalar moments from phase one")
+    ap.add_argument("--out", type=Path, help="destination for the phase-three coefficients")
     ap.add_argument("--certify-rank", action="store_true", help="check a full-rank Krylov certificate over the composite modulus")
     args = ap.parse_args()
 
@@ -160,11 +172,14 @@ def main():
         assert p_rec == p_true
         return
 
+    if args.seq is None or args.out is None:
+        ap.error("--seq and --out are required for a matrix computation")
     t0 = time.time()
-    raw = open(args.seq, "rb").read()
-    N, seq_len = struct.unpack_from("<II", raw, 0)
+    with (gzip.open(args.seq, "rb") if args.seq.suffix == ".gz" else args.seq.open("rb")) as stream:
+        raw = stream.read()
+    N, seq = read_moments(raw)
+    seq_len = len(seq)
     print(f"Loaded sequence: N={N}, seq_len={seq_len}")
-    seq = [read_u960(raw, 8 + 120 * k) for k in range(seq_len)]
     print(f"Unpacked {len(seq)} 943-bit integers in {time.time()-t0:.2f}s. Running FLINT Half-GCD...")
     t1 = time.time()
     p = half_gcd_minpoly(seq, COFACTOR, args.certify_rank)

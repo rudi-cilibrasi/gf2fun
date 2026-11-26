@@ -216,6 +216,28 @@ class Equations:
         return sorted((int(t), w) for t, w in coeff.items() if w)
 
 
+def verify_rank(f):
+    from phase2_minpoly import half_gcd_minpoly, read_moments, write_u960
+
+    cert = json.loads((DATA / "degree-1229-q1024-quaternary-rank.json").read_text())
+    raw = gzip.decompress((DATA / "degree-1229-q1024-quaternary-moments.bin.gz").read_bytes())
+    n, seq = read_moments(raw)
+    if (cert["model"] != 21149 or cert["q"] != f.q or cert["circle_rows"] != f.rows
+            or n != cert["dimension"] or n != len(f.labels) or len(seq) != cert["moment_count"]
+            or sha256(raw).hexdigest() != cert["moments_sha256"]):
+        raise ArithmeticError("rank certificate and archived matrix dimensions or moments disagree")
+    p = half_gcd_minpoly(seq, COFACTOR, certify_rank=True)
+    if len(p)-1 != n or p[0] != int(cert["minimal_recurrence_constant_mod_C"]):
+        raise ArithmeticError("incorrect full-degree recurrence")
+    scale = -pow(p[0], -1, COFACTOR)
+    digest = sha256(struct.pack("<I", n))
+    for c in p[1:]:
+        digest.update(write_u960(c*scale % COFACTOR))
+    if digest.hexdigest() != cert["phase3_coefficients_sha256"]:
+        raise ArithmeticError("incorrect normalized recurrence coefficients")
+    print(f"The {len(seq):,} archived moments certify augmented rank {n:,} modulo the full cofactor.")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--q", type=int, choices=PARAMETERS, default=512, help="circle field size (default 512)")
@@ -224,11 +246,16 @@ def main():
     parser.add_argument("--row", type=int, metavar="INDEX", help="export a zero-based archived row")
     parser.add_argument("--check-logs", action="store_true", help="check the published vector against every circle modulo C")
     parser.add_argument("--solution", type=Path, help="compare a phase-three binary solution with the published table")
+    parser.add_argument("--rank", action="store_true", help="verify the archived q=1024 full-rank recurrence")
     args = parser.parse_args()
+    if args.rank and args.q != 1024:
+        parser.error("--rank requires --q 1024")
     f = Constants(args.q)
     data = gzip.decompress((DATA/f"degree-1229-q{f.q}-quaternary-pencils.bin.gz").read_bytes())
     if len(data) != f.rows*4 or sha256(data).hexdigest() != f.digest:
         raise ArithmeticError("incorrect circle parameter archive")
+    if args.rank:
+        verify_rank(f)
     if args.rebuild:
         if census(f) != data:
             raise ArithmeticError("the reconstructed archive differs from the published identifiers")
@@ -261,6 +288,14 @@ def main():
                 row = equations.row(int(code))
                 stream.write(struct.pack("<H", len(row)))
                 stream.write(b"".join(entry.pack(t, w) for t, w in row))
+        if f.q == 1024:
+            digest = sha256()
+            with args.matrix.open("rb") as stream:
+                for block in iter(lambda: stream.read(1 << 20), b""):
+                    digest.update(block)
+            cert = json.loads((DATA / "degree-1229-q1024-quaternary-rank.json").read_text())
+            if digest.hexdigest() != cert["matrix_sha256"]:
+                raise ArithmeticError("the reconstructed matrix differs from the rank certificate")
     if args.row is not None:
         if not 0 <= args.row < len(codes):
             parser.error("row index outside the archive")

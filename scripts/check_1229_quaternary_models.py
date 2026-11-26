@@ -11,11 +11,12 @@ from pathlib import Path
 from flint import fq_default_ctx, fq_default_poly_ctx
 
 from check_degree_1229 import COFACTOR, GROUP, KNOWN, PRIMES
-from check_factor_base import DATA, polynomial
+from check_factor_base import DATA, irreducible, polynomial
 from period_coordinate import CANDIDATES, DEGREE, mask_of, period_polynomial
 
 
 MODELS = DATA / "degree-1229-quaternary-models.json"
+RANK = DATA / "degree-1229-q1024-quaternary-rank.json"
 
 
 def verify(row, old):
@@ -63,6 +64,12 @@ def verify(row, old):
         if (anchor.pow_mod(GROUP, binary) != 1 or anchor.pow_mod(KNOWN, binary) == 1
                 or any(anchor.pow_mod(GROUP//p, binary) == 1 for p in PRIMES)):
             raise ArithmeticError("the quaternary anchor failed a known order projection")
+        certificate = json.loads(RANK.read_text())
+        mask = int(certificate["norm_minimal_polynomial_hex"], 16)
+        minimal = polynomial(mask)
+        if (minimal.degree() != DEGREE or not irreducible(minimal) or minimal.compose_mod(norm, binary) != 0
+                or mask.bit_count() != certificate["norm_minimal_polynomial_weight"]):
+            raise ArithmeticError("incorrect binary minimal polynomial of the norm generator")
     return binary, gen
 
 

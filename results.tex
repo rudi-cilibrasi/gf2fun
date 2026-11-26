@@ -10385,7 +10385,7 @@ of degree \(d\mid9\), one has
 binary conjugates in the degree-2458 field. All \(e_t\) are coprime to
 \(C\), so each projection generates the same subgroup as \(U_0^K\).
 The four known prime-index tests for \(U_0\) all pass and \(U_0^K\ne1\).
-Its exact order and the orders of the sparse roots remain open.
+Section~\ref{sec:quaternary-rank} proves \(U_0\) primitive.
 
 \section{A second circle system for the same quaternary coordinate}
 \label{sec:quaternary-doubled}
@@ -10433,9 +10433,9 @@ The four known tests on \(a^9\) exclude those primes, so \(p\mid C\).
 Take a character \(H^\times\to\mathbb Z/p\mathbb Z\) of order \(p\).
 Its values on the \(V_c\) satisfy the homogeneous circle equations
 and vanish at \(V_0\). Full rank would force all these values to
-vanish, contrary to generation. The same conclusion would give
-exact order \(C\) for every projection in the \(q=512\) table,
-since \(9\) and every published exponent are coprime to \(C\).
+vanish, contrary to generation. Section~\ref{sec:quaternary-rank}
+verifies this rank, giving every projection in the \(q=512\) table
+exact order \(C\) since \(9\) and all exponents are coprime to \(C\).
 
 \section{Two pentanomial orders from cubic values in a rational coordinate}
 \label{sec:rational-cubics}
@@ -12412,5 +12412,60 @@ catalogue leaves 76,921 distinct quadratics. Either expression for
 \(L(P)\) can be checked by powering in the binary field; the checker
 also accepts logarithms for any individual cubic branch.
 See \nolinkurl{scripts/check_1229_seventh_descent.py}.
+
+\section{Full rank and a primitive norm in the quaternary degree-1229 model}
+\label{sec:quaternary-rank}
+
+\begin{theorem}
+In model 21149 let \(x\) be the quaternary polynomial generator, and
+let \(a=x^{1+2^{1229}}\) be its norm to \(H=\mathbb F_{2^{1229}}\).
+The order of \(a\) is \(2^{1229}-1\). Its binary minimal polynomial
+has 599 terms. All 29,144 projected norms in the \(q=512\) table
+have exact order \(C\).
+\end{theorem}
+\begin{proof}
+The 172,222 homogeneous \(q=1024\) circle equations of
+Section~\ref{sec:quaternary-doubled} have \(N=104{,}968\) columns.
+Select \(N-1\) archived rows, append the coordinate \(V_0=a^{10}\)
+as the last row, and scale rows by the reproducible diagonal in the
+Wiedemann solver. Denote this square matrix by \(A\). The archived
+\(2N=209{,}936\) moments are \(s_i=u^\top A^i b\), with the vectors
+and row selection determined by the solver. FLINT and NTL reconstructed
+identical full circle matrices; recomputing these moments starts
+from that matrix. The compressed moment file allows a separate
+verification of the following polynomial identities.
+
+Put \(S(Z)=\sum_{i<2N}s_i Z^i\) over \(\mathbb Z/C\mathbb Z\).
+Extended Euclidean reduction of \(Z^{2N},S\) gives a denominator
+\(Q(0)=1\) of degree \(N\), with unit leading coefficient, and
+\(B=QS\bmod Z^{2N}\) of degree less than \(N\). Its polynomial
+transformation matrix has unit determinant. As in
+Section~\ref{sec:quaternary-logs}, the certificate shows that \(B,Q\)
+are coprime modulo every prime \(p\mid C\).
+
+Over \(\mathbb F_p\), the infinite moment generating function equals
+\(u^\top(I-ZA)^{-1}b\). Its denominator \(D=\det(I-ZA)\) has degree
+at most \(N\), constant coefficient one, and the adjugate gives a
+numerator \(E\) of degree less than \(N\). The first \(2N\) moments
+imply \(BD-EQ\equiv0\bmod Z^{2N}\). Both products have degree below
+\(2N\), so equality holds. Coprimality forces \(Q\mid D\). Since \(Q\)
+retains degree \(N\), \(D\) has degree \(N\) and \(A\) is invertible
+modulo \(p\). Hence \(\det A\) is a unit modulo \(C\), whatever the
+prime-power multiplicities. The determinant before row scaling is
+also a unit.
+
+The generation and character argument of
+Section~\ref{sec:quaternary-doubled} proves \(a\) primitive. The
+unaugmented circle matrix has rank exactly \(N-1\) modulo each
+\(p\mid C\): a nonzero character of order \(p\) supplies a nonzero
+kernel vector on the generating norms. The smaller table has
+normalization \(U_0=a^9\). Its exponents are all units modulo \(C\),
+and its projected field equalities were checked separately in the
+degree-2458 binary presentation. Hence each \(U_t^K\) has order \(C\).
+The binary minimal polynomial of \(a\), the matrix and moment
+digests, and the constant coefficient of the monic recurrence are in
+\nolinkurl{data/degree-1229-q1024-quaternary-rank.json}. The model
+checker verifies its degree, irreducibility and value at \(a\).
+\end{proof}
 
 \end{document}
