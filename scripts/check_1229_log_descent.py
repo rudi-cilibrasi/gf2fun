@@ -7,8 +7,8 @@ from functools import cache
 from math import gcd
 from pathlib import Path
 
-from check_1229_factor_base_orders import CIRCLE_LOGS, ISOGENY_LOGS, read_logs, read_table
-from check_1229_hermitian_descent import records as cubic_records, relation as cubic_relation
+from check_1229_factor_base_orders import CIRCLE_LOGS, ISOGENY_LOGS, check_examples, read_logs, read_table
+from check_1229_hermitian_descent import records as hermitian_records, relation as hermitian_relation
 from check_1229_isogeny_logs import H0, H1, Q
 from check_degree_1229 import COFACTOR, KNOWN, check_known_order
 from check_factor_base import DATA, irreducible, modulus, polynomial
@@ -68,16 +68,32 @@ def norm_pencil(row):
         raise ArithmeticError("the pencil does not isolate its target")
     # Homogenize each small binary factor of T^(q+1)+1 before factoring the pencil.
     source = Counter()
-    for u, multiplicity in unity_factors():
+    for u, exponent_in_unity in unity_factors():
         piece = homogeneous(u, f, g, u.degree())
         for p, exponent in factors(piece).items():
-            source[p] += int(multiplicity) * exponent
+            source[p] += int(exponent_in_unity) * exponent
     inverse_q = pow(Q, -1, COFACTOR)
     relation = Counter({p: e*inverse_q for p, e in source.items()})
     relation.update({p: m*e for p, e in factors(H1).items()})
     relation.subtract(rhs)
     inv = pow(multiplicity, -1, COFACTOR)
     return target, {p: inv*c for p, c in relation.items()}
+
+
+def seroussi_binomial():
+    shift = polynomial(3)
+    # (1+x)^36 / (1+y)^5 = (1+x)^(-5084) and 5084 = 4*1271.
+    d = (H0+H1)**36 + H1**36 * shift**5
+    rhs = factors(d)
+    if rhs.pop(0xd3, 0) != 1:
+        raise ArithmeticError("the binomial does not isolate the designated factor")
+    inverse_q = pow(Q, -1, COFACTOR)
+    source = factors(shift**1271 + 1)
+    relation = Counter({p: 4*inverse_q*e for p, e in source.items()})
+    relation.update({3: 5-5084*inverse_q})
+    relation.update({p: 36*e for p, e in factors(H1).items()})
+    relation.subtract(rhs)
+    return polynomial(0xd3), relation
 
 
 def checked_exponent(p, e, base, field):
@@ -125,43 +141,64 @@ def reduce_task(name, target, relation, table, base, field, path):
 
 
 def main():
-    cubics = cubic_records()
-    cubic_names = {f"cubic-{p:#x}": p for p in cubics}
+    forms = hermitian_records()
+    cubics = {p for p, row in forms.items() if len(row["relative_factor"]) == 4}
+    form_names = {f"{'cubic' if p in cubics else 'quadratic'}-{p:#x}": p for p in forms}
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--task", choices=(*CANDIDATES, *PENCIL_NAMES, *cubic_names))
+    parser.add_argument("--task", choices=(*CANDIDATES, *PENCIL_NAMES, "seroussi-0xd3-binomial", *form_names))
     parser.add_argument("--json", action="store_true", help="print the complete selected task")
     parser.add_argument("--logs", type=Path, help="check a mask,exponent CSV for the selected task")
     parser.add_argument("--expand-cubics", action="store_true", help="substitute all available cubic descents")
+    parser.add_argument("--alternate-pencils", action="store_true",
+                        help="use the three alternative pencils containing solved quadratic logarithms")
+    parser.add_argument("--terminal-orders", action="store_true",
+                        help="also verify the orders and minimal-polynomial weights of the solved quadratics")
     args = parser.parse_args()
     if (args.json or args.logs) and not args.task:
         parser.error("--json and --logs require --task")
     field_mask, table = read_table()
     extra_logs = dict(read_logs(CIRCLE_LOGS))
     extra_logs.update(read_logs(ISOGENY_LOGS))
+    terminal = {p: int(row["log_mod_C"]) for p, row in forms.items() if "log_mod_C" in row}
+    if terminal.keys() & (extra_logs.keys() | table.keys()):
+        raise ValueError("a terminal logarithm was already in the earlier tables")
+    extra_logs.update(terminal)
+    if args.terminal_orders:
+        if any(gcd(e, COFACTOR) != 1 for e in terminal.values()):
+            raise ArithmeticError("a terminal logarithm fails the cofactor order test")
+        check_examples(field_mask, terminal, {p: (1, forms[p]["minimal_polynomial_terms"]) for p in terminal})
     field = polynomial(field_mask)
     base = polynomial(2).pow_mod(KNOWN, field)
     cert = json.loads(CERT.read_text())
     @cache
-    def cubic(p):
-        return cubic_relation(p, cubics[p])
+    def hermitian(p):
+        row = forms[p]
+        if args.alternate_pencils and "alternate_hermitian" in row:
+            row = row | {"hermitian": row["alternate_hermitian"]}
+        return hermitian_relation(p, row)
 
-    for name in ([args.task] if args.task else [*CANDIDATES, *PENCIL_NAMES, *cubic_names]):
+    for name in ([args.task] if args.task else [*CANDIDATES, *PENCIL_NAMES, "seroussi-0xd3-binomial", *form_names]):
         if name in CANDIDATES:
             target, relation = sparse_quotient(name, cert["quotients"][name], field)
-        elif name in cubic_names:
-            p = cubic_names[name]
-            target, relation = polynomial(p), cubic(p)
+        elif name in form_names:
+            p = form_names[name]
+            target, relation = polynomial(p), hermitian(p)
+        elif name == "seroussi-0xd3-binomial":
+            target, relation = seroussi_binomial()
         else:
             row, = (r for r in cert["pencils"] if int(r["target_hex"], 16) == PENCIL_NAMES[name])
             target, relation = norm_pencil(row)
         if args.expand_cubics:
             relation = Counter(relation)
-            for p in sorted(relation.keys() & cubics.keys()):
+            for p in sorted(relation.keys() & cubics):
                 weight = relation.pop(p)
-                relation.update({m: weight*c for m, c in cubic(p).items()})
+                relation.update({m: weight*c for m, c in hermitian(p).items()})
         for p in (relation.keys() & extra_logs.keys()) - table.keys():
             table[p] = checked_exponent(p, extra_logs[p], base, field)
         result = reduce_task(name, target, relation, table, base, field, args.logs)
+        if name in form_names and "log_mod_C" in forms[form_names[name]]:
+            if result["remaining"] or result["known_exponent_mod_C"] != forms[form_names[name]]["log_mod_C"]:
+                raise ArithmeticError("the circle does not reconstruct the published terminal exponent")
         if args.json:
             print(json.dumps(result, indent=2))
         elif result["remaining"]:

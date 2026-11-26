@@ -13,6 +13,7 @@ import GF2Sparse.FibreBound
 import GF2Sparse.FourierWeightBounds
 import GF2Sparse.GaussPeriod
 import GF2Sparse.Grid
+import GF2Sparse.HermitianDescent
 import GF2Sparse.IterateOrder
 import GF2Sparse.KasamiTriples
 import GF2Sparse.Linearized

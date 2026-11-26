@@ -39,14 +39,21 @@ def records():
 
 
 def matrix(values):
-    a, b, c, u, v, w = values
-    if any(d != d**Q for d in (a, b, c)):
+    if len(values) == 3:
+        a, b, u = values
+        h = [[a, u], [u**Q, b]]
+    else:
+        a, b, c, u, v, w = values
+        h = [[a, u, v], [u**Q, b, w], [v**Q, w**Q, c]]
+    if any(row[i] != row[i]**Q for i, row in enumerate(h)):
         raise ValueError("non-Hermitian diagonal")
-    return [[a, u, v], [u**Q, b, w], [v**Q, w**Q, c]]
+    return h
 
 
 def numerator(h):
-    return sum((h[i][j] * (H0**i * H1**(2-i) * T**j) for i in range(3) for j in range(3)), K.zero())
+    m = len(h)-1
+    return sum((c * (H0**i * H1**(m-i) * T**j)
+                for i, row in enumerate(h) for j, c in enumerate(row)), K.zero())
 
 
 @cache
@@ -64,7 +71,7 @@ def scalar_groups():
 
 def pencil(h):
     """Express the Hermitian form as a product of q+1 forms of degree at most two."""
-    for i, j in combinations(range(3), 2):
+    for i, j in combinations(range(len(h)), 2):
         a, c, u = h[i][i], h[j][j], h[i][j]
         if not (a*c + u*u**Q).is_zero():
             break
@@ -110,17 +117,18 @@ def binary_factors(p):
 
 def relation(mask, row):
     h = matrix([element(v) for v in row["hermitian"]])
+    m = len(h)-1
     t = K([element(v) for v in row["relative_factor"]])
-    if t.degree() != 3 or not t.is_irreducible() or not t.leading_coefficient().is_one():
-        raise ArithmeticError("invalid designated cubic")
+    if t.degree() != m+1 or not t.is_irreducible() or not t.leading_coefficient().is_one():
+        raise ArithmeticError("invalid designated target factor")
     if set(binary_factors(coefficient_norm(t))) != {mask}:
-        raise ArithmeticError("the cubic has the wrong binary norm")
+        raise ArithmeticError("the target factor has the wrong binary norm")
     d = numerator(h)
     rest, remainder = divmod(d, t)
-    if not remainder.is_zero() or any(p.degree() > 2 for p, _ in rest.factor()[1]):
-        raise ArithmeticError("the cubic did not descend to relative degree two")
+    if not remainder.is_zero() or any(p.degree() > m for p, _ in rest.factor()[1]):
+        raise ArithmeticError("a factor exceeds the proposed descent bound")
     pieces = pencil(h)
-    source = sum((h[i][j] * T**(i+Q*j) for i in range(3) for j in range(3)), K.zero())
+    source = sum((c * T**(i+Q*j) for i, row in enumerate(h) for j, c in enumerate(row)), K.zero())
     if product(pieces).monic() != source.monic():
         raise ArithmeticError("the pencil did not reconstruct the full source polynomial")
     left = Counter()
@@ -131,7 +139,7 @@ def relation(mask, row):
     inverse_q = pow(Q, -1, COFACTOR)
     coeff = Counter({p: e*inverse_q for p, e in left.items()})
     coeff.subtract(right)
-    # The norm of h1(y)^2 is h1(y)^40 and h1 = T(T+1)^2.
-    coeff.update({2: 40, 3: 80})
+    # Norm(h1(y)^m) = h1(y)^(20m) and h1 = T(T+1)^2.
+    coeff.update({2: 20*m, 3: 40*m})
     inverse = pow(mult, -1, COFACTOR)
     return {p: (c*inverse) % COFACTOR for p, c in coeff.items() if c % COFACTOR}
