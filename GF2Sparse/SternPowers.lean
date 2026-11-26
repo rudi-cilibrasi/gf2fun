@@ -1,3 +1,4 @@
+import GF2Sparse.Certificate
 import GF2Sparse.ShiftWeight
 
 /-! Trace polynomials for the sum of the two positive trinomial exponents. -/
@@ -58,6 +59,24 @@ theorem tracePoly_weights (k : ℕ) :
   obtain ⟨he, ho⟩ := tracePoly_double k
   rw [he, ho, ShiftWeight.card_support_sq_add_X_mul_sq, Nat.add_comm]
   exact ⟨by simpa using ShiftWeight.card_support_sq_add_X_mul_sq (tracePoly k) 0, rfl⟩
+
+/-- The degree-eleven source and its thirteenth-power pentanomial both have full order. -/
+theorem primitive_midpoint_pair_11 : Primitive (decode 0x805) ∧ Primitive (decode 0x863) := by
+  have h : ∀ p ∈ [23,89], Nat.Prime p := by
+    intro p hp
+    simp at hp
+    rcases hp with rfl | rfl <;> decide
+  exact ⟨(check_sound h (by decide +kernel : check 11 0x805 [23,89] = true)).2.2,
+         (check_sound h (by decide +kernel : check 11 0x863 [23,89] = true)).2.2⟩
+
+/-- The degree-28 source and its 31st-power pentanomial both have full order. -/
+theorem primitive_midpoint_pair_28 : Primitive (decode 0x10000009) ∧ Primitive (decode 0x10008083) := by
+  have h : ∀ p ∈ [3,5,29,43,113,127], Nat.Prime p := by
+    intro p hp
+    simp at hp
+    rcases hp with rfl | rfl | rfl | rfl | rfl | rfl <;> decide
+  exact ⟨(check_sound h (by decide +kernel : check 28 0x10000009 [3,5,29,43,113,127] = true)).2.2,
+         (check_sound h (by decide +kernel : check 28 0x10008083 [3,5,29,43,113,127] = true)).2.2⟩
 
 end
 end GF2Sparse.SternPowers

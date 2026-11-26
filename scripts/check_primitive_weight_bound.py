@@ -1,6 +1,7 @@
 """Check the exact polynomial counts in the primitive-weight bound for degree 1229."""
 
-from math import comb, factorial, isqrt, prod
+from fractions import Fraction
+from math import ceil, comb, factorial, isqrt, prod
 
 
 def odd_prime(n):
@@ -67,10 +68,39 @@ def krawtchouk_row(block, weight, radius):
     return row
 
 
-def fourier_count(n, block, radius, base, cutoff, prime_count):
+def paired_factor_bound(block, free, cutoff, squared, overweight):
+    """Sieve the overweight words by irreducibles through degree eleven using two intersections."""
+    small = (2, 3, 3, 4, 4, 4)
+    delta = prod(1-Fraction(1, 2**e) for e in small)
+    # There are c_e monic irreducibles of degree e, with sum_{d|e} d*c_d = 2^e.
+    counts = {}
+    for e in range(1, 12):
+        counts[e] = (2**e-sum(d*c for d, c in counts.items() if e % d == 0))//e
+    hits = [Fraction(1, 2**e) for e, c in counts.items() if e >= 5 for _ in range(c)]
+    mean = sum(hits)
+    constant = delta*(1-mean+(mean**2-sum(x*x for x in hits))/2)
+    fourier_mass = 2**len(small)*delta*(1+len(hits)+comb(len(hits), 2))
+
+    # Each summand uses the six small factors and at most two more of degree <= 11.
+    length = sum(small)+2*11+1
+    middle = [krawtchouk_row(block, u, block) for u in range(block//length, block//2+1)]
+    middle_max = [max(map(abs, column)) for column in zip(*middle)]
+    first = [min(free+1, max(0, cutoff-1-i)) for i in range(block+1)]
+    first = [k+(1-i-k) % 2 for i, k in enumerate(first)]
+    free_max = [0]*(block+1)
+    for v in range(free//length, free//2+1):
+        tail = krawtchouk_row(free, v, free) + [0, 0]
+        for k in range(free, -1, -1):
+            tail[k] += tail[k+2]
+        free_max = [max(previous, abs(tail[k])) for previous, k in zip(free_max, first)]
+    error = sum(a*b*c for a, b, c in zip(squared, middle_max, free_max))
+    return ceil(constant*overweight + fourier_mass*error)
+
+
+def fourier_count(n, block, radius, base, cutoff, prime_count, paired=False):
     """Count primitive polynomials using the radial Fourier weights and the small-factor sieve."""
-    if not odd_prime(n) or n <= 4:
-        raise ValueError("the small-factor sieve requires an odd prime degree greater than four")
+    if not odd_prime(n) or n <= (11 if paired else 4):
+        raise ValueError("the prime degree must exceed the degree of every sieve factor")
     if not 0 < 2 * block < n or not 0 <= radius <= block or base < 1:
         raise ValueError("invalid block, frequency radius or base")
     free = n - 1 - 2 * block
@@ -82,24 +112,29 @@ def fourier_count(n, block, radius, base, cutoff, prime_count):
     tails = [extension_tails(free, parity) for parity in (0, 1)]
     mass = 0
     overweight = 0
+    squared = []
     for i in range(block + 1):
         transform = sum(g * k for g, k in zip(frequency, krawtchouk_row(block, i, radius)))
+        squared.append(transform**2)
         weight_mass = comb(block, i) * transform**2
         mass += weight_mass
         first_bad = min(free + 1, max(0, cutoff - 1 - i))
         overweight += weight_mass * tails[1 - i % 2][first_bad]
     assert mass == (1 << block) * sum(comb(block, j) * g*g for j, g in enumerate(frequency))
 
-    # The six irreducibles of degrees 2, 3 and 4 give a modulus of degree 20.
-    degrees = (2, 3, 3, 4, 4, 4)
-    residue_count = 1 << sum(degrees)
-    unit_count = prod((1 << e) - 1 for e in degrees)
-    min_weight = free // (sum(degrees) + 1)
-    error_bits = (comb(free, min_weight).bit_length() - 1) // 2
-    error_denominator = 1 << error_bits
-    bad = (unit_count * overweight + residue_count - 1) // residue_count
-    error_numerator = mass << (free + len(degrees))
-    bad += (error_numerator + error_denominator - 1) // error_denominator
+    if paired:
+        bad = paired_factor_bound(block, free, cutoff, squared, overweight)
+    else:
+        # The six irreducibles of degrees 2, 3 and 4 give a modulus of degree 20.
+        degrees = (2, 3, 3, 4, 4, 4)
+        residue_count = 1 << sum(degrees)
+        unit_count = prod((1 << e) - 1 for e in degrees)
+        min_weight = free // (sum(degrees) + 1)
+        error_bits = (comb(free, min_weight).bit_length() - 1) // 2
+        error_denominator = 1 << error_bits
+        bad = (unit_count * overweight + residue_count - 1) // residue_count
+        error_numerator = mass << (free + len(degrees))
+        bad += (error_numerator + error_denominator - 1) // error_denominator
 
     order = (1 << n) - 1
     least_prime = 2 * n + 1
@@ -129,10 +164,11 @@ def main():
 
     # The i-th distinct order prime is at least 2*n*i + 1.
     assert prod(2*n*i + 1 for i in range(1, 78)) > (1 << n) - 1
-    for block, radius, base, cutoff, count, exponent in [
-        (502, 16, 14, 315, 76, 621), (509, 15, 14, 313, 19, 616)
+    for block, radius, base, cutoff, count, exponent, paired in [
+        (502, 16, 14, 315, 76, 621, False), (509, 15, 14, 313, 19, 616, False),
+        (510, 14, 14, 313, 76, 622, True), (503, 16, 13, 311, 19, 619, True),
     ]:
-        bound = fourier_count(n, block, radius, base, cutoff, count)
+        bound = fourier_count(n, block, radius, base, cutoff, count, paired)
         assert bound > 2**exponent
         print(f"degree {n}, weight <= {cutoff}, at most {count} order primes")
         print(f"  at least {bound} primitive polynomials (> 2^{exponent})")

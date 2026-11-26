@@ -12615,8 +12615,8 @@ the rationals}, \url{https://arxiv.org/abs/math/0610601}.
 For each index take \(n=m-a>\max(7,a)\). Testing irreducibility and
 \(X^{(2^n-1)/p}\ne1\bmod f\) for every prime \(p\mid 2^n-1\) leaves
 exactly the two sparse images in the table. In both cases \(m\) is
-coprime to \(2^n-1\). The finite enumeration and independent binary
-characteristic polynomials are checked by
+coprime to \(2^n-1\). Lean certifies the full orders of both pairs. The finite enumeration
+and independent binary characteristic polynomials are checked by
 \nolinkurl{scripts/check_trinomial_decimations.py} with
 \texttt{--midpoints 64}.
 \end{proof}
@@ -12677,5 +12677,69 @@ degree bound on the outstanding logarithms. Computing the common
 order still requires their signed sum and the lower-degree contributions.
 The interpolant and indices are in
 \nolinkurl{data/degree-1229-seventh-power-decic.json}.
+
+\section{A two-block sieve for the weights in degree 1229}
+\label{sec:paired-weight}
+More than \(2^{622}\) primitive binary polynomials of degree 1229 have
+weight at most 313, using only the degree bound on the number of order
+primes. With the cofactor bound of Theorem~\ref{thm:1229-cofactor-bound},
+more than \(2^{619}\) have weight at most 311.
+
+Keep the radial Fourier weights \(A_i^2\), middle block length \(d\),
+free length \(L=1228-2d\), and total overweight mass \(T_B\) from
+Corollary~\ref{cor:fourier-weight-1229}. Let \(D_0\) be the product of
+the six irreducibles of degrees \(2,3,3,4,4,4\), and
+\(\delta=(3/4)(7/8)^2(15/16)^3\). Let \(\mathcal P\) be the set of all
+404 monic irreducibles of degrees five through eleven. There are
+\(6,9,18,30,56,99,186\) at successive degrees, by
+\(\sum_{e\mid j}e I_e=2^j\). For a polynomial \(f\), put
+\(H=\#\{p\in\mathcal P:p\mid f\}\). On irreducibles of degree 1229 the
+nonnegative majorant
+\[
+       {\bf1}_{(f,D_0)=1}\big(1-H+\tbinom H2\big)
+\]
+equals one. Expanding it gives the unit indicator, single divisibility
+indicators, and pair intersections. Every summand is a function on
+residues modulo a squarefree polynomial of degree at most
+\(20+2\cdot11=42\). By the Chinese remainder theorem its contribution
+to the constant Fourier coefficient can be computed from the independent
+densities. Writing \(b_p=2^{-\deg p}\), the constant coefficient of the
+majorant is
+\[
+ c_0=\delta\big(1-\textstyle\sum_p b_p+\sum_{p<p'}b_pb_{p'}\big).
+\]
+The absolute Fourier coefficients of a divisibility indicator sum to
+one. Those of the unit indicator sum to \(2^6\delta\), by the field
+calculation in Corollary~\ref{cor:fourier-weight-1229}. Thus the total
+absolute mass of nonconstant characters is at most
+\(C=2^6\delta(1+404+\binom{404}2)\).
+
+For each such character, consider the bit string of its binary linear
+functional on the consecutive powers of \(T\) in each coefficient block.
+On any block of length \(b\), its number of ones is between
+\(r_b=\lfloor b/43\rfloor\) and \(b-r_b\). In fact any 42 consecutive
+powers span the residue ring, and both \(T\) and \(T+1\) are units.
+A run of 43 equal answers would force the functional to vanish, on
+consecutive powers for a zero run or on their consecutive sums for a
+one run.
+
+If the two strings have weights \(u,v\), their signed sum at middle
+weight \(i\) and free weight \(k\) is
+\(\pm K_i(u;d)K_k(v;L)\). The common sign comes from fixed coefficients.
+Let \(I_i=\{k:0\le k\le L,\ 2+i+k>B,\ 2+i+k\text{ odd}\}\). The
+weighted number of eligible overweight polynomials is therefore at most
+\[
+ c_0T_B+C\sum_{i=0}^d A_i^2
+   \max_{r_d\le u\le d-r_d}|K_i(u;d)|
+   \max_{r_L\le v\le L-r_L}\Big|\sum_{k\in I_i}K_k(v;L)\Big|.
+\]
+The fixed parity of \(I_i\) and \(K_j(b-w;b)=(-1)^jK_j(w;b)\) allow
+both maxima to be taken over their lower halves. This retains the
+cancellation among free weights and the character sum over the middle
+words. Use the ceiling of this quantity in place of \(T'_B\) in
+Corollary~\ref{cor:fourier-weight-1229}. The parameters
+\((d,b,a,B,w)=(510,14,14,313,76)\) and \((503,16,13,311,19)\)
+give the stated counts by integer arithmetic in
+\nolinkurl{scripts/check_primitive_weight_bound.py}.
 
 \end{document}
