@@ -8154,10 +8154,12 @@ checks every reported root by direct sextic evaluation.
 There are 52,488 binary irreducibles of degrees dividing 20, one for
 each binary orbit in \(K\). Taking logarithms in the cyclic target
 group produces an integer row for each split circle. A square minor
-on 1,536 degree-20 columns has integer determinant of bit length 2739,
-coprime to \(2^{1229}-1\). Hence these 1,536 values can be expressed
-in terms of the other 50,952 modulo the full group order. The same
+on 4,096 degree-20 columns has integer determinant of bit length 10,296,
+coprime to \(2^{1229}-1\). Hence these 4,096 values can be expressed
+in terms of the other 48,392 modulo the full group order. The same
 elimination works in the quotient by a candidate sparse root.
+A shorter check uses a 1,536-column minor with a 2,739-bit determinant
+also coprime to the group order.
 
 The checker represents \(K\) in the basis with modulus \(Z^{20}+Z^3+1\).
 It chooses columns by a fixed permutation of the least degree-20 orbit
@@ -8181,8 +8183,8 @@ Let \(n\) be an odd prime and \(x\) an element of degree \(n\) over
 \]
 \end{theorem}
 \begin{proof}
-Write \(H\) for the displayed subgroup. If its index \(I\) is proper
-(\(I>1\)), take a prime \(\ell\mid I\). The order of \(2\bmod\ell\)
+Write \(H\) for the displayed subgroup. If its index \(I\) exceeds
+one, take a prime \(\ell\mid I\). The order of \(2\bmod\ell\)
 divides \(n\) and exceeds one, so \(2n\mid\ell-1\). Thus \(I\ge2n+1\).
 The character proof of Theorem~\ref{thm:factor-moments} works for
 this subgroup by taking the characters of \(\mathbb F_{2^n}^\times/H\)
@@ -8249,5 +8251,91 @@ These identities leave the descent to linear factors open.
 \nolinkurl{scripts/check_1229_factor_generation.py} verifies both
 sparse equations, factors the representatives, checks their products,
 and reproduces the rational generation bounds.
+
+\section{A quadratic Frobenius model for the degree-1229 subfield}
+\label{sec:quadratic-frobenius}
+Put \(q=1024\) and \(C=\mathbb F_q=\F[z]/(z^{10}+z^3+1)\). In this
+basis let \(u=z^9+z^5+z^4\) and \(v=z^6+z^5+z^4+z^3+z+1\)
+(bit masks 560 and 123). The polynomial
+\[
+ P(T)=T^{2048}+uT^{1025}+vT^{1024}+u
+\]
+has an irreducible factor of degree 1229 over \(C\). Its six factor
+degrees are \(7,10,29,280,493,1229\), all with multiplicity one.
+In the corresponding field \(L=C(t)\), write \(y=t^q\). Then
+\[
+       t=\frac{y^2+vy+u}{uy}.
+\]
+Degree two is minimal for such a rational expression at this \(q\).
+If both numerator and denominator had degree at most one, clearing
+denominators would give a nonzero polynomial in \(t\) of degree at
+most \(q+1<1229\).
+
+For verification, the product of the ten coefficient conjugates
+of \(P\) is binary. Its distinct irreducible factors have degrees
+\(70,100,290,2800,4930,12290\). Each degree \(10d\) factor splits
+over \(C\) into ten degree-\(d\) factors. Conjugation permutes the
+ten parents transitively and the product is squarefree, so each
+parent receives one factor from each orbit. The published certificate
+uses the degree-12290 binary factor as modulus and gives the embedding
+of \(z\) for which its residue \(t\) satisfies the displayed equation.
+To find the parameters one can compute
+\(\gcd(P,T^{q^{1229}}-T)\). Its degree is the number of roots in \(C\),
+plus 1229 exactly when the required factor is present. Repeated
+squaring uses the four-term reduction rule for \(P\).
+
+Inside \(L\) let \(E=\mathbb F_{2^{1229}}\). The data give the two
+binary sparse roots and their common Gauss period as explicit residues.
+Direct substitution checks both sparse equations and the two
+expressions in the period. The period can be obtained as
+\(w+w^{-1}\) for \(w\) of order 2459 in \(L\). Since
+\(\operatorname{ord}_{2459}(2)=2458\), its degree over \(\F\) is 1229.
+Thus the same 3,380 period targets of the earlier certificate are
+available in the quadratic model.
+
+\paragraph{Norm circles.}
+In the compositum with \(C'=\mathbb F_{q^2}\) take
+\(S=\{c\in C':(c+b)^{q+1}=\rho\}\), with \(b\in C'\) and
+\(\rho\in C^\times\). Write \(\bar b=b^q\). The circle identity has
+a cubic on the right, giving
+\[
+ uy\prod_{c\in S}(t+c)
+     =(y^2+vy+u+buy)(y+\bar b)+\rho uy .
+\]
+At \(b=0\) one can cancel \(uy\). For \emph{every} one of the 1023 radii,
+\[
+     \prod_{c^{q+1}=\rho}(t+c)=u^{-1}(y^2+vy+u(1+\rho)).
+\]
+The quadratic splits over \(C'\) and is separable since \(v\ne0\).
+For related field representations see
+\href{https://arxiv.org/abs/1402.3668}{Granger, Kleinjung and
+Zumbr\"agel, section 2}.
+
+\paragraph{A generating set in the binary target.}
+The values
+\[
+  \operatorname{Norm}_{L/E}\bigl(B(t)\bigr),\qquad
+   B\in C[T]\text{ monic irreducible of degree one or two},
+\]
+generate \(E^\times\). More generally take \(n\) an odd prime,
+\(C=\mathbb F_{2^d}\) with \(\gcd(n,d)=1\),
+\(E=\mathbb F_{2^n}\), and \(L=CE\). For \(t\) of degree \(n\) over
+\(C\), the same assertion holds using the irreducibles over \(C\) of
+degrees dividing \(m\) whenever \(2m<n\) and \(2n^2\le3|C|^m\).
+Indeed lift every nontrivial character of \(E^\times/H\) along the
+surjective norm \(L^\times\to E^\times\), where \(H\) is generated by
+the stated values. The lifted character is even because the norm on
+\(C^\times\) is its norm to \(\F^\times=\{1\}\). It therefore has
+the degree-\((n-2)\) nontrivial part of the Dirichlet \(L\)-polynomial
+used in Theorem~\ref{thm:factor-moments}, now with inverse roots of
+absolute value \(\sqrt{|C|}\). The prime divisors of the index still
+divide \(2^n-1\). The proof of Section~\ref{sec:prime-factor-generation}
+applies with \(Q=|C|^m\). Here \(d=10,m=2\), and there are
+\((q^2+q)/2=524800\) linear and irreducible quadratic values.
+For either sparse root \(r\in E\) its norm is \(r^{10}\), which
+generates the same subgroup since \(\gcd(10,2^{1229}-1)=1\).
+Membership of the generating set in that subgroup remains open.
+See \nolinkurl{data/degree-1229-quadratic-frobenius.json} and
+\nolinkurl{scripts/check_1229_quadratic_model.py}.
 
 \end{document}

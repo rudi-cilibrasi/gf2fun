@@ -1,6 +1,7 @@
 """Check translated norm circles in degree 1229 and certify a minor modulo the full group order."""
 
 import argparse
+import hashlib
 import json
 from collections import Counter
 from math import gcd
@@ -16,6 +17,10 @@ from check_factor_base import polynomial
 Q = 1024
 SIZE = Q**2
 COLUMNS = "center,norm_radius,root0,root1,root2,root3,root4,root5"
+MINORS = {
+    1536: ("955ebfc42c663f516eaaa755131db798e2b778ef920d2550e6db0ef956da7c80", 2739),
+    4096: ("b968e9e33a742735ce29a57dc8a45ad375b2059b66967ad5f9a98bab79aea436", 10296),
+}
 
 
 class Constants:
@@ -156,7 +161,7 @@ def pivot_columns(field, dimension):
     return ordered[keep][:dimension]
 
 
-def check_minor(field, rows, dimension):
+def circle_minor(field, rows, dimension):
     columns = pivot_columns(field, dimension)
     index = np.full(SIZE, -1, dtype=np.int32)
     index[columns] = np.arange(dimension)
@@ -180,9 +185,16 @@ def check_minor(field, rows, dimension):
             break
     if used != dimension:
         raise ArithmeticError("too few eligible circle rows")
+    if hashlib.sha256(matrix.tobytes()).hexdigest() != MINORS[dimension][0]:
+        raise ArithmeticError("the reconstructed minor differs from the published matrix")
+    return matrix
+
+
+def check_minor(field, rows, dimension):
+    matrix = circle_minor(field, rows, dimension)
     determinant = int(fmpz_mat(matrix.tolist()).det())
-    if gcd(determinant, GROUP) != 1:
-        raise ArithmeticError("the indicated minor is singular modulo a group-order prime")
+    if abs(determinant).bit_length() != MINORS[dimension][1] or gcd(determinant, GROUP) != 1:
+        raise ArithmeticError("the integer determinant certificate failed")
     print(f"Verified {dimension} eliminable columns. The integer determinant has "
           f"{abs(determinant).bit_length()} bits and gcd 1 with 2^1229-1.")
 
