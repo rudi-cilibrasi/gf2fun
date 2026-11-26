@@ -10712,4 +10712,53 @@ independently checked this last set. All five roots pass the four
 known prime-index tests and the extra cofactor test. Their full orders
 remain open.
 
+\section{All binary supports with two sparse translates}
+\label{sec:translated-support-types}
+Let \(F(0)=F(1)=1\). Suppose \(F,F(X+1)\) have degree greater than
+one and each has three or five terms. Across the entire support of
+\(F\), at most four different binary digit positions occur in its
+exponents. More precisely, up to permutation of digit positions
+there are 28 possible supports. The counts distinguish the two
+coordinates, so each support is counted with its own orientation.
+\[
+\begin{array}{c|c|c|r}
+ w(F)&w(F(X+1))&\text{active digit positions}&\text{types}\\ \hline
+ 3&3&2&2\\
+ 3&5&3&3\\
+ 5&3&3&3\\
+ 5&5&3&6\\
+ 5&5&4&14
+\end{array}
+\]
+Here a digit position \(j\) is active if some exponent has bit \(j\)
+equal to one. Introduce a symbol \(Y_j=X^{2^j}\) for each active
+position. A binary exponent is a squarefree product of the corresponding
+symbols, and translating \(X\) replaces each \(Y_j\) by \(1+Y_j\).
+Distinct subsets of the positions give distinct exponents.
+
+The all-exponent bound of Section~\ref{sec:shift-weight} gives a
+finite enumeration independent of the numerical degree. Let \(P=F+1\)
+have \(m\in\{2,4\}\) nonconstant monomials. Each involves at most
+\(\lfloor\log_2 m\rfloor+2\) symbols. Temporarily number the monomials
+from \(1\) to \(m\). For each nonempty subset \(S\) of their indices,
+choose the number \(c_S\) of digit positions that occur precisely in
+those monomials. The only size restrictions needed are
+\(\sum_{S\ni i}c_S\le\lfloor\log_2 m\rfloor+2\) at every index \(i\).
+These counts describe every incidence pattern up to permutation of
+digit positions. Discard empty and repeated monomials. Expanding the
+translate by symmetric difference of subset lists retains exactly the
+patterns with two or four translated monomials. None has more than
+four active positions. Canonicalizing over permutations of those
+positions gives the table above. A second enumeration takes all
+two- and four-element subsets of the fifteen nonconstant multilinear
+monomials on four symbols and recovers exactly the same list.
+
+Every injection of a type's positions into the nonnegative binary
+places preserves both support sizes. For a specified degree \(n\),
+the used places must include the one-bits of \(n\) and cannot exceed
+its highest bit. Enumerating injections under these restrictions and
+retaining leading exponent \(n\) therefore lists every eligible
+polynomial. The script \nolinkurl{scripts/check_translated_supports.py}
+prints all 28 types or the exact supports in a requested degree.
+
 \end{document}
