@@ -1,5 +1,6 @@
 import GF2Sparse.Degree1229
 import GF2Sparse.PackedOrder
+import GF2Sparse.SeventhImage
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.ReduceModChar
@@ -226,5 +227,28 @@ theorem balanced_frobenius_order :
       ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
         orderOf (AdjoinRoot.root (pentanomial 101 614 818)) = knownPart*t :=
   of_certified 101 614 818 5 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- Partial order of the degree-1229 pentanomial whose seventh power is also sparse. -/
+theorem seventh_source_order :
+    Irreducible (pentanomial 166 249 332) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 166 249 332)) = knownPart*t :=
+  of_certified 166 249 332 3 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- An identical multiplicative order for two distinct irreducible pentanomials. -/
+theorem seventh_pair_order :
+    Irreducible (pentanomial 332 726 1089) ∧
+      orderOf (AdjoinRoot.root (pentanomial 332 726 1089)) =
+        orderOf (AdjoinRoot.root (pentanomial 166 249 332)) := by
+  have hs : SeventhImage.source 1229 83 = pentanomial 166 249 332 := by
+    unfold SeventhImage.source SeventhImage.tail pentanomial
+    ring
+  have ht : SeventhImage.target 1229 83 363 = pentanomial 332 726 1089 := by
+    unfold SeventhImage.target pentanomial
+    ring
+  have hf : Irreducible (SeventhImage.source 1229 83) := hs ▸ seventh_source_order.1
+  rw [← hs, ← ht]
+  exact ⟨(SeventhImage.irreducible_target_iff (by decide) (by decide) (by decide +kernel)).2 hf,
+    SeventhImage.target_root_order (by decide) (by decide) (by decide +kernel) hf⟩
 
 end GF2Sparse.SparseRootModels

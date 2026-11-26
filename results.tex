@@ -11568,4 +11568,88 @@ in each degree. These checks give all \(2^n-1\) nonzero residues as
 powers of \(X\). Both computations can be repeated using
 \nolinkurl{scripts/check_product_range.py}.
 
+\section{A seventh power links four degree-1229 pentanomials}
+\label{sec:seventh-pair}
+The roots of the following two irreducible polynomials, together with
+the roots of their reciprocals, all have the same multiplicative order.
+\[
+ \begin{aligned}
+ F&=X^{1229}+X^{332}+X^{249}+X^{166}+1,\\
+ G&=X^{1229}+X^{1089}+X^{726}+X^{332}+1 .
+ \end{aligned}
+\]
+In fact, if \(r\) is a root of \(F\), then \(r^7\) is a root of \(G\).
+Among all 639166 irreducible pentanomials in this degree, exactly
+\(F\) and its reciprocal have a seventh power with a five-term minimal
+polynomial. The order of these four candidates remains to be determined.
+
+\begin{theorem}\label{thm:seventh-pair}
+Let \(u>0,\ n>4u,\ 7v=2n+u\). Put \(A(T)=1+T^2+T^3+T^4\) and set
+\[
+ F_{n,u}=X^n+A(X^u),\qquad G_{n,u}=X^n+X^{4u}+X^{3v}+X^{2v}+1 .
+\]
+Then \(F_{n,u}(X)\mid G_{n,u}(X^7)\). The polynomial \(G_{n,u}\)
+is primitive exactly when \(F_{n,u}\) is primitive and \(3\nmid n\).
+When \(3\nmid n\), the two polynomials are irreducible simultaneously,
+and in that event their roots have the same order.
+\end{theorem}
+\begin{proof}
+Expansion in \(\F[T]\) gives the identity
+\[
+ A(T)^7+T^{28}+\bigl(TA(T)^2\bigr)^3+\bigl(TA(T)^2\bigr)^2+1=0 .
+\]
+In the quotient by \(F_{n,u}\), write \(r=X\bmod F_{n,u}\) and
+\(T=r^u\). We have \(r^n=A(T)\) and \((r^7)^v=T A(T)^2\).
+The identity gives \(G_{n,u}(r^7)=0\), proving divisibility.
+Both polynomials are monic of degree \(n\), since \(3v<n\).
+Lemma~\ref{lem:sampling} gives the primitive criterion, using
+\(\operatorname{ord}_7(2)=3\).
+If \(F_{n,u}\) is irreducible and \(3\nmid n\), the seventh-power map
+on \(\mathbb F_{2^n}^{\times}\) is invertible and commutes with
+Frobenius. Thus \(r^7\) has the same degree and order as \(r\).
+Conversely, if \(G_{n,u}\) is irreducible, any root of \(F_{n,u}\)
+generates a field containing a root of \(G_{n,u}\). Its degree is
+therefore at least \(n\), which proves irreducibility of \(F_{n,u}\).
+\end{proof}
+For \(n=16,u=3,v=5\) the two primitive polynomials have interior
+exponents \((6,9,12)\) and \((10,12,15)\). The first has full order
+\(65535=3\cdot5\cdot17\cdot257\) by direct powering, and the
+theorem gives the second. All degree-16 trinomials are reducible by
+Swan's theorem. Lean verifies the general divisibility, equivalence,
+equality of orders and degree-16 example in
+\nolinkurl{GF2Sparse/SeventhImage.lean}.
+
+For \(n=1229\) take \(u=83,v=363\). The reciprocals have interior
+exponents \((897,980,1063)\) and \((140,503,897)\). Inversion and
+seventh powering preserve order. Lean also verifies that \(F,G\) are
+irreducible and that their common order has the form \(Kt\), \(1<t\mid C\),
+where \(2^{1229}-1=KC\) as in the four known prime tests.
+See \nolinkurl{GF2Sparse/SparseRootModels.lean}.
+For the certified dense primitive generator \(g\), a logarithm
+\((g^K)^e=r^K\) determines the common index as \(\gcd(e,C)\).
+Indeed, \(g^K\) generates the subgroup of order \(C\), while
+\(r^K\) has order \(t\). A coprime answer would certify
+all four primitive. The checker exports this equation with
+\texttt{--task} and verifies a submitted exponent with \texttt{--log}.
+
+For reproducibility, let \(P(X)=\sum_{s\in S}X^s\) be one of the
+319583 reciprocal representatives from the irreducibility census.
+The polynomial of the \(m\)-th powers of its roots satisfies
+\[
+ P_m(X^m)=\prod_{j=0}^{m-1} P(\zeta^j X)
+ \qquad (m=5,7)
+\]
+for a primitive \(m\)-th root \(\zeta\). The leading coefficient is one
+because \(m\) is odd. Both powers are coprime to \(2^{1229}-1\), hence
+\(P_m\) is the minimal polynomial. Expand first in five independent
+variables indexed by \(S\) using the residues \(s\bmod m\). A surviving
+monomial with multiplicities \(k_s\) contributes to exponent
+\(\sum_s k_s s/m\) of \(P_m\). Equal exponents cancel in pairs.
+Reciprocating the input reciprocates the output.
+The smallest fifth-power weight is nine, attained by 14 sources.
+The smallest seventh-power weight is five, attained by the two
+sources above. The census checker also verifies every minimum by
+substitution in its source field.
+See \nolinkurl{scripts/check_1229_power_images.py}.
+
 \end{document}

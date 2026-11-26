@@ -6,6 +6,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Four degree-1229 pentanomials have exactly the same root order.** If $r$ is a root of the polynomial with interior exponents $(166,249,332)$, then $r^7$ is a root of the one with exponents $(332,726,1089)$. These two polynomials and their reciprocals are irreducible. One verified logarithm gives their common index, which is still unknown. Among all 639,166 irreducible pentanomials only the first and its reciprocal have a five-term seventh-power image. The same construction gives a proved primitive pair in degree 16. [Proof](results.pdf#page=151) · [Lean theorem](GF2Sparse/SeventhImage.lean) · [Degree-1229 certificate](GF2Sparse/SparseRootModels.lean) · [Census and logarithm task](scripts/check_1229_power_images.py)
 - **Primitive pentanomials are verified in at least 2,167 of the first 2,816 degrees.** The interval 2689–2816 adds 48 verified degrees, including the primitive pentanomial $X^{2785}+X^{19}+X^{17}+X^2+1$. PARI/GP and FLINT checked the full multiplicative orders. [Proof](results.pdf#page=150) · [Witness table](data/product-witnesses-2689-2816.csv) · [Complete group factorizations](data/mersenne-2689-2816.json) · [Verifier](scripts/check_product_range.py)
 - **A fixed Frobenius bidegree can cover only logarithmically many degrees through $X$.** This holds for primitive binary polynomials of every weight when their original terms are rewritten in a root coordinate and its Frobenius conjugate. For each fixed $\varepsilon>0$, the degrees permitting both variables to have degree at most $n^{1/2-\varepsilon}$ have density zero. Writing each exponent in base $2^s$ gives a side length below $2\sqrt n$ for every degree. [Proof](results.pdf#page=150) · [Lean proof of the area bound](GF2Sparse/FrobeniusBoxes.lean)
 - **Exactly 24 degree-1229 pentanomials can fit their five terms in degree 12 in both a root coordinate and its Frobenius conjugate.** This is the smallest possible square, allowing any generator of the sparse root's subgroup. The smallest sum of the two degrees is 18. Only the pentanomial with taps $(3,410,822)$ and its reciprocal attain it. For the former, setting $z^5=r$ and $y=z^{2048}$ gives $zy^3+z^{14}y^2+z^2y+z^{15}+1=0$. The full order of $r$ remains open. [Proof](results.pdf#page=148) · [List the twelve reciprocal pairs](scripts/check_1229_frobenius_boxes.py) · [Lean identities and partial orders](GF2Sparse/SparseRootModels.lean)
@@ -110,6 +111,12 @@ The Lean target for an all-degree proof is `GF2Sparse.Conjecture`. The gap is to
 The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ for every $s>0$, using at most five exponents of the form $2^i-1$. The Lean theorem `conjecture_iff_sparseOreIrreducible` converts a proof of this target directly into the original conjecture. [Formal equivalence](GF2Sparse/OreConjecture.lean)
 
 ## Contributing
+
+Four degree-1229 candidates share one discrete logarithm task. The JSON gives the binary field modulus, a base of order $C$, and the target as hexadecimal polynomial masks with bit $i$ as the coefficient of $X^i$. Find an integer $0\le e<C$ with $\mathrm{base}^e=\mathrm{target}$ in that field. Replace `--task` with `--log E` to check an answer. The checker computes the exact index of all four roots, and an index of one proves all four primitive. [Download the task](data/degree-1229-seventh-power-task.json)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_power_images.py --task
+~~~
 
 To work directly on either cubic value, choose `--v 256` or `--v 400`. The command exports the field modulus, the projected primitive base, the projected cubic and its two linear components. Submit either a single exponent with `--cubic-log` or both exponents with `--linear-logs` to verify the sparse root's exact index. [Rational coordinate checker](scripts/check_1229_rational_cubics.py)
 
