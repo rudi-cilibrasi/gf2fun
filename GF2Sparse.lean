@@ -12,6 +12,7 @@ import GF2Sparse.DyadicFactors
 import GF2Sparse.DyadicTap
 import GF2Sparse.EllipticRay
 import GF2Sparse.FactorBaseExamples
+import GF2Sparse.FactorFieldIndex
 import GF2Sparse.FibreBound
 import GF2Sparse.FifthImage
 import GF2Sparse.FourierWeightBounds
