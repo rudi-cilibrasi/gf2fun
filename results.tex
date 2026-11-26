@@ -9855,4 +9855,110 @@ There are \((q^4-q^2)/2\) monic irreducible quadratics over \(k\).
 Thus at most \(2(q^2+1)/(q(q^2-1))\) of them can have a pencil
 of this kind. For \(q=1024\) the bound is below \(0.196\%\).
 
+\section{A uniqueness theorem and an exhaustive terminal census}
+\label{sec:terminal-census}
+Write \(k=\mathbb F_{q^2}\), where \(q\) is a power of two, and
+\(\bar z=z^q\) on \(k\). A nonzero projective linear Hermitian form
+has coefficients \(A,d\in\mathbb F_q\), \(b\in k\), up to a nonzero
+\(\mathbb F_q\)-scalar. Its substituted numerator is
+\[
+   D(T)=(AT+b)h_0(T)+(\bar b T+d)h_1(T).
+\]
+
+\begin{theorem}
+For \(\alpha\) quadratic over \(k\) and a prescribed
+\(\beta\in\mathbb P^1(\mathbb F_{q^4})\), at most one projective
+nonsingular Hermitian form satisfies
+\((A\alpha+b)\beta=\bar b\alpha+d\).
+\end{theorem}
+\begin{proof}
+The nonsingular forms give projectivities represented by
+\[
+      M=\begin{pmatrix}\bar b&d\\A&b\end{pmatrix},
+       \qquad M\bar M=(b\bar b+Ad)I .
+\]
+Two such projectivities \(M_1,M_2\) taking \(\alpha\) to \(\beta\)
+give \(S=M_2^{-1}M_1\) fixing \(\alpha\). In the projective group
+\(\bar S=M_2 S^{-1}M_2^{-1}\). Thus
+\(j=(\operatorname{tr}S)^2/\det S\) lies in \(\mathbb F_q\),
+since it is invariant under scaling, conjugacy and inversion.
+If \(S\) is nonscalar it also fixes the distinct \(k\)-conjugate of
+\(\alpha\). Its two eigenlines are conjugate over \(k\) and its
+eigenvalue ratio \(v\ne1\) satisfies \(v^{q^2}=v^{-1}\).
+But \(v+v^{-1}=j\) puts \(v\) in \(\mathbb F_{q^2}\), hence
+\(v=v^{-1}\), impossible in characteristic two. Thus \(S\) is
+scalar. Proportional nonsingular Hermitian matrices have their
+proportionality scalar in \(\mathbb F_q\), so the forms coincide.
+\end{proof}
+
+\paragraph{Counting rational roots.}
+For the degree-1229 model take \(q=1024\) and \(R=h_0/h_1\) as
+in Section~\ref{sec:dyadic-1229}. Normalize to \(A=1\) or, at
+\(A=0\), normalize \(b\) to have norm one. For a finite rational
+point \(t\) with \(h_1(t)\ne0\), put \(u=R(t)+\bar t\).
+Then \(D(t)=0\) determines \(d\). The condition \(d=\bar d\) is
+\[
+     \operatorname{Tr}_{k/\mathbb F_q}(bu)
+       =A\operatorname{Tr}_{k/\mathbb F_q}(tR(t)).
+\]
+This enumerates the pencils through \(t\) by one linear equation.
+The poles \(t=0,1\) are checked in the original numerator.
+Counting rational roots with multiplicity over binary Frobenius
+orbits gives the following distribution on all \(q^3+q\)
+nonsingular pencils.
+\[
+\begin{array}{c|rrrr}
+\text{multiplicity}&0&1&2&3\\\hline
+\text{pencils}&387423907&393417163&205276159&62209942\\
+\text{multiplicity}&4&5&6&\\\hline
+\text{pencils}&23660020&9362&1746295&
+\end{array}
+\]
+The numerator has degree six for \(A=1\), and five for \(A=0\).
+If two degrees remain after removing the rational roots, they give
+one irreducible quadratic. To check higher multiplicities, the
+square root of the derivative, up to scaling when \(b\ne0\), is
+\(T^2+zT+z\) with \(z^2=(A+d)/b\). An irreducibility test and
+division find no repeated irreducible quadratic. For \(b=0\) the
+square root is linear or zero, and the sole identically-zero
+derivative in a nonsingular pencil gives \(D=T^6\).
+
+Exactly 23,752,900 pencils leave one quadratic and otherwise split.
+Their 1,187,645 binary Frobenius orbits each have size twenty.
+Independent factorization of every representative gives 1,183,001
+distinct binary masks from norm circles and 4,644 from trace lines.
+All have absolute degree forty. Their pencils and the original
+52,488 linear logarithms determine every exponent in this catalogue.
+The same uniqueness theorem shows why two conjugate quadratics in a
+single nonsingular pencil require a separate search only on proper
+coefficient orbits. If \(Q\) and \(Q^{(2^i)}\ne Q\) both divide
+\(D\), the pencil and its \(2^i\)-conjugate both contain the
+second quadratic and therefore coincide.
+
+One can also check the uniqueness obstruction by Artin--Schreier
+trace. Cross-multiplication of the two projectivities gives a
+quadratic with middle coefficient \(v+w\), where
+\(v=A_2d_1+A_1d_2\) and \(w=\bar b_1 b_2+b_1\bar b_2\).
+The relative trace of the product of its outer coefficients is
+\(vw\). For \(v+w\ne0\), dividing by \((v+w)^2\) gives the
+Artin--Schreier value of \(v/(v+w)\), of absolute trace zero.
+The quadratic therefore cannot be irreducible over \(k\).
+The two numerator identities are checked in
+\nolinkurl{GF2Sparse/HermitianDescent.lean}.
+
+Factoring the 157,469 additional representatives consisting of
+proper-orbit nonsingular pencils and normalized rank-one forms
+with finite source point gives 26,362 further binary masks.
+Each has two distinct conjugate quadratic factors and all other
+factors linear. Of these, 26,360 have binary degree forty, and
+two have degree eight. Every contributing pencil is nonsingular.
+The remaining rank-one form has substituted polynomial \(h_1\).
+This exhausts all projective linear Hermitian forms in which the
+nonlinear factors are quadratics with a single binary mask.
+The two catalogues are disjoint and together give 1,214,007 exact
+logarithms. Their intersection with the previous tables has size
+209, bringing the verified or constructible set to 1,304,685
+distinct logarithms. None of the 126, 534, or 8,996 open rows
+from Section~\ref{sec:hermitian-descent} belongs to these catalogues.
+
 \end{document}

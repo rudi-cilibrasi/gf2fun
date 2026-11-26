@@ -197,11 +197,14 @@ class SourceLogs {
         NTL::ZZ sum, rhs;
         if (a) {
             int rho = d ^ k.norm[b];
-            if (!rho)
-                throw std::logic_error("singular circle");
-            int off = (q + 1) * k.di(rho), center = k.bar[b];
-            for (int j = 0; j <= q; j++)
-                sum += weight[k.orbit[center ^ circle_points[off + j]]];
+            int center = k.bar[b];
+            if (rho) {
+                int off = (q + 1) * k.di(rho);
+                for (int j = 0; j <= q; j++)
+                    sum += weight[k.orbit[center ^ circle_points[off + j]]];
+            } else {
+                sum = (q + 1) * weight[k.orbit[center]];
+            }
         } else {
             int inv = k.inv(b), base = k.mul(epsilon, d);
             for (int s : k.real)
@@ -317,6 +320,30 @@ void census(const Field &k, const char *path) {
               << smooth << " simple quadratic eliminations and " << rep
               << " additional pencils with repeated irreducible quadratic.\n";
 }
+// A nonrational quadratic point belongs to at most one nonsingular pencil. Distinct
+// conjugate quadratic factors in one pencil therefore force a proper coefficient orbit.
+// Rank-one forms are indexed separately by their single point in the projective line.
+void supplement(const Field &k, const char *path) {
+    std::ofstream out(path);
+    if (!out)
+        throw std::runtime_error("cannot open supplementary pencil list");
+    for (size_t j = 0; j < k.reps.size(); j++) {
+        int b = k.reps[j], ell = k.length[j];
+        out << 1 << ' ' << b << ' ' << k.norm[b] << ' ' << ell << " -1\n";
+        if (ell == 20)
+            continue;
+        for (int i = 0; i < q; i++) {
+            int d = k.real[i], len = std::lcm(ell, k.length[k.orbit[d]]);
+            if (k.canonical[ell % 20][i] != i || len == 20)
+                continue;
+            if (d != k.norm[b])
+                out << 1 << ' ' << b << ' ' << d << ' ' << len << " -1\n";
+            if (k.norm[b] == 1)
+                out << 0 << ' ' << b << ' ' << d << ' ' << len << " -1\n";
+        }
+    }
+    // The remaining rank-one form has constant source and substituted polynomial h1.
+}
 // Integer encodings place the constant binary coefficient in the least significant bit.
 GF2X binary(long value) {
     GF2X r;
@@ -332,6 +359,27 @@ long mask(const GF2X &f) {
             r |= 1L << j;
     return r;
 }
+std::pair<long, int> quadratic_norm(const GF2EX &target) {
+    GF2EX prod(1), qb = target;
+    int s = 0;
+    do {
+        prod *= qb;
+        s++;
+        SetCoeff(qb, 0, sqr(ConstTerm(qb)));
+        SetCoeff(qb, 1, sqr(coeff(qb, 1)));
+    } while (qb != target && s <= 20);
+    if (s != 4 && s != 20)
+        throw std::logic_error("unexpected quadratic orbit length");
+    long p = 0;
+    for (int j = 0; j <= deg(prod); j++) {
+        if (IsOne(coeff(prod, j)))
+            p |= 1L << j;
+        else if (!IsZero(coeff(prod, j)))
+            throw std::logic_error("nonbinary target");
+    }
+    return {p, 20 / s};
+}
+
 // Independently factor every candidate numerator over the constant field, then take the
 // binary coefficient norm of its one quadratic, retaining the orbit multiplicity.
 void factor(const SourceLogs *logs) {
@@ -339,61 +387,46 @@ void factor(const SourceLogs *logs) {
     long a, b, d, orbit_size, l;
     while (std::cin >> a) {
         if (!(std::cin >> b >> d >> orbit_size >> l) || (a != 0 && a != 1) || b < 0 || b >= size || d < 0 ||
-            d >= size || orbit_size <= 0 || 20 % orbit_size || l < 0 || l > 6)
+            d >= size || orbit_size < 0 || (orbit_size && 20 % orbit_size) || l < -1 || l > 6)
             throw std::invalid_argument("invalid projective pencil row");
         GF2E A = to_GF2E(binary(a)), B = to_GF2E(binary(b)), D = to_GF2E(binary(d)), bc = power(B, 1024);
-        if (power(D, q) != D || (a ? B * bc == D : IsZero(B)))
-            throw std::invalid_argument("singular or non-Hermitian pencil");
+        if (power(D, q) != D || (!a && IsZero(B)))
+            throw std::invalid_argument("invalid Hermitian pencil");
         GF2EX f;
         std::array<GF2E, 7> coefficients{B, A + D, B + bc, A + D, bc, B, A};
         for (int j = 0; j < 7; j++)
             SetCoeff(f, j, coefficients[j]);
         MakeMonic(f);
-        GF2EX q;
-        int e = 0, rational = 0;
+        long p = 0;
+        int mult = 0, rational = 0;
+        bool single = true;
         std::vector<long> roots;
         for (const auto &fac : CanZass(f)) {
             if (deg(fac.a) == 1) {
                 rational += fac.b;
                 for (int j = 0; j < fac.b; j++)
                     roots.push_back(mask(rep(ConstTerm(fac.a))));
-            } else if (deg(fac.a) == 2 && !e) {
-                q = fac.a;
-                e = fac.b;
-            } else {
-                e = -1;
-                break;
-            }
+            } else if (deg(fac.a) == 2) {
+                const auto [binary_mask, norm_mult] = quadratic_norm(fac.a);
+                if (p && p != binary_mask)
+                    single = false;
+                p = binary_mask;
+                mult += fac.b * norm_mult;
+            } else
+                single = false;
         }
-        if (e < 0) {
+        if (l >= 0 && rational != l)
+            throw std::logic_error("rational-root census mismatch");
+        if (!single || !p) {
             if (l == deg(f) - 2)
                 throw std::logic_error("smoothness census mismatch");
             continue;
         }
-        if (e == 0 || rational != l)
-            throw std::logic_error("rational-root census mismatch");
-        GF2EX prod(1), qb = q;
-        int s = 0;
-        do {
-            prod *= qb;
-            s++;
-            SetCoeff(qb, 0, sqr(ConstTerm(qb)));
-            SetCoeff(qb, 1, sqr(coeff(qb, 1)));
-        } while (qb != q && s <= 20);
-        if (s != 4 && s != 20)
-            throw std::logic_error("unexpected quadratic orbit length");
-        long p = 0;
-        for (int j = 0; j <= deg(prod); j++) {
-            if (IsOne(coeff(prod, j)))
-                p |= 1L << j;
-            else if (!IsZero(coeff(prod, j)))
-                throw std::logic_error("nonbinary target");
-        }
         std::cout << p << ' ' << a << ' ' << b << ' ' << d;
         if (logs)
-            std::cout << ' ' << logs->exponent(a, b, d, e * (20 / s), roots);
+            std::cout << ' ' << logs->exponent(a, b, d, mult, roots);
         else {
-            std::cout << ' ' << e * (20 / s) << ' ' << l;
+            std::cout << ' ' << mult << ' ' << rational;
             for (long t : roots)
                 std::cout << ' ' << t;
         }
@@ -408,6 +441,8 @@ int main(int argc, char **argv) {
         const std::string mode = argc > 1 ? argv[1] : "";
         if (mode == "scan" && argc == 3)
             census(Field(), argv[2]);
+        else if (mode == "supplement" && argc == 3)
+            supplement(Field(), argv[2]);
         else if (mode == "factor" && argc == 2)
             factor(nullptr);
         else if (mode == "logs" && argc == 3) {
@@ -415,7 +450,8 @@ int main(int argc, char **argv) {
             SourceLogs logs(field, argv[2]);
             factor(&logs);
         } else
-            throw std::invalid_argument("use scan PENCIL_FILE, factor, or logs FACTOR_BASE");
+            throw std::invalid_argument(
+                "use scan or supplement with PENCIL_FILE, factor, or logs FACTOR_BASE");
         return 0;
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';

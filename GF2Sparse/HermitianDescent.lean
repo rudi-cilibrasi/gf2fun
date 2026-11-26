@@ -172,4 +172,22 @@ theorem binary_cubic_sum {K : Type*} [CommRing K] [CharP K 2] (u v : K) :
     _ = (u^3+v^3)+((u^2*v+u*v^2)+(u^2*v+u*v^2)) := by rw [CharTwo.add_sq]; ring
     _ = _ := by rw [CharTwo.add_self_eq_zero, add_zero]
 
+/-- The relative trace of the product of the outer coefficients of the equation
+for a common pencil point. The primed entries denote Frobenius conjugates. -/
+theorem common_pencil_trace {K : Type*} [CommRing K] [CharP K 2]
+    (a₁ a₂ d₁ d₂ b₁ b₁' b₂ b₂' : K) :
+    (a₂*b₁'+a₁*b₂')*(d₁*b₂+d₂*b₁) + (a₂*b₁+a₁*b₂)*(d₁*b₂'+d₂*b₁') =
+      (a₂*d₁+a₁*d₂)*(b₁'*b₂+b₁*b₂') := by
+  let z := a₂*d₂*b₁*b₁' + a₁*d₁*b₂*b₂'
+  calc
+    _ = (z+z) + (a₂*d₁+a₁*d₂)*(b₁'*b₂+b₁*b₂') := by dsimp [z]; ring
+    _ = _ := by rw [CharTwo.add_self_eq_zero, zero_add]
+
+/-- After division by (v+w)^2 this is the Artin--Schreier value of v/(v+w). -/
+theorem common_pencil_artinSchreier {K : Type*} [CommRing K] [CharP K 2] (v w : K) :
+    v^2+v*(v+w) = v*w := by
+  calc
+    _ = (v^2+v^2)+v*w := by ring
+    _ = _ := by rw [CharTwo.add_self_eq_zero, zero_add]
+
 end GF2Sparse.HermitianDescent
