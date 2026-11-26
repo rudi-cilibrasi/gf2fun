@@ -10965,6 +10965,10 @@ three leading coefficients multiply to one. For odd \(n\), cubing is
 a permutation of \(\mathbb F_{2^n}^{\times}\) commuting with Frobenius.
 It follows that for an irreducible \(P\) of odd degree \(n\), \(C(P)\)
 is the minimal polynomial of a cube and has the same root order.
+The file \nolinkurl{GF2Sparse/CubicImage.lean} proves the divisibility
+\(P\mid C(P)(X^3)\), equality of the degrees for arbitrary components,
+and the equivalence of primitivity of \(C(P)\) with primitivity of
+\(P\) and odd degree for positive degree.
 
 \begin{theorem}\label{thm:cubed-supports}
 Let \(P\) have five terms, constant coefficient one and exponent gcd one.

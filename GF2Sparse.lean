@@ -3,6 +3,7 @@ import GF2Sparse.BinomialTail
 import GF2Sparse.AdditiveOrbit
 import GF2Sparse.ConjugateProducts
 import GF2Sparse.Coverage
+import GF2Sparse.CubicImage
 import GF2Sparse.CyclicWeight
 import GF2Sparse.Degree1229
 import GF2Sparse.DyadicExample1024
