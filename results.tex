@@ -9091,4 +9091,163 @@ the functions computed by Miller's algorithm. It also replays all
 checks those powers, the three rational point bounds after clearing
 denominators, the degree-53 trial divisions, and the subgroup recurrence.
 
+\section{A degree-five elliptic isogeny and two sparse-root descents}
+\label{sec:quintic-descent}
+In the degree-1229 model of Theorem~\ref{thm:1229-q1024-primitive},
+let \(q=1024\), \(y=x^q\), and write
+\[
+  x=R(y),\qquad R(T)=\frac{h_0(T)}{h_1(T)}
+     =\frac{T^5+T^2+1}{T^3+T}.
+\]
+The splitting of \(h_0(T)+a h_1(T)\) can be determined over every
+binary extension. This gives exact logarithms for irreducible
+polynomials outside the original factor base.
+
+\begin{theorem}
+Let \(A\) be the elliptic curve \(w^2+w=z^3+z\) over \(\F\),
+and put \(N_m=\#A(\mathbb F_{2^m})\). For each finite
+\(a\in\mathbb F_{2^m}\), the factor degrees of \(h_0(T)+a h_1(T)\)
+are \(1,1,1,1,1\), or \(5\), or \(1,2,2\). Exactly \(2N_m/5\)
+parameters give the irreducible case. Consequently the number of
+monic irreducibles \(P\in\F[T]\) of degree \(m\) for which
+\(U_P(T)=h_1(T)^m P(R(T))\) is irreducible equals
+\[
+  \frac{2}{5m}\sum_{\substack{e\mid m\\5\nmid m/e}}\mu(m/e)\,N_e .
+\]
+\end{theorem}
+\begin{proof}
+Let \(\pi\) be binary Frobenius on \(A\). The chord between the generic
+point \((z,w)\) and its Frobenius image has slope
+\((w^2+w)/(z^2+z)=z+1\). Replacing the point by its negative
+\((z,w+1)\) adds \(1/(z^2+z)\) to the slope. The addition law therefore gives
+\[
+ z((\pi+1)P)=z+1,\qquad
+ z((\pi-1)P)=z+1+\frac{1}{[z(z+1)]^2}.
+\]
+It follows that the isogeny \(\phi=(\pi+1)(\pi-1)=\pi^2-1\) induces
+the rational map \(S(z)=z+[z(z+1)]^{-2}=R(1/z)\).
+Its differential is \(-1\), and its kernel is \(A(\mathbb F_4)\).
+The four affine points over \(\F\) and the identity give \(N_1=5\).
+The trace recurrence \(t_0=2,\ t_1=-2,\ t_m=-2t_{m-1}-2t_{m-2}\)
+gives \(N_m=2^m+1-t_m\), in particular \(N_2=5\). Thus \(\phi\) is
+separable of degree five with constant cyclic kernel \(\langle H\rangle\).
+
+Over an algebraic closure, the abscissa \(a\) lifts to distinct points
+\(P,-P\). Choose \(V\) with \(\phi(V)=P\). The five preimages of \(a\)
+under \(S\) have distinct abscissas \(z(V+iH)\), \(i\in\mathbb Z/5\),
+since equality up to sign would give either equal kernel translates or \(P=-P\).
+Taking reciprocals gives the five roots for \(R\). None of the poles
+of \(S\) lies over a finite \(a\). If \(P\) is rational over
+\(\mathbb F_{2^m}\), Frobenius acts on the indices by
+\(i\mapsto i+j\). This gives five fixed points when \(P\) belongs to
+\(\phi(A(\mathbb F_{2^m}))\), and a five-cycle otherwise. The image has
+size \(N_m/5\). Counting pairs \(P,-P\) outside it gives \(2N_m/5\)
+irreducible fibers. In the remaining case Frobenius exchanges \(P,-P\),
+so its action on the indices is \(i\mapsto j-i\), giving degrees \(1,2,2\).
+
+An element of exact degree \(e\mid m\) gives an irreducible quintic over
+\(\mathbb F_{2^m}\) precisely when it does so over \(\mathbb F_{2^e}\)
+and \(5\nmid m/e\). For a root \(\beta\) in that fiber,
+\(R(\beta)=a\), so its binary degree is \(5e\) if the fiber over
+\(\mathbb F_{2^e}\) is irreducible. The polynomial \(U_P\) is monic of
+degree \(5e\) when \(\deg P=e\). Möbius inversion over divisors
+relatively prime to five, followed by division by \(m\) for conjugacy,
+gives the formula.
+\end{proof}
+
+There is also a multiplicative restriction. In an irreducible fiber
+over \(k=\mathbb F_{2^m}\), the norm from its degree-five extension to
+\(k\) sends both \(\beta\) and \(\beta+1\) to one. Indeed the quintic
+takes the value one at both zero and one. All six
+\(\mathrm{PGL}_2(\F)\)-transforms of \(\beta\) therefore have order
+dividing \((2^{5m}-1)/(2^m-1)\). For \(m>1\) this rules out primitive
+roots of \(U_P\) in their own degree \(5m\).
+
+In the fixed degree-1229 field, write \(L(P)\) for the uniquely
+normalized exponent modulo \(C\) satisfying \((x^K)^{L(P)}=P(x)^K\).
+The identity \(U_P(y)=h_1(y)^m P(x)\) gives
+\[
+  L(U_P)=q^{-1}L(P)+mL(h_1)\pmod C,\qquad
+  L(h_1)=1+2L(T+1).
+\]
+For \(m=1,2,4,5,10,20\) the theorem gives \(2,0,2,2,40,20992\)
+irreducible pullbacks respectively. The degree-five and degree-20
+results already occur in the original table. Pulling back the new
+irreducibles a second time gives the following additions.
+\[
+\begin{array}{r|rrrrr|r}
+ \text{binary degree of mask} &25&50&100&250&500&\text{total}\\\hline
+ \text{first application}&2&40&20992&0&0&21034\\
+ \text{second application}&0&0&0&28&16689&16717
+\end{array}
+\]
+For an irreducible fiber over \(k\), Newton's identities give
+\(\operatorname{Tr}_{k(\beta)/k}(\beta)=0\) and
+\(\operatorname{Tr}_{k(\beta)/k}(\beta^3)=1\).
+If \(m\) is odd, \(\beta^3+\beta\) therefore has absolute trace one,
+so \(\beta\) has no rational lift to \(A\) over \(k(\beta)\).
+This explains the absence of irreducible second pullbacks above degree 25.
+The \(37{,}751\) new masks bring the total to \(90{,}239\).
+\nolinkurl{scripts/check_1229_isogeny_logs.py} derives their exponents.
+The NTL checker verifies irreducibility and the projected power identity
+for each new mask. Lean verifies the two chord-coordinate identities,
+the permutations of the five indices, and the numerical trace recurrence
+values in \nolinkurl{GF2Sparse/QuinticIsogeny.lean}.
+
+\paragraph{Eleven projected logarithms for each pentanomial.}
+For a stored sparse root \(r\), use consecutive Euclidean remainders
+\(a,b\) of \(I,r\), with \(a=c r,\ b=d r\bmod I\). Stop at the first
+\(\deg b\le615\). Choose binary polynomials \(u,v\) and form
+\[
+   r=\frac{u a+v b}{u c+v d}\pmod I .
+\]
+The two choices of \((u,v)\) are hexadecimal coefficient masks,
+with bit \(i\) giving the coefficient of \(X^i\). After factoring
+the numerator and denominator and inserting known logarithms, the
+remaining binary masks have the following factor degrees over
+\(\mathbb F_{2^{20}}\). A binary mask of degree \(d\) factors there
+into \(\gcd(d,20)\) conjugates of degree \(d/\gcd(d,20)\).
+\[
+\begin{array}{c|c|l}
+ \text{interior taps of the pentanomial}&(u,v)&
+       \text{relative degrees of the eleven masks}\\\hline
+ 27,50,77&(\mathtt{76e6},\mathtt{e6f5})&3,7,8,11,11,11,12,13,14,17,21\\
+ 2,6,15&(\mathtt{4aa7},\mathtt{7644})&2,3,7,7,9,9,13,13,13,15,18
+\end{array}
+\]
+The earlier single-shift identities in Section~\ref{sec:prime-factor-generation}
+had largest degrees 29 and 33. For each new quotient the published
+task gives an offset \(a_0\) and coefficients \(c_P\) such that
+\(L(r)=a_0+\sum_P c_P L(P)\bmod C\).
+Since both roots pass the four known-prime order checks,
+their exact group indices are \(\gcd(L(r),C)\). The eleven unknown
+exponents for either row suffice to compute that index. The verifier
+checks the assembled equation in the field and accepts partial solutions.
+
+Individual factors can be reduced further. For
+coprime binary \(F,G\), put \(j=\max(\deg F,\deg G)\) and set
+\[
+ B(X)=F(X)^{q+1}+G(X)^{q+1},\qquad
+ D(T)=h_1(T)^j\{F(T)F(R(T))+G(T)G(R(T))\}.
+\]
+Then \(D(y)=h_1(y)^j B(x)\), and \(B\) is the product of the
+\(F+\gamma G\) over the \(q+1\) solutions of \(\gamma^{q+1}=1\) in
+\(\mathbb F_{q^2}\). Every factor of \(B\) over this field is of degree
+at most \(j\). For each row below, factor \(D\), isolate the target,
+and combine equal masks on both sides. The last two columns give the
+number and largest relative degree of the remaining logarithms.
+\[
+\begin{array}{l|c|c|c|r|r}
+ \text{source}&\text{target mask}&\deg_{\mathbb F_{2^{20}}}&(F,G)&
+ \text{remaining}&\text{max. degree}\\\hline
+ \text{Seroussi quotient}&\mathtt{d3}&7&(\mathtt c,\mathtt b)&44&3\\
+ \text{product quotient}&\mathtt{bf}&7&(\mathtt{26},\mathtt b)&62&5\\
+ \text{product quotient}&\mathtt{35d5}&13&(\mathtt{13e},\mathtt d)&92&8\\
+ \text{product single shift}&\mathtt{91}&7&(\mathtt{17},\mathtt e)&59&4\\
+ \text{Seroussi single shift}&\mathtt{c19}&11&(\mathtt{2f},\mathtt{29})&66&5
+\end{array}
+\]
+The quotients, pencils and partial-log verifier are in
+\nolinkurl{scripts/check_1229_log_descent.py}.
+
 \end{document}

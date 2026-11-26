@@ -6,6 +6,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Each of two degree-1229 pentanomials now reduces to eleven projected logarithms.** For $X^{1229}+X^{15}+X^6+X^2+1$, the largest factor degree over $\mathbb F_{2^{20}}$ dropped from 33 to 18. For $X^{1229}+X^{77}+X^{50}+X^{27}+1$, it dropped from 29 to 21. The task files give each factor and its coefficient. The checker verifies partial submissions and computes the exact group index when a task is complete. [Seroussi task](data/degree-1229-seroussi-descent-task.json) · [Product task](data/degree-1229-product-descent-task.json) · [Descent checker](scripts/check_1229_log_descent.py)
+- **A degree-five elliptic isogeny gives 37,751 more verified logarithms.** The rational map in the $q=1024$ model comes from Frobenius squared minus the identity on $w^2+w=z^3+z$, after inverting the input coordinate. The point count predicts the irreducible fibers. Two substitutions extend the original table from 52,488 to 90,239 distinct entries. NTL checks every new exponent directly in the degree-1229 field. [Derivation](results.pdf#page=118) · [Logarithm generator](scripts/check_1229_isogeny_logs.py) · [Lean coordinate and cycle identities](GF2Sparse/QuinticIsogeny.lean)
 - **Degree 1229 still needs a five-term witness.** The projected-log table contains 52,487 primitive elements among 52,488 entries. The one exception has index 46,703. The smallest minimal polynomials in the table have 545 terms. The script below prepares the single remaining logarithm for any eligible pentanomial and checks a submitted exponent in either direction. [Exact census](results.pdf#page=116) · [Census checker](scripts/check_1229_factor_base_orders.py) · [Sparse candidate preparation](scripts/prepare_1229_single_log.py)
 - **Elliptic-curve order certificates in every degree.** At most $\lceil\sqrt{2}\,n\rceil+1$ explicit subgroup-membership targets and order tests for specified small primes suffice in degree $n\ge2$. Prime degrees $n\ge7$ require only the membership targets. For $X^{53}+X^{23}+X^{21}+X^2+1$ the first 30 elliptic logarithms suffice with trial division, or all 38 suffice using the degree alone. [Proof](results.pdf#page=117) · [Point and logarithm checker](scripts/check_elliptic_ray.py) · [Lean arithmetic](GF2Sparse/EllipticRay.lean)
 - **Unconditional primitivity in degree 1229 without factoring $2^{1229}-1$, and a single-scalar pentanomial reduction.** For the $q=1024$ Frobenius model $I(X)\mid h_0(X^{1024})+Xh_1(X^{1024})$ ($h_0=T^5+T^2+1$, $h_1=T^3+T$), Hermitian circle norm-projection over $\mathbb F_{2^{20}}$ yields 93,656 exact multiplicative relations (92,910 canonically unique) of exact corank one across all 52,488 binary irreducibles of degree dividing 20. Solving the full $52{,}488\times 52{,}488$ system modulo the unfactored 284-digit cofactor $C$ via AVX2 Wiedemann and FLINT Half-GCD yields all 52,488 projected discrete logarithms $(x^K)^{e_P}\equiv P(x)^K\pmod{I(X)}$, every one directly verified in $\mathbb F_{2^{1229}}$ with $\gcd(e_P,C)=1$. The character-sum bound gives $Q=1294.90>1227$ using only one trial division ($C\bmod 2459\ne0\Rightarrow J\ge 9833$, and $Q=1366.00>1227$ with the sieved wheel), unconditionally proving $I(X)$ (weight 613) and all 111 degree-$\le10$ evaluations $P(x)$ primitive of exact order $2^{1229}-1$. Certifying any of the 639,144 eligible degree-1229 pentanomials now reduces from 3,380 targets to one single scalar $e_r$ with $(r^K)^{e_r}\equiv x^K$. [52,488 verified logs](data/degree-1229-q1024-projected-logs.csv.gz) · [Certificate metadata](data/degree-1229-q1024-certificate.json) · [Direct verifier](scripts/check_1229_q1024_logs.py) · [Single-scalar checker](scripts/check_1229_single_log.py) · [Relation generator & 943-bit solver](scripts/wiedemann_943.cpp)
@@ -81,6 +83,15 @@ The Lean target for an all-degree proof is `GF2Sparse.Conjecture`. The gap is to
 The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ for every $s>0$, using at most five exponents of the form $2^i-1$. The Lean theorem `conjecture_iff_sparseOreIrreducible` converts a proof of this target directly into the original conjecture. [Formal equivalence](GF2Sparse/OreConjecture.lean)
 
 ## Contributing
+
+To work on one factor of a degree-1229 pentanomial, pick a row from either eleven-factor task. For its binary polynomial $P$, find $e$ with $(x^K)^e=P(x)^K$ modulo the supplied field polynomial. Each file gives $x^K$, $K$, $C$, and every remaining coefficient. The checker takes a CSV with header `mask,exponent` and any subset of the rows. The mask can be hexadecimal or decimal. It verifies each exponent, then removes that row and updates the known part of the target logarithm. [Seroussi rows](data/degree-1229-seroussi-descent-task.json) · [Product rows](data/degree-1229-product-descent-task.json)
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_log_descent.py --task seroussi --json
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_log_descent.py --task seroussi --logs my-logs.csv
+~~~
+
+For a smaller starting problem, the Seroussi factor with mask `0xd3` has a further decomposition into 44 logarithms of relative degree at most three. Run the same command with `--task seroussi-0xd3 --json` to get those rows. The product factors `0xbf` and `0x35d5` have analogous tasks called `product-0xbf` and `product-0x35d5`. Running the checker without arguments verifies all decompositions. [Norm identities](results.pdf#page=120)
 
 Two degree-1229 logarithm problems are ready to download. The product candidate has interior taps $27,50,77$, and the Seroussi candidate has $2,6,15$. Each file gives a base $b$ and target $t$ in the same certified $q=1024$ field. A solution to $b^d=t$ gives the exact index $\gcd(d,C)$ of that sparse root, where $C$ is the supplied cofactor. An index of one certifies the pentanomial. [Product candidate input](data/degree-1229-single-log-product.json) · [Seroussi candidate input](data/degree-1229-single-log-seroussi.json)
 
@@ -285,6 +296,13 @@ To reproduce the complete order and term-count census of the 52,488 degree-1229 
 ~~~sh
 g++ -std=c++17 -O3 -fopenmp scripts/census_1229_factor_base.cpp -lntl -o /tmp/gf2-factor-base-orders
 OMP_NUM_THREADS=8 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_factor_base_orders.py --census /tmp/gf2-factor-base-orders
+~~~
+
+The same NTL executable checks all 37,751 isogeny lifts. The following commands also export their exponents and replay the Lean coordinate identities.
+
+~~~sh
+OMP_NUM_THREADS=8 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_isogeny_logs.py --second-step --verify-powers /tmp/gf2-factor-base-orders --export /tmp/gf2-isogeny-logs.csv
+lake build GF2Sparse.QuinticIsogeny && lake env leanchecker -v GF2Sparse.QuinticIsogeny
 ~~~
 
 With PARI/GP on the path, the following commands reconstruct the elliptic norms and check the degree-53 logarithms and the degree-1229 targets.

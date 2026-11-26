@@ -19,6 +19,21 @@
       "target_hex": "0xc19",
       "f_hex": "0x2f",
       "g_hex": "0x29"
+    },
+    {
+      "target_hex": "0xd3",
+      "f_hex": "0xc",
+      "g_hex": "0xb"
+    },
+    {
+      "target_hex": "0xbf",
+      "f_hex": "0x26",
+      "g_hex": "0xb"
+    },
+    {
+      "target_hex": "0x35d5",
+      "f_hex": "0x13e",
+      "g_hex": "0xd"
     }
   ]
 }

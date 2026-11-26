@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 from collections import Counter
+from functools import cache
 from math import gcd
 from pathlib import Path
 
@@ -15,7 +16,10 @@ from period_coordinate import CANDIDATES, mask_of
 
 
 CERT = DATA / "degree-1229-log-descent.json"
-PENCIL_NAMES = {"degree-7": 0x91, "degree-11": 0xc19}
+PENCIL_NAMES = {
+    "degree-7": 0x91, "degree-11": 0xc19,
+    "seroussi-0xd3": 0xd3, "product-0xbf": 0xbf, "product-0x35d5": 0x35d5,
+}
 
 
 def factors(poly):
@@ -26,6 +30,11 @@ def factors(poly):
 
 def homogeneous(poly, a, b, degree):
     return sum((a**i * b**(degree-i) for i in range(poly.degree()+1) if poly[i]), polynomial(0))
+
+
+@cache
+def unity_factors():
+    return (polynomial(2)**(Q+1) + 1).factor()[1]
 
 
 def sparse_quotient(name, row, field):
@@ -57,7 +66,12 @@ def norm_pencil(row):
     multiplicity = rhs.pop(mask_of(target), 0)
     if gcd(multiplicity, COFACTOR) != 1:
         raise ArithmeticError("the pencil does not isolate its target")
-    source = factors(f**(Q+1) + g**(Q+1))
+    # Homogenize each small binary factor of T^(q+1)+1 before factoring the pencil.
+    source = Counter()
+    for u, multiplicity in unity_factors():
+        piece = homogeneous(u, f, g, u.degree())
+        for p, exponent in factors(piece).items():
+            source[p] += int(multiplicity) * exponent
     inverse_q = pow(Q, -1, COFACTOR)
     relation = Counter({p: e*inverse_q for p, e in source.items()})
     relation.update({p: m*e for p, e in factors(H1).items()})
