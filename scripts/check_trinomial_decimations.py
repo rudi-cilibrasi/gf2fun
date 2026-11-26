@@ -3,6 +3,7 @@
 import argparse
 from collections import Counter
 from fractions import Fraction
+from functools import cache
 from itertools import combinations, permutations
 from math import comb, gcd, lcm
 
@@ -159,13 +160,89 @@ def check_short_powers(n):
     return len(sources), len(images)
 
 
+@cache
+def trace_support(m):
+    """Support of the binary polynomial taking u(u+1) to u^m+(u+1)^m."""
+    if m < 2:
+        return frozenset({0} if m else {})
+    k = m//2
+    if not m % 2:
+        return frozenset(2*i for i in trace_support(k))
+    return frozenset(2*i for i in trace_support(k+1)) | frozenset(2*i+1 for i in trace_support(k))
+
+
+def midpoint_support(n, a, m):
+    for tap, reflected in ((a, False), (n-a, True)):
+        if (n+tap) % m == 0:
+            h = (n+tap)//m
+            image = {n, tap} ^ {h*j for j in trace_support(m)}
+        elif n > 2*tap and (n-2*tap) % m == 0:
+            h = (n-2*tap)//m
+            image = {0, n} | {tap+h*j for j in trace_support(m)}
+        else:
+            continue
+        return tuple(sorted(n-i if reflected else i for i in image))
+    return None
+
+
+def check_midpoint_powers(limit):
+    from power_images import power_characteristic
+
+    # Children of a consecutive Stern pair. The sum increases at every edge.
+    indices = {1}
+    todo = [(1, 1, 1)]
+    while todo:
+        k, left, right = todo.pop()
+        if left+right <= 5:
+            indices.add(2*k+1)
+            todo.extend(((2*k, left, left+right), (2*k+1, left+right, right)))
+    if indices != {1, 3, 5, 7, 9, 11, 13, 15, 17, 31}:
+        raise ArithmeticError("unexpected odd indices with trace weight at most five")
+    exceptions = []
+    for m in sorted(indices):
+        for a in range(1, (m+1)//2):
+            n = m-a
+            if n <= 7 or not primitive(polynomial((0, a, n)), n):
+                continue
+            image = power_characteristic((0, a, n), m)
+            if len(image) <= 5:
+                if gcd(2**n-1, m) != 1 or not primitive(polynomial(image), n):
+                    raise ArithmeticError("imprimitive exceptional image")
+                exceptions.append((n, a, m, image))
+    if exceptions != [(11, 2, 13, (0, 1, 5, 6, 11)), (28, 3, 31, (0, 1, 7, 15, 28))]:
+        raise ArithmeticError("incorrect sparse midpoint powers beyond the degree")
+    checked = 0
+    for n in range(2, limit+1):
+        for a in range(1, n):
+            if gcd(a, n) != 1:
+                continue
+            for m in range(3, 2*n, 2):
+                expected = midpoint_support(n, a, m)
+                if expected is None:
+                    continue
+                if expected != power_characteristic((0, a, n), m):
+                    raise ArithmeticError(f"incorrect midpoint formula at degree {n}, tap {a}, power {m}")
+                if m <= n and len(expected) != 2+len(trace_support(m)):
+                    raise ArithmeticError("unexpected overlap in the short midpoint formula")
+                checked += 1
+    return checked
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--blocks", type=int, metavar="DEGREE", help="verify all binary block powers in one odd degree above 11")
     group.add_argument("--all-powers", type=int, metavar="DEGREE",
                        help="compute every characteristic polynomial for exponents up to the degree")
+    group.add_argument("--midpoints", type=int, metavar="LIMIT",
+                       help="check every midpoint characteristic polynomial through this degree and the two long powers")
     args = parser.parse_args()
+    if args.midpoints is not None:
+        if args.midpoints < 2:
+            parser.error("choose a degree limit of at least two")
+        checked = check_midpoint_powers(args.midpoints)
+        print(f"Verified {checked} midpoint characteristic polynomials and both primitive long-power exceptions.")
+        raise SystemExit
     check_patterns()
     if args.all_powers is not None:
         n = args.all_powers

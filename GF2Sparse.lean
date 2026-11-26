@@ -56,6 +56,7 @@ import GF2Sparse.RootProducts
 import GF2Sparse.ShiftedExample
 import GF2Sparse.ShiftedPeriods
 import GF2Sparse.ShiftWeight
+import GF2Sparse.SternPowers
 import GF2Sparse.Seroussi1229
 import GF2Sparse.SeventhImage
 import GF2Sparse.ShortProducts

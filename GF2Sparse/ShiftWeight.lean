@@ -80,6 +80,16 @@ private theorem wt_join (a b : BinaryPoly) : wt (join a b) = wt a + wt b := by
   rw [Finset.card_image_of_injective _ (by intro x y h; dsimp at h; omega),
       Finset.card_image_of_injective _ (by intro x y h; dsimp at h; omega)]
 
+/-- The even and odd supports in a binary Frobenius decomposition are disjoint. -/
+theorem card_support_sq_add_X_mul_sq (a b : BinaryPoly) :
+    (a^2 + X*b^2).support.card = a.support.card + b.support.card := by
+  have hf : frobenius (ZMod 2) 2 = RingHom.id _ := by
+    ext1 c
+    exact ZMod.pow_card c
+  have he (p : BinaryPoly) : expand (ZMod 2) 2 p = p^2 := by
+    simpa [hf] using map_frobenius_expand 2 p
+  simpa only [join, wt, he] using wt_join a b
+
 private theorem shift_join (a b : BinaryPoly) :
     shift (join a b) = join (shift (a+b)) (shift b) := by
   have commute (p : BinaryPoly) :

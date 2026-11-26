@@ -12540,4 +12540,85 @@ primitive base as the six-factor certificate.
 The three interpolants and 380 additional pencil indices are in
 \nolinkurl{data/degree-1229-seventh-power-real-pencils.json}.
 
+\section{Stern weights for every trinomial power with a midpoint}
+\label{sec:stern-midpoint}
+Let \(f=1+X^a+X^n\) be primitive, \(0<a<n\), \(n>7\), and let
+\(r\) be a root. Write a positive exponent as \(2^s m\), with \(m>1\)
+odd. Suppose one of the three distinct residues \(0,a,n\bmod m\) is
+the midpoint of the other two. Let \(s_j\) denote Stern's diatomic
+sequence, defined by \(s_0=0,\ s_1=1,\ s_{2j}=s_j,\
+s_{2j+1}=s_j+s_{j+1}\).
+
+\begin{theorem}
+For \(m\le n\) the minimal polynomial of \(r^{2^s m}\) has exactly
+\(2+s_m\) terms. For \(m>n\), the only such images with at most five
+terms, up to taking reciprocals of both polynomials, are
+\[
+\begin{array}{c|c|c|c}
+n&a&m&\text{support of the image}\\\hline
+11&2&13&0,1,5,6,11\\
+28&3&31&0,1,7,15,28
+\end{array}
+\]
+Both displayed images are primitive.
+\end{theorem}
+
+\begin{proof}
+The midpoint condition says that \(m\) divides one of \(n+a,2n-a,n-2a\).
+These are nonzero since \(\gcd(a,n)=1\) and \(n>7\). In particular
+\(m<2n\). The order of \(r^m\) is at least \((2^n-1)/m\), which exceeds
+\(2^{\lfloor n/2\rfloor}-1\) because \(2^{\lceil n/2\rceil}+1\ge2n\)
+for \(n\ge8\). Thus \(r^m\) has degree \(n\). The power \(2^s\) leaves
+its minimal polynomial unchanged.
+
+Put \(P_0=0,\ P_1=1,\ P_{j+2}=P_{j+1}+Y P_j\). If \(u+v=1\), then
+\(P_j(uv)=u^j+v^j\), by the quadratic equation of \(u,v\). The even and
+odd recurrences are
+\[
+ P_{2j}=P_j^2,\qquad P_{2j+1}=P_{j+1}^2+Y P_j^2.
+\]
+They follow together by induction using the defining recurrence. The
+last two summands have disjoint exponent parity, so the weight of
+\(P_j\) is exactly \(s_j\). Also \(\deg P_j\le\lfloor(j-1)/2\rfloor\)
+for \(j\ge1\), by the defining recurrence. Lean verifies the trace,
+weight recurrences and the following equation in
+\nolinkurl{GF2Sparse/SternPowers.lean}.
+
+If \(n+a=mh\), take \(u=r^a,\ v=r^n\). Since \(u+v=1\), the monic
+minimal polynomial of \(r^m\) is
+\[
+                  G(Y)=Y^n+Y^a+P_m(Y^h).
+\]
+The trace term has degree strictly less than \(n\). Cancellation at
+\(Y^a\) requires \(h\mid a\). Since \(h\mid n+a\) and \(\gcd(a,n)=1\),
+this is possible only for \(h=1\). The case \(m\mid 2n-a\) follows
+by replacing \(r\) with \(r^{-1}\), whose trinomial has tap \(n-a\).
+For the remaining case reflect the tap if necessary so \(n-2a=mh>0\).
+Now \(u=r^{-a},\ v=r^{n-a}\) sum to one. Multiply their trace identity
+by \(r^{am}\) to get the minimal polynomial
+\[
+                     1+Y^n+Y^a P_m(Y^h).
+\]
+All exponents of its last summand are strictly between zero and \(n\).
+These formulas prove the asserted short-power weight.
+
+For \(m>n\) the first formula with \(h=1\) applies up to reflection.
+Its weight is \(s_m+2\) when the coefficient of \(Y^a\) in \(P_m\)
+vanishes and \(s_m\) otherwise. Thus five or fewer terms require
+\(s_m\le5\). For \(k\ge1\) the pair \((s_k,s_{k+1})=(b,c)\) has
+children \((b,b+c)\), \((b+c,c)\) at indices \(2k,2k+1\). Starting
+at \((1,1)\) and stopping when the sum exceeds five exhausts all odd
+indices with \(s_m\le5\), giving
+\(1,3,5,7,9,11,13,15,17,31\). This pair enumeration is also described
+by B.~Reznick, \emph{Regularity properties of the Stern enumeration of
+the rationals}, \url{https://arxiv.org/abs/math/0610601}.
+For each index take \(n=m-a>\max(7,a)\). Testing irreducibility and
+\(X^{(2^n-1)/p}\ne1\bmod f\) for every prime \(p\mid 2^n-1\) leaves
+exactly the two sparse images in the table. In both cases \(m\) is
+coprime to \(2^n-1\). The finite enumeration and independent binary
+characteristic polynomials are checked by
+\nolinkurl{scripts/check_trinomial_decimations.py} with
+\texttt{--midpoints 64}.
+\end{proof}
+
 \end{document}
