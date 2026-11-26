@@ -20,6 +20,8 @@ from power_images import norm_pattern
 
 SOURCE = (166, 249, 332)
 TARGET = (332, 726, 1089)
+SPLITS = {"6": "degree-1229-seventh-power-split-six.json", "9": "degree-1229-seventh-power-split.json",
+          "degree-20": "degree-1229-seventh-power-degree20.json"}
 
 
 def census(m, taps):
@@ -75,33 +77,45 @@ def verify_pair():
     return f
 
 
-def split_task(row, logs=None):
+def split_log_table():
     from check_1229_factor_base_orders import DIRECTION_LOGS, extended_table, read_logs, read_table
-    from check_1229_hermitian_descent import bits, records, relative_factor
-    from check_1229_log_descent import checked_exponent, reduce_task, sparse_quotient
-    from check_1229_norm_height import checked_norm
-    from prepare_1229_single_log import prepare
+    from check_1229_hermitian_descent import records
+
+    field_mask, table = read_table()
+    table = extended_table(table)
+    table.update(read_logs(DIRECTION_LOGS))
+    table.update({p: int(r["log_mod_C"]) for p, r in records().items() if "log_mod_C" in r})
+    return field_mask, table
+
+
+def split_coefficients(row, field, root):
+    from check_1229_log_descent import sparse_quotient
 
     if tuple(row["source_taps"]) != SOURCE:
         raise ValueError("incorrect sparse source in the split")
-    _, field, _, root = prepare(SOURCE)
-    field_mask, table = read_table()
-    if mask_of(field) != field_mask:
-        raise ValueError("the sparse root uses a different logarithm basis")
     j, shift = row["frobenius"], row["base_shift"]
     if not 0 <= j < N or not 0 <= shift < GROUP:
         raise ValueError("invalid Frobenius index or base shift")
     x = polynomial(2)
-    base = x.pow_mod(KNOWN, field)
     conjugate = root.pow_mod(1 << j, field) * x.pow_mod(shift, field) % field
     relation = sparse_quotient(conjugate, row, field)
     relation[2] -= shift
     inverse = pow(1 << j, -1, COFACTOR)
-    coefficients = {p: inverse*c for p, c in relation.items() if c}
+    return {p: inverse*c for p, c in relation.items() if c}
 
-    table = extended_table(table)
-    table.update(read_logs(DIRECTION_LOGS))
-    table.update({p: int(r["log_mod_C"]) for p, r in records().items() if "log_mod_C" in r})
+
+def split_task(row, logs=None):
+    from check_1229_hermitian_descent import bits, relative_factor
+    from check_1229_log_descent import checked_exponent, reduce_task
+    from check_1229_norm_height import checked_norm
+    from prepare_1229_single_log import prepare
+
+    _, field, _, root = prepare(SOURCE)
+    field_mask, table = split_log_table()
+    if mask_of(field) != field_mask:
+        raise ValueError("the sparse root uses a different logarithm basis")
+    base = polynomial(2).pow_mod(KNOWN, field)
+    coefficients = split_coefficients(row, field, root)
     known = {p: checked_exponent(p, table[p], base, field) for p in coefficients.keys() & table.keys()}
     masks = coefficients.keys()-known.keys()
     if "logarithms" in row:
@@ -131,8 +145,8 @@ def main():
     options = parser.add_mutually_exclusive_group()
     options.add_argument("--task", action="store_true", help="export the common-index logarithm task")
     options.add_argument("--log", type=int, metavar="EXPONENT", help="verify the common-index logarithm")
-    options.add_argument("--split", nargs="?", type=int, choices=(6, 9), const=9,
-                         help="export a split into 6 or 9 factor logarithms (default with --split: 9)")
+    options.add_argument("--split", nargs="?", choices=SPLITS, const="9",
+                         help="export a factor split; degree-20 gives six inputs, each of relative degree at most 20")
     options.add_argument("--check-split", type=Path, help="verify a finder row and export its individual logarithms")
     parser.add_argument("--logs", type=Path, help="check a partial or complete mask,exponent CSV for a split")
     args = parser.parse_args()
@@ -143,10 +157,8 @@ def main():
         if args.check_split:
             row = {"source_taps": list(SOURCE), **json.loads(args.check_split.read_text())}
         else:
-            filename = ("degree-1229-seventh-power-split-six.json" if args.split == 6
-                        else "degree-1229-seventh-power-split.json")
-            row = json.loads((DATA / filename).read_text())
-            if len(row["logarithms"]["remaining"]) != args.split:
+            row = json.loads((DATA / SPLITS[args.split]).read_text())
+            if len(row["logarithms"]["remaining"]) != (9 if args.split == "9" else 6):
                 raise ArithmeticError("unexpected number of factor tasks")
         task = split_task(row, args.logs)
         if not args.logs and "logarithms" in row and task != row["logarithms"]:
