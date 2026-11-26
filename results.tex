@@ -10154,7 +10154,61 @@ pencil coefficients. The verifier reconstructs every one of the
 substitution side. Taking norms to \(\mathbb F_{2^{1229}}\) gives
 relations between evaluations in the binary subgroup. The
 known primitive generator supplies a common base for these five
-representations. Computing the sparse-root logarithms or an
-appropriate new table of linear norms is still open.
+representations.
+
+\paragraph{Relations between linear norms.}
+Write \(H=\mathbb F_{2^{1229}}\), \(L=\mathbb F_{q^{2\cdot1229}}\),
+and let \(a\) be the transported primitive generator of \(H^\times\).
+With the known part \(K\) of the group order and \(C=(2^{1229}-1)/K\), put
+\[
+ W_c=\log_{a^K}\!\left(N_{L/H}(x+c)^K\right)\pmod C
+ \qquad(c\in k).
+\]
+The involution of \(L/\mathbb F_{q^{1229}}\) fixes \(x\) and takes
+\(c\) to \(\bar c=c^q\). Thus \(W_c=W_{\bar c}\), giving
+\((q^2+q)/2=524{,}800\) variable labels in each model. Suppose
+\(S\) has finite source roots \(P\) and its substituted numerator
+\(D\) splits over \(k\). The denominator \(h_1\) always splits
+over \(k\). Taking norms in the displayed identity gives
+\[
+  \sum_{c\in P} W_c+q\sum_{h_1(t)=0}W_t-q\sum_{D(t)=0}W_t=0
+  \pmod C,
+\]
+with multiplicities. Indeed \(y+t=(x+\bar t)^q\), and the norm
+of any nonzero constant in \(k\) is one.
+
+Take \(b,d\in B\) in the norm circles with \(d\ne b^2\), and
+also take the trace lines \(S(X)=X^q+X+d\), for which
+\(D(T)=u+(T+d)h_1(T)\). These give \(q^2\) source pencils to
+test per model. At \(b=0\) every numerator has degree at most two.
+Each other numerator is cubic over \(B\) and splits over \(k\)
+exactly when it has a root in \(B\). The verifier counts solutions
+by incidence on the graph of the rational function, and independently
+tests every cubic by translating to \(Y^3+pY+h\).
+\[
+\begin{array}{c|r|r|r}
+ (u,v)&\text{split norm circles}&\text{split trace lines}&\text{total}\\\hline
+ (3,1019)&698{,}712&680&699{,}392\\
+ (6,246)&698{,}021&688&698{,}709\\
+ (6,285)&698{,}704&688&699{,}392\\
+ (6,454)&698{,}704&688&699{,}392\\
+ (7,88)&698{,}021&688&698{,}709
+\end{array}
+\]
+
+The \(q-1=1023\) rows with \(b=0\) are independent modulo \(C\).
+Their sources \(c^{q+1}=d\), \(d\in B^\times\), are disjoint.
+Each contains one real point and 512 nonreal conjugate pairs,
+each pair contributing coefficient two. A nonreal root of \(h_1\)
+or of \(D/d=T^2+(1+u/d)T+v\) has norm \(v\) to \(B\).
+For each \(d\ne v\), any source pair therefore provides a column
+with entry two in that row and zero in all other zero-center rows.
+In the row \(d=v\), at most four roots from \(h_1D\) affect the
+512 pairs, so another source column has entry two in that row.
+The resulting triangular minor has determinant a power of two,
+which is a unit modulo the odd integer \(C\). The full matrix rank
+and both sparse-root orders remain open. The relation checker
+exports a signed row from its pencil parameters, and the model
+checker exports an individual \(W_c\) as a forward-logarithm task.
 
 \end{document}

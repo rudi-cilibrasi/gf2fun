@@ -14,6 +14,7 @@ from period_coordinate import CANDIDATES, DEGREE, period_polynomial, mask_of
 
 CERTIFICATE = DATA / "degree-1229-height-two-models.json.gz"
 Q = 1024
+LINEAR_CONSTANT_MODULUS = (1 << 20) | (1 << 3) | 1
 
 
 def binary_polynomial(mask, ring):
@@ -24,15 +25,21 @@ def scalar(mask, field):
     return field([mask >> i & 1 for i in range(mask.bit_length())])
 
 
+def bits(c):
+    return sum(int(bit) << i for i, bit in enumerate(c.to_list()))
+
+
 def pack_relative(poly):
-    def bits(c):
-        return sum(int(bit) << i for i, bit in enumerate(c.to_list()))
     return hex(sum(bits(c) << (10*i) for i, c in enumerate(poly)))
 
 
+def quadratic_constants():
+    field = fq_default_ctx(modulus=binary_polynomial(LINEAR_CONSTANT_MODULUS, fmpz_mod_poly_ctx(2)), var="w")
+    return field, fq_default_poly_ctx(field)
+
+
 def check_pencil(row, theta_mask):
-    field = fq_default_ctx(modulus=fmpz_mod_poly_ctx(2)([1, 0, 0, 1] + [0]*16 + [1]), var="w")
-    ring = fq_default_poly_ctx(field)
+    field, ring = quadratic_constants()
     t = ring.gen()
     theta = scalar(theta_mask, field)
     if theta**10+theta**3+1 != 0:
@@ -105,12 +112,26 @@ def verify(args):
             raise ArithmeticError(f"the {name} sparse root or its embedding failed")
         roots[name] = r
     check_pencil(row, theta_mask)
-    if task:
-        r = roots[task]
-        return {"candidate": task, "u": row["u"], "v": row["v"], "q": Q,
+    if task is not None:
+        if isinstance(task, str):
+            r = roots[task]
+            target = {"candidate": task, "sparse_root_packed_hex": pack_relative(r)}
+        else:
+            k, polys = quadratic_constants()
+            theta, c = scalar(theta_mask, k), scalar(task, k)
+            subfield = {bits(binary_polynomial(i, polys)(theta)): scalar(i, field) for i in range(Q)}
+            # First take the quadratic constant norm to F_(q^1229), then its ten-fold norm to F_(2^1229).
+            point_norm = x*x + subfield[bits(c+c**Q)]*x + subfield[bits(c**(Q+1))]
+            r = point_norm.pow_mod(((1 << (10*DEGREE))-1)//((1 << DEGREE)-1), g)
+            if r.pow_mod(1 << DEGREE, g) != r:
+                raise ArithmeticError("the linear norm did not land in the binary subfield")
+            target = {"linear_mask_hex": hex(task), "linear_constant_modulus_hex": hex(LINEAR_CONSTANT_MODULUS),
+                      "ten_bit_generator_in_linear_constants_hex": hex(theta_mask),
+                      "linear_norm_packed_hex": pack_relative(r)}
+        return {**target, "u": row["u"], "v": row["v"], "q": Q,
                 "constant_modulus_hex": "0x409", "bits_per_coefficient": 10,
                 "relative_modulus_packed_hex": row["relative_modulus_packed_hex"],
-                "sparse_root_packed_hex": pack_relative(r), "primitive_generator_packed_hex": pack_relative(base),
+                "primitive_generator_packed_hex": pack_relative(base),
                 "K": str(KNOWN), "C": str(COFACTOR), "base_packed_hex": pack_relative(base.pow_mod(KNOWN, g)),
                 "target_packed_hex": pack_relative(r.pow_mod(KNOWN, g))}
     return row["u"], row["v"]
@@ -120,7 +141,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--model", type=int, nargs=2, metavar=("U", "V"), help="select one coefficient pair")
-    parser.add_argument("--task", choices=CANDIDATES, help="export the selected sparse root's forward-log task")
+    target = parser.add_mutually_exclusive_group()
+    target.add_argument("--task", choices=CANDIDATES, help="export the selected sparse root's forward-log task")
+    target.add_argument("--linear", type=lambda z: int(z, 0), help="export the log target for the norm of x+c, with c a twenty-bit mask")
     args = parser.parse_args()
     if args.jobs < 1:
         parser.error("--jobs must be positive")
@@ -130,12 +153,15 @@ def main():
         raise ValueError("incorrect base-field parameters")
     old = next(r for r in json.loads((DATA / "degree-1229-frobenius-models.json").read_text()) if r["q"] == Q)
     per = mask_of(period_polynomial(DEGREE))
-    selected = args.model or ([3, 1019] if args.task else None)
+    if args.linear is not None and not 0 <= args.linear < Q**2:
+        parser.error("--linear requires a twenty-bit mask")
+    task = args.task if args.linear is None else args.linear
+    selected = args.model or ([3, 1019] if task is not None else None)
     rows = [row for row in record["models"] if not selected or [row["u"], row["v"]] == selected]
     if not rows:
         parser.error("unrecognized height-two model")
-    items = [(row, record["constant_generator_in_quadratic_extension"], old, per, args.task) for row in rows]
-    if args.task:
+    items = [(row, record["constant_generator_in_quadratic_extension"], old, per, task) for row in rows]
+    if task is not None:
         print(json.dumps(verify(items[0]), indent=2))
         return
     with ProcessPoolExecutor(max_workers=args.jobs) as pool:
