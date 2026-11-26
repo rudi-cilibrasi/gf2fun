@@ -11136,4 +11136,97 @@ degree-27 trinomials are reducible. The checker verifies both orders
 using \(2^{27}-1=7\cdot73\cdot262657\). The source belongs to
 template 4, with \(t=7,\ u=10,\ v=-7\) in the translated support.
 
+
+\section{How long repeated cubing can preserve sparsity}
+\label{sec:cubing-chains}
+\begin{theorem}\label{thm:cubing-chains}
+Let \(r\) be primitive in \(\mathbb F_{2^n}\) with \(n\) odd.
+For \(n>11\), the minimal polynomials of \(r,r^3,r^9\) all have at
+most five terms exactly when the first is a trinomial with two
+exponents congruent modulo nine. Four consecutive iterates of cubing
+cannot all have minimal polynomials of weight at most five.
+Degree 23 attains three consecutive iterates.
+
+For all odd \(n\ge7\) the sharp upper bound is four, attained by two
+starting polynomials each in degrees seven and eleven. Across all odd
+degrees there are exactly twelve primitive pentanomials for which both
+the third and ninth powers still have minimal polynomials of weight at
+most five. Four occur in each of degrees five, seven and eleven.
+\end{theorem}
+\begin{proof}
+Start with an exponent-gcd-one pentanomial of odd degree for which the
+first two cube images have odd weight at most five. Applying the cube
+formula twice to the 130 exceptions of Theorem~\ref{thm:cubed-supports}
+retains 30. For the templates, row 3 has even span. For each of
+rows 1, 2 and 4 write the first image exponents as \((iu+jv)/3\).
+The residues of \(u,v\) modulo nine specify the residues of these
+exponents modulo three. Apply the same cube formula to the pairs
+\((i,j)\) with those residues, before substituting numerical steps.
+The resulting ninth-power exponents have denominator nine. The
+possible numbers of distinct formal terms of odd multiplicity are
+respectively \(\{9,17\},\{11,13\},\{11\}\).
+Thus an actual odd weight at most five requires at least one equality
+\[
+    (i-k)u+(j-l)v=0
+\]
+between distinct remaining forms. Since \(\gcd(u,v)=1\), this gives
+only \((u,v)=\pm(j-l,k-i)/\gcd(j-l,k-i)\). Check the residues,
+translate to least exponent zero, and evaluate both cube images.
+This argument includes specializations that already had a collision
+at the first cube, since pairs of equal terms cancel after specialization
+in either computation.
+
+Taking both orientations and removing duplicates gives the full
+pentanomial census.
+\[
+\begin{array}{c|rrrrr|r}
+n&5&7&9&11&13&\text{total}\\\hline
+\text{normalized supports}&4&10&14&10&2&40\\
+\text{irreducible}&4&4&6&4&0&18\\
+\text{primitive}&4&4&0&4&0&12
+\end{array}
+\]
+The checker \nolinkurl{scripts/check_cubing_chains.py} also enumerates
+all normalized odd-degree supports through degree 13 directly, factors
+the survivors, and verifies the orders and the third- and ninth-power
+identities by modular arithmetic. Cubing preserves primitivity in odd
+degree, so both images in a primitive row give minimal polynomials.
+
+For a primitive trinomial of odd degree at least five there is exactly
+one congruent pair of exponents modulo three. All distinct residues
+would give a root \(\omega\), and all equal residues would give a
+nontrivial dilation. Translate the congruent pair to exponents \(0,u\)
+and write the third as \(v\). If \(9\mid u\), the ninth-power image,
+up to translation of its exponents, is
+\[
+        (1+X^{u/9})^9+X^v
+        =1+X^{u/9}+X^{8u/9}+X^u+X^v .
+\]
+The first cube is a pentanomial by Theorem~\ref{thm:progression}.
+If \(9\nmid u\), the six residue lifts with \(u=3,6\bmod9\) and
+\(v=1,4,7\bmod9\) suffice up to simultaneous sign. Each gives seven
+formal ninth-power terms. The same two-term collision test leaves
+only \(X^3+X+1,\ X^5+X^2+1,\ X^7+X+1\) and their reciprocals.
+This proves the criterion for \(n>11\).
+
+If the first polynomial of four sparse iterates were a trinomial,
+its cube would start a three-iterate pentanomial row in the table.
+If the first were a pentanomial, it would itself start such a row.
+The primitive trinomial \(X^{23}+X^9+1\) gives respective weights
+\(3,5,5,7\), attaining the degree-\(n>11\) bound. For \(n=7,9,11\)
+direct enumeration of primitive sparse sources gives the following
+counts by the number of consecutive sparse iterates, starting with
+the source.
+\[
+\begin{array}{c|rrrr}
+ n\backslash\text{length}&1&2&3&4\\\hline
+ 7&4&4&4&2\\9&10&6&2&0\\11&32&8&4&2
+\end{array}
+\]
+In degree eleven one such sequence has interior tap sets
+\[
+ (4,6,7),\quad(2,6,8),\quad(5,9,10),\quad(3,6,8).
+\]
+\end{proof}
+
 \end{document}
