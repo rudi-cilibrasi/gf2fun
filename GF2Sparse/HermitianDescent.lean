@@ -268,4 +268,30 @@ theorem fixed_common_pencil_root {K : Type*} [Field K] [CharP K 2]
     _ = (v^2+v*(v+w))/(v+w)^2 := by rw [htrace, common_pencil_artinSchreier]
     _ = _ := by field_simp
 
+/-- A linear rational expression in the q-th power cannot contain a factor
+of degree strictly greater than q+1 unless its cleared polynomial vanishes. -/
+theorem height_one_factor_bound {K : Type*} [Field K] (q : ℕ) (a b c d : K)
+    (P : K[X]) (hp : q+1 < P.natDegree)
+    (hdiv : P ∣ C a*X^q+C b + X*(C c*X^q+C d)) :
+    C a*X^q+C b + X*(C c*X^q+C d) = 0 := by
+  have lin (u v : K) : (C u*X^q+C v).natDegree ≤ q := by
+    apply (natDegree_add_le _ _).trans
+    exact max_le ((natDegree_mul_le).trans (by simp)) (by simp)
+  have bound : (C a*X^q+C b + X*(C c*X^q+C d)).natDegree ≤ q+1 := by
+    apply (natDegree_add_le _ _).trans
+    apply max_le ((lin a b).trans (by omega))
+    have mulBound := @natDegree_mul_le K _ X (C c*X^q+C d)
+    rw [natDegree_X] at mulBound
+    have := lin c d
+    omega
+  by_contra nonzero
+  exact (not_le_of_gt hp) ((natDegree_le_of_dvd hdiv nonzero).trans bound)
+
+/-- In a nonzero cubic pencil a designated quadratic can leave at most a linear cofactor. -/
+theorem height_two_cofactor {K : Type*} [Field K] (Q B : K[X])
+    (nonzero : Q*B ≠ 0) (target : Q.natDegree = 2) (bound : (Q*B).natDegree ≤ 3) :
+    B.natDegree ≤ 1 := by
+  rw [natDegree_mul (left_ne_zero_of_mul nonzero) (right_ne_zero_of_mul nonzero), target] at bound
+  omega
+
 end GF2Sparse.HermitianDescent

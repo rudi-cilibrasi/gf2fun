@@ -10061,4 +10061,100 @@ and the translation in the indicated coordinate is by one.
 Exactly forty catalogue quadratics have sum one in each of the
 three coordinates, improving the last bound to 441.
 
+\section{Five degree-two Frobenius representations for the sparse roots}
+\label{sec:height-two-models}
+Let \(q=1024\) and let
+\(B=\mathbb F_q=\F[z]/(z^{10}+z^3+1)\), with the constant coefficient
+in the low bit of an integer encoding. For each pair
+\[
+   (u,v)=(3,1019),\ (6,246),\ (6,285),\ (6,454),\ (7,88)
+\]
+the polynomial
+\[
+  X^{2049}+X^{1025}+vX+u
+\]
+has an irreducible factor \(g\in B[X]\) of degree 1229. In
+\(B[X]/g\), put \(x=X\bmod g\) and \(y=x^q\). Then
+\[
+    x=\frac{u}{y^2+y+v}.
+\]
+Height two, the maximum degree of numerator and denominator in this
+rational function, is the smallest possible for \(q=1024\).
+A nonconstant height-one relation \(x=(ay+b)/(cy+d)\) produces
+a nonzero polynomial in \(x\) of degree at most 1025.
+
+\paragraph{Constant fields.}
+Among subfields of \(k=\mathbb F_{2^{20}}\), \(B\) is the
+smallest over which a height-two representation can have this
+degree. For a smaller subfield \(B_0=\mathbb F_{2^s}\),
+\(s\in\{1,2,4,5\}\).
+An inseparable quadratic map is \(M(T^2)\) for a projectivity
+\(M\). Iterating \(x=M(x^{2^{11}})\) \(s\) times gives
+\(x=M_s(x^{2^{11s}})\), with \(M_s\) defined over \(B_0\).
+Its order divides \(|\mathrm{PGL}_2(B_0)|=2^s(2^{2s}-1)\).
+Thus the degree of \(x\) over \(B_0\) divides eleven times
+that order, which is prime to 1229.
+
+A separable quadratic map over this perfect field has a unique
+geometric critical point, which is rational. Indeed its
+homogeneous derivative numerator is the square of a linear form.
+Under a coordinate change \(x\mapsto M(x)\), the rational map
+changes by \(R\mapsto M\circ R\circ(M^{(q)})^{-1}\).
+Choose the change to put its critical point at infinity.
+If infinity maps to infinity, it is a quadratic polynomial, since
+its unique pole has multiplicity two. The roots of the resulting
+equation form an affine translate of the roots of a separable
+binary additive polynomial of degree \(2^{11}\). Frobenius acts
+through \(\mathrm{AGL}_{11}(2)\). Its order has no prime divisor
+1229, since \(1229\nmid 2^i-1\) for \(1\le i\le11\).
+Otherwise the critical value is finite and the rational map is
+\(a+b/(T^2+dT+e)\), with \(bd\ne0\). Indeed subtracting the
+value at infinity leaves a constant numerator, since infinity
+is critical. An affine output scaling and translation, with the
+conjugate input change, normalize the critical value to zero and
+\(d\) to one. This gives precisely the two-parameter family above.
+The finder exhausts respectively 2, 7, 64 and 200 binary Frobenius
+orbits of \((u,v)\) over the four smaller fields. None has a
+degree-1229 factor. It computes the gcd of the parent with
+\(X^{2^{1229s}}+X\) and removes its linear part. The parent is
+squarefree because it equals \(X\) times its derivative plus
+\(u\ne0\). A factor of degree 1229 over \(k\) would already have
+degree 1229 over the smaller field, since the parent degree is
+below twice 1229.
+
+\paragraph{Embedding and elimination certificates.}
+Each recorded factor has ten distinct binary Frobenius conjugates.
+Their product is an irreducible binary modulus of degree 12,290.
+The file \nolinkurl{data/degree-1229-height-two-models.json.gz}
+contains both presentations, the image of \(z\), and explicit images
+of the earlier primitive generator and both degree-1229 sparse
+roots. For the construction in the binary presentation, take
+\(\zeta\) of exact order 2459 by powering and put
+\(\omega=\zeta+\zeta^{-1}\).
+The signed powers of two cover all nonzero residues modulo 2459,
+so \(\omega\) gives the same degree-1229 Gauss-period coordinate
+as in Section~\ref{sec:1229-frobenius-models}. Evaluating the
+three earlier power-basis expressions at \(\omega\) transports
+the subgroup base and both targets coherently. The checker
+independently verifies irreducibility, the coefficient norm, the
+field equations and both original sparse-root expressions.
+
+After extending constants to \(k\), the degree-1229 factor remains
+irreducible. For the source pencil
+\(S(X)=X^{q+1}+bX+\bar b X^q+d\), set \(h_1=T^2+T+v\).
+Clearing the denominator gives
+\[
+ h_1(y)S(x)=D(y),\qquad D(T)=(T+b)u+(\bar bT+d)h_1(T).
+\]
+Thus a quadratic dividing a nonzero \(D\) always leaves a
+cofactor of degree at most one. For each model the certificate
+supplies such a quadratic, the residual linear root, and the
+pencil coefficients. The verifier reconstructs every one of the
+1025 source points on the norm circle and the full cubic on the
+substitution side. Taking norms to \(\mathbb F_{2^{1229}}\) gives
+relations between evaluations in the binary subgroup. The
+known primitive generator supplies a common base for these five
+representations. Computing the sparse-root logarithms or an
+appropriate new table of linear norms is still open.
+
 \end{document}
