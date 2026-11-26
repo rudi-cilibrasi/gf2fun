@@ -12852,4 +12852,78 @@ prime-divisor tests in Section~\ref{sec:ore2047} give larger order
 divisors for the 46 sparse degree-11 seeds.
 \end{proof}
 
+\begin{theorem}\label{thm:ore-uniform-five}
+For every primitive binary seed \(P\) of degree \(s\ge40\), any root
+\(r\) of its degree-\(n=2^s-1\) Ore lift satisfies
+\[
+                    \log_2\ord(r)>5\sqrt{n+1}.
+\]
+In particular this applies to a trinomial or pentanomial lift whenever
+the primitive seed has three or five terms.
+\end{theorem}
+\begin{proof}
+Write \(s=2a+\delta\), \(\delta\in\{0,1\}\), and set \(m=2^{20}\),
+\(t=2^{a-20}\). We construct \(t\) disjoint sets of generators with the
+same degree bounds, using Corollary~\ref{cor:ore-fraction-bound}.
+There are \(v=(1,1,2,3)\) monic irreducibles with constant term 1 in
+degrees \(k=1,2,3,4\), respectively. Their total degree is 21.
+For \(0\le u_k\le v_k\) write \(N(d,u)\) for the number of monic
+constant-one labels \(g\) of degree \(d\) divisible by exactly \(u_k\)
+of the degree-\(k\) primes. Each has
+\[
+ \deg C_g=\Phi_2(g)\le 2^d\prod_{k=1}^4(1-2^{-k})^{u_k}.
+\]
+For \(d\ge22\) the Chinese remainder theorem, including the prescribed
+residue modulo \(Y\), gives
+\[
+ N(d,u)=2^{d-22}\prod_{k=1}^4 {v_k\choose u_k}(2^k-1)^{v_k-u_k}.
+\]
+For \(d<22\), fix the chosen primes and exclude the unchosen primes
+by inclusion--exclusion. A specified product of degree \(b\) divides
+exactly \(2^{d-b-1}\) labels for \(b<d\), one for \(b=d\), and zero
+for \(b>d\).
+
+For each \(8\le d\le24\) and each profile \(u\), set
+\[
+ K=\min_{0\le j\le\max(0,22-d)}
+        \left\lfloor N(d+j,u)/2^j\right\rfloor,\qquad
+ W=\left\lceil 2^d\prod_{k=1}^4(1-2^{-k})^{u_k}\right\rceil .
+\]
+The ratio \(N(d+j,u)/2^j\) is constant once \(d+j\ge22\).
+There are thus at least \(tK\) labels of actual degree \(d+a-20\)
+with this profile, each giving a generator of degree at most \(tW\).
+Their label degrees are at most \(a+4<s\), so all their logarithms
+exist. Split them into \(t\) sets of \(K\) labels, discarding any excess.
+
+Within each set choose \(J\) distinct labels for the numerator and \(J\)
+others for the denominator. On each side use every chosen label at least
+once, with total multiplicity at most \(T\). There are
+\[
+             H={K\choose J}{K-J\choose J}{T\choose J}^2
+\]
+choices, each of degree at most \(tWT\) per side.
+The following integer certificate sums \(WT\) and
+\(\lfloor\log_2 H\rfloor\) over the profiles with \(J>0\).
+\[
+\begin{array}{c|r|r|r}
+\delta &\text{families used}&D=\sum WT&B=\sum\lfloor\log_2 H\rfloor\\\hline
+0&462&548189421234&5247607\\
+1&487&1095841698650&7424461
+\end{array}
+\]
+To reproduce the choices, let \(Q=2^{60}\) and take
+\(\lambda=1743\) for the even row and \(1233\) for the odd row.
+Start with \(v'=Q-\lfloor Q\lambda W/(1000m\cdot4096)\rfloor\).
+Replace \(v'\) by \(\lfloor(v')^2/Q\rfloor\) twelve times. Use
+\(J=\lfloor Kv'/(Q+v')\rfloor\) and
+\(T=\lfloor Kv'Q/(Q^2-(v')^2)\rfloor\).
+The finite calculation in \nolinkurl{scripts/check_ore_uniform_order.py}
+checks \(2J\le K\), \(J\le T\), \(2D\le2^\delta m^2-2\), and
+\(B^2>25\cdot2^\delta m^2\).
+Across all \(t\) sets per profile the degree per side is at most
+\(t^2D\), with \(2t^2D<n\). Hence the \(2^{tB}\) lower bound for
+distinct reduced fractions is also a lower bound for the order.
+Finally \(tB>5t m\sqrt{2^\delta}=5\sqrt{n+1}\).
+\end{proof}
+
 \end{document}
