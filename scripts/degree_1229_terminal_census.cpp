@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <NTL/GF2EXFactoring.h>
+#include <NTL/GF2XFactoring.h>
 #include <map>
 #include <fstream>
 #include <iostream>

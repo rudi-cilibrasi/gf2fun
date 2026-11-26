@@ -1,0 +1,14 @@
+{
+  "distinct": 1214007,
+  "indices": {
+    "1": 1213940,
+    "36871": 40,
+    "46703": 27
+  },
+  "minimum_terms": 531,
+  "minimum_masks": [
+    "0x11ff5e40575",
+    "0x1f59e1246f3"
+  ],
+  "maximum_terms": 703
+}

@@ -10,8 +10,10 @@ import struct
 import subprocess
 import sys
 import tempfile
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from itertools import islice
+from math import prod
 from pathlib import Path
 
 from check_1229_factor_base_orders import read_table
@@ -81,7 +83,50 @@ def rebuild(mode, data, backend, work, jobs):
     print(f"Reconstructed all {len(seen):,} targets in {mode}.", file=sys.stderr)
 
 
-def calculate(rows, backend, work, jobs, output, power_backend, check_individually):
+def fiber_counts(rows, backend, jobs):
+    counts = [Counter(), Counter(), Counter()]
+    def traces(group):
+        values = native(backend, ["traces"], [f"{p}\n" for p, _, _ in group])
+        if [r[0] for r in values] != [p for p, _, _ in group]:
+            raise ArithmeticError("incomplete relative-trace list")
+        return values
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        for values in pool.map(traces, batches(rows)):
+            for p, *trace_masks in values:
+                orbit = (p.bit_length()-1)//2
+                for count, t in zip(counts, trace_masks, strict=True):
+                    degree = t.bit_length()-1
+                    if not degree or orbit % degree or 20 % degree:
+                        raise ArithmeticError("incorrect binary degree of a fiber trace")
+                    count[t] += orbit//degree
+    for name, count, (limit, witness) in zip(("T", "1/T", "1/(T+1)"), counts,
+            ((46, 0x41d), (45, 0x13d2b7), (52, 0x25)), strict=True):
+        if (max(count.values()) != limit or count[witness] != limit or count[3] != 40 or
+                sum((p.bit_length()-1)*n for p, n in count.items()) != 24_280_108):
+            raise ArithmeticError(f"unexpected quadratic fibers in chart {name}")
+        print(f"{name}: at most {limit} catalogue fibers at any fixed trace, attained at {witness:#x}. "
+              f"Exactly {count[3]} have trace one.")
+
+
+def order_census(stream):
+    indices = Counter()
+    minimum, maximum = 1230, 0
+    lightest = []
+    for line in stream:
+        p, terms, missing = map(int, line.split())
+        index = prod(prime for i, prime in enumerate(PRIMES) if missing >> i & 1)
+        indices[index] += 1
+        if terms < minimum:
+            minimum, lightest = terms, []
+        if terms == minimum:
+            lightest.append(p)
+        maximum = max(maximum, terms)
+    return {"distinct": sum(indices.values()), "indices": {str(i): n for i, n in sorted(indices.items())},
+            "minimum_terms": minimum, "minimum_masks": [hex(p) for p in sorted(lightest)],
+            "maximum_terms": maximum}
+
+
+def calculate(rows, backend, work, jobs, output, power_backend, check_individually, orders=False):
     field_mask, table = read_table()
     field = polynomial(field_mask)
     known = ((1 << 1229)-1)//COFACTOR
@@ -112,13 +157,21 @@ def calculate(rows, backend, work, jobs, output, power_backend, check_individual
     verification = work / "powers.txt"
     with verification.open("w") as verify, ThreadPoolExecutor(max_workers=jobs) as pool:
         print(field_mask, *PRIMES, file=verify)
-        writer = csv.writer(output, lineterminator="\n")
-        writer.writerow(("mask", "exponent"))
+        writer = csv.writer(output, lineterminator="\n") if output else None
+        if writer:
+            writer.writerow(("mask", "exponent"))
         for group in pool.map(logarithms, batches(rows)):
             for p, e in group:
-                writer.writerow((hex(p), e))
+                if writer:
+                    writer.writerow((hex(p), e))
                 if power_backend:
                     print(p, e, file=verify)
+    if orders:
+        result = work / "orders.txt"
+        with verification.open() as stream, result.open("w") as out:
+            subprocess.run([str(power_backend.resolve()), "--extended"], stdin=stream, stdout=out, check=True)
+        with result.open() as stream:
+            return order_census(stream)
     if power_backend:
         with verification.open() as stream:
             subprocess.run([str(power_backend.resolve()), "--projected"], stdin=stream, stdout=sys.stderr, check=True)
@@ -131,18 +184,22 @@ def main():
     select.add_argument("--task", type=Path, help="look up every remaining mask in a contributor task")
     select.add_argument("--rebuild", action="store_true", help="repeat the incidence census and all NTL factorizations")
     select.add_argument("--export-all", type=Path, help="reconstruct the entire mask,exponent CSV")
+    select.add_argument("--orders", action="store_true", help="check all projected powers, full orders, and minimal-polynomial weights")
+    select.add_argument("--fibers", action="store_true", help="count all catalogue fibers at a fixed trace in three projective coordinates")
     parser.add_argument("--backend", type=Path, help="compiled degree_1229_terminal_census executable")
     parser.add_argument("--power-backend", type=Path, help="independent census_1229_factor_base executable")
     parser.add_argument("--jobs", type=int, default=4)
     args = parser.parse_args()
-    if args.jobs <= 0 or (args.rebuild or args.export_all) and not args.backend:
-        parser.error("use a positive job count and provide --backend for --rebuild or --export-all")
-    if args.power_backend and not (args.export_all or args.mask or args.task):
+    if args.jobs <= 0 or (args.rebuild or args.export_all or args.fibers) and not args.backend:
+        parser.error("use a positive job count and provide --backend for --rebuild, --export-all, or --fibers")
+    if args.orders and not (args.backend and args.power_backend):
+        parser.error("--orders requires --backend and --power-backend")
+    if args.power_backend and not (args.export_all or args.mask or args.task or args.orders):
         parser.error("--power-backend requires a logarithm task")
     if args.power_backend and not args.backend:
         parser.error("--power-backend requires --backend to reconstruct the exponents")
     tables = {mode: catalogue(path, count, digest) for mode, path, count, digest in TABLES}
-    if not (args.rebuild or args.mask or args.task or args.export_all):
+    if not (args.rebuild or args.mask or args.task or args.export_all or args.orders or args.fibers):
         print("1,214,007 distinct relative quadratics. The binary degrees are 40 for 1,214,005 and 8 for two.")
         return
     with tempfile.TemporaryDirectory() as tmp:
@@ -150,6 +207,16 @@ def main():
         if args.rebuild:
             for mode, data in tables.items():
                 rebuild(mode, data, args.backend, work, args.jobs)
+            return
+        if args.fibers:
+            fiber_counts(heapq.merge(*(RECORD.iter_unpack(data) for data in tables.values())), args.backend, args.jobs)
+            return
+        if args.orders:
+            rows = heapq.merge(*(RECORD.iter_unpack(data) for data in tables.values()))
+            summary = calculate(rows, args.backend, work, args.jobs, None, args.power_backend, False, orders=True)
+            if summary != json.loads((DATA / "degree-1229-terminal-order-census.json").read_text()):
+                raise ArithmeticError("order or weight census differs from the published result")
+            print(json.dumps(summary, indent=2))
             return
         if args.export_all:
             # Complete a temporary file on the same filesystem before replacing an existing export.
