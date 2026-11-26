@@ -63,3 +63,4 @@ import GF2Sparse.Trinomial1229
 import GF2Sparse.TrinomialMultiples
 import GF2Sparse.TwoBlockOrder
 import GF2Sparse.WeightBounds
+import GF2Sparse.Witness2520
