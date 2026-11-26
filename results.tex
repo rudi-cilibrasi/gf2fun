@@ -11962,6 +11962,25 @@ tests on these alone recover precisely the source of
 Section~\ref{sec:seventh-pair} and its reciprocal.
 
 \begin{corollary}
+If \(7\mid n\) and \(n>14\), no primitive binary polynomial of degree
+\(n\) with at most five terms has a sparse seventh-power minimal
+polynomial. Here sparse means weight at most five. Degree 14 attains
+the boundary.
+\end{corollary}
+\begin{proof}
+In the family, normalization forces \(7\nmid u\), and
+\(t\equiv3u\pmod7\). Both endpoints of the support lie among
+\(0,4u,t\), which are pairwise distinct modulo seven. Thus its
+degree is never a multiple of seven. Among the exceptions, the
+checker finds primitive sources of degree divisible by seven only
+in degrees 7 and 14. In degree 14 the source with interior exponents
+\((5,6,9)\) gives image exponents \((9,10,11)\). Finally, for a
+trinomial of degree divisible by seven the exponents \(0,n\) agree
+modulo seven. Its seventh-power image has nine terms for \(n>7\),
+by Section~\ref{sec:trinomial-decimations}.
+\end{proof}
+
+\begin{corollary}
 For a primitive binary element \(r\), the largest degree in which
 the minimal polynomials of \(r,r^5,r^{25}\) can all have weight at
 most five is 13. For \(r,r^7,r^{49}\) the largest degree is 10.
@@ -12093,5 +12112,92 @@ Consequently the common group index of all four sparse roots is
 Each submitted logarithm can be checked separately by modular powering
 with \nolinkurl{scripts/check_1229_power_images.py}. The nine values
 and the common index remain open.
+
+\section{Counting primitive pentanomials from all powers of the form \texorpdfstring{\(2^k+1\)}{2\^k+1}}
+\label{sec:all-trinomial-blocks}
+Let \(T_n\) and \(P_n\) count primitive trinomials and pentanomials
+of degree \(n\), respectively. Write \(T_n(m)\) for the number of
+these trinomials with two exponents congruent modulo \(m\).
+Let \(U_n\) count the primitive five-term seventh-power images of the
+degree-\(n\) primitive trinomials, as in
+Section~\ref{sec:trinomial-decimations}.
+
+\begin{theorem}
+For every odd \(n>11\),
+\[
+       P_n\ \ge\ 2T_n+U_n+\sum_{k\ge3}T_n(2^k+1).
+\]
+In particular, define \(b(n)=\#\{k\ge3:2^k+1\mid n\}\).
+Then \(P_n\ge(2+b(n))T_n\). For any positive integer \(L\), there
+is an infinite arithmetic progression of odd degrees on which
+\(P_n\ge L T_n\).
+\end{theorem}
+\begin{proof}
+Put \(R=2^k\) and \(m=R+1\). If the trinomial exponents include
+\(a,a+mh\), take \(h>0\) and write \(c\) for the third exponent.
+This pair is unique because the three exponents have gcd one and
+include zero. The power formula of Theorem~\ref{thm:progression}
+takes a root to a root of
+\[
+         X^c+X^a(1+X^h)^m
+           =X^c+X^a(1+X^h+X^{Rh}+X^{mh}).
+\]
+In odd degree the \(m\)-th power has full order. Indeed, a common
+divisor of \(2^n-1\) and \(2^k+1\) divides both \(2^{kn}-1\) and
+\(2^{kn}+1\). The first integer \(2^n-1\) is odd, so the common
+divisor is one. Lean proves the coprimality, block expansion, the
+short order at a cancellation, and primitive-order transfer in \nolinkurl{GF2Sparse/TrinomialPowers.lean}.
+
+If the isolated term cancels an interior term, \(h\) divides every
+source difference, hence \(h=1\), \(n=m\), and the trinomial is
+\(X^{R+1}+X+1\) or its reciprocal. For any root \(r\) of the former,
+\(r^R=(1+r)/r\) and \(r^{R^2}=1/(1+r)\). Thus
+\(r^{1+R+R^2}=1\), where \(1+R+R^2<2^{R+1}-1\) for \(R\ge4\).
+Such a source cannot be primitive. We obtain a degree-\(n\)
+primitive pentanomial for every source counted by \(T_n(m)\), for
+every \(k\ge3\).
+
+To distinguish these images across all \(k\), consider four increasing
+points \(d_0,d_1,d_2,d_3\) with \(d_0+d_3=d_1+d_2\).
+The block from exponent \(R+1\) has ratio \((d_2-d_0)/(d_1-d_0)=R\).
+Translate and divide by \(h\) to write the five points as
+\(\{0,1,R,R+1,s\}\). Any other choice of four with equal pair sums
+must use \(s\), which must then equal a sum of two of the four block
+points minus a third. Up to reflection about \((R+1)/2\), all
+possibilities and the resulting alternative ratios are
+\[
+\begin{array}{c|cccc}
+s&-R&1-R&-1&2\\\hline
+\text{ratio}&(R+1)/R&R/(R-1)&R+1&R-1 .
+\end{array}
+\]
+For \(R\ge8\) none is a power of two. Thus the four block points and
+\(k\) can be recovered from the image. The endpoints and the unused
+exponent recover the source. This also distinguishes these blocks
+from the cubic and equal-residue fifth-power blocks of ratios 2 and 4.
+
+It remains to compare the midpoint images from fifth and seventh
+powers. For \(H_2=\{0,1,2,s,5-s\}\), two pairs with equal sums
+force normalized source degree seven. For \(H_3=\{0,1,3,s,7-s\}\)
+the possibilities are 5, 9 and 11. These follow by imposing each
+ordered pair-sum equality as in Section~\ref{sec:trinomial-decimations}.
+Consequently every term in the bound counts a disjoint set. The
+sum is finite since each eligible \(m\) divides a nonzero source
+difference of magnitude at most \(n\).
+
+If \(m\mid n\) then the endpoints \(0,n\) agree modulo \(m\) for
+every trinomial, so \(T_n(m)=T_n\). Here the two block taps \(h,n-h\)
+are the unique complementary pair among the three interior terms,
+which Lean also proves determines the tap and the step. Taking odd multiples of the
+least common multiple of any chosen finite list of the odd integers
+\(2^k+1\), \(k\ge3\), gives the arithmetic progression. This bound
+is conditional on the number of primitive trinomials in those degrees.
+\end{proof}
+In degree 153 the primitive trinomial taps are \(1,8,145,152\).
+Since \(9,17\mid153\), powers \(3,5,9,17\) give sixteen distinct
+primitive pentanomials. The checker
+\nolinkurl{scripts/check_trinomial_decimations.py} verifies the
+counts, divisibility and full orders. Its \texttt{--blocks} option
+accepts an odd degree above eleven.
 
 \end{document}

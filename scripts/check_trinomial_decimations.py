@@ -1,5 +1,6 @@
 """Verify the support overlaps for third, fifth and seventh powers of primitive trinomial roots."""
 
+import argparse
 from collections import Counter
 from fractions import Fraction
 from itertools import combinations, permutations
@@ -59,6 +60,7 @@ def check_patterns():
     configurations = [
         ([zero, one, four, five, s], [zero, five, s], ap4, set()),
         ([zero, one, two, s, (-1,5)], [zero, s, (-1,5)], ap4, {7}),
+        ([zero, one, two, s, (-1,5)], [zero, s, (-1,5)], [(1,-1,-1,1)], {7}),
         ([zero, one, three, s, (-1,7)], [zero, s, (-1,7)], [(1,-2,1)], {2,5,9,11,13}),
         ([zero, one, three, s, (-1,7)], [zero, s, (-1,7)], [(1,-1,-1,1)], {5,9,11}),
     ]
@@ -94,8 +96,49 @@ def check_degree(n):
     return len(sources), [len(outputs) for outputs in family.values()]
 
 
+def block_image(support, m):
+    for a, b in combinations(support, 2):
+        step, remainder = divmod(b-a, m)
+        if not remainder:
+            isolated, = set(support)-{a, b}
+            return tuple(sorted((a, a+step, b-step, b, isolated)))
+    return None
+
+
+def check_all_blocks(n):
+    sources = [(0, a, n) for a in range(1, n) if primitive(polynomial((0, a, n)), n)]
+    exponents = [3, 5, 7, *(2**k+1 for k in range(3, n.bit_length()) if 2**k+1 <= n)]
+    counts = Counter()
+    images = set()
+    for s in sources:
+        for m in exponents:
+            if gcd(2**n-1, m) != 1:
+                continue
+            t = power_support(s, m) if m <= 7 else block_image(s, m)
+            if t is None or len(t) != 5:
+                continue
+            g = polynomial(t)
+            if (len(set(t)) != 5 or t in images or not primitive(g, n)
+                    or g.compose_mod(X**m, polynomial(s)) != 0):
+                raise ArithmeticError(f"repeated or invalid power-{m} image at {s}")
+            images.add(t)
+            counts[m] += 1
+    return len(sources), dict(sorted(counts.items()))
+
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--blocks", type=int, metavar="DEGREE", help="verify all binary block powers in one odd degree above 11")
+    args = parser.parse_args()
     check_patterns()
+    if args.blocks is not None:
+        if args.blocks <= 11 or args.blocks % 2 == 0:
+            parser.error("--blocks requires an odd degree above 11")
+        total, counts = check_all_blocks(args.blocks)
+        print(f"{total} primitive trinomials give {sum(counts.values())} different primitive pentanomials: {counts}.")
+        raise SystemExit(0)
+    if check_all_blocks(153) != (4, {3: 4, 5: 4, 9: 4, 17: 4}):
+        raise ArithmeticError("incorrect degree-153 block families")
     for n in range(7, 18):
         total, counts = check_degree(n)
         print(f"Degree {n} has {total} primitive trinomials and "

@@ -130,6 +130,10 @@ def audit():
     prim = [s for s in irr if primitive(polynomial(s), s[-1])]
     if (len(irr), len(prim), max(s[-1] for s in irr), max(s[-1] for s in prim)) != (111, 84, 25, 25):
         raise ArithmeticError("unexpected irreducible or primitive exceptions")
+    if Counter(s[-1] for s in prim if s[-1] % 7 == 0) != {7: 10, 14: 2}:
+        raise ArithmeticError("incorrect primitive exceptions in degrees divisible by seven")
+    if power_characteristic((0, 5, 6, 9, 14), 7) != (0, 9, 10, 11, 14):
+        raise ArithmeticError("incorrect degree-14 image")
     print("One family and 230 exceptions. Outside the family 111 are irreducible, including 84 primitive.")
     return exceptions
 

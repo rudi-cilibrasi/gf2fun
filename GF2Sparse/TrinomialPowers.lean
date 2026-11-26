@@ -66,4 +66,60 @@ theorem nine_terms_17 :
   rw [ht, support_decode]
   decide +kernel
 
+/-- Every power of the form 2^k+1 acts bijectively on an odd-degree binary field's units. -/
+theorem odd_mersenne_coprime {n : ℕ} (hn : Odd n) (k : ℕ) :
+    (2^n-1).Coprime (2^k+1) := by
+  apply Nat.coprime_of_dvd
+  intro p hp hm hd
+  have plus : p ∣ 2^(k*n)+1 := hd.trans (by
+    simpa only [← pow_mul, one_pow] using hn.nat_add_dvd_pow_add_pow (2^k) 1)
+  have minus : p ∣ 2^(k*n)-1 := hm.trans (by
+    simpa only [← pow_mul, Nat.mul_comm n k] using Nat.sub_one_dvd_pow_sub_one (2^n) k)
+  have pos := Nat.two_pow_pos (k*n)
+  have htwo : p ∣ 2 := (show 2^(k*n)+1-(2^(k*n)-1) = 2 by omega) ▸ Nat.dvd_sub plus minus
+  have he : p = 2 := (Nat.prime_dvd_prime_iff_eq hp Nat.prime_two).1 htwo
+  obtain ⟨j, hj⟩ := hn
+  have hpos : 0 < n := by omega
+  subst p
+  have even : 2 ∣ 2^n := dvd_pow_self 2 (by omega)
+  have pos' := Nat.two_pow_pos n
+  omega
+
+/-- The four terms of the binomial block, with one isolated source term. -/
+theorem binary_block_identity (a t u k : ℕ) :
+    sampledBlock a t u (2^k+1) =
+      X^a + X^t * (X^((2^k+1)*u) + X^(2^k*u) + X^u + 1) := by
+  unfold sampledBlock
+  rw [pow_succ, add_pow_expChar_pow, one_pow]
+  simp only [← pow_mul, Nat.mul_comm u (2^k), add_mul, one_mul]
+  ring
+
+/-- If the isolated exponent cancels a block tap, the endpoint trinomial has a short order. -/
+theorem root_pow_one_of_block_collision {K : Type*} [CommRing K] [CharP K 2]
+    {r : K} {k : ℕ} (hr : r^(2^k+1) = r+1) : r^((2^k+1)*2^k+1) = 1 := by
+  rw [pow_succ, pow_mul, hr, add_pow_expChar_pow, one_pow, add_mul, one_mul, ← pow_succ, hr]
+  rw [add_right_comm, CharTwo.add_self_eq_zero, zero_add]
+
+theorem primitive_binary_block {a t u k : ℕ} (hu : 0 < u)
+    (hd : a ≠ t + (2^k+1)*u) (hn : Odd (max a (t+(2^k+1)*u)))
+    (hs : Primitive (blockEndpoints a t u (2^k+1))) :
+    Primitive (sampledBlock a t u (2^k+1)) :=
+  (sampledBlock_primitive_iff hu (Nat.succ_pos _) hd).2 ⟨hs, odd_mersenne_coprime hn k⟩
+
+/-- When the block spans the degree, its two complementary interior positions
+and its isolated trinomial tap determine the two parameters uniquely. -/
+theorem complementary_taps_injective {n h j a b : ℕ} (hn : Odd n)
+    (hh : h+h < n) (hj : j+j < n) (ha : a < n) (hb : b < n)
+    (ha₁ : a ≠ h) (ha₂ : a ≠ n-h) (hb₁ : b ≠ j) (hb₂ : b ≠ n-j)
+    (he : ({h, n-h, a} : Finset ℕ) = {j, n-j, b}) : h = j ∧ a = b := by
+  have mem (i : ℕ) : (i = h ∨ i = n-h ∨ i = a) ↔ (i = j ∨ i = n-j ∨ i = b) := by
+    simpa only [Finset.mem_insert, Finset.mem_singleton] using (Finset.ext_iff.mp he i)
+  obtain ⟨k, hk⟩ := hn
+  have m₁ := mem h
+  have m₂ := mem (n-h)
+  have m₃ := mem j
+  have m₄ := mem (n-j)
+  have m₅ := mem a
+  omega
+
 end GF2Sparse.TrinomialPowers
