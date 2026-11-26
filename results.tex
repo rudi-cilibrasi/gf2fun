@@ -8925,4 +8925,170 @@ and direct pair-product checks through \(s=7\) (plus \(s=8\) in
 \nolinkurl{scripts/check_trinomial_4test.cpp}).
 \end{proof}
 
+\section{Exact orders and weights of the degree-1229 factor base}
+\label{sec:q1024-factor-orders}
+Among the \(52{,}488\) elements \(P(x)\) in
+Theorem~\ref{thm:1229-q1024-primitive}, precisely \(52{,}487\) have
+order \(N=2^{1229}-1\). The sole exception has order \(N/46703\) and
+binary coefficient mask \(\mathtt{16fec7}\) in hexadecimal. The least
+weight of a minimal polynomial in the entire table is 545, attained
+at masks \(\mathtt{11c4b7}\) and \(\mathtt{193377}\), both primitive.
+
+To reproduce the census, write \(N=KC\) as in the theorem and take
+\(j=K(K^{-1}\bmod C)\). For each published exponent \(e_P\) set
+\(v=P(x)x^{-j e_P}\). The coordinate \(x^j\) has exact order \(C\), and
+\(v^K=1\) is precisely the field identity in the projected-log table
+since \(j\equiv1\bmod C\). All the exponents are units modulo \(C\).
+The index of \(P(x)\) therefore consists exactly of the known primes
+\(p\mid K\) for which \(v^{K/p}=1\), since \(K\) is squarefree. Each
+nonconstant \(P\) here has degree at most 20, so \(P(x)\notin\mathbb F_2\)
+and its minimal polynomial has degree 1229. Computing its coefficients
+over \(\mathbb F_2\) gives the term count.
+\nolinkurl{scripts/check_1229_factor_base_orders.py} verifies the three
+displayed examples directly by modular powers and a change of basis.
+Its NTL backend replays every projected identity and computes all
+four order tests and every minimal-polynomial weight.
+
+\section{Order certificates from rational points of elliptic curves}
+\label{sec:elliptic-ray}
+Let \(K=\mathbb F_Q\), with \(Q=2^d\), and let \(A/K\) be an elliptic
+curve with origin \(O\), \(M=\#A(K)\), and a rational point \(T\) of
+order \(n\ge2\). There is a point \(B\) satisfying
+\(\sigma B=B+T\), where \(\sigma\) is the \(Q\)-power Frobenius.
+Indeed, \(\sigma-1\) is a nonconstant isogeny and is surjective on
+geometric points. The orbit of \(B\) has length \(n\). Write \(b\) for
+its closed place, \(L=\mathbb F_{Q^n}\) for its residue field, and
+\(E=\mathbb F_{2^n}\subset L\). This Frobenius presentation also occurs
+in \href{https://arxiv.org/abs/0802.0165}{Couveignes and Lercier,
+\emph{Elliptic periods for finite fields}}.
+
+For \(P\in A(K)\), choose a rational function \(f_P\) with divisor
+\(M[P]-M[O]\), taking \(f_O=1\). Such a function exists because
+\(\operatorname{Pic}^0(A)(K)=A(K)\). Define
+\[
+ u_P=\operatorname{Norm}_{L/E}(f_P(B))^{Q-1}\quad\text{in }E^\times .
+\]
+The exponent kills choices of constants. If \(\gcd(d,n)=1\), the
+norm already sends \(K^\times\) to 1: on constants its conjugating
+powers run through all \(d\) binary embeddings of \(K\). In this
+case the following theorem also holds with the ordinary norm for \(u_P\).
+
+\begin{theorem}\label{thm:elliptic-ray}
+Let \(H=\langle r\rangle\subset E^\times\), and suppose each possible
+prime divisor \(\ell\) of its index is at least \(J>1\) and is
+coprime to \(M(Q-1)\). Take \(k\) different cosets of
+\(\langle T\rangle\) in \(A(K)\), including the identity coset.
+Suppose \(u_T\in H\), and \(u_P\in H\) for one representative of each
+of the \(k-1\) other cosets. For any finite sequence of nonnegative real
+weights put \(W_i=\sum_j c_jc_{j+i}\), taking missing entries to be zero.
+If \(W_0>0\) and
+\[
+ \frac{2}{W_0}\sum_{i\ge1}\frac{W_i}{Q^{i/2}}
+                 \left(nk-\frac{Q^i+1}{J}\right)>n ,
+\]
+then \(r\) is primitive.
+\end{theorem}
+\begin{proof}
+Suppose \(\ell\) divides the index, and let \(\chi:E^\times\to C_\ell\)
+be the quotient character killing \(H\). For a rational degree-zero divisor
+\(D\) away from \(b\), take \(f_D\) with divisor \(MD\).
+The rule \(D\mapsto\chi(\operatorname{Norm}_{L/E}(f_D(B))^{Q-1})\)
+is a homomorphism. On a principal divisor \((g)\) its value is
+\(\chi(\operatorname{Norm}_{L/E}(g(B)))^{M(Q-1)}\).
+The same assertions for ordinary norms use exponent \(M\) on principal
+divisors. In particular the map factors through the ray class group
+of modulus \(b\). The local units at \(b\) map onto \(C_\ell\):
+residues of functions realize \(L^\times\), the norm is surjective,
+and the final exponent is prime to \(\ell\). Extend the map to all
+divisors away from \(b\) by subtracting their degree times \([O]\).
+Ray class reciprocity now gives a cyclic degree-\(\ell\) cover \(Y/A\)
+with \(O\) split, full constant field \(K\), and one totally and tamely
+ramified place \(b\). Thus \(2g_Y=2+n(\ell-1)\) by Riemann--Hurwitz.
+For the ray class construction and inertia description see
+\href{https://arxiv.org/abs/math/9803065}{Auer, \emph{Ray class fields
+of global function fields with many rational places}}.
+
+Translating the divisor of \(f_P\) gives
+\(f_{P+T}(B)/f_T(B)=c f_P(B-T)\) for \(c\in K^\times\).
+Since \(B-T=\sigma^{n-1}B\), this gives
+\(u_{P+T}=u_T u_P^{Q^{n-1}}\).
+Membership therefore extends to all \(nk\) points of the chosen cosets.
+Their places split in \(Y\) by the definition of the character.
+Consequently \(\#Y(\mathbb F_{Q^i})\ge\ell nk\) for every \(i\ge1\).
+Write the inverse zeros of \(Y\) as \(\sqrt Q\,z_j\), with \(|z_j|=1\).
+Expand \(0\le\sum_j|\sum_i c_i z_j^i|^2\) and use the point count
+\(\#Y(\mathbb F_{Q^i})=Q^i+1-Q^{i/2}\sum_j z_j^i\).
+After division by \(\ell W_0\), the left side of the displayed
+criterion is at most \(2g_Y/\ell=n-(n-2)/\ell\le n\), a contradiction.
+\end{proof}
+
+\begin{corollary}\label{cor:elliptic-ray-uniform}
+In every degree \(n\ge2\), one can construct at most
+\(\lceil\sqrt2\,n\rceil+1\) targets independently of the proposed
+generator \(r\). Their membership in \(\langle r\rangle\), together
+with prime order tests for \(p\mid 2^n-1\) with \(p\le2n\) or
+\(p\mid Q-1\), certifies full order. Here \(Q<2n^2\) is explicit.
+In prime degree \(n\ge7\) no preliminary order tests are needed.
+\end{corollary}
+\begin{proof}
+Take \(Q\) to be the least power of two at least \(n^2\), and \(M\)
+the least multiple of \(\operatorname{lcm}(2,n)\) at least \(Q+1\).
+Then \(Q+1<M\le 2n^2\) and \(0<M-(Q+1)<2n\le2\sqrt Q\).
+The odd trace \(Q+1-M\) is ordinary, and a curve with cyclic rational
+group of order \(M\) exists by the classification in
+\href{https://www.numdam.org/item/10.24033/bsmf.2107.pdf}{Voloch,
+\emph{A note on elliptic curves over finite fields}}.
+Put \(h=M/n\le2n\) and \(k=\min(h,\lceil\sqrt Q\rceil+1)\).
+A prime \(\ell\) dividing the index after the stated tests satisfies
+\(\ell>2n\) and \(\ell\nmid M(Q-1)\). Form \(Y\) as in the proof of
+Theorem~\ref{thm:elliptic-ray}. The Hasse--Weil bound alone gives
+\[
+ nk\le (Q+1)/\ell+\bigl(n-(n-2)/\ell\bigr)\sqrt Q .
+\]
+If \(k<h\), the right side is less than \(n+n\sqrt Q\), while
+\(k\ge\sqrt Q+1\). If \(k=h\), then \(nk=M>Q+1\), whereas
+\((\sqrt Q-n)(\sqrt Q-1/n)\ge0\) gives
+\(Q+1\ge(n+2/(\ell-1))\sqrt Q\); substitution bounds the right
+side by \(Q+1\). Both cases are impossible. All defining objects can
+be found by finite enumeration and the \(f_P\) by divisor arithmetic.
+If \(n\ge7\) is prime, \(2^{n-1}\ge n^2\), so \(d=\log_2 Q<n\).
+Every prime divisor of \(2^n-1\) has order \(n\) for 2, is
+\(1\bmod 2n\), and cannot divide \(2^d-1\).
+\end{proof}
+
+Two certificates use the curve \(y^2+xy=x^3+x^2+b_0\) over
+\(\mathbb F_2[z]\) modulo the indicated constant-field polynomial.
+Coordinates below are binary coefficient masks. In both rows \(G\)
+generates \(A(K)\). The targets, in order, are \(u_T,u_G,u_{2G},\ldots\).
+\[
+\begin{array}{r|l|r|r|l|l}
+ n & \text{modulus for }z & b_0 & M & G & T\\\hline
+ 53 & z^{11}+z^2+1 & 15 &2014 &(2,1)&(878,1610)\\
+ 1229 & z^{19}+z^5+z^2+z+1 &1580&523554 &(2,419140)&(192032,405065)
+\end{array}
+\]
+Take \(c_i=w_i\) for even \(i\) and \(c_i=w_i/\sqrt2\) for odd \(i\).
+In degree 53 the first 30 targets give the left side
+\(11238455167735/209375215616>53\) with \(J=6361\) and
+\(w=(10,28,20,15)\). The 59 trial values \(106s+1\), \(1\le s\le59\),
+are coprime to \(2^{53}-1\). With all 38 targets the weights
+\((12,28,12)\) already give \(251066193/4656640>53\) at \(J=107\).
+The published logarithms verify these certificates for the root of
+\(X^{53}+X^{23}+X^{21}+X^2+1\).
+
+In degree 1229 the 387 masks are expressed in the Gauss period basis of
+Section~\ref{sec:period-logs}. With \(J=818085338814611458\) and
+\(w=(3,9,9,14,10,12,6,4)\) the left side is between \(1229.55\) and
+\(1229.56\). This supplies an independent conditional test for a
+candidate passing the known order checks. The proven model generator
+in Theorem~\ref{thm:1229-q1024-primitive} gives the shorter one-scalar
+test in this particular degree.
+
+\nolinkurl{scripts/check_elliptic_ray.py} verifies the curves, orders,
+points above \(b\), Frobenius translations, and the actual norms of
+the functions computed by Miller's algorithm. It also replays all
+38 degree-53 powers. \nolinkurl{GF2Sparse/EllipticRay.lean} independently
+checks those powers, the three rational point bounds after clearing
+denominators, the degree-53 trial divisions, and the subgroup recurrence.
+
 \end{document}

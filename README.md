@@ -6,6 +6,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Degree 1229 still needs a five-term witness.** The projected-log table contains 52,487 primitive elements among 52,488 entries. The one exception has index 46,703. The smallest minimal polynomials in the table have 545 terms. The script below prepares the single remaining logarithm for any eligible pentanomial and checks a submitted exponent in either direction. [Exact census](results.pdf#page=116) · [Census checker](scripts/check_1229_factor_base_orders.py) · [Sparse candidate preparation](scripts/prepare_1229_single_log.py)
+- **Elliptic-curve order certificates in every degree.** At most $\lceil\sqrt{2}\,n\rceil+1$ explicit subgroup-membership targets and order tests for specified small primes suffice in degree $n\ge2$. Prime degrees $n\ge7$ require only the membership targets. For $X^{53}+X^{23}+X^{21}+X^2+1$ the first 30 elliptic logarithms suffice with trial division, or all 38 suffice using the degree alone. [Proof](results.pdf#page=117) · [Point and logarithm checker](scripts/check_elliptic_ray.py) · [Lean arithmetic](GF2Sparse/EllipticRay.lean)
 - **Unconditional primitivity in degree 1229 without factoring $2^{1229}-1$, and a single-scalar pentanomial reduction.** For the $q=1024$ Frobenius model $I(X)\mid h_0(X^{1024})+Xh_1(X^{1024})$ ($h_0=T^5+T^2+1$, $h_1=T^3+T$), Hermitian circle norm-projection over $\mathbb F_{2^{20}}$ yields 93,656 exact multiplicative relations (92,910 canonically unique) of exact corank one across all 52,488 binary irreducibles of degree dividing 20. Solving the full $52{,}488\times 52{,}488$ system modulo the unfactored 284-digit cofactor $C$ via AVX2 Wiedemann and FLINT Half-GCD yields all 52,488 projected discrete logarithms $(x^K)^{e_P}\equiv P(x)^K\pmod{I(X)}$, every one directly verified in $\mathbb F_{2^{1229}}$ with $\gcd(e_P,C)=1$. The character-sum bound gives $Q=1294.90>1227$ using only one trial division ($C\bmod 2459\ne0\Rightarrow J\ge 9833$, and $Q=1366.00>1227$ with the sieved wheel), unconditionally proving $I(X)$ (weight 613) and all 111 degree-$\le10$ evaluations $P(x)$ primitive of exact order $2^{1229}-1$. Certifying any of the 639,144 eligible degree-1229 pentanomials now reduces from 3,380 targets to one single scalar $e_r$ with $(r^K)^{e_r}\equiv x^K$. [52,488 verified logs](data/degree-1229-q1024-projected-logs.csv.gz) · [Certificate metadata](data/degree-1229-q1024-certificate.json) · [Direct verifier](scripts/check_1229_q1024_logs.py) · [Single-scalar checker](scripts/check_1229_single_log.py) · [Relation generator & 943-bit solver](scripts/wiedemann_943.cpp)
 - **Four exterior-power tests for 100% of six infinite shifted-dyadic trinomial families (including all Mersenne and Fermat degrees).** For any shifted dyadic trinomial $X^{2^s+d}+X^a+1$, any product-one triple or quartet of reciprocal roots satisfies $K(1)=1$ immediately, reducing the quartet dynamics to a 2-variable denominator-free polynomial map with resultants as small as degree 8. This gives 100% all-$s$ squarefree trinomial fourth-test covers for every Mersenne degree $2^s-1\ge7$ using two trinomials ($a\in\{1,3\}$, period 3), every Fermat number $2^{2^k}+1\ge5$ using two trinomials ($a\in\{2,5\}$), every $2^s+2\ge6$ using two trinomials ($a\in\{1,7\}$, period 12), and every $2^s-3\ge13$, $2^s+1\ge5$, $2^s+3\ge5$, and $2^s+5\ge7$ using three trinomials each (plus all odd pullbacks $T(X^m)$). [Certificates](data/shifted-dyadic-trinomial-4test-certificates.json) · [Exact algebraic prover](scripts/check_shifted_trinomial_quartets.py) · [C++ degree-261 checker](scripts/check_trinomial_4test.cpp)
 - **At most $0.21925n$ terms in every sufficiently large degree.** At least $2^{n/2}$ distinct primitive binary polynomials meet this bound in each such degree. The proof combines a character sum over field elements with the binary Fourier transform of a function on the middle coefficients. In degree 1229, more than $2^{621}$ primitive polynomials have at most 315 terms without any factorization of the group order. The known cofactor bound brings the weight down to 313 for more than $2^{616}$ polynomials. [General proof](results.pdf#page=98) · [Degree-1229 proof](results.pdf#page=99) · [Exact calculation](scripts/check_primitive_weight_bound.py) · [Lean check of both finite bounds](GF2Sparse/FourierWeightBounds.lean) · [Shparlinski's earlier bound](https://www.mathnet.ru/eng/ppi820)
@@ -79,6 +81,16 @@ The Lean target for an all-degree proof is `GF2Sparse.Conjecture`. The gap is to
 The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ for every $s>0$, using at most five exponents of the form $2^i-1$. The Lean theorem `conjecture_iff_sparseOreIrreducible` converts a proof of this target directly into the original conjecture. [Formal equivalence](GF2Sparse/OreConjecture.lean)
 
 ## Contributing
+
+Two degree-1229 logarithm problems are ready to download. The product candidate has interior taps $27,50,77$, and the Seroussi candidate has $2,6,15$. Each file gives a base $b$ and target $t$ in the same certified $q=1024$ field. A solution to $b^d=t$ gives the exact index $\gcd(d,C)$ of that sparse root, where $C$ is the supplied cofactor. An index of one certifies the pentanomial. [Product candidate input](data/degree-1229-single-log-product.json) · [Seroussi candidate input](data/degree-1229-single-log-seroussi.json)
+
+To reconstruct the product candidate input, run
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/prepare_1229_single_log.py --candidate product
+~~~
+
+Append `--forward-log DECIMAL` to check a computed $d$. Use `--reverse-log DECIMAL` for an exponent satisfying $t^e=b$. The same command accepts `--candidate seroussi` or `--taps A B C` for three increasing interior exponents. It checks irreducibility and all four known-prime order tests before printing a task.
 
 For every sufficiently large odd $n$ and fixed cutoff $B$, there are at least $c_B n\varphi(n)$ two-odd-tap supports that pass the squarefreeness, inverse-pair and small-factor tests in both degrees $n$ and $n+2(u+v)$. Exactly one of those degrees has an odd factor count for that support. As a consequence, a positive proportion of odd degrees have at least $c_B n^2$ supports passing all four tests together. Lean verifies the cyclic coprimality test for squarefreeness. [Proof](results.pdf#page=90) · [Lean criterion](GF2Sparse/ReciprocalSieve.lean) · [Paired-degree checker](scripts/check_odd_tap_parity.py)
 
@@ -267,6 +279,20 @@ curl -fsSL https://raw.githubusercontent.com/postvakje/Reformatted-Cunningham-Pr
 A pull request can include the generated table and the corresponding interval theorem. Existing tables can be checked independently, so contributors can work on disjoint ranges. [Combining verified intervals](GF2Sparse/Coverage.lean)
 
 ## Verification
+
+To reproduce the complete order and term-count census of the 52,488 degree-1229 factor-base values, use a C++17 compiler with NTL and OpenMP. Omitting the `--census` argument and its executable checks the two minimum-weight examples and the exceptional order directly in Python.
+
+~~~sh
+g++ -std=c++17 -O3 -fopenmp scripts/census_1229_factor_base.cpp -lntl -o /tmp/gf2-factor-base-orders
+OMP_NUM_THREADS=8 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_factor_base_orders.py --census /tmp/gf2-factor-base-orders
+~~~
+
+With PARI/GP on the path, the following commands reconstruct the elliptic norms and check the degree-53 logarithms and the degree-1229 targets.
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_elliptic_ray.py --degree 53
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_elliptic_ray.py --degree 1229
+~~~
 
 From the repository root, with Lean managed by elan, run
 
