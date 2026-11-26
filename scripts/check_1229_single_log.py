@@ -53,17 +53,29 @@ def eval_poly_mod(F: nmod_poly, x_elem: nmod_poly, modP: nmod_poly) -> nmod_poly
 def verify_single_scalar(P: nmod_poly, x_elem: nmod_poly, e_r: int, cert_path: Path) -> None:
     cert = json.loads(cert_path.read_text())
     I = poly_from_mask(int(cert["modulus_hex"], 16))
-    facs = P.factor()[1]
-    assert P.degree() == 1229 and len(facs) == 1 and facs[0][1] == 1, "P is not irreducible of degree 1229"
+    # Only the unique degree-1229 irreducible factor of this parent has the
+    # published full-order proof. Bind even a custom metadata path to that field.
     Y = nmod_poly([0, 1], 2)
-    assert Y.pow_mod(GROUP, P) == 1
+    t = Y**1024
+    parent = t**5 + t**2 + 1 + Y*(t**3 + t)
+    if I.degree() != 1229 or parent % I != 0 or I.factor()[1] != [(I, 1)]:
+        raise ValueError("the supplied modulus is not the certified q=1024 generator polynomial")
+    facs = P.factor()[1]
+    if P.degree() != 1229 or len(facs) != 1 or facs[0][1] != 1:
+        raise ValueError("P is not irreducible of degree 1229")
+    if Y.pow_mod(GROUP, P) != 1:
+        raise ArithmeticError("the proposed root fails the field-order test")
     for p in PRIMES:
-        assert Y.pow_mod(GROUP // p, P) != 1, f"Failed known prime factor {p}"
-    assert eval_poly_mod(I, x_elem % P, P).is_zero(), "I(x_in_P) != 0 mod P"
-    assert 0 <= e_r < COFACTOR
+        if Y.pow_mod(GROUP // p, P) == 1:
+            raise ArithmeticError(f"the root order misses the known prime {p}")
+    if not eval_poly_mod(I, x_elem % P, P).is_zero():
+        raise ArithmeticError("the supplied field element is not a root of the certified modulus")
+    if not 0 <= e_r < COFACTOR:
+        raise ValueError("exponent outside the projected group range")
     YK = Y.pow_mod(KNOWN, P)
     xK = (x_elem % P).pow_mod(KNOWN, P)
-    assert YK.pow_mod(e_r, P) == xK, "(Y^K)^{e_r} != x_in_P^K mod P"
+    if YK.pow_mod(e_r, P) != xK:
+        raise ArithmeticError("the submitted exponent fails the projected field identity")
     print("CERTIFIED PRIMITIVE: exact multiplicative order 2^1229 - 1 verified from one scalar e_r!")
 
 

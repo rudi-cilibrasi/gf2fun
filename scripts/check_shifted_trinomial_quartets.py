@@ -495,7 +495,7 @@ def classify_trinomial(d, a):
                     W_cur = kc_mod(kc_mul(W_cur, W_cur, f_mod), ir, f_mod)
                     u_const = [] if u_cur.is_zero() else [u_cur]
                     if a1_w == u_const and c1_w == W_cur:
-                        frob_s.append(s)
+                        frob_s.append(s % P)
                 if frob_s:
                     quartet_hits.append((P, frob_s))
 
@@ -523,6 +523,8 @@ FAMILIES = [
 
 
 def main() -> None:
+    if not __debug__:
+        raise RuntimeError("the quartet proof requires Python assertions; run without -O")
     t0 = time.time()
     cert_path = REPO_ROOT / "data" / "shifted-dyadic-trinomial-4test-certificates.json"
     saved = json.loads(cert_path.read_text())

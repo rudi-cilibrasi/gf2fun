@@ -85,6 +85,8 @@ def _verify_chunk(items):
 
 
 def main() -> None:
+    if not __debug__:
+        raise RuntimeError("the table audit requires Python assertions; run without -O")
     ap = argparse.ArgumentParser(description="Verify degree-1229 q=1024 projected discrete logs and primitivity.")
     ap.add_argument("--jobs", type=int, default=8, help="Parallel worker processes (default: 8)")
     ap.add_argument("--sample", type=int, default=0, help="If >0, check only first N entries in F_{2^1229} (0 = all 52,488)")
