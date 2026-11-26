@@ -12046,4 +12046,52 @@ integer factors prime. After verifying their multiplicities against
 \(2^n-1\), the checker verified each full power and all 1315 distinct
 prime-index powers across the 44 degrees.
 
+\section{Nine factor logarithms for the four linked degree-1229 pentanomials}
+\label{sec:seventh-split}
+Let \(r\) be the root with source taps \((166,249,332)\) from
+Section~\ref{sec:seventh-pair}, embedded in the certified binary
+field with primitive generator \(x\). Write \(2^{1229}-1=KC\) for
+the known part and the coprime 943-bit cofactor. The certificate
+\nolinkurl{data/degree-1229-seventh-power-split.json} gives coprime
+binary polynomials \(A,B\) of degrees 619 and 614 with
+\[
+                 r^{2^{1127}}x^{64817}B(x)=A(x).
+\]
+Their irreducible factor degrees, with multiplicity, are
+\[
+ \begin{aligned}
+ A &: 1,1,7,190,420,\\
+ B &: 1,1,1,2,11,12,18,60,68,440.
+ \end{aligned}
+\]
+To obtain this quotient, reduce a Frobenius conjugate times a power
+of \(x\) modulo the field polynomial. Apply the extended Euclidean
+algorithm to that residue and the field polynomial, stopping when
+the degree of a remainder drops below the degree of its coefficient
+on the residue. Adjacent rows give a basis of numerator--denominator
+pairs. We tried binary polynomial combinations with both degrees at
+most 620 and factored their two entries. The displayed identity is
+verified directly in the field.
+
+For a binary irreducible \(P\), put
+\(L(P)=\log_{x^K}(P(x)^K)\bmod C\).
+The values at \(X,X+1\) and \(X^2+X+1\) are known. Their contribution,
+including the shift \(-64817\), gives an explicit offset \(e_0\)
+after dividing by \(2^{1127}\) modulo \(C\). The other nine inputs have
+degrees \(3,3,7,9,11,17,19,21,22\) over \(\mathbb F_{2^{20}}\).
+For each input the file includes the binary mask, signed coefficient
+\(w_P=2^{-1127}(v_P(A)-v_P(B))\bmod C\), and one monic irreducible
+factor over \(\mathbb F_{2^{20}}\) in the basis \(z^{20}+z^3+1=0\).
+For binary degree \(d\), the coefficient norm of that factor is
+\(P^{20/\gcd(d,20)}\). The checker verifies each norm and the
+complete identity
+\[
+       r^K=(x^K)^{e_0}\prod_P (P(x)^K)^{w_P}.
+\]
+Consequently the common group index of all four sparse roots is
+\(\gcd(e_0+\sum_P w_P L(P),C)\).
+Each submitted logarithm can be checked separately by modular powering
+with \nolinkurl{scripts/check_1229_power_images.py}. The nine values
+and the common index remain open.
+
 \end{document}
