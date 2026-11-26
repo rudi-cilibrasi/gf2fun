@@ -11470,4 +11470,78 @@ identities and proves irreducibility and order \(Kt\), with \(1<t\mid C\),
 for both examples in \nolinkurl{GF2Sparse/SparseRootModels.lean}.
 \end{proof}
 
+\section{How the minimum Frobenius bidegree grows with the degree}
+\label{sec:frobenius-box-density}
+Use the termwise representation of Section~\ref{sec:sparse-frobenius-boxes}
+for a primitive binary polynomial of any weight. Let \(b(n)\) be the
+least possible \(\max(h,d)\) over all such polynomials of degree \(n\),
+all generators \(z\), and all Frobenius exponents.
+
+\begin{theorem}
+For every fixed \(B\), only \(O_B(\log X)\) degrees \(n\le X\) have
+\(b(n)\le B\). For each fixed \(0<\delta<1/2\), the degrees with
+\(b(n)\le n^{1/2-\delta}\) have natural density zero.
+For every positive \(n\), \(b(n)<2\sqrt n\).
+\end{theorem}
+\begin{proof}
+Write \(M=2^n-1\) and \(S\) for the support of a primitive polynomial,
+including \(0,n\). The positive exponents in \(S\) have gcd one. If a
+prime \(p\) divided them all, \(r^p\) would satisfy a polynomial of
+degree \(n/p\). Its order is at least \(M/p>2^{n/p}-1\), since
+\((2^n-1)/(2^{n/p}-1)=1+2^{n/p}+\cdots+2^{(p-1)n/p}>p\).
+
+Suppose \(h,d\le B\) and \(n>\max(17,B(B+1))\). Swapping coordinates
+allows \(q=2^s\le2^{\lfloor n/2\rfloor}\). Write \(t_e=i_e+qj_e\).
+Since \(r\) and \(z\) are primitive, \(t_e-t_0\equiv me\bmod M\)
+with \(m\) a unit modulo \(M\). Thus \(n(t_e-t_0)-e(t_n-t_0)\)
+is a multiple of \(M\) of absolute value at most \(n(h+qd)<M\).
+Indeed \(n(n-1)<2^{\lfloor n/2\rfloor}-1\) for \(n\ge18\), by
+induction in steps of two starting at 18 and 19. Hence
+\(n\mid e(t_n-t_0)\) for all \(e\), and the support gcd gives
+\(n\mid t_n-t_0\). We obtain \(t_e=t_0+ke\) over the integers.
+If \(k=0\), the endpoint congruence would give \(M\mid n\).
+Inverting \(z\) and reflecting both axes allows \(k>0\).
+
+The five-term case and all other weights obey the same area bound
+\(k\le hd\). Indeed, if the points lay on a line, the affine function
+\((i,j)\mapsto i+qj\) would interpolate each point between the endpoints
+with parameter \(e/n\). Thus \(n\mid e(i_n-i_0),e(j_n-j_0)\) for all
+\(e\). The support gcd and \(h,d<n\) would make the endpoints equal.
+Choose any three noncollinear points. The determinant of their two
+difference vectors is divisible by \(k\), by substituting
+\(i_e=t_0+ke-qj_e\). Its absolute value is at most \(hd\), twice the
+maximum triangle area in the rectangle. This bound follows also by
+maximizing the absolute determinant one point at a time at the corners.
+Lean proves the determinant and step bounds in
+\nolinkurl{GF2Sparse/FrobeniusBoxes.lean}.
+
+Now \(q>B\), since otherwise \(kn\le h+qd\le B(B+1)<n\).
+The endpoints of the increasing progression lie in the first and last
+rows, respectively. Consequently
+\[
+             kn=dq+a,\qquad 1\le d\le B,\quad |a|\le B,\quad
+             1\le k\le Bd,\quad q\le B(n+1).
+\]
+For fixed \(B\), each tuple \(d,a,k,q\) determines at most one \(n\).
+There are only \(O_B(\log X)\) such tuples through \(X\).
+
+For the density assertion set \(B=\lfloor X^{1/2-\delta}\rfloor\).
+There are \(O(B^2+1)\) degrees below the preceding cutoff.
+Above it, the integer \(dq+a=kn\) is positive and at most
+\(B^2(X+1)+B=O(X^2)\). There are \(O(B^2\log X)\) choices of
+\(d,a,q\). For each, \(n\) divides \(dq+a\). To bound the divisor
+count by \(\tau(v)=O_\eta(v^\eta)\) for each \(\eta>0\), use
+\(j+1\le2^j\le p^{\eta j}\) for \(p\ge 2^{1/\eta}\) and absorb
+\(\sup_{j\ge0}(j+1)p^{-\eta j}\) for each smaller prime in the constant.
+Taking \(\eta=\delta/2\) bounds the count by
+\(O_\delta(B^2+1+B^2 X^\delta\log X)=o(X)\).
+
+Finally choose \(z=r\) and the smallest power of two \(q\ge\sqrt n\).
+Writing \(e=(e\bmod q)+q\lfloor e/q\rfloor\) puts every support
+in widths \(q-1<2\sqrt n\) and \(\lfloor n/q\rfloor\le\sqrt n\).
+\end{proof}
+The lower bounds apply in particular to any primitive pentanomial
+in the degrees they cover. They concern re-expressing its original
+terms by a single power substitution and a common monomial.
+
 \end{document}
