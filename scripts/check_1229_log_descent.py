@@ -10,7 +10,7 @@ from pathlib import Path
 from check_1229_factor_base_orders import CIRCLE_LOGS, ISOGENY_LOGS, check_examples, read_logs, read_table
 from check_1229_hermitian_descent import records as hermitian_records, relation as hermitian_relation
 from check_1229_isogeny_logs import H0, H1, Q
-from check_1229_norm_height import FORMS, norm_quotient, sparse_root
+from check_1229_norm_height import FORMS, known_offset_quotient, norm_quotient, sparse_root
 from check_degree_1229 import COFACTOR, KNOWN
 from check_factor_base import DATA, irreducible, polynomial
 from period_coordinate import CANDIDATES, mask_of
@@ -141,7 +141,7 @@ def main():
     parser.add_argument("--task", choices=(*CANDIDATES, *PENCIL_NAMES, "seroussi-0xd3-binomial", *form_names))
     parser.add_argument("--json", action="store_true", help="print the complete selected task")
     parser.add_argument("--logs", type=Path, help="check a mask,exponent CSV for the selected task")
-    parser.add_argument("--norm-form", choices=FORMS,
+    parser.add_argument("--norm-form", choices=(*FORMS, "known-offset"),
                         help="use one or two irreducible norms for a whole pentanomial")
     parser.add_argument("--expand-cubics", action="store_true", help="substitute all available cubic descents")
     parser.add_argument("--alternate-pencils", action="store_true",
@@ -178,7 +178,9 @@ def main():
     for name in ([args.task] if args.task else names):
         if name in CANDIDATES:
             target = sparse_root(name, field)
-            if args.norm_form:
+            if args.norm_form == "known-offset":
+                relation = known_offset_quotient(name, target, field, table)
+            elif args.norm_form:
                 relation = norm_quotient(name, args.norm_form, target, field)
             else:
                 relation = sparse_quotient(target, cert["quotients"][name], field)

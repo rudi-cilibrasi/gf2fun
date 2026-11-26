@@ -2,6 +2,7 @@
 
 import argparse
 import json
+from collections import Counter
 from functools import cache
 from math import gcd
 
@@ -11,6 +12,7 @@ from period_coordinate import CANDIDATES, DEGREE, mask_of
 
 
 CERTIFICATE = DATA / "degree-1229-q1024-norm-quotients.json"
+KNOWN_OFFSETS = DATA / "degree-1229-known-offset-quotients.json"
 FORMS = {"pair31": (31, 31), "pair32": (32, 32), "single62": (62, 0), "single64": (64, 0)}
 
 
@@ -68,6 +70,31 @@ def norm_quotient(name, form, root, field):
     if denominator_degree:
         relation[mask_of(v)] = -inverse
     return relation
+
+
+def known_offset_quotient(name, root, field, table):
+    row = json.loads(KNOWN_OFFSETS.read_text())[name]
+    j, shift = row["frobenius"], row["multiplier_power"]
+    multiplier, small, denominator = (polynomial(int(row[key], 16)) for key in
+                                     ("multiplier_hex", "known_numerator_hex", "known_denominator_hex"))
+    if not 0 <= j < DEGREE or shift < 0 or any(p.is_zero() for p in (multiplier, small, denominator)):
+        raise ValueError("invalid known multiplier, numerator, denominator or exponent")
+    degree = len(row["unknown"]["relative_factor"]) - 1
+    unknown = checked_norm(row["unknown"], degree)
+    u = small * unknown
+    value = root.pow_mod(1 << j, field) * multiplier.pow_mod(shift, field)
+    if (value * denominator - u) % field != 0 or u.gcd(denominator) != 1:
+        raise ArithmeticError("the known-offset quotient fails in the field")
+    relation = Counter()
+    for p, weight in ((small, 1), (denominator, -1), (multiplier, -shift)):
+        for factor, e in p.factor()[1]:
+            mask = mask_of(factor)
+            if 20 % factor.degree() or mask not in table:
+                raise ArithmeticError("missing original linear-base logarithm in the offset")
+            relation[mask] += weight * int(e)
+    relation[mask_of(unknown)] += 1
+    inverse = pow(pow(2, j, COFACTOR), -1, COFACTOR)
+    return {p: inverse * e for p, e in relation.items()}
 
 
 def is_coefficient_norm(p):
