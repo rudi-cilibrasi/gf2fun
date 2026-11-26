@@ -6,6 +6,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **A 29,144-variable logarithm system is solved in a degree-1229 model over $\mathbb F_4$.** With $q=512$, 124,252 distinct circle orbits yield a system of exact corank one modulo the unfactored cofactor. Direct powering checks every exponent. All 29,144 projected norms generate the same subgroup. The model embeds the previously certified primitive generator and both pentanomial roots. The order of the norm used to normalize this table is still open. [Proof](results.pdf#page=134) · [29,144 exponents](data/degree-1229-q512-quaternary-logs.csv.gz) · [Field and embedding certificates](data/degree-1229-quaternary-models.json) · [Circle identifiers](data/degree-1229-q512-quaternary-pencils.bin.gz)
 - **262,144 specified norms generate the full multiplicative group in each of the five degree-1229 models.** Their labels are the conjugate pairs with no preimage under the rational map. The checker expresses all 524,800 linear norms as explicit products of these values. The pullbacks give 262,656 independent equations over the full group order, and the 1,023 zero-center circles add independent constraints. [Proof](results.pdf#page=133) · [Leaf list and reduction exporter](scripts/check_1229_height_two_pullback.py)
 - **Five degree-1229 models attain the minimum possible rational degree, two.** With $q=1024$ each has $x=u/((x^q)^2+x^q+v)$. Both sparse roots and the previously certified primitive generator have explicit embeddings. A projective pencil containing a quadratic leaves a cofactor of degree at most one. Each model supplies 698,709 or 699,392 equations for 524,800 linear-norm logarithms, including 1,023 provably independent equations. The full rank is open. [Proof and models](results.pdf#page=131) · [Five field and embedding certificates](data/degree-1229-height-two-models.json.gz) · [Model verifier](scripts/check_1229_height_two.py) · [Equation census and export](scripts/check_1229_height_two_relations.py)
 - **Linear Hermitian pencils give exactly 1,214,007 quadratic logarithms by isolating one binary mask.** For 1,187,645 masks the substituted polynomial has a single irreducible quadratic. A further 26,362 have two conjugate quadratics with the same binary norm. A uniqueness theorem and a census of all projective forms prove these lists exhaustive in the certified degree-1229 model. Direct powering verifies all 1,214,007 exponents. Exactly 1,213,940 of these values are primitive, and their minimum polynomial weight is 531. [Uniqueness theorem and census](results.pdf#page=129) · [Single factors](data/degree-1229-terminal-catalogue.bin.gz) · [Conjugate pairs](data/degree-1229-terminal-conjugates.bin.gz) · [Logarithm lookup](scripts/check_1229_terminal_census.py) · [Exact order census](data/degree-1229-terminal-order-census.json)
@@ -92,6 +93,25 @@ The Lean target for an all-degree proof is `GF2Sparse.Conjecture`. The gap is to
 The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ for every $s>0$, using at most five exponents of the form $2^i-1$. The Lean theorem `conjecture_iff_sparseOreIrreducible` converts a proof of this target directly into the original conjecture. [Formal equivalence](GF2Sparse/OreConjecture.lean)
 
 ## Contributing
+
+To verify the quaternary logarithm table, compile the NTL backend and run the model checker. The same checker exports either pentanomial as a discrete logarithm to the previously certified primitive base. [Model checker](scripts/check_1229_quaternary_models.py) · [Independent binary-field verification](scripts/degree_1229_quaternary_logs.cpp)
+
+~~~sh
+g++ -O3 -std=c++17 -fopenmp scripts/degree_1229_quaternary_logs.cpp -lntl -o /tmp/gf2-quaternary-logs
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_quaternary_models.py --verify-logs /tmp/gf2-quaternary-logs
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_quaternary_models.py --model 21149 --task product
+~~~
+
+To reproduce the linear system, rebuild its circle census and coefficient matrix. The solver computes the normalized exponents and checks the rank modulo the unfactored cofactor. The last command compares its output with the published table and checks every circle equation. [Pencil census and matrix builder](scripts/check_1229_quaternary_pencils.py) · [Wiedemann solver](scripts/wiedemann_943.cpp)
+
+~~~sh
+uv run --no-project --with numpy --with sympy --with python-flint==0.9.0 python scripts/check_1229_quaternary_pencils.py --rebuild --matrix /tmp/gf2-q512.bin
+g++ -O3 -march=native -fopenmp scripts/wiedemann_943.cpp -o /tmp/gf2-wiedemann
+/tmp/gf2-wiedemann --phase1 /tmp/gf2-q512.bin /tmp/gf2-q512.seq 12
+uv run --no-project --with python-flint==0.9.0 python scripts/phase2_minpoly.py --seq /tmp/gf2-q512.seq --out /tmp/gf2-q512.poly --certify-rank
+/tmp/gf2-wiedemann --phase3 /tmp/gf2-q512.bin /tmp/gf2-q512.poly /tmp/gf2-q512.sol 12
+uv run --no-project --with numpy --with sympy --with python-flint==0.9.0 python scripts/check_1229_quaternary_pencils.py --solution /tmp/gf2-q512.sol --check-logs
+~~~
 
 To work in a model with a linear cofactor, export a sparse-root task over $\mathbb F_{1024}$. The task packs polynomial coefficients into ten-bit groups, starting with the constant coefficient. Find $e$ with $\mathtt{base}^e=\mathtt{target}$ modulo the relative modulus. This is the same forward exponent as in the certified binary model. The final command checks a submitted value and computes the sparse root's exact index. [Model verifier](scripts/check_1229_height_two.py) · [Model search](scripts/find_1229_height_two.cpp)
 

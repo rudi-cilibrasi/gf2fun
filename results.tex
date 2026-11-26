@@ -10312,4 +10312,79 @@ Thus the pullbacks and these circles together impose 263,679 independent
 equations on 524,800 labels. The option \texttt{--circle-rank} checks
 the components and all five unit determinants.
 
+\section{A solved quaternary logarithm system for degree 1229}
+\label{sec:quaternary-logs}
+Let \(B=\mathbb F_4=\F[\omega]/(\omega^2+\omega+1)\), encoding
+\(1,\omega,1+\omega\) by \(1,2,3\). The following rows specify
+\(R=h_0/h_1\) by coefficient lists in increasing degree. Each parent
+\(h_0(X^q)+Xh_1(X^q)\) has an irreducible degree-1229 factor over \(B\).
+\[
+\begin{array}{r|r|l|l}
+ q&\text{model}& h_0&h_1\\\hline
+512&21149&(1,3,1,2,2)&(0,1,1)\\
+512&72554&(2,2,2,1,3)&(2,1,0,1)\\
+256&4212418&(2,0,0,3,2,1)&(0,1,0,0,0,1)
+\end{array}
+\]
+The coefficient norm of each recorded factor is an irreducible binary
+polynomial of degree 2458. In its field \(E=\mathbb F_{4^{1229}}\),
+the model checker verifies the constant embedding, the common Gauss
+period, the previously certified primitive generator of
+\(H=\mathbb F_{2^{1229}}\) and both original pentanomial roots.
+
+Use model 21149 with \(x=X\bmod g\), \(q=512\), \(k=\mathbb F_{q^2}\)
+and \(L=kE\). Its linear norms \(U_t=N_{L/H}(x+t)\) agree on each
+fourth-power orbit in \(k\), since \([L:E]=9\) and \(E\cap k=B\).
+Burnside's lemma gives \((4^9+2\cdot4^3+6\cdot4)/9=29{,}144\) labels.
+The normalization is \(U_0=N_{E/H}(x)^9\). Write \(\bar t=t^q\).
+For a circle \(S(X)=X^{q+1}+bX+\bar b X^q+d\), set
+\[
+ D(T)=(T+b)h_0(T)+(\bar b T+d)h_1(T).
+\]
+When \(D\) splits, clearing the denominator and taking norms gives
+the homogeneous logarithm row with one contribution from each of the
+513 circle points, \(+q\) at each conjugate root of \(h_1=T(T+1)\)
+and \(-q\) at each conjugate root of \(D\), with multiplicities.
+Here \(t\) and \(\bar t\) can belong to distinct fourth-power orbits.
+
+To count all split circles, fix \(t\in k\) and put \(r=R(t)\) at
+nonpoles. A root occurs exactly when
+\[
+       d=tr+br+\bar b t,\qquad
+       \operatorname{Tr}_{k/\mathbb F_q}(b(r+\bar t))
+           =\operatorname{Tr}_{k/\mathbb F_q}(tr).
+\]
+Thus the centers lie on an affine line unless \(r=\bar t\), when every
+center occurs. A pole forces \(b=t\). The census counts repeated roots
+by polynomial division and discards singular circles. Of the
+\(q^2(q-1)\) nonsingular norm circles, 1,118,130 split. Fourth powers
+give 124,252 orbit representatives. FLINT and NTL independently
+factored the substituted quintics and reconstructed byte-for-byte
+identical coefficient matrices.
+
+Over the unfactored cofactor \(C\), augment 29,143 circle equations by
+the normalization that label zero has exponent one. The modular
+Wiedemann computation of Section~\ref{sec:1229-q1024-primitivity}
+can be reused on this square system. Its 58,288 scalar moments give
+a recurrence of degree 29,144 with unit constant coefficient. The
+two-by-two polynomial matrix in the extended Euclidean calculation
+has unit determinant. Its last row gives the generating function
+numerator and denominator modulo \(Z^{58{,}288}\). Their common
+divisors modulo any prime of \(C\) divide \(Z^{58{,}288}\), and the
+denominator has unit constant term. Hence its degree stays 29,144
+in lowest terms at every such prime. The sampled square matrix is
+invertible modulo \(C\) by Cayley--Hamilton. For
+each of the 29,144 resulting exponents the binary-field backend
+directly verifies
+\[
+                  (U_0^K)^{e_t}=U_t^K .
+\]
+Indeed for the monic minimal polynomial \(p_t\) of \(t\) over \(B\),
+of degree \(d\mid9\), one has
+\(U_t=N_{E/H}(p_t(x))^{9/d}\). The implementation evaluates both
+binary conjugates in the degree-2458 field. All \(e_t\) are coprime to
+\(C\), so each projection generates the same subgroup as \(U_0^K\).
+The four known prime-index tests for \(U_0\) all pass and \(U_0^K\ne1\).
+Its exact order and the orders of the sparse roots remain open.
+
 \end{document}
