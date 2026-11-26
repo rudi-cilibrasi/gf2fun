@@ -8579,7 +8579,8 @@ For either sparse root \(r\) there are explicit monic good irreducibles
 \[
               r=\operatorname{Norm}_{K(t)/C(t)}\bigl(U(t)/V(t)\bigr).
 \]
-The same statement holds for the period targets with masks 2 and 19.
+The same statement holds for all ten period targets of degree at most six
+in the 3380-target list of Section~\ref{sec:period-logs}.
 In each case 16 is the least possible value of
 \(\max(\deg U,\deg V)\), even allowing reducible polynomials and arbitrary
 nonzero leading coefficients. For a single polynomial norm the least
@@ -8611,11 +8612,14 @@ examples the checker verifies
   d_0+d_1=1229,\qquad \det[L_0,L_1]\ne0,\qquad
   \min(d_0,d_1)>585.
 \]
-Independence of the leading vectors makes the degree of a nonzero
-combination with multipliers \(u,v\) exactly
-\(\max(d_0+\deg u,d_1+\deg v)\), with \(\deg0=-\infty\).
-Norms of two polynomials of degrees at most 15 would give a nonzero
-module pair of degrees at most \(39\cdot15=585\), a contradiction.
+For any pair \((A,B)\) in the module with \(B\ne0\), put
+\(D=\max(\deg A,\deg B)\). Each \(p_iB-b_iA\) is divisible by \(I\).
+If \(\max(d_0,d_1)+D<1229\), both determinants vanish, contradicting
+\(p_0b_1-b_0p_1=I\ne0\). This general inequality is formalized in
+\nolinkurl{GF2Sparse/NormQuotients.lean}. It gives
+\(D\ge1229-\max(d_0,d_1)=\min(d_0,d_1)>585\).
+Norms of two polynomials of degrees at most 15 would have
+\(D\le39\cdot15=585\).
 For a single norm of degree at most 31 the norm polynomial would have
 degree at most 1209. The unique representative \(\rho\) has degree
 1228 in each case, which proves the second lower bound by the
@@ -8649,5 +8653,99 @@ Theorem~\ref{thm:even2292}, this leaves only 2294, 2302 and 2416
 among the even degrees through 2416 uncertified here. There are now
 2005 certified degrees among the first 2416. The first gap is still
 1229.
+
+\section{Short products of norms in the binary target group}\label{sec:binary-norm-cover}
+In each of the six open degrees through 1280, every element of
+\(\mathbb F_{2^n}^\times\) is the norm of a single good degree-16
+polynomial value in the corresponding forward model. Every element
+is also a product of at most 15 norms of linear values.
+Here the norm goes all the way down to the binary target field.
+The following estimate gives the bounds for intermediate degrees as well.
+
+\begin{theorem}
+Take a forward model of Section~\ref{sec:forward-descent}. Write
+\(K=\mathbb F_{2^m}\), \(E=\mathbb F_{2^n}\), \(F=K(t)\) and
+\(\pi:E^\times\twoheadrightarrow D\) for any quotient group, including
+the identity map. Let \(h\) be a power of two and set
+\[
+   s=2^{mh/2},\qquad
+   b=\begin{cases}0&h=1,\\q+4&h>1.\end{cases}
+\]
+Suppose \(k\ge1\) satisfies
+\[
+                  (s-b)^k>(|D|-1)(n-1+b)^k .
+\]
+Every element of \(D\) is a product of \(k\) terms
+\(\pi(\operatorname{Norm}_{F/E} U(t))\), for monic irreducible
+\(U\in K[T]\) of degree \(h\). For \(h>1\) every \(U\) can be taken
+good. Each of the \(k\) signs in the product may be prescribed.
+\end{theorem}
+\begin{proof}
+Set \(L=\mathbb F_{2^{mh}}\). Since \(n\) is odd and \(h\) is a power
+of two, \(t\) has degree \(n\) over \(L\). Define
+\(A(\lambda)=\pi(\operatorname{Norm}_{L(t)/E}(t-\lambda))\) for
+\(\lambda\in L\). A nontrivial character of \(D\) lifts to a nontrivial
+character of \(L(t)^\times\) by surjectivity of the norm and \(\pi\).
+The affine-line character estimate gives
+\[
+       \left|\sum_{\lambda\in L}\chi(A(\lambda))\right|\le(n-1)s .
+\]
+See \href{https://web.math.princeton.edu/~nmk/old/estcharsums.pdf}
+{Katz, \emph{An estimate for character sums}, Theorem 1}.
+
+For \(h=1\) keep all of \(L\). Otherwise discard its index-two
+subfield, of size \(s\), which contains all elements of smaller
+degree over \(K\). Also discard the poles of \(R=h_0/h_1\) and its
+trap roots of degree \(h\). The two Frobenius equations have at most
+\(q+2\) and \(qs+2\) roots, the poles contribute at most two,
+and the fibres of \(R\) over the index-two subfield contain at most
+\(2s\) points. Since \(s\ge q+6\), at most \(bs\) elements are
+discarded. This leaves a set \(S\) of size at least \(s(s-b)\),
+with nontrivial character sums bounded by \((n-1+b)s\).
+
+Orthogonality on \(D\) gives at least
+\[
+  \frac{s^k}{|D|}
+    \left((s-b)^k-(|D|-1)(n-1+b)^k\right)
+\]
+ordered parameter tuples for each target and each prescribed choice
+of signs. A minus sign conjugates the corresponding character sum.
+For \(\lambda\in S\) its minimal polynomial \(U\) over \(K\) has
+degree \(h\). The \(h\) conjugates of \(t-\lambda\) over \(F\)
+have product \(U(t)\), since \(L\) and \(F\) intersect in \(K\).
+Transitivity of the norm gives the claimed representation.
+\end{proof}
+
+Each entry in the table is a sufficient number \(k\) of norm values.
+The last two rows use the projection \(a\mapsto a^{K_0}\) from
+Section~\ref{sec:period-logs}, where \(K_0\) is the known part of the
+degree-1229 group order and \(C_0=(2^{1229}-1)/K_0\).
+\[
+\begin{array}{l|r|l|rrrrr}
+ n&m&|D|&h=1&2&4&8&16\\\hline
+ 1229&234&2^n-1&12&6&3&2&1\\
+ 1229,1231,1237&198&2^n-1&14&7&4&2&1\\
+ 1243,1249,1259&198&2^n-1&15&7&4&2&1\\
+ 1229&234&C_0&9&5&3&2&1\\
+ 1229&198&C_0&11&6&3&2&1
+\end{array}
+\]
+Lean checks the strict integer inequalities in
+\nolinkurl{GF2Sparse/NormCoverBounds.lean}. The table proves existence
+for arbitrary prescribed targets. Section~\ref{sec:norm-quotients}
+gives actual coefficients for specified targets with its norm to \(C(t)\).
+
+For either sparse degree-1229 root \(r\), there is also a quantitative
+test of what full order would imply on this line. If \(H=\langle
+r\rangle\) is proper, its index \(I\) is at least
+\(J=818085338814611458\). Apply orthogonality on \(E^\times/H\) to
+the full line of parameters \(\lambda\in K\). The fraction for which
+\(\operatorname{Norm}_{F/E}(t-\lambda)\in H\) is at most
+\[
+ \frac1I+\left(1-\frac1I\right)\frac{1228}{2^{m/2}}
+ \le \frac1J+\frac{1228}{2^{99}} < 2^{-59}.
+\]
+If \(r\) is primitive, every parameter gives a member of \(H\).
+The exact order of either prescribed root remains open.
 
 \end{document}

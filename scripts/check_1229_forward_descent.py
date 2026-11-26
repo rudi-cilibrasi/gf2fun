@@ -58,6 +58,8 @@ def check_model(record, periods, factors, quotients, gp, quotients_only=False):
                     if d == 6 and int(row["degree"]) <= 6]
     if [row["mask"] for row in targets] != expected:
         raise ArithmeticError("incorrect period targets")
+    if d == 6 and [row["target"] for row in quotients] != [*TAPS, *expected]:
+        raise ArithmeticError("incorrect targets in degree-16 norm quotients")
     modulus = record["constant_modulus"]
     body = f"""
 f=binpol({record['binary_modulus_hex']}); check(poldegree(f)=={D} && polisirreducible(f));
@@ -154,6 +156,7 @@ quotientcheck(residue,shift,seed,top,bottom)={
   check(d0+d1==1229 && max(d0,d1)<=624);
   my(mat=[polcoef(p0,d0),polcoef(p1,d1);polcoef(b0,d0),polcoef(b1,d1)]);
   check(p0*b1-b0*p1==basepol && matdet(mat)!=0 && min(d0,d1)>39*15);
+  check((p0-residue*b0)%basepol==0 && (p1-residue*b1)%basepol==0);
   my(c=matsolve(mat,[one,one]~), s=Pol(apply(a->value(a,zz),digits(seed,64))));
   check(poldegree(s)<624-d0);
   my(u=c[1]*x^(624-d0)+s, v=c[2]*x^(624-d1)+value(shift,zz));
