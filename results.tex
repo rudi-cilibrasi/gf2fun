@@ -7353,9 +7353,9 @@ degrees admits a primitive product pentanomial. In degree 1535 one is
 \]
 The file \nolinkurl{data/odd-product-witnesses-1281-1535.csv} gives the
 eighty pairs \((u,v)\). The pinned Cunningham transcription supplies
-69 complete group orders, and
-\nolinkurl{data/mersenne-odd-1281-1535-extra.json} supplies the other
-eleven from \href{https://factordb.com/index.php?query=2%5E1535-1}{FactorDB}.
+69 complete group orders. The other eleven come from
+\href{https://factordb.com/index.php?query=2%5E1535-1}{FactorDB}
+and appear in \nolinkurl{data/mersenne-odd-1281-1535-extra.json}.
 PARI/GP tested irreducibility and multiplicative order in the factor
 field. FLINT independently proved primality of the 741 distinct
 integer factors, multiplied each list back to \(2^n-1\), and checked
@@ -7363,5 +7363,210 @@ the full power and each prime-index power in the polynomial quotient.
 The adjacent even degrees are covered by the even-degree table.
 Together with the six gaps through 1280 this leaves 54 degrees open
 in the project among the first 1536.
+
+\section{A weight bound below one quarter of the degree}\label{sec:weight-quarter}
+Let \(W(n)\) be the minimum weight of a primitive binary polynomial of
+degree \(n\). Shparlinski proved \(W(n)\le n/4+o(n)\).
+The following bound counts primitive polynomials with few terms by
+allowing a distribution on the coefficients in the middle of the polynomial.
+\href{https://www.mathnet.ru/eng/ppi820}{I.~E.~Shparlinski,
+\emph{On Primitive Polynomials}, 1987, pp.~100--103}.
+
+\begin{theorem}\label{thm:primitive-weight-quarter}
+Write \(h(p)=-p\log_2p-(1-p)\log_2(1-p)\), and put
+\[
+ c=\frac12-\frac{25}{64(2-h(1/8))}=0.23179383\ldots .
+\]
+There is an absolute \(C\) such that for all sufficiently large \(n\)
+at least \(2^{n/2}\) distinct primitive binary polynomials of degree
+\(n\) have weight at most \(cn+C\sqrt{n\log n}\).
+In particular \(W(n)\le 0.2318n\) for all sufficiently large \(n\).
+\end{theorem}
+
+Put \(q=2^n,\ N=q-1,\ K=\mathbb F_q\). For \(z\in K^\times\) write
+\[
+ P_z(T)=\prod_{j=0}^{n-1}(T-z^{2^j}).
+\]
+This is a monic binary polynomial of degree \(n\) with constant
+coefficient one. When \(z\) generates \(K^\times\), its minimal
+polynomial is \(P_z\), and each primitive polynomial arises from
+exactly \(n\) such generators.
+
+\begin{lemma}\label{lem:weight-characters}
+Let \(U_m=(\F[T]/T^{m+1})^\times\), where \(m\ge1\).
+For any nontrivial character \(\chi\) of \(U_m\) and any character
+\(\lambda\) of \(K^\times\),
+\[
+ \left|\sum_{z\in K^\times}\chi(P_z)\lambda(z)\right|\le m\sqrt q .
+\]
+\end{lemma}
+\begin{proof}
+On the units of \(K[T]/T^{m+1}\) take the character
+\(\eta(f)=\chi(\mathcal N(f))\lambda(f(0))\), where \(\mathcal N\)
+is the product of the \(n\) coefficientwise Frobenius conjugates.
+The norm maps the units with constant one onto \(U_m\). Indeed,
+modulo \(T^{i+1}\), the norm of \(1+bT^i\) is
+\(1+\operatorname{Tr}_{K/\F}(b)T^i\) for \(1\le i\le m\).
+The field trace is onto, so we can lift a desired unit one coefficient
+at a time. On these units the second character factor is one, so
+\(\eta\) is nontrivial. Extend it by zero on nonunits.
+The sum in the lemma is the degree-one coefficient of its Dirichlet
+\(L\)-function over \(K[T]\), since \(\mathcal N(T-z)=P_z\) and the
+summand at \(z=0\) is zero. This \(L\)-function has degree at most
+\(m\), and each reciprocal root has modulus at most \(\sqrt q\) by
+Weil's theorem. Equivalently one may apply the degree-one
+von Mangoldt sum bound directly.
+\href{https://arxiv.org/pdf/1204.0708\#page=10}{Keating and Rudnick,
+\emph{The variance of the number of prime polynomials in short intervals
+and in residue classes}, equations (3.29)--(3.33)}.
+\end{proof}
+
+Fix \(m=2d<n\) and \(0\le a\le d\), and take
+\[
+ A=\left\{1+\sum_{i\in S}T^{d+i}:
+       S\subseteq\{1,\ldots,d\},\ |S|=a\right\}\subset U_m,
+ \qquad s=|A|=\binom da .
+\]
+Multiplication of these units adds their nonconstant parts modulo
+\(T^{2d+1}\). In particular \(u^{-1}=u\) for every \(u\in A\).
+Let \(F(v)\) count ordered pairs in \(A^2\) with product \(v\).
+Then \(F(1)=s,\ \sum_v F(v)=s^2\), and \(F(v)\le s\). Its Fourier
+coefficient at \(\chi\) is \(\left|\sum_{u\in A}\chi(u)\right|^2\).
+Fourier inversion at the identity shows that the sum of these
+nonnegative coefficients divided by \(|U_m|=2^m\) is \(s\).
+Consequently Lemma~\ref{lem:weight-characters} gives, for every \(\lambda\),
+\[
+ \left|\sum_{z\in K^\times}F(P_z)\lambda(z)
+       -{\bf1}_{\lambda=1}\,M\right|\le m\sqrt q\,s,
+ \qquad M=\frac{Ns^2}{2^m}.
+ \tag{1}\label{eq:weight-main}
+\]
+
+\begin{lemma}\label{lem:weight-sieve}
+Partition the distinct prime divisors of \(N\) into \(D\) and \(E\).
+Put \(t=|D|,\ w=|E|,\ \sigma=\sum_{\ell\in E}1/\ell\) and
+\(\theta=\prod_{\ell\in D}(1-1/\ell)\). The weighted count of
+generators satisfies
+\[
+ R=\sum_{\ord(z)=N}F(P_z)
+ \ \ge\ \theta\big((1-\sigma)M-(w+1)2^t m\sqrt q\,s\big).
+\]
+\end{lemma}
+\begin{proof}
+For a prime \(\ell\mid N\), the indicator that \(z\) is not an
+\(\ell\)-th power in \(K^\times\) is
+\[
+ (1-1/\ell)\left(1-\frac{1}{\ell-1}
+             \sum_{\ord(\lambda)=\ell}\lambda(z)\right).
+\]
+Multiplying these indicators over \(D\) gives constant character
+coefficient \(\theta\) and sum of absolute coefficients \(\theta2^t\),
+because the orders at distinct primes are coprime. Apply
+\eqref{eq:weight-main}. For each \(\ell\in E\), multiply that product
+by the indicator of \(\ell\)-th powers,
+\(\ell^{-1}\sum_{\lambda^\ell=1}\lambda(z)\).
+The constant coefficient is now \(\theta/\ell\), and the sum of
+absolute coefficients is at most \(\theta2^t\). Subtracting the sum
+of these upper bounds on the excluded weights proves the result,
+since \(F\) is nonnegative.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:primitive-weight-quarter}]
+Take for \(D\) the prime divisors of \(N\) up to \(\sqrt n\).
+Then \(t\le\sqrt n,\ w\le n\), and Mertens' estimate for the sum of
+reciprocal primes gives
+\[
+ \sigma\le \sum_{\sqrt n<\ell\le n,\ \ell\ {\rm prime}}\frac1\ell
+       +\frac1{\log_2 n}=\log 2+o(1).
+\]
+Here the product of prime divisors exceeding \(n\) is less than
+\(2^n\), so there are at most \(n/\log_2 n\) of them.
+In increasing order the \(i\)-th prime in \(D\) is at least \(i+1\),
+giving \(\theta\ge1/(t+1)\ge1/(n+1)\).
+
+Take \(p=1/8,\ b=2-h(p)\), and let \(d\) be the largest multiple of
+eight at most \((n/2-\sqrt n-7\log_2 n)/b\). For large \(n\) this
+gives \(0<2d<n\). Set \(a=pd\). The term at \(a\) is a mode of
+the binomial distribution with parameters \(d,p\), so
+\(s\ge 2^{h(p)d}/(d+1)\). Relative to \(M\), the error inside the
+parentheses in Lemma~\ref{lem:weight-sieve} is therefore
+\[
+ O(n^3)\,2^{t-n/2+bd}=O(n^{-4}).
+\]
+Thus \(R\gg\theta M\) with an absolute positive constant.
+
+There are \(L=n-1-2d\) unrestricted interior coefficients above the
+two blocks. Count all monic polynomials with constant one, giving
+each polynomial \(f\) weight \(F(f\bmod T^{2d+1})\).
+The total of these multiplicities is \(s^2 2^L\). Sampling from this
+distribution amounts to choosing two independent uniform \(a\)-subsets
+\(S,S'\), then filling the unrestricted coefficients independently.
+The Hamming weight is
+\[
+ Z=2+2(a-J)+Y,\qquad J=|S\cap S'|,\quad
+ Y\sim\operatorname{Bin}(L,1/2).
+\]
+Here \(J\) is hypergeometric with mean \(a^2/d\), independent of \(Y\).
+It follows that \(\mathbb E Z=n/2+3/2-(25/32)d\).
+For \(u=2\sqrt{n\log n}\), Hoeffding's inequality, including its
+sampling-without-replacement form, gives
+\[
+ \Pr(J<\mathbb E J-u)\le e^{-2u^2/a}\le n^{-8},\qquad
+ \Pr(Y>\mathbb E Y+u)\le e^{-2u^2/L}\le n^{-8}.
+\]
+Thus at most \(2n^{-8}s^2 2^L\) of the polynomial weight lies above
+\(\mathbb E Z+3u\). Each primitive polynomial has \(n\) roots, so
+discarding all those of greater weight costs \(O(n^{-7}s^2 2^L)\)
+from \(R\). This is \(o(\theta M)\), since \(N/2^{2d}\ge2^L\).
+Each remaining polynomial contributes at most \(ns\) to \(R\).
+The number of distinct remaining primitive polynomials is at least
+\[
+ \gg\frac{\theta Ns}{n2^{2d}}
+ \gg\frac{2^{n-bd}}{n(n+1)(d+1)}
+ \ge 2^{n/2}
+\]
+for all sufficiently large \(n\), where the last assertion absorbs
+the absolute constant using \(n/2-bd\ge\sqrt n+7\log_2 n\).
+Substitution of \(d\) in \(\mathbb E Z+3u\) gives the asserted
+coefficient and error term. For the strict decimal comparison,
+\(7^{462}<2^{1297}\) implies \(264/769<1/(2b)\), whence
+\(c<713/3076<1159/5000=0.2318\).
+\end{proof}
+
+\begin{corollary}\label{cor:primitive-weight-1229}
+In degree \(1229\) more than \(2^{619}\) distinct primitive
+polynomials have weight at most \(329\), using only the degree to
+bound the prime divisors of the group order. Using
+Theorem~\ref{thm:1229-cofactor-bound}, more than \(2^{613}\)
+have weight at most \(327\).
+\end{corollary}
+\begin{proof}
+For odd prime \(n\), each prime divisor \(\ell\) of \(2^n-1\) has
+\(\ord_\ell(2)=n\), so \(\ell\ge P=2n+1\). Take \(D\) empty, and
+let \(w\) be an upper bound on the number of distinct divisors that
+are prime. Then \(\sigma\le w/P\). For a weight limit \(B\), put
+\[
+ T_B=\sum_{j=\max(0,2a-d)}^a\binom aj\binom{d-a}{a-j}
+       \sum_{\substack{0\le k\le L,\ k\ {\rm odd}\\2+2(a-j)+k>B}}
+                   \binom Lk .
+\]
+Fixing one member of the ordered pair gives the first two binomial
+factors by its overlap with the other member. A primitive polynomial
+in degree \(n>1\) has odd weight, so only odd \(k\) can contribute.
+There are at most \(nsT_B\) weighted primitive roots to discard.
+Dividing the resulting lower bound by \(ns\), a lower bound for the
+number of distinct primitive polynomials of weight at most \(B\) is
+\[
+ \frac{(P-w)Ns-P2^{2d}\big((w+1)2d\lceil\sqrt q\rceil+nT_B\big)}
+      {P2^{2d}n}.
+\]
+At \(n=1229\), \(P^{110}>N\), so one may use \(w=109\).
+Take \((d,a,B)=(411,54,329)\). The integer part of the displayed
+bound exceeds \(2^{619}\). The four known prime factors and the
+bound of 15 on the remaining cofactor give \(w=19\).
+Taking \((d,a,B)=(414,55,327)\) gives an integer part exceeding
+\(2^{613}\). Both evaluations use integer arithmetic in
+\nolinkurl{scripts/check_primitive_weight_bound.py}.
+\end{proof}
 
 \end{document}
