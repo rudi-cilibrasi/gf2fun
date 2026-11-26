@@ -10,8 +10,9 @@ from pathlib import Path
 from check_1229_factor_base_orders import CIRCLE_LOGS, ISOGENY_LOGS, check_examples, read_logs, read_table
 from check_1229_hermitian_descent import records as hermitian_records, relation as hermitian_relation
 from check_1229_isogeny_logs import H0, H1, Q
-from check_degree_1229 import COFACTOR, KNOWN, check_known_order
-from check_factor_base import DATA, irreducible, modulus, polynomial
+from check_1229_norm_height import FORMS, norm_quotient, sparse_root
+from check_degree_1229 import COFACTOR, KNOWN
+from check_factor_base import DATA, irreducible, polynomial
 from period_coordinate import CANDIDATES, mask_of
 
 
@@ -37,22 +38,14 @@ def unity_factors():
     return (polynomial(2)**(Q+1) + 1).factor()[1]
 
 
-def sparse_quotient(name, row, field):
-    sparse = modulus(1229, CANDIDATES[name])
-    if not irreducible(sparse):
-        raise ValueError("the proposed sparse polynomial is reducible")
-    check_known_order(sparse)
-    task = json.loads((DATA / f"degree-1229-single-log-{name}.json").read_text())
-    if int(task["model_modulus_hex"], 16) != mask_of(field):
-        raise ValueError("the sparse root uses another model modulus")
-    root = polynomial(int(task["sparse_root_in_model_hex"], 16))
+def sparse_quotient(root, row, field):
     u, v = (polynomial(int(row[k], 16)) for k in ("numerator_hex", "denominator_hex"))
     if (u.degree() >= 1229 or v.degree() >= 1229 or u.gcd(v) != 1
-            or sparse.compose_mod(root, field) != 0 or (v*root-u) % field != 0):
+            or (v*root-u) % field != 0):
         raise ArithmeticError("the reduced quotient does not represent the designated sparse root")
     relation = factors(u)
     relation.subtract(factors(v))
-    return root, relation
+    return relation
 
 
 def norm_pencil(row):
@@ -148,6 +141,8 @@ def main():
     parser.add_argument("--task", choices=(*CANDIDATES, *PENCIL_NAMES, "seroussi-0xd3-binomial", *form_names))
     parser.add_argument("--json", action="store_true", help="print the complete selected task")
     parser.add_argument("--logs", type=Path, help="check a mask,exponent CSV for the selected task")
+    parser.add_argument("--norm-form", choices=FORMS,
+                        help="use one or two irreducible norms for a whole pentanomial")
     parser.add_argument("--expand-cubics", action="store_true", help="substitute all available cubic descents")
     parser.add_argument("--alternate-pencils", action="store_true",
                         help="use the three alternative pencils containing solved quadratic logarithms")
@@ -156,6 +151,8 @@ def main():
     args = parser.parse_args()
     if (args.json or args.logs) and not args.task:
         parser.error("--json and --logs require --task")
+    if args.norm_form and args.task and args.task not in CANDIDATES:
+        parser.error("--norm-form applies to the product and seroussi pentanomials")
     field_mask, table = read_table()
     extra_logs = dict(read_logs(CIRCLE_LOGS))
     extra_logs.update(read_logs(ISOGENY_LOGS))
@@ -177,9 +174,14 @@ def main():
             row = row | {"hermitian": row["alternate_hermitian"]}
         return hermitian_relation(p, row)
 
-    for name in ([args.task] if args.task else [*CANDIDATES, *PENCIL_NAMES, "seroussi-0xd3-binomial", *form_names]):
+    names = list(CANDIDATES) if args.norm_form else [*CANDIDATES, *PENCIL_NAMES, "seroussi-0xd3-binomial", *form_names]
+    for name in ([args.task] if args.task else names):
         if name in CANDIDATES:
-            target, relation = sparse_quotient(name, cert["quotients"][name], field)
+            target = sparse_root(name, field)
+            if args.norm_form:
+                relation = norm_quotient(name, args.norm_form, target, field)
+            else:
+                relation = sparse_quotient(target, cert["quotients"][name], field)
         elif name in form_names:
             p = form_names[name]
             target, relation = polynomial(p), hermitian(p)
@@ -196,6 +198,8 @@ def main():
         for p in (relation.keys() & extra_logs.keys()) - table.keys():
             table[p] = checked_exponent(p, extra_logs[p], base, field)
         result = reduce_task(name, target, relation, table, base, field, args.logs)
+        if args.norm_form:
+            result["norm_form"] = args.norm_form
         if name in form_names and "log_mod_C" in forms[form_names[name]]:
             if result["remaining"] or result["known_exponent_mod_C"] != forms[form_names[name]]["log_mod_C"]:
                 raise ArithmeticError("the circle does not reconstruct the published terminal exponent")
