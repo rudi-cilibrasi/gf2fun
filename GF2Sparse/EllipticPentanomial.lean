@@ -26,6 +26,15 @@ theorem shift_product {K : Type*} [Field K] [CharP K 2] {u w : K} {n : ℕ}
   linear_combination (norm := (try ring_nf; reduce_mod_char!))
     ((w+1)*u^3+w*u^2+u)*hw - hu
 
+/-- The cubic of the relative norm is a symmetric identity in the two conjugates. -/
+theorem cubic_norm_identity {K : Type*} [Field K] [CharP K 2] (x y : K) :
+    let s := x*y
+    let b := (1+x)*(1+y)
+    b^3 + (1+s)*b^2 + (1+s+s^2)*b + (1+x^3)*(1+y^3) = 0 := by
+  dsimp only
+  ring_nf
+  reduce_mod_char!
+
 private def p2 : ProvenPrime := ⟨2, by norm_num1⟩
 private def p3 : ProvenPrime := ⟨3, by norm_num1⟩
 private def p5 : ProvenPrime := ⟨5, by norm_num1⟩

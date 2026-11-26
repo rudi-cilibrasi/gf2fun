@@ -13815,4 +13815,87 @@ projections and a nontrivial contribution from the remaining cofactor,
 using the factorization of the known part of \(2^{1229}-1\) in \nolinkurl{GF2Sparse/Degree1229.lean}.
 Full multiplicative order remains open.
 
+\section{A cubic norm test for the elliptic pentanomials}
+\label{sec:elliptic-cubic-norm}
+The translated elliptic coordinate of Theorem~\ref{thm:elliptic-pentanomial-order}
+also gives exact norm identities. Write \(m=n/3\) and \(Q=2^{n/6}\).
+Here \(n/6\) is odd and \(\mathbb F_{2^n}=\mathbb F_{Q^6}\).
+\begin{theorem}\label{thm:elliptic-cubic-norm}
+Suppose \(F_k\) is irreducible, let \(r\) be a root, and put
+\[
+ u=1+r,\quad a=u^3,\quad s=u^{Q^3+1},\quad b=r^{Q^3+1}.
+\]
+Then \(a\) has degree \(m\) over \(\F\), \(s\) has degree \(n/6\),
+and \(b\) has degree three over \(\mathbb F_Q\). Their equations include
+\[
+ a^m=a+1,\qquad
+ b^3+(1+s)b^2+(1+s+s^2)b+s^n=0.
+\]
+The norm of \(r\) to \(\mathbb F_{Q^2}\) is \(a^m\). In particular
+\(\gcd(m,2^m-1)\) divides the index of \(r\), and whenever
+\(k\equiv2\pmod3\) the pentanomial is imprimitive.
+\end{theorem}
+\begin{proof}
+The equation \(u^n+u^3+1=0\) gives \(a^m=a+1\), and
+\([\F(u):\F]=3m\) forces \([\F(a):\F]=m\).
+The three conjugates of \(u\) over \(\mathbb F_{Q^2}\) are
+\(u,\omega u,\omega^2u\), so the norm of \(1+u\) is \(1+a=a^m\).
+Under a surjective norm the index of the image divides the original
+index. In \(\mathbb F_{Q^2}^\times\) every \(m\)-th power has index
+divisible by \(\gcd(m,2^m-1)\). For \(k\equiv2\pmod3\),
+\(4^k\equiv7\pmod9\), whence \(3\mid m\). Since \(m\) is even,
+\(3\mid 2^m-1\) as well.
+
+Write \(u'=u^{Q^3}\). Then \(s=uu'\in\mathbb F_{Q^3}\) and
+\(s^3=a^{Q+1}\in\mathbb F_Q\). Cubing is bijective on both fields
+since \(Q\equiv2\pmod3\), so \(s\in\mathbb F_Q\).
+Taking the quadratic norm of \(a^m=a+1\) gives
+\(a+a^Q=1+s^3+s^n\). Thus \(a\) is quadratic over \(\F(s)\) with
+trace \(1+s^3+s^n\) and product \(s^3\), forcing
+\([\F(s):\F]=n/6\). Put \(w=u+u'=b+1+s\). Then
+\(w^3=a+a^Q+sw\), which gives the displayed cubic after
+substitution. If \(b\) were in \(\mathbb F_Q\), the equation
+\(u^2+wu+s=0\) would place \(u\) in \(\mathbb F_{Q^2}\), contradicting
+degree \(n\). Thus the cubic is irreducible over \(\mathbb F_Q\).
+\end{proof}
+
+\begin{corollary}\label{cor:4098-cubic}
+For \(r\) a root of \(X^{4098}+X^{4096}+X^3+X+1\), put
+\(Q=2^{683}\) and \(C=(Q^2+Q+1)/7\). The element \(s\) above is
+primitive in \(\mathbb F_Q\) and \(r^{Q^3-1}\) has exact order
+\(Q^3+1\). The root \(r\) is primitive if and only if
+\[
+              (b^{Q-1})^7\quad\text{has order}\quad C .
+\]
+Here \(C\) is a specified 411-digit composite. The order of \(r\)
+is \(((2^{4098}-1)/C)d\) for a divisor \(d>1\) of \(C\).
+\end{corollary}
+\begin{proof}
+The trinomial \(X^{1366}+X+1\) is primitive: its seven prime-index
+tests all pass. Therefore \(a\) is primitive, \(s^3=a^{Q+1}\) is
+primitive in \(\mathbb F_Q\), and so is \(s\).
+For \(M=2^{4098}-1\), the supplied fourteen distinct primes, with
+multiplicities, give \(K=M/C\) and \(\gcd(K,C)=1\). The powers
+\(r^{M/\ell}\ne1\) for all fourteen primes, and \(r^K\ne1\).
+As \(Q^3+1\) divides \(K\), its projection is full.
+The remaining projection is the norm \(b\) of order dividing
+\(Q^3-1\). Its norm down to \(\mathbb F_Q\) is \(s^{4098}\), primitive
+since \(\gcd(4098,Q-1)=1\). The remaining group has order
+\(Q^2+Q+1=7C\), coprime to \(Q-1\), and its factor seven already
+passes the prime-index test. This proves the equivalence.
+
+The file \nolinkurl{data/degree-4098-elliptic-norm.json} gives both
+binary minimal polynomials: \(s\) has degree 683 and weight 351,
+and \(b\) has degree 2049 and weight 1005. Thus the cubic test can
+be run entirely over the given degree-683 field. Any conjugate
+choice of \(s\), followed by any root of its cubic, gives the same
+order. The integer factors come from
+\href{https://factordb.com/index.php?id=1000000000000004098}{FactorDB}.
+\nolinkurl{scripts/check_4098_elliptic_norm.py} independently proves
+their primality for the known part, checks the finite-field powers,
+and verifies the two minimal polynomials by irreducibility and
+substitution. PARI/GP independently checked the projected orders and
+the norm equations.
+\end{proof}
+
 \end{document}
