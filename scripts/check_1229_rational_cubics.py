@@ -4,11 +4,11 @@ import argparse
 import json
 from math import gcd
 
-from check_1229_frobenius_models import TABLE, power_basis_expression
+from check_1229_frobenius_models import primitive_generator_in
 from check_degree_1229 import COFACTOR, GROUP, KNOWN, N, check_known_order
-from check_factor_base import modulus, polynomial
+from check_factor_base import modulus
 from check_sparse_root_models import X, inverse, irreducible_candidate, small_factors
-from period_coordinate import coordinate, mask_of
+from period_coordinate import mask_of
 
 
 CASES = {256: (461, 167), 400: (29, 41)}
@@ -59,12 +59,7 @@ def verify(v):
 
 def projected_task(v):
     field, cubic = verify(v)
-    model = next(row for row in json.loads(TABLE.read_text()) if row["q"] == 1024)
-    old = int(model["modulus_hex"], 16)
-    expression = power_basis_expression(int(model["period_hex"], 16), 2, old)
-    generator = expression.compose_mod(coordinate(field), field)
-    if polynomial(old).compose_mod(generator, field) != 0:
-        raise ArithmeticError("the image of the previously certified primitive generator is incorrect")
+    generator = primitive_generator_in(field)
     values = [p.pow_mod(KNOWN, field) for p in (generator, X, X+1, cubic)]
     return field, values
 

@@ -39,6 +39,20 @@ def power_basis_expression(generator, value, field):
     return polynomial(expression)
 
 
+def primitive_generator_in(field):
+    """Transport the certified q=1024 generator through the common Gauss-period coordinate."""
+    model = next(row for row in json.loads(TABLE.read_text()) if row["q"] == 1024)
+    certificate = json.loads((DATA / "degree-1229-q1024-certificate.json").read_text())
+    if model["modulus_hex"] != certificate["modulus_hex"]:
+        raise ValueError("the dense modulus differs from the primitive-generator certificate")
+    old = int(model["modulus_hex"], 16)
+    expression = power_basis_expression(int(model["period_hex"], 16), 2, old)
+    generator = expression.compose_mod(coordinate(field), field)
+    if polynomial(old).compose_mod(generator, field) != 0:
+        raise ArithmeticError("the transported generator fails its certified minimal polynomial")
+    return generator
+
+
 def make_records():
     x = polynomial(2)
     sparse = {name: modulus(DEGREE, taps) for name, taps in CANDIDATES.items()}
