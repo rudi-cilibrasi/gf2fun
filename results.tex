@@ -8338,4 +8338,17 @@ Membership of the generating set in that subgroup remains open.
 See \nolinkurl{data/degree-1229-quadratic-frobenius.json} and
 \nolinkurl{scripts/check_1229_quadratic_model.py}.
 
+\section{Seventeen further odd degrees through 2291}\label{sec:odd-2291}
+For the 17 degrees in \nolinkurl{data/odd-product-witnesses-2049-2291.csv},
+PARI/GP found primitive \(X^n+(1+X^u)(1+X^v)\). For example,
+\(X^{2177}+X^7+X^4+X^3+1\) is primitive. The factorizations in
+\nolinkurl{data/mersenne-odd-2049-2291.json} contain 175 distinct
+primes. FLINT proved them prime, recomputed every group order from
+its factors, and checked the full and prime-index powers for all
+17 witnesses. Including the 122 even degrees from 2050 through 2292
+gives 1929 certified positive degrees through 2292. The first
+unresolved degree remains 1229.
+\href{https://factordb.com/index.php?query=2%5E2177-1}{FactorDB record
+for the degree-2177 group order}.
+
 \end{document}
