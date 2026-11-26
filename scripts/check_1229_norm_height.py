@@ -38,15 +38,15 @@ def certificate():
     return rows
 
 
-def checked_norm(piece, degree):
+def checked_norm(piece, degree, power=1):
     from check_1229_hermitian_descent import K, coefficient_norm, element
 
     binary = polynomial(int(piece["mask_hex"], 16))
     coeffs = piece["relative_factor"]
-    if len(coeffs) != degree + 1 or coeffs[-1] != 1 or binary.degree() != 20 * degree:
+    if len(coeffs) != degree + 1 or coeffs[-1] != 1 or binary.degree() * power != 20 * degree:
         raise ValueError("incorrect degrees or leading coefficient in norm certificate")
     factor = K([element(c) for c in coeffs])
-    if not factor.is_irreducible() or not irreducible(binary) or coefficient_norm(factor) != binary:
+    if not factor.is_irreducible() or not irreducible(binary) or coefficient_norm(factor) != binary**power:
         raise ArithmeticError("incorrect irreducible factor or coefficient norm")
     return binary
 
@@ -72,15 +72,32 @@ def norm_quotient(name, form, root, field):
     return relation
 
 
-def known_offset_quotient(name, root, field, table):
-    row = json.loads(KNOWN_OFFSETS.read_text())[name]
+def known_offset_quotient(name, root, field, table, discovery=None):
+    if discovery is None:
+        row = json.loads(KNOWN_OFFSETS.read_text())[name]
+    else:
+        from check_1229_hermitian_descent import K, bits
+
+        row = json.loads(discovery.read_text())
+        mask = int(row["unknown_mask_hex"], 16)
+        row["unknown"] = None
+        if mask != 1:
+            binary = polynomial(mask)
+            if not irreducible(binary):
+                raise ValueError("the proposed unknown factor is reducible")
+            split = K([int(c) for c in binary.coeffs()]).factor()[1]
+            coeffs = min([bits(c) for c in f.coeffs()] for f, _ in split)
+            row["unknown"] = {"mask_hex": hex(mask), "relative_factor": coeffs}
     j, shift = row["frobenius"], row["multiplier_power"]
     multiplier, small, denominator = (polynomial(int(row[key], 16)) for key in
                                      ("multiplier_hex", "known_numerator_hex", "known_denominator_hex"))
     if not 0 <= j < DEGREE or shift < 0 or any(p.is_zero() for p in (multiplier, small, denominator)):
         raise ValueError("invalid known multiplier, numerator, denominator or exponent")
-    degree = len(row["unknown"]["relative_factor"]) - 1
-    unknown = checked_norm(row["unknown"], degree)
+    unknown = polynomial(1)
+    if row["unknown"] is not None:
+        absolute_degree = int(row["unknown"]["mask_hex"], 16).bit_length() - 1
+        conjugates = gcd(absolute_degree, 20)
+        unknown = checked_norm(row["unknown"], absolute_degree // conjugates, 20 // conjugates)
     u = small * unknown
     value = root.pow_mod(1 << j, field) * multiplier.pow_mod(shift, field)
     if (value * denominator - u) % field != 0 or u.gcd(denominator) != 1:
@@ -92,7 +109,8 @@ def known_offset_quotient(name, root, field, table):
             if 20 % factor.degree() or mask not in table:
                 raise ArithmeticError("missing original linear-base logarithm in the offset")
             relation[mask] += weight * int(e)
-    relation[mask_of(unknown)] += 1
+    if not unknown.is_one():
+        relation[mask_of(unknown)] += 1
     inverse = pow(pow(2, j, COFACTOR), -1, COFACTOR)
     return {p: inverse * e for p, e in relation.items()}
 

@@ -141,14 +141,21 @@ def main():
     parser.add_argument("--task", choices=(*CANDIDATES, *PENCIL_NAMES, "seroussi-0xd3-binomial", *form_names))
     parser.add_argument("--json", action="store_true", help="print the complete selected task")
     parser.add_argument("--logs", type=Path, help="check a mask,exponent CSV for the selected task")
-    parser.add_argument("--norm-form", choices=(*FORMS, "known-offset"),
-                        help="use one or two irreducible norms for a whole pentanomial")
+    norm_options = parser.add_mutually_exclusive_group()
+    norm_options.add_argument("--norm-form", choices=(*FORMS, "known-offset"),
+                              help="use one or two irreducible norms for a whole pentanomial")
+    norm_options.add_argument("--offset-certificate", type=Path,
+                              help="check and export a new single-factor task from the known-offset finder")
     parser.add_argument("--expand-cubics", action="store_true", help="substitute all available cubic descents")
     parser.add_argument("--alternate-pencils", action="store_true",
                         help="use the three alternative pencils containing solved quadratic logarithms")
     parser.add_argument("--terminal-orders", action="store_true",
                         help="also verify the orders and minimal-polynomial weights of the solved quadratics")
     args = parser.parse_args()
+    if args.offset_certificate:
+        if args.task not in CANDIDATES:
+            parser.error("--offset-certificate requires a product or seroussi task")
+        args.norm_form = "known-offset"
     if (args.json or args.logs) and not args.task:
         parser.error("--json and --logs require --task")
     if args.norm_form and args.task and args.task not in CANDIDATES:
@@ -179,7 +186,7 @@ def main():
         if name in CANDIDATES:
             target = sparse_root(name, field)
             if args.norm_form == "known-offset":
-                relation = known_offset_quotient(name, target, field, table)
+                relation = known_offset_quotient(name, target, field, table, args.offset_certificate)
             elif args.norm_form:
                 relation = norm_quotient(name, args.norm_form, target, field)
             else:
