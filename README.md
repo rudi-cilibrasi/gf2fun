@@ -6,7 +6,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **An exact test connects four-term tails to primitive trinomials.** For $0<k<n$, the polynomial $X^n+(X+1)^k$ is primitive exactly when $X^n+X^k+1$ is primitive and $k$ is coprime to $2^n-1$. The tail has four terms when $k$ has two ones in binary. This gives 38 primitive trinomials from the archived product witnesses. In degree 2574 both polynomials are primitive, and the translate of the pentanomial root has exact index nine. [Lean proof](GF2Sparse/BinomialTail.lean) · [Witness and order checker](scripts/check_binomial_tails.py)
+- **A power of any polynomial tail gives an exact primitivity test.** If $k\deg H<n$, then $X^n+H(X)^k$ is primitive exactly when $X^n+H(X^k)$ is primitive and $\gcd(k,2^n-1)=1$, for $k>0$. Lean also proves the irreducibility criterion and the exact order of $H(r)$ for a primitive root $r$. This gives same-degree primitive trinomials for all 55 archived product witnesses whose taps have a power-of-two ratio. At degree 1229, proper factors are available for every one of the 933 supports of this form. [Lean proof](GF2Sparse/BinomialTail.lean) · [933 proper factors](data/degree-1229-product-ratio-factors.csv) · [Witness and factor checker](scripts/check_binomial_tails.py)
 - **A polynomial and its translate cannot both have at most five terms if the degree has five or more ones in binary.** Lean proves a sharp bound for every exponent in the support and characterizes equality. Among degrees below 65,536 with at least four binary ones, only 23 and 71 admit a translated pair of irreducible pentanomials. Both pairs are primitive. At degree 1229 the smallest translate of an irreducible pentanomial has 33 terms, attained by exactly five polynomials. [Proof and examples](results.pdf#page=138) · [Lean theorem](GF2Sparse/ShiftWeight.lean) · [838 proper factors](data/four-bit-translated-pairs.csv) · [Certificate checker](scripts/check_shift_weights.py) · [Degree-1229 census](scripts/census_1229_shift_weights.cpp)
 - **Twenty-eight support patterns describe every translated pair of binary trinomials and pentanomials with value one at zero and one.** Across all exponents of either polynomial at most four binary digit positions occur. The checker lists every eligible support in any requested degree, including both orientations. [Classification](results.pdf#page=140) · [Print the patterns or select a degree](scripts/check_translated_supports.py)
 - **Three families of affine lines determine 107 projected logarithms in the degree-1229 field.** Direct powering certifies that all 107 values are primitive. Eight also occur in the earlier quadratic catalogue. A fifth-root-of-unity identity gives an explicit logarithm for a cubic factor over $\mathbb F_{2^{20}}$ from 207 known factors. [Exponent table](data/degree-1229-direction-logs.csv) · [Derivation and order checks](scripts/check_1229_direction_logs.py)
@@ -523,6 +523,15 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_product_rang
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 2293 --end 2416 --available --factor-table data/mersenne-2293-2416.json --verify data/product-witnesses-2293-2416.csv --jobs 4
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 2417 --end 2560 --available --factor-table data/mersenne-2417-2560.json --verify data/product-witnesses-2417-2560.csv --jobs 4
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 2561 --end 2688 --available --factor-table data/mersenne-2561-2688.json --verify data/product-witnesses-2561-2688.csv --jobs 4
+~~~
+
+The following commands replay the polynomial-tail theorem, list the 55 trinomial witnesses and verify the published degree-1229 factors.
+
+~~~sh
+lake build GF2Sparse.BinomialTail
+lake env leanchecker -v GF2Sparse.BinomialTail
+uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_binomial_tails.py --list --powers --factors-1229 .lake/ratio-factors.csv
+cmp .lake/ratio-factors.csv data/degree-1229-product-ratio-factors.csv
 ~~~
 
 Lean checks the degree-2520 witness with one theorem per prime-index power. The following commands build the certificate and independently replay its module. [Lean certificate](GF2Sparse/Witness2520.lean) · [Generator with the --separate-powers option](scripts/make_packed_table.py)

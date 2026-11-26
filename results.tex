@@ -10894,7 +10894,60 @@ are both primitive. FLINT independently checks the full orders in
 these two fields and the translate's exact order \((2^{2574}-1)/9\).
 The general criteria, the root bijection, and the order formula are
 proved in \nolinkurl{GF2Sparse/BinomialTail.lean}. The script
-\nolinkurl{scripts/check_binomial_tails.py} lists the 38 witnesses
+\nolinkurl{scripts/check_binomial_tails.py} lists these witnesses among the product supports
 and replays the three degree-2574 order checks.
+
+\subsection*{Arbitrary polynomial tails}
+In fact, let \(H\in\F[X]\), \(k>0\) and \(k\deg H<n\).
+Set \(F_H=X^n+H(X)^k\) and \(G_H=T^n+H(T^k)\).
+Then
+\begin{align*}
+ F_H\text{ is irreducible}
+     &\iff G_H\text{ is irreducible and }\gcd(n,k)=1,\\
+ F_H\text{ is primitive}
+     &\iff G_H\text{ is primitive and }\gcd(k,2^n-1)=1 .
+\end{align*}
+The formal statement uses \(\operatorname{natDegree}(0)=0\) and
+also covers \(H=0\).
+The same difference-of-powers argument gives \(G_H(T)\mid F_H(T^k)\).
+For coprime \(n,k\) the inverse on nonzero roots is
+\(t=r^aH(r)^b\), with \(ak+bn=1\) as above. A zero root corresponds
+to zero. To deduce the irreducibility equivalence, take the field of
+an irreducible factor of either polynomial. It contains a root of the
+other polynomial. If that polynomial is irreducible of degree \(n\),
+the factor field has degree divisible by \(n\), so the factor has
+degree \(n\). If \(d=\gcd(n,k)>1\), then
+\(X^{n/d}+H(X)^{k/d}\) is a proper factor of \(F_H\).
+For a primitive root \(r\) of \(F_H\), the corresponding root of
+\(G_H\) is primitive and \(H(r)=t^n\). Thus \(H(r)\) has index
+\(\gcd(n,2^n-1)\). Lean verifies these statements for arbitrary \(H\).
+
+For \(0<u<v\), the product \((1+X^u)(1+X^v)\) is a proper odd
+power over \(\F\) exactly when \(v/u\) is a power of two.
+Indeed write \(u=2^a u_0\), \(v=2^b v_0\) with odd parts
+\(u_0,v_0\). If they differ, a root of unity in precisely one of
+\(\mu_{u_0},\mu_{v_0}\) has multiplicity \(2^a\) or \(2^b\), which
+precludes every odd power greater than one. If they agree, then
+\(v=2^s u\) for \(s>0\) and the product equals \((1+X^u)^{1+2^s}\).
+The criterion now compares the product pentanomial with
+\(T^n+T^{u+v}+1\), using \(k=1+2^s\).
+This specializes the sampling of trinomial endpoints from the earlier
+four-term progression construction.
+
+The witness tables contain 55 such tap pairs, including the 38 above.
+In 49 cases \(1+r^u\) is primitive. The six exceptional degrees
+\(6,63,594,726,1026,2574\) have respective indices
+\(3,7,27,3,513,9\).
+At degree 1229 there are exactly
+\(\sum_{s=1}^{10}\lfloor1228/(1+2^s)\rfloor=933\) such supports.
+Theorem~\ref{thm:1229-no-trinomial} rules them all out. To produce
+a proper factor for each one, take a recorded proper factor \(D\)
+of \(G_H(T)\) and find the first binary linear dependence among
+\(1,T^k,T^{2k},\ldots\) modulo \(D\). The resulting monic polynomial
+has degree at most \(\deg D<1229\) and divides \(F_H\).
+The option \nolinkurl{--factors-1229} of
+\nolinkurl{scripts/check_binomial_tails.py} regenerates all 933 rows of
+\nolinkurl{data/degree-1229-product-ratio-factors.csv} and verifies each
+factor by binary division. Their degrees range from 2 through 568.
 
 \end{document}
