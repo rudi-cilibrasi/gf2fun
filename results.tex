@@ -11774,4 +11774,123 @@ Its exponents \(3,17\) agree modulo seven, and its seventh-power
 image \(1+X^3(1+X^2)^7\) has nine terms and is primitive.
 Lean checks the order, the weight and the divisibility for this example.
 
+\section{The last sparse fifth power of a primitive pentanomial}
+\label{sec:fifth-chains}
+
+\begin{theorem}
+Exactly 72 primitive binary pentanomials have a root whose fifth power
+has a minimal polynomial with at most five terms. Of these, 58 have a
+primitive fifth-power image. The largest source degree is 25. There the
+only sources are
+\[
+ F=X^{25}+X^{13}+X^9+X^8+1
+ \qquad\text{and its reciprocal.}
+\]
+For this \(F\), the fifth-power image is \(G=X^{25}+X^{20}+X^{17}+X^{15}+1\).
+Both are primitive, and \(F(X)\mid G(X^5)\).
+\end{theorem}
+
+\begin{proof}
+For a monic binary polynomial \(f\), let \(C_5(f)\) be the polynomial
+whose roots, with multiplicities, are the fifth powers of the roots of
+\(f\). If \(\zeta\) has order five in \(\mathbb F_{16}\), then
+\[
+ C_5(f)(X^5)=\prod_{j=0}^4 f(\zeta^j X).
+\]
+The product has leading coefficient one and the stated roots. For a
+primitive root of degree \(n\ge5\), its fifth power has order at least
+\((2^n-1)/5>2^{\lfloor n/2\rfloor}-1\). It still has degree \(n\),
+so \(C_5(f)\) is its minimal polynomial. A degree-four pentanomial
+is necessarily \(\Phi_5\) and has root order five.
+
+Write the five exponents of \(f\) as a set containing zero. Call it
+normalized if their gcd is one. Every primitive support is normalized
+by Section~\ref{sec:frobenius-box-density}. We classify all normalized
+pentanomials coprime to \(\Phi_5\) with \(C_5(f)\) of weight at most
+five, including reducible sources. All five exponents in one residue
+class modulo five would violate normalization. Five distinct residues
+would give a factor \(\Phi_5\). These are the only exclusions:
+the binary polynomial of residue parities has degree at most four,
+is nonzero at 1 and vanishes at \(\zeta\) only if it equals \(\Phi_5\).
+
+For the remaining residue profiles, translate one labeled exponent to
+zero, permute the labels and allow multiplication of residues by a unit
+modulo five. Translation shifts the product exponents uniformly, and
+residue scaling permutes the five factors in the product. Start with
+integer vectors \(p_0=0,p_1=e_1,\ldots,p_4=e_4\). Possible exponents
+are \(p_i\cdot t\) for a rational parameter vector \(t\), up to common
+translation and scaling. With residue labels \(s_i\), multiply the
+five linear forms \(\sum_i\zeta^{js_i} Z_i\). A surviving monomial
+\(\prod_i Z_i^{k_i}\) has coefficient one: Frobenius permutes the
+factors. It contributes the vector \(\sum_i k_i p_i\). Cancel
+identical vectors in pairs. Specializations with the prescribed
+residues give the desired norm exponents before division by five.
+
+Whenever more than five distinct vectors survive, at least one of the
+first six must coincide with another for a sparse specialization.
+For each such pair \(v,w\), restrict to the hyperplane
+\((v-w)\cdot t=0\) by eliminating one coordinate and clearing
+denominators. Discard restrictions that already identify source
+points. The computation finds more than five surviving vectors at
+every remaining dimension two or higher. In dimension two it suffices
+to test the line perpendicular to each difference. If \(k\) vectors
+survive before restriction, a line can be skipped when fewer than
+\((k-5)/2\) unordered pairs have the corresponding normal direction,
+since one pair removes at most two terms. On each surviving line,
+divide the five scalar source coordinates by their gcd. Test that
+their residues match the labels up to a unit. Sort and subtract the
+smallest coordinate, recording both signs of the line. These steps
+exhaust normalized integer supports in all degrees.
+
+\[
+\begin{array}{c|r|r|r}
+ (s_0,s_1,s_2,s_3,s_4)&\text{initial norm terms}
+    &\text{normalized supports}&\text{largest degree}\\\hline
+ 00001&17&0&-\\
+ 00011&13&8&85\\
+ 00012&17&34&64\\
+ 00014&23&2&10\\
+ 00112&21&56&31\\
+ 00113&17&38&27\\
+ 00123&23&184&24
+\end{array}
+\]
+The two supports of degree 85 are \(\{0,1,5,21,85\}\) and its
+reciprocal. Of the 322 supports, 102 are irreducible, all in degrees
+at most 25. Testing the order of \(X\) modulo each irreducible source
+gives the primitive counts below, including reciprocal orientations.
+\[
+\begin{array}{c|rrrrrrrrrrrrrrr}
+n&5&6&7&8&9&10&11&12&13&15&16&17&18&19&25\\\hline
+\#&4&4&6&4&6&8&8&6&8&4&4&4&2&2&2
+\end{array}
+\]
+A fifth power retains full order exactly when \(4\nmid n\).
+The checker \nolinkurl{scripts/check_fifth_power_chains.py} implements
+the hyperplane enumeration. It independently computes the characteristic
+polynomial of multiplication by \(X^5\) on \(\F[X]/(f)\) for every
+listed support and for all eligible supports through degree 25.
+It checks divisibility by substitution and uses complete prime
+factorizations for the order tests. Lean independently proves
+primitivity and divisibility for the displayed degree-25 pair in
+\nolinkurl{GF2Sparse/FifthImage.lean}.
+\end{proof}
+
+\begin{corollary}
+Let \(r\) be primitive of degree \(n>25\) with a minimal polynomial of
+weight at most five. The minimal polynomial of \(r^5\) has weight
+at most five exactly when the source is a trinomial. In that case
+the minimal polynomial of \(r^{25}\) has more than five terms.
+\end{corollary}
+\begin{proof}
+The preceding theorem handles a five-term source. For a trinomial,
+Section~\ref{sec:trinomial-decimations} gives exactly five exponents
+for the first image, including all three source exponents. Their gcd
+is one. The first image is irreducible of degree \(n\), so the
+classification of 102 normalized irreducibles rules out a sparse norm
+for the next image. Finally \((2^n-1)/25>2^{\lfloor n/2\rfloor}-1\)
+in this range, so \(r^{25}\) has full degree and that norm is its
+minimal polynomial.
+\end{proof}
+
 \end{document}
