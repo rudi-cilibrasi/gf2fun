@@ -11893,4 +11893,135 @@ in this range, so \(r^{25}\) has full degree and that norm is its
 minimal polynomial.
 \end{proof}
 
+\section{One family of sparse seventh powers and two sharp iteration bounds}
+\label{sec:seventh-supports}
+For a monic binary \(f\), write \(C_m(f)\) for the monic polynomial on
+the \(m\)-th powers of its roots counted with multiplicity. We consider
+five distinct source exponents including zero with gcd one.
+
+\begin{theorem}
+Outside exactly 230 exceptional supports, \(C_7(f)\) has odd weight at
+most five precisely for supports of the following form, up to translation:
+\[
+              \{0,2u,3u,4u,t\},\qquad u+2t\equiv0\pmod7 .
+\]
+Here \(u,t\) can have either sign. The 230 exceptions have degree at most
+27. Of them, 111 are irreducible, including 84 primitive sources, all
+in degrees at most 25. In particular every primitive pentanomial of
+degree above 25 whose seventh power has a sparse minimal polynomial
+belongs to this one family.
+\end{theorem}
+\begin{proof}
+Use the hyperplane enumeration of Section~\ref{sec:fifth-chains} with
+\(m=7\) and \(\zeta\) of order seven in \(\mathbb F_8\).
+The identity is \(C_7(f)(X^7)=\prod_{j=0}^6 f(\zeta^jX)\).
+The norm has odd weight exactly when \(f\) has no seventh root of
+unity as a root. This test depends only on the residue profile and
+can be applied before any restriction by evaluating all variables at 1.
+Seven is prime, so all unit scalings permute the factors.
+The profiles of odd weight are recorded below. Each entry counts
+exceptional normalized supports after removing the displayed family.
+\[
+\begin{array}{c|rrrrrrrrrr}
+\text{profile}&00001&00011&00012&00016&00112&00113&00114&00123&00125&01234\\\hline
+\#&0&0&0&0&14&10&6&40&62&98\\
+\text{largest degree}&-&-&-&-&23&15&16&20&27&24
+\end{array}
+\]
+At each node whose surviving vectors already number five or fewer,
+the checker tests for four distinct points \(a,b,c,d\) satisfying
+\(2c=3b-a\) and \(d=2b-a\). For the remaining point \(h\) the
+residue test is \(b-a+4(h-a)\equiv0\pmod7\). These conditions
+express the family with \(u=(b-a)/2\) and \(t=h-a\). Integral scalar
+points force \(u\) integral since both \(2u\) and \(3u\) are integral.
+Every such node of dimension at least two passes these tests.
+For the family, expanding the five formal norm terms with
+\(v=(u+2t)/7\) gives image exponents, relative to the same translate,
+\[
+                         0,\quad 4u,\quad t,\quad 2v,\quad 3v .
+\]
+Cancellation leaves odd weight at most five. The ordered case with
+isolated leading term also follows from the Lean identity in
+Section~\ref{sec:seventh-pair}. The point and residue tests remove
+the family on lines as well, leaving the stated 230 exceptions.
+An independent characteristic-polynomial enumeration checks both
+the family and its complement through degree 27. Testing irreducibility
+and root orders gives the stated counts. For a primitive source in
+degree above 25, the order of its seventh power exceeds the size of
+every proper subfield's multiplicative group, so the norm is the
+minimal polynomial.
+\end{proof}
+
+In degree 1229 the isolated exponent must be an endpoint, since the
+span of the four aligned terms is divisible by four. Up to
+reciprocation it is 1229. With a positive step magnitude \(k\), the
+other four terms are \(0,2k,3k,4k\) with \(k\equiv-2\cdot1229\pmod7\),
+or \(0,k,2k,4k\) with \(k\equiv1229\pmod7\).
+There are 176 supports including reciprocals. Direct irreducibility
+tests on these alone recover precisely the source of
+Section~\ref{sec:seventh-pair} and its reciprocal.
+
+\begin{corollary}
+For a primitive binary element \(r\), the largest degree in which
+the minimal polynomials of \(r,r^5,r^{25}\) can all have weight at
+most five is 13. For \(r,r^7,r^{49}\) the largest degree is 10.
+\end{corollary}
+\begin{proof}
+The fifth-power bound above degree 25 is the preceding section's
+corollary. For seventh powers, suppose first that \(n>25\).
+Both powered roots have full degree by the lower bound
+\((2^n-1)/49>2^{\lfloor n/2\rfloor}-1\). A pentanomial with a
+sparse first image must belong to the family. In coordinates
+\((u,t)\), the five image exponents multiplied by seven are the
+linear forms with vectors
+\[
+                   (0,0),(28,0),(0,7),(2,4),(3,6).
+\]
+Equating each pair in turn, and retaining distinct normalized source
+points, gives source degrees \(9,12,13,25\). Thus for \(n>25\)
+the first image has five terms. They have gcd one after subtracting
+any one exponent, since a common divisor of \(t,2v,3v\) divides
+\(t,v,u\). For a sparse second image, the first must therefore
+belong to the same family. Test each ordered choice \(a,b,c,d\) of
+four of these five vectors for the two equations
+\((a-3b+2c)\cdot(u,t)=(a-2b+d)\cdot(u,t)=0\).
+At least one equation is nonzero for each choice. On their common
+kernel, take the two primitive signs of the parameter vector and the
+span of \(0,2u,3u,4u,t\), discarding repeated source terms.
+The only degree is eight, even before the congruence test.
+
+For a trinomial with a sparse first image, the seventh-power shape
+\(H_3\) of Section~\ref{sec:trinomial-decimations} has gcd one
+because it retains the three source exponents. Membership in the
+seventh-power family requires three terms in arithmetic progression.
+The table for \(H_3\) gives degrees at most 13 for that condition.
+This completes the exclusion for both kinds of source above degree 25.
+
+In degrees 5 through 25 for fifth powers and 4 through 25 for
+seventh powers, direct characteristic polynomials give the following
+counts of primitive sources with two successive sparse images.
+All powered roots here have full degree, as one checks from their
+order \((2^n-1)/\gcd(2^n-1,m^2)\). Unlisted degrees in the
+respective ranges have count zero.
+\[
+\begin{array}{c|rrrrrrrr}
+ n&4&5&6&7&8&9&10&11\\\hline
+ m=5&-&6&6&6&0&2&6&2\\
+ m=7&2&6&6&8&4&18&4&0
+\end{array}
+\qquad
+\begin{array}{c|r}
+ n&13\\\hline
+ m=5&2\\
+ m=7&0
+\end{array}
+\]
+For \(m=5\) a degree-13 example has successive interior exponent triples
+\((1,4,10),(4,6,10),(4,8,11)\). For \(m=7\) a degree-10
+example gives \((2,3,8),(1,4,9),(2,6,7)\).
+The complete computations are in
+\nolinkurl{scripts/check_fifth_power_chains.py} and
+\nolinkurl{scripts/check_seventh_power_supports.py}.
+\end{proof}
+
 \end{document}

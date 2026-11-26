@@ -5,99 +5,21 @@ Run with uv run --no-project --with python-flint==0.9.0 python scripts/check_fif
 
 import argparse
 from collections import Counter
-from functools import cache
-from itertools import combinations, combinations_with_replacement
+from itertools import combinations
 from math import gcd
 
-from flint import nmod_mat
-
-from check_cubed_parity import X, polynomial, reciprocal
-from check_cubed_supports import restrict
+from check_cubed_parity import X, polynomial
 from check_cubing_chains import primitive
-from power_images import norm_pattern
-
-
-def residue_profiles():
-    """Five labels modulo translation, invertible scaling and permutation."""
-    return sorted({min(tuple(sorted(a*(r-b) % 5 for r in residues))
-                       for a in range(1, 5) for b in residues)
-                   for residues in combinations_with_replacement(range(5), 5)
-                   if 1 < len(set(residues)) < 5})
-
-
-def direction(vector):
-    divisor = gcd(*vector)
-    if next(x for x in vector if x) < 0:
-        divisor = -divisor
-    return tuple(x//divisor for x in vector)
-
-
-def classify_profile(residues):
-    pattern = norm_pattern(5, residues)
-    exceptions = set()
-
-    @cache
-    def visit(points):
-        if len(set(points)) < 5:
-            return
-        columns = tuple(zip(*points))
-        terms = Counter(tuple(sum(i*x for i, x in zip(mix, col)) for col in columns)
-                        for mix in pattern)
-        odd = sorted(t for t, multiplicity in terms.items() if multiplicity % 2)
-        if len(odd) <= 5:
-            raise ArithmeticError(f"positive-dimensional sparse family for {residues}: {points}")
-        if len(columns) > 2:
-            # At least one of any six survivors must collide with another survivor.
-            equations = {direction(tuple(a-b for a, b in zip(t, u)))
-                         for i, t in enumerate(odd[:6]) for u in odd[i+1:]}
-            for equation in equations:
-                visit(restrict(points, equation))
-            return
-
-        # On a line every collision has the same normal direction. A colliding
-        # pair removes at most two terms, including when several pairs coincide.
-        pairs = Counter(direction((a-c, b-d)) for (a, b), (c, d) in combinations(odd, 2))
-        for (u, v), count in pairs.items():
-            if 2*count < len(odd)-5:
-                continue
-            values = [v*a-u*b for a, b in points]
-            if len(set(values)) != 5:
-                continue
-            scale = gcd(*values)
-            exponents = [x//scale for x in values]
-            if not any(all((k*x-r) % 5 == 0 for x, r in zip(exponents, residues)) for k in range(1, 5)):
-                continue
-            image = Counter(v*a-u*b for a, b in odd)
-            if sum(c % 2 for c in image.values()) <= 5:
-                support = tuple(x-min(exponents) for x in sorted(exponents))
-                exceptions.update((support, reciprocal(support)))
-
-    visit(((0, 0, 0, 0), *(tuple(int(i == j) for j in range(4)) for i in range(4))))
-    visit.cache_clear()
-    return exceptions
-
-
-def fifth_characteristic(support):
-    """Characteristic polynomial of multiplication by X^5 modulo F, including reducible F."""
-    n = support[-1]
-    modulus = sum(1 << e for e in support)
-    column = 1
-    transpose = []
-    for i in range(n+5):
-        if i >= 5:
-            transpose.extend((column >> j) & 1 for j in range(n))
-        column <<= 1
-        if column >> n:
-            column ^= modulus
-    coefficients = nmod_mat(n, n, transpose, 2).charpoly()
-    return tuple(i for i in range(n+1) if coefficients[i])
+from power_images import classify_profile, norm_pattern, power_characteristic, residue_profiles
 
 
 def audit():
     exceptions = set()
     profiles = []
-    for residues in residue_profiles():
-        sources = classify_profile(residues)
+    for residues in residue_profiles(5):
+        if len(norm_pattern(5, residues)) % 2 == 0:
+            continue
+        sources = classify_profile(5, residues)
         if sources & exceptions:
             raise ArithmeticError("overlapping residue profiles")
         exceptions.update(sources)
@@ -113,7 +35,7 @@ def audit():
     for taps in combinations(range(1, 26), 4):
         support = (0, *taps)
         if gcd(*taps) == 1 and len({e % 5 for e in support}) < 5:
-            if len(fifth_characteristic(support)) <= 5:
+            if len(power_characteristic(support, 5)) <= 5:
                 direct.add(support)
     if direct != {s for s in exceptions if s[-1] <= 25}:
         raise ArithmeticError("the independent low-degree enumeration disagrees")
@@ -121,7 +43,7 @@ def audit():
     primitive_images = {}
     primitive_targets = 0
     for s in exceptions:
-        image = fifth_characteristic(s)
+        image = power_characteristic(s, 5)
         f, g = polynomial(s), polynomial(image)
         if len(image) > 5 or g.compose_mod(X**5, f) != 0:
             raise ArithmeticError(f"direct characteristic polynomial failed at {s}")
@@ -140,6 +62,15 @@ def audit():
         raise ArithmeticError("unexpected primitive sources or targets")
     if primitive_images.get((0, 8, 9, 13, 25)) != (0, 15, 17, 20, 25):
         raise ArithmeticError("the degree-25 pair changed")
+    chains = Counter()
+    for n in range(5, 26):
+        sources = {s for s in primitive_images if s[-1] == n}
+        sources.update((0, a, n) for a in range(1, n) if primitive(polynomial((0, a, n)), n))
+        for s in sources:
+            if len(power_characteristic(s, 5)) <= 5 and len(power_characteristic(s, 25)) <= 5:
+                chains[n] += 1
+    if chains != {5: 6, 6: 6, 7: 6, 9: 2, 10: 6, 11: 2, 13: 2}:
+        raise ArithmeticError("unexpected sparse fifth-power chains")
     return profiles, primitive_images
 
 
