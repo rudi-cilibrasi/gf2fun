@@ -9796,6 +9796,27 @@ The choice of either Artin--Schreier lift of \(w\) has the same
 solvability in the second equation, since \(\delta=v_0^q+v_0\)
 belongs to the image of that map.
 
+\paragraph{Testing a quartic cofactor.}
+For a monic quartic \(T^4+aT^3+bT^2+cT+d\), a partition into
+\((T^2+pT+r)(T^2+sT+t)\) gives a root \(y=r+t\) of
+\[
+  y^3+by^2+acy+a^2d+c^2=0.
+\]
+Indeed \(p+s=a,\ r+t+ps=b,\ pt+sr=c,\ rt=d\), and substitution
+gives the identity. Translating by \(b\) gives the depressed cubic
+\(z^3+gz+h=0\), where \(g=b^2+ac\) and \(h=a^2d+c^2+abc\).
+If \(h\ne0\), solve \(Z^2+Z=g^3/h^2\). A nonzero choice
+\(w\in\{hZ,h(Z+1)\}\) gives a cubic root \(z=u+g/u\)
+when \(u^3=w\). In the half fields used here, the cube subgroup
+has order coprime to three, so a single exponentiation gives a
+candidate \(u\) and cubing verifies it.
+For \(a\ne0\), solve \(p^2+ap=b+y\) and take
+\(s=a+p,\ r=(c+py)/a,\ t=y+r\). Checking \(rt=d\) and splitting
+the two quadratics gives the four roots. The verifier independently
+tests divisibility of \(T^{2^m}+T\) by the monic cofactor.
+Lean verifies the resolvent and the two cubic identities in
+\nolinkurl{GF2Sparse/HermitianDescent.lean}.
+
 \paragraph{Certificates and exact terminal values.}
 The four relative degree-32 parents each give 1025 finite projective
 preimages and four cofactor roots. At each of the 4116 relative
@@ -9823,5 +9844,15 @@ This brings the tables to 90,887 distinct exponents, including
 are in \nolinkurl{data/degree-1229-dyadic-sample.json.gz}, and the
 45 exponents and linear-pencil certificates are in
 \nolinkurl{data/degree-1229-dyadic-quadratic-logs.json}.
+
+For any rational substitution, there is a counting restriction on
+this final step. Over \(k=\mathbb F_{q^2}\), there are
+\(q^3+q\) projective \(\mathbb F_q\)-sublines, by the orders of
+\(\mathrm{PGL}_2(k)\) and \(\mathrm{PGL}_2(\mathbb F_q)\).
+A nonzero substituted polynomial can contain at most one distinct
+irreducible quadratic for which all other factors are linear.
+There are \((q^4-q^2)/2\) monic irreducible quadratics over \(k\).
+Thus at most \(2(q^2+1)/(q(q^2-1))\) of them can have a pencil
+of this kind. For \(q=1024\) the bound is below \(0.196\%\).
 
 \end{document}

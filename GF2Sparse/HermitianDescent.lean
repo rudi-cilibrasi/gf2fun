@@ -143,4 +143,33 @@ theorem translate_norm_on_line {K : Type*} [CommRing K] [CharP K 2]
       _ = _ := by rw [CharTwo.add_self_eq_zero, add_zero]
   · ring
 
+/-- The sum of the constant terms in any quadratic partition is a root of the
+cubic resolvent. In characteristic two the terms with a factor four vanish. -/
+theorem quartic_partition_resolvent {K : Type*} [CommRing K] (p s r t : K) :
+    let a := p+s
+    let b := r+t+p*s
+    let c := p*t+s*r
+    let d := r*t
+    let y := r+t
+    y^3-b*y^2+(a*c-4*d)*y+(4*b*d-a^2*d-c^2) = 0 := by
+  dsimp
+  ring
+
+/-- Translation by the quadratic coefficient depresses the binary resolvent. -/
+theorem translate_cubic_resolvent {K : Type*} [CommRing K] [CharP K 2] (a b c d z : K) :
+    (z+b)^3+b*(z+b)^2+a*c*(z+b)+a^2*d+c^2 =
+      z^3+(b^2+a*c)*z+(a^2*d+c^2+a*b*c) := by
+  have cancel : z+b+b = z := by rw [add_assoc, CharTwo.add_self_eq_zero, add_zero]
+  calc
+    _ = (z+b)^2*(z+b+b)+a*c*(z+b)+a^2*d+c^2 := by ring
+    _ = _ := by rw [cancel, CharTwo.add_sq]; ring
+
+/-- A cube root and its complementary factor reconstruct a root of the depressed cubic. -/
+theorem binary_cubic_sum {K : Type*} [CommRing K] [CharP K 2] (u v : K) :
+    (u+v)^3+u*v*(u+v) = u^3+v^3 := by
+  calc
+    _ = (u+v)^2*(u+v)+u*v*(u+v) := by ring
+    _ = (u^3+v^3)+((u^2*v+u*v^2)+(u^2*v+u*v^2)) := by rw [CharTwo.add_sq]; ring
+    _ = _ := by rw [CharTwo.add_self_eq_zero, add_zero]
+
 end GF2Sparse.HermitianDescent
