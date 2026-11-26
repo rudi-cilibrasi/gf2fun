@@ -41,7 +41,7 @@ def xorShifts : List ℕ → ℕ → ℕ
   | [], _ => 0
   | j::js, a => (a <<< j) ^^^ xorShifts js a
 
-private theorem decode_xorShifts (js : List ℕ) (w : ℕ) :
+theorem decode_xorShifts (js : List ℕ) (w : ℕ) :
     decode (xorShifts js w) = decode (xorShifts js 1) * decode w := by
   induction js with
   | nil => simp [xorShifts]

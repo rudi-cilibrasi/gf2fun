@@ -12847,6 +12847,16 @@ coefficients using integer arithmetic. For each of the trinomials
 \(X^{2047}+X^3+1\) and \(X^{2047}+X^{511}+1\), direct modular
 exponentiation checks all 47 class polynomials of degree at most 31.
 Of these, 38 give individual irreducible factors.
+Lean checks all 94 signed logarithm identities in
+\nolinkurl{GF2Sparse/OreClassLogs2047.lean}. For example let
+\(C=\sum_{i\in I}X^i\) with
+\(I=\{0,2,3,8,9,11,12,13,15,17,18,19,21\}\).
+At a root \(r\) of \(X^{2047}+X^3+1\) the identity reads
+\[
+        C(r)=\frac{r^{2^{1361}+1}}{r^{2^{1496}+2^{1912}}}.
+\]
+Here the annihilator label is
+\((Y^2+Y+1)(Y^3+Y+1)\), so \(C\) is irreducible of degree 21.
 The universal estimate here also covers dense seeds. The separate
 prime-divisor tests in Section~\ref{sec:ore2047} give larger order
 divisors for the 46 sparse degree-11 seeds.
@@ -12924,6 +12934,32 @@ Across all \(t\) sets per profile the degree per side is at most
 \(t^2D\), with \(2t^2D<n\). Hence the \(2^{tB}\) lower bound for
 distinct reduced fractions is also a lower bound for the order.
 Finally \(tB>5t m\sqrt{2^\delta}=5\sqrt{n+1}\).
+\end{proof}
+
+\begin{corollary}
+The logarithm in Theorem~\ref{thm:ore-class-logs} extends to all
+labels \(g\ne P\) by omitting the divisors \(d\) that are multiples
+of \(P\). For \(g=P\) the same sum gives the logarithm of
+\(C'_P(r)=r^{-1}\). In particular
+\[
+ C_{Ph}(r)=C_h(r)^{-1}\quad(P\nmid h,\ h\ne1),\qquad
+ C_g(r)=1\quad(P^2\mid g).
+\]
+\end{corollary}
+\begin{proof}
+In the field containing \(r\), take the coefficient of the lowest
+nonzero power of \(X-r\) in each factor of
+\(L_g=\prod_{d\mid g}C_d\). This coefficient is multiplicative.
+If \(P\mid d\), then \(L_d(r)=0\) and \(L'_d(r)=1\), so its coefficient
+is 1. Otherwise the coefficient is \(r^{2^{j(d)}}\) as before.
+Möbius inversion gives the restricted sum. The only \(C_g\) vanishing
+at \(r\) is \(C_P\), which has a simple zero.
+For \(g=Ph\) with \(P\nmid h\), the surviving Möbius coefficients are
+\(-\mu(h/d)\), including the derivative case \(h=1\). For \(P^2\mid g\)
+all surviving coefficients vanish. The script checks the specialization
+and derivative directly for the degree-two and degree-three primitive
+seeds with masks \(7\) and \(11\), through class degrees 64 and 128
+respectively.
 \end{proof}
 
 \end{document}

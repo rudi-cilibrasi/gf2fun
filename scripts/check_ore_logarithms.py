@@ -93,34 +93,51 @@ def linearized_mask(label):
     return sum(1 << (1 << i) for i in support(label))
 
 
+def class_identity(factors):
+    numerator = denominator = 1
+    terms = mobius_terms(factors)
+    for e, sign in terms:
+        if sign > 0:
+            numerator = mask_product(numerator, linearized_mask(e))
+        else:
+            denominator = mask_product(denominator, linearized_mask(e))
+    mask = exact_quotient(numerator, denominator)
+    if mask_product(mask, denominator) != numerator:
+        raise ArithmeticError("inexact class polynomial quotient")
+    return mask, terms
+
+
 def check_logs(seed, cap, show):
     logs = ore_power_table(seed)
     n = len(logs)
-    if not 1 <= cap < n:
-        raise ValueError("choose a positive degree cap below the lifted degree")
+    if cap < 1:
+        raise ValueError("choose a positive degree cap")
     modulus = polynomial((1 << i) - 1 for i in support(seed))
     if not modulus.is_irreducible():
         raise ArithmeticError("reducible Ore lift")
     size = (1 << n) - 1
     counts = Counter()
     singles = Counter()
+    derivatives = 0
     for degree, factors in class_labels(cap):
-        numerator = denominator = 1
-        exponent = 0
-        for e, sign in mobius_terms(factors):
-            step = logs[remainder(e, seed)]
-            exponent += sign * (1 << step)
-            if sign > 0:
-                numerator = mask_product(numerator, linearized_mask(e))
-            else:
-                denominator = mask_product(denominator, linearized_mask(e))
-        mask = exact_quotient(numerator, denominator)
+        mask, terms = class_identity(factors)
+        exponent = sum(sign * (1 << logs[residue]) for e, sign in terms
+                       if (residue := remainder(e, seed)))
         factor = polynomial(support(mask))
         is_single = single_orbit(factors)
         if factor.degree() != degree or is_single != factor.is_irreducible():
             raise ArithmeticError(f"incorrect orbit classification for {factors}")
-        if X.pow_mod(exponent % size, modulus) != factor:
+        value = factor % modulus
+        vanishes = factors == ((seed, 1),)
+        if vanishes:
+            if value != 0:
+                raise ArithmeticError("the exact seed class should vanish")
+            value = factor.derivative() % modulus
+            derivatives += 1
+        if X.pow_mod(exponent % size, modulus) != value:
             raise ArithmeticError(f"incorrect logarithm for {mask:#x}")
+        if vanishes:
+            continue
         counts[degree] += 1
         if is_single:
             singles[degree] += 1
@@ -129,6 +146,22 @@ def check_logs(seed, cap, show):
     print(f"degree {n}, through factor degree {cap}: {sum(counts.values())} exact logarithms, "
           f"{sum(singles.values())} individual irreducibles")
     print("individual irreducibles by degree:", sorted(singles.items()))
+    if derivatives:
+        print("also verified the regularized logarithm of the vanishing seed class")
+
+
+def lean_data():
+    records = sorted(class_identity(factors) for _, factors in class_labels(31))
+    labels = sorted({e for _, terms in records for e, _ in terms})
+    first, second = (ore_power_table(seed) for seed in (0x805, 0xa01))
+    print("private def seedLogs : List (ℕ × ℕ × ℕ) := [")
+    print(",\n".join(f"  ({e:#x}, {first[e]}, {second[e]})" for e in labels) + "]")
+    print("\ndef classes : List (ℕ × List ℕ × List ℕ) := [")
+    result = []
+    for mask, terms in records:
+        sides = [", ".join(hex(e) for e, sign in terms if sign == s) for s in (1, -1)]
+        result.append(f"  ({mask:#x}, [{sides[0]}], [{sides[1]}])")
+    print(",\n".join(result) + "]")
 
 
 def order_bound(s):
@@ -148,9 +181,12 @@ if __name__ == "__main__":
     parser.add_argument("--cap", type=int, default=16, help="maximum class polynomial degree")
     parser.add_argument("--show", action="store_true", help="print individual masks and exponents in hex")
     parser.add_argument("--bound", type=int, help="calculate the uniform order bound in this seed degree")
+    parser.add_argument("--lean-data", action="store_true", help="emit the degree-2047 Lean tables")
     args = parser.parse_args()
-    if args.seed is None and args.bound is None:
-        parser.error("supply --seed or --bound")
+    if args.seed is None and args.bound is None and not args.lean_data:
+        parser.error("supply --seed, --bound or --lean-data")
+    if args.lean_data:
+        lean_data()
     if args.bound is not None:
         if args.bound < 2:
             parser.error("use seed degree at least two")

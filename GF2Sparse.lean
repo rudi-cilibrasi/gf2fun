@@ -28,6 +28,7 @@ import GF2Sparse.MersenneExamples
 import GF2Sparse.NormCoverBounds
 import GF2Sparse.NormExamples
 import GF2Sparse.NormQuotients
+import GF2Sparse.OreClassLogs2047
 import GF2Sparse.OreComponents
 import GF2Sparse.OreConjecture
 import GF2Sparse.OreExamples

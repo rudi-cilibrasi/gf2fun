@@ -7,7 +7,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 ## Results
 
 - **A uniform order bound for sparse Ore lifts.** If a primitive binary seed has degree $s\ge40$, every root of its lift of degree $n=2^s-1$ has order greater than $2^{5\sqrt{n+1}}$. A three- or five-term seed gives a lift with the same number of terms. [Proof](results.pdf#page=168) · [Integer certificate](scripts/check_ore_uniform_order.py)
-- **Explicit logarithms at roots of irreducible Ore lifts.** Logarithms in the seed field determine products of binary irreducibles with prescribed Frobenius annihilator. In each of two degree-2047 trinomials, direct powering checks 47 products of degree at most 31, including 38 individual irreducibles. Counting reduced fractions of these products over all degrees through 1023 gives an order bound above $2^{218}$ for every primitive degree-11 seed. [Proof](results.pdf#page=167) · [Reproduce the logarithms and bounds](scripts/check_ore_logarithms.py)
+- **Explicit logarithms at roots of irreducible Ore lifts.** Logarithms in the seed field determine products of binary irreducibles with prescribed Frobenius annihilator. For each of two degree-2047 trinomials, Lean and direct powering verify 47 identities through factor degree 31, including 38 individual irreducibles. Counting reduced fractions through degree 1023 gives an order bound above $2^{218}$ for every primitive degree-11 seed. [Proof](results.pdf#page=167) · [Lean certificate](GF2Sparse/OreClassLogs2047.lean) · [Reproduce the logarithms and bounds](scripts/check_ore_logarithms.py)
 - **Midpoint powers of primitive trinomials have an exact weight formula.** If one of $0,a,n$ is the midpoint of the other two modulo the odd part $m>1$ of the power, then for $m\le n$ the weight is two plus the $m$th term of Stern's diatomic sequence. For $m>n>7$ there are exactly two sparse images up to reciprocation. The degree-11 trinomial with tap 2 gives a primitive pentanomial at power 13, and the degree-28 trinomial with tap 3 gives one at power 31. [Proof](results.pdf#page=164) · [Lean trace and weight identities](GF2Sparse/SternPowers.lean) · [Check the finite enumeration](scripts/check_trinomial_decimations.py)
 - **All powers up to the degree of a primitive trinomial are classified.** For degree $n>7$, strip powers of two from the exponent to obtain $m\le n$. The image is a trinomial for $m=1$. It has five terms precisely when $m=2^k+1$ and two source exponents agree modulo $m$, or when $m=5,7$ and the three distinct residues have a midpoint. Every other image has at least seven terms. At degree 153 all 612 root powers of the four primitive trinomials give exactly sixteen distinct primitive pentanomials. [Proof and exact count](results.pdf#page=160) · [Lean multiplicity and injectivity lemmas](GF2Sparse/TrinomialPowers.lean) · [Independent matrix check with --all-powers](scripts/check_trinomial_decimations.py)
 - **In degree 153, four primitive trinomials give sixteen distinct primitive pentanomials.** More generally, in odd degree $n>11$, each divisor of $n$ of the form $2^k+1$ with $k\ge3$ gives one more distinct pentanomial per primitive trinomial, in addition to the third- and fifth-power images. Choosing several such divisors gives an explicit progression of degrees for any prescribed multiplier. [Counting theorem](results.pdf#page=158) · [Lean construction](GF2Sparse/TrinomialPowers.lean) · [Verify or explore a degree](scripts/check_trinomial_decimations.py)
@@ -635,6 +635,15 @@ The Ore lift census and its two large full-order certificates use the same facto
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_ore_lifts.py --factor-table /tmp/gf2-cunningham.json
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_ore_lifts.py --factor-table /tmp/gf2-cunningham.json --lean > /tmp/gf2-ore.lean &&
   cmp /tmp/gf2-ore.lean GF2Sparse/OrePrimitiveExamples.lean
+~~~
+
+The following commands check the two sets of degree-2047 logarithms and the uniform order bound for seed degrees at least 40.
+
+~~~sh
+lake build GF2Sparse.OreClassLogs2047
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_ore_logarithms.py --bound 11 --seed 0x805 --cap 31
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_ore_logarithms.py --seed 0xa01 --cap 31
+uv run --no-project --with python-flint==0.9.0 python scripts/check_ore_uniform_order.py
 ~~~
 
 To verify all eighteen degree-4095 orders, run either of these independent checks from the repository root. Both use the checked-in factors.
