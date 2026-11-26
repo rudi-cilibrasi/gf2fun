@@ -9580,4 +9580,132 @@ submitted independently. The scope of the minimum is the displayed
 direct quotient in this field model. Multiplying by an element with
 a known logarithm changes the representation problem.
 
+\paragraph{One unknown with a known offset.}
+Let \(U,V,S\) be binary polynomials whose factors all split over \(k\).
+Their projected logarithms belong to the original 52,488-entry table.
+For both sparse roots we found an irreducible \(P\) and integers \(j,s\)
+such that
+\[
+ r^{2^j}S(x)^s=P(x)U(x)/V(x).
+\]
+Thus \(2^j L(r)=L(P)+L(U)-L(V)-sL(S)\pmod C\).
+The product root admits a single unknown of relative degree 58, with
+\(j=495\), \(s=63\), \(S=T^{20}+T^3+1\) and
+\(\deg U=\deg V=40\). The Seroussi root gives relative degree 57,
+with \(j=811\), \(s=0\), \(\deg U=60\) and \(\deg V=37\).
+Here \(U,V\) are elements with known logarithms and need not be
+coefficient norms. The search used consecutive Euclidean remainder
+vectors for \(r^{2^j}S(x)^s\) to enumerate binary numerator--denominator
+pairs of bounded unequal degrees, then removed factors splitting over
+\(k\) from the numerator. The checker verifies the full field equality,
+the degree and irreducibility of \(P\), its coefficient-norm expression
+and the projected exponent of the known offset. The binary masks and
+constant-field factors are in \nolinkurl{data/degree-1229-known-offset-quotients.json}.
+
+\section{When a quadratic Hermitian pencil splits completely}
+\label{sec:split-quadratic-pencils}
+Put \(q=2^h\ge4\), \(k=\mathbb F_{q^2}\), and
+\(\bar z=z^q\) for \(z\in k\). A projective \(\mathbb F_q\)-subline
+is an image of \(\mathbb P^1(\mathbb F_q)\) under a fractional linear
+map over \(k\). A quadratic pencil here is a pair of homogeneous
+binary quadratics \(f,g\). Its source factors are the fibers of
+\(f/g\) above such a subline, counted with multiplicity on
+\(\mathbb P^1\).
+
+\begin{theorem}
+Suppose that \(f/g\) is separable of degree two. If every source factor
+splits over \(k\), the source divisor is the sum of two projective
+\(\mathbb F_q\)-sublines in the source, meeting at the ramification
+point. For \(q=1024\), any other target subline has at least 481 fibers
+that are irreducible quadratics over \(k\).
+\end{theorem}
+
+\begin{proof}
+The separable quadratic extension \(k(T)/k(f/g)\) has a deck involution.
+This is an element of \(\mathrm{PGL}_2(k)\). In characteristic two
+it has a unique fixed point defined over the perfect field \(k\).
+Moving the point to infinity and rescaling puts the involution
+in the form \(t\mapsto t+1\). Its invariant field is \(k(t^2+t)\).
+A change of target coordinate therefore gives the map \(t\mapsto t^2+t\).
+A finite fiber over \(u\) splits precisely when its absolute trace is
+zero. The fiber at infinity is a double rational point.
+
+A subline through infinity has finite part \(b+a\mathbb F_q\).
+Its absolute trace vanishes identically precisely when
+\(\operatorname{Tr}_{k/\mathbb F_2}(b)=0\) and
+\(a\in\mathbb F_q^\times\). Indeed the trace pairing on
+\(\mathbb F_q\) is nondegenerate and the relative trace of \(a\)
+is \(a+a^q\). For such a line put \(v=t^q+t\). Its inverse image
+has \(v^2+v=b^q+b\). The right side has trace zero in \(\mathbb F_q\),
+so \(v\) takes two values there, differing by one. Each equation
+\(t^q+t=v\) describes an affine \(\mathbb F_q\)-line.
+Infinity occurs once in each projective closure.
+
+A subline avoiding infinity is a norm circle
+\(b+a\mu_{q+1}\), where \(a\ne0\) and
+\(\mu_{q+1}=\{u\in k:u^{q+1}=1\}\).
+To see this, transport the Hermitian equation \(t^q+t=0\) of the
+standard projective subline. A nonzero coefficient of \(t^{q+1}\)
+allows completion of the norm, and its radius is nonzero because
+the circle has \(q+1\) points. On \(\mu_{q+1}\) the absolute trace of
+\(au\) is represented by a polynomial having the exponents
+\[
+ 2^i,\quad q+1-2^i\qquad(0\le i<h).
+\]
+Indeed \(2^h\equiv-1\pmod{q+1}\). The first group lies in
+\([1,q/2]\), the second in \([q/2+1,q]\), and the linear
+coefficient is \(a\ne0\). Subtracting a constant gives a nonzero
+polynomial of degree at most \(q\), which cannot vanish at all
+\(q+1\) points. Thus no such circle splits everywhere.
+
+For the numerical bound, every coset of \(\mu_{1025}\) has a unique
+representative \(a\in\mathbb F_{1024}^\times\), since the two
+multiplicative subgroup orders are coprime. For each of the 1023
+representatives, the checker counts torus points with absolute trace
+of \(au\) equal to one. A translation of trace one exchanges the
+count with its complement in 1025. This gives between 481 and 544
+nonsplit fibers on norm circles, with both endpoints attained.
+Among the affine sublines, the horizontal direction has 512
+translates with zero nonsplit fibers and 512 with 1024. Each other
+direction has 512 nonsplit fibers per translate. These counts exhaust
+the \(1024^3+1024\) projective sublines.
+\end{proof}
+
+\begin{corollary}
+In the \(q=1024\) model, none of the 126 quadratic factors in the
+published product-cubic task can divide the cleared numerator of a
+rank-two quadratic Hermitian pencil with completely split source.
+\end{corollary}
+
+\begin{proof}
+Write its Hermitian form in two sets of homogeneous variables as
+\(H=f\bar f+g\bar g\), using diagonalization over \(k\).
+On the graph of Frobenius its source is \(f^{q+1}+g^{q+1}\).
+When \(f/g\) is separable of degree two, the theorem expresses the
+split source as a product of the two Hermitian forms of the source
+sublines, up to a nonzero scalar. The same factorization holds in the
+two sets of variables. Indeed dehomogenizing and substituting
+\((X,Y)=(T,T^q)\) sends the nine monomials of bidegrees at most
+\((2,2)\) to distinct powers \(T^{i+qj}\), since \(q>2\).
+
+A common linear factor \(d\) of \(f,g\) contributes the rank-one
+Hermitian factor \(d\bar d\), leaving a linear pencil. In the
+purely inseparable degree-two case the coprime quadratics \(f,g\)
+are squares of linear forms up to constants, since \(k\) is perfect.
+Then \(H\) is the square of a linear-pencil Hermitian form.
+In each case, substitution of \(X=h_0(Y)/h_1(Y)\) and clearing
+denominators gives a product of two cleared linear-pencil
+numerators. An irreducible quadratic dividing this product must
+divide one of them. For each of the 126 targets, the four linear
+divisibility equations for this Hermitian form have zero nullspace,
+as checked in Section~\ref{sec:hermitian-descent}.
+\end{proof}
+
+The count 481 applies to individual fibers over the constant field.
+After taking binary norms different fibers can give the same mask.
+The subline census can be reproduced with
+\nolinkurl{scripts/check_1229_quadratic_pencils.py}.
+Lean checks the trace-polynomial obstruction and the factorization
+identity for horizontal lines in \nolinkurl{GF2Sparse/HermitianDescent.lean}.
+
 \end{document}
