@@ -86,6 +86,23 @@ theorem tail_relations :
   change (z^39+1)^(2^5) = z^19*(z^15+(z^6+(z^2+1)))+1
   rw [add_pow_expChar_pow, one_pow, ← pow_mul, ← h, ← pow_add, show 39 * 2^5 = 19 + 1229 by decide]
 
+private theorem fold_power {A : Type*} [CommRing A] [CharP A 2] (z : A)
+    (d m s : ℕ) : z^d * (z^m + 1)^(2^s) = z^(d + m * 2^s) + z^d := by
+  rw [add_pow_expChar_pow, one_pow, mul_add, mul_one, ← pow_mul, ← pow_add]
+
+/-- Three binomial factorizations used in the degree-1229 direct order certificate. -/
+theorem folded_relations :
+    let z := AdjoinRoot.root candidate
+    let g := z^15 + (z^6 + (z^2 + 1))
+    z^21 * (z^151 + 1)^8 = g + z^21 ∧
+      z^13 * (z^19 + 1)^64 = g + z^13 ∧
+      z^3 * (z^613 + 1)^2 = g + z^3 := by
+  letI : Fact (Irreducible candidate) := ⟨irreducible_candidate⟩
+  letI : CharP (AdjoinRoot candidate) 2 := charP_of_injective_ringHom (AdjoinRoot.of candidate).injective 2
+  dsimp only
+  rw [← tail_relations.1]
+  exact ⟨fold_power _ 21 151 3, fold_power _ 13 19 6, fold_power _ 3 613 1⟩
+
 theorem order_split :
     ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧ orderOf (AdjoinRoot.root candidate) = knownPart*t := by
   rw [← decoded]

@@ -11305,4 +11305,72 @@ The public input is \nolinkurl{data/degree-1229-irreducible-supports.csv.gz}.
 The checker \nolinkurl{scripts/check_1229_sparse_frobenius.py} verifies both assertions.
 \end{proof}
 
+\section{A 4,944-logarithm order certificate in the Seroussi coordinate}
+\label{sec:seroussi-direct-moment}
+Let \(r\) be a root of \(T^{1229}+g(T)\) for
+\(g=T^{15}+T^6+T^2+1\), and set \(M=2^{1229}-1\). The following
+criterion uses polynomial values at \(r\) itself. Each submitted
+logarithm can be verified independently by exponentiation.
+
+\begin{theorem}
+Logarithms to base \(r\) for the 4,944 masks in
+\nolinkurl{data/degree-1229-seroussi-direct-targets.csv} suffice to
+prove that \(r\) has order \(M\). Logarithms of their \(K\)-th powers
+to the base \(r^K\) also suffice, where \(K\) is the known part of \(M\).
+\end{theorem}
+\begin{proof}
+For any one of the 639,144 pentanomials passing the four prime-index
+tests, a proper index of its root subgroup is at least
+\(J=818085338814611458\), by Theorem~\ref{thm:1229-cofactor-bound}.
+Take all 4,720 irreducibles through degree 15 and any 228 irreducibles
+of degree 16. With \(L=136\) in Theorem~\ref{thm:factor-moments},
+the symmetric weights in \nolinkurl{scripts/check_1229_direct_moment.py}
+give the exact lower bound
+\[
+ Q=\frac{356112683324172380993987964422215087730554819995787}
+          {290229303099191540429874230304885944987852734464}
+   >1227.
+\]
+These integers were chosen by rounding a numerical eigenvector of the
+moment matrix, after scaling its odd entries by \(\sqrt2\). Only the
+displayed rational inequality and nonnegativity enter the proof.
+
+For Seroussi's modulus, four of these values need no separate inputs.
+The value of \(T\) has logarithm one. The two factorizations in
+Section~\ref{sec:factor-base} recover the masks 32707 and 121583.
+For the fourth write \(B_u\) for the polynomial with binary mask \(u\).
+The identity
+\[
+               r^{21}(1+r^{151})^8=r^{21}+g(r)
+\]
+follows from \(21+8\cdot151=1229\). The polynomial \(1+T^{151}\)
+factors as \(1+T\) times ten distinct degree-15 irreducibles, including
+\(B_{\mathtt{edf1}}\). The other side factors as
+\( B_{\mathtt d}B_{\mathtt{1f3}}B_{\mathtt{4d7}}\), of degrees
+\(3,8,10\). The coefficient of the missing logarithm is eight,
+a unit modulo \(M\). Thus the required external inputs number
+\(4720+228-4=4944\).
+
+Two further identities give values of higher degree from the same inputs.
+For \(m=19,613\), put \(\Phi_m=(T^m+1)/(T+1)\). These are
+irreducible of degrees 18 and 612. The respective identities are
+\[
+ \begin{aligned}
+ r^{13}\big((1+r)\Phi_{19}(r)\big)^{64}
+     &=B_{\mathtt{7}}(r)B_{\mathtt{3b77}}(r),\\
+ r^3\big((1+r)\Phi_{613}(r)\big)^2
+     &=B_{\mathtt{13}}(r)B_{\mathtt{9ab}}(r).
+ \end{aligned}
+\]
+They follow from \(13+64\cdot19=3+2\cdot613=1229\) and factorization
+of \(g+T^{13}\) and \(g+T^3\). The checker recomputes every factorization
+and the exact moment. Lean proves all three folded power identities in
+\nolinkurl{GF2Sparse/Seroussi1229.lean}.
+
+Finally the four known prime tests put the subgroup of order \(K\) inside
+\(\langle r\rangle\). This subgroup is the kernel of the \(K\)-th power
+map. Thus verifying \(B(r)^K=(r^K)^e\) proves \(B(r)\in\langle r\rangle\),
+as required by the moment theorem.
+\end{proof}
+
 \end{document}
