@@ -1,6 +1,7 @@
-"""Check the forward Frobenius models and good binary lifts using PARI/GP."""
+"""Check Frobenius models, good lifts, and explicit norm identities using PARI/GP."""
 
 import argparse
+import csv
 import json
 import math
 import subprocess
@@ -10,6 +11,8 @@ from check_1229_quadratic_model import TABLE as PERIOD_TABLE, multiply
 
 
 TABLE = Path(__file__).resolve().parents[1] / "data" / "degree-1229-forward-descent.json"
+FACTORS = TABLE.with_name("degree-1229-norm-factors.json")
+WHEEL = TABLE.with_name("degree-1229-period-wheel.csv")
 TAPS = {"product": (27, 50, 77), "seroussi": (2, 6, 15)}
 
 
@@ -35,19 +38,25 @@ def constant_extension(record):
     return m
 
 
-def check_model(record, periods, gp):
+def check_model(record, periods, factors, gp):
     d, n, q = (record[key] for key in ("constant_degree", "degree", "q"))
     b = record["pole"]
     D = d*n
     m = constant_extension(record)
     L = record["lift_degree"]
     h, rem = divmod(L, m)
-    if n != 1229 or b not in (1, 2) or rem or h < 2 or h & (h-1) or L <= D:
+    if n != 1229 or b not in (1, 2) or rem or h < 2 or h & (h-1) or L <= D or factors["m"] != m:
         raise ArithmeticError("incorrect lift degree or parent polynomial")
     # Over the small constant field the uniform degree is twice the witness degree.
     relative_degree = L//d
     if (1 << (d*(relative_degree-n))) <= 2*(n+3+2*q+8):
         raise ArithmeticError("insufficient margin in uniform lift estimate")
+    targets = factors["period_targets"]
+    with WHEEL.open(newline="") as table:
+        expected = [int(row["mask"]) for row in csv.DictReader(table)
+                    if d == 6 and int(row["degree"]) <= 6]
+    if [row["mask"] for row in targets] != expected:
+        raise ArithmeticError("incorrect period targets")
     modulus = record["constant_modulus"]
     body = f"""
 f=binpol({record['binary_modulus_hex']}); check(poldegree(f)=={D} && polisirreducible(f));
@@ -77,25 +86,44 @@ binarynorm(P)={{
 zz=ffgen(cc,'cbase); one=zz^0;
 parent=one*x^{q+b}+value({record['a']},zz)*x^2+value({record['b']},zz)*x+value({record['c']},zz);
 basepol=gcd(f*one,parent); basepol/=pollead(basepol); check(poldegree(basepol)=={n});
+kp=binpol({factors['modulus']}); check(poldegree(kp)=={m} && polisirreducible(kp));
+xi=ffgen(kp,'kgen); zk=value({factors['base_generator']},xi); check(subst(cc,x,zk)==0);
+ctab=vector(2^{d},i,value(i-1,zk));
+inlarge(a)=ctab[1+fromdigits(liftall(Vec((a*one).pol)),2)];
+relativecheck(residue,low,coeffs)={{
+  my(g=residue+basepol*(x^{relative_degree-n}+binpol(low)*one));
+  check(poldegree(g)=={relative_degree} && g%basepol==residue); good(binarynorm(g));
+  my(v=Polrev(apply(a->value(a,xi),coeffs)), prod=v);
+  check(poldegree(v)=={h} && pollead(v)==1);
+  for(i=2,{m//d},v=Pol(apply(a->a^(2^{d}),Vec(v)));prod*=v);
+  check(prod==Pol(apply(inlarge,Vec(g))));
+}};
 """
     for family, taps in TAPS.items():
         root = record["sparse_root_hex"][family]
         low = record["lift_low_multipliers"][family]
         relative_low = record["relative_lift_low_multipliers"][family]
+        coefficients = [int(c, 16) for c in factors["sparse"][family]]
         i, j, k = taps
         body += f"""
 rep=binpol({root}); r=subst(rep,x,t); check(r==value({periods[family]},p));
 check(r^{n}+r^{k}+r^{j}+r^{i}+1==0 && r^(2^{n})==r);
 candidate=rep+f*(x^{L-D}+binpol({low}));
 check(candidate%f==rep); good(candidate);
-relative=(rep*one)%basepol;
-g=relative+basepol*(x^{relative_degree-n}+binpol({relative_low})*one);
-check(poldegree(g)=={relative_degree} && g%basepol==relative); good(binarynorm(g));
+relativecheck((rep*one)%basepol,{relative_low},{coefficients});
 """
+    body += f"periodmod=Mod(binpol({record['period_hex']})*one,basepol);\n"
+    for row in targets:
+        coefficients = [int(c, 16) for c in row["coefficients_hex"]]
+        body += (f"residue=lift(subst(binpol({row['mask']})*one,x,periodmod));"
+                 f"relativecheck(residue,{row['low_multiplier']},{coefficients});\n")
     pari(gp, body)
     print(f"At degree {n} with q={q}, each sparse root has two verified lifts. "
           f"The binary lift has {d} orbits of good degree-{h} factors "
           f"and the relative lift has one orbit of size {m//d}.", flush=True)
+    if targets:
+        print(f"Verified explicit norms of good degree-{h} factors for all {len(targets)} "
+              "listed period targets of degree at most six.", flush=True)
 
 
 def coefficient_norm(record):
@@ -134,8 +162,9 @@ def main():
     args = parser.parse_args()
     data = json.loads(TABLE.read_text())
     periods = json.loads(PERIOD_TABLE.read_text())["sparse_in_period_hex"]
+    factors = {entry["constant_degree"]: entry for entry in json.loads(FACTORS.read_text())}
     for model in data["degree_1229"]:
-        check_model(model, periods, args.gp)
+        check_model(model, periods, factors[model["constant_degree"]], args.gp)
     common = data["first_gaps"]
     for model in common["models"]:
         check_gap({**common, **model}, args.gp)

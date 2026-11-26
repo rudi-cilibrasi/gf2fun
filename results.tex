@@ -8491,6 +8491,39 @@ over \(C\) and every factor \(U\) in its norm is good. In particular,
 the first model gives each sparse root as a single norm of a good
 degree-32 polynomial value.
 
+\paragraph{Explicit factors for the logarithm inputs.}
+The coefficients of \(U\) for both roots in both models are in
+\nolinkurl{data/degree-1229-norm-factors.json}, in order of increasing
+power of \(T\). Each coefficient mask uses the binary power basis of
+the indicated constant field \(K\). For \(m=234\) the modulus is
+\(W^{234}+W^{11}+W^9+W^2+1\), and for \(m=198\) it is
+\(W^{198}+W^{34}+W^{19}+W^{15}+1\). The data also specify the image
+of \(z\) in this basis. The checker multiplies all \(j\) coefficient
+conjugates of each supplied \(U\) and compares the polynomial with
+the prescribed \(G\) before evaluation at \(t\).
+
+The same degree-32 construction works for every mask of degree at
+most six in the 3380-target list from Section~\ref{sec:period-logs}.
+Here \(V\) represents \(B_s(p)\), where \(s\) encodes a binary
+polynomial and \(p=\zeta+\zeta^{-1}\) is the designated period.
+\[
+\begin{array}{c|rrrrrrrrrr}
+ s&2&19&37&41&47&67&73&87&91&109\\ \hline
+ S&717&155&2094&1168&314&945&239&85&980&2700
+\end{array}
+\]
+Thus for each of these ten targets and either sparse base, both sides
+of the requested logarithm are explicit norms over the same constant
+field. The data give the factors of degree 32 for both sides.
+
+To construct such a factor, take a root \(\alpha\) of the binary
+coefficient norm of \(G\). Form
+\(\prod_{i=0}^{B/j-1}(T-\alpha^{2^{mi}})\).
+Its coefficients lie in \(K\). Express them in the binary power basis
+of a coefficient of full degree \(m\), transport that basis to the
+specified \(K\), then choose the binary conjugate dividing \(G\) under
+the specified embedding of \(C\).
+
 \begin{theorem}
 Every nonzero \(a\in C(t)\) is the norm of a good monic irreducible
 polynomial value \(U(t)\) with \(\deg_K U=64\) in the \(d=6\) model,
