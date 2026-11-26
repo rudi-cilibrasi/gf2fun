@@ -13,6 +13,8 @@ from check_1229_height_two import CERTIFICATE, DEGREE, LINEAR_CONSTANT_MODULUS, 
 
 INFINITY = Q**2
 GROUP_ORDER = (1 << DEGREE)-1
+TEST_LEAVES = {(3, 1019): (3, 5, 9), (6, 246): (2, 7, 8), (6, 285): (2, 8, 11),
+               (6, 454): (2, 7, 23), (7, 88): (2, 5, 15)}
 
 
 def slots(initial=-1):
@@ -167,6 +169,73 @@ class Pullback:
                 coeffs[t] = (coeffs.get(t, 0)+correction*w) % GROUP_ORDER
         return {t: w for t, w in coeffs.items() if w}
 
+    def single_leaf(self, t):
+        """Evaluate all nonzero V coordinates when one shifted leaf is one."""
+        if self.left[t] >= 0:
+            raise ValueError("the specified coordinate is not a leaf")
+        values, weight = {}, 1
+        while t not in self.predecessor:
+            values[t] = weight
+            t = self.parent[t]
+            weight = weight*Q*(1+(self.left[t] == self.right[t])) % GROUP_ORDER
+        cycle, multiplier = {}, 1
+        while t not in cycle:
+            cycle[t] = weight
+            t = self.parent[t]
+            step = Q*(1+(self.left[t] == self.right[t]))
+            weight, multiplier = weight*step % GROUP_ORDER, multiplier*step % GROUP_ORDER
+        inverse = pow(1-multiplier, -1, GROUP_ORDER)
+        values.update((c, w*inverse % GROUP_ORDER) for c, w in cycle.items())
+        return values
+
+
+def check_circle_rank(graph, u, v):
+    """Test the zero-center circle rows on explicit solutions of the pullback equations."""
+    field = graph.field
+    real = {a: i for i, a in enumerate(field.real)}
+    # A difference at two sibling leaves vanishes at every other vertex.
+    parent = list(range(Q))
+    def component(i):
+        while i != parent[i]:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+    for t in graph.leaves:
+        mate = field.key[t ^ 1]
+        if t >= mate or graph.left[mate] >= 0:
+            continue
+        d, e = (real[field.multiply(c, field.conjugate[c])] for c in (t, mate))
+        if v not in (d, e):
+            parent[component(d)] = component(e)
+    large = {component(i) for i in range(1, Q) if i not in (1, v)}
+    if len(large) != 1 or component(1) in large or component(v) in large or component(1) == component(v):
+        raise ArithmeticError("the differences of sibling leaves have unexpected radius components")
+
+    columns = []
+    for leaf in TEST_LEAVES[u, v]:
+        values = graph.single_leaf(leaf)
+        common = -(Q+1)*values.get(INFINITY, 0)
+        rows = [0]*Q
+        for c, w in values.items():
+            if c == INFINITY:
+                continue
+            bar = field.conjugate[c]
+            mult = 1 + (c != bar)
+            rows[real[field.multiply(c, bar)]] += mult*w
+            h = field.multiply(c, c) ^ c ^ field.real[v]
+            if not h:
+                common += Q*mult*w
+            elif c:
+                d = real.get(field.divide(field.multiply(c, field.real[u]), h))
+                if d is not None:
+                    rows[d] -= Q*mult*(1+(d == u))*w
+        columns.append(((rows[1]+common) % GROUP_ORDER, (rows[v]+common) % GROUP_ORDER,
+                        (sum(rows[1:])-rows[1]-rows[v]+(Q-3)*common) % GROUP_ORDER))
+    a, b, c = columns
+    det = sum(a[i]*(b[(i+1)%3]*c[(i+2)%3]-b[(i+2)%3]*c[(i+1)%3]) for i in range(3))
+    if gcd(det, GROUP_ORDER) != 1:
+        raise ArithmeticError("the three remaining radius coordinates have a nonunit determinant")
+
 
 def check_field(model, constants, mask, coefficients):
     """Multiply the exported linear norms in the certified quotient and take their full binary-field norms."""
@@ -201,6 +270,7 @@ def main():
     group.add_argument("--leaves", action="store_true", help="print the reduced factor base, one mask per line")
     group.add_argument("--reduce", type=lambda z: int(z, 0), metavar="MASK", help="print a linear norm as a sum of leaf logarithms")
     parser.add_argument("--field-check", action="store_true", help="also multiply the exported factors in the certified field")
+    parser.add_argument("--circle-rank", action="store_true", help="certify the additional rank of all zero-center circles")
     args = parser.parse_args()
     if args.reduce is not None and not 0 <= args.reduce < INFINITY:
         parser.error("a linear norm requires a twenty-bit constant")
@@ -215,6 +285,8 @@ def main():
     field = Constants(record["constant_generator_in_quadratic_extension"])
     for row in models:
         graph = Pullback(field, row["u"], row["v"])
+        if args.circle_rank:
+            check_circle_rank(graph, row["u"], row["v"])
         if args.reduce is not None:
             coeffs = graph.reduce(args.reduce)
             if args.field_check:
@@ -229,6 +301,8 @@ def main():
             print(f"u={row['u']}, v={row['v']}: {len(graph.leaves):,} free leaf logarithms, "
                   f"{len(field.labels)-1-len(graph.leaves):,} independent pullbacks. "
                   f"Cycle lengths {cycles}, pole support {len(graph.pole):,}.")
+            if args.circle_rank:
+                print("All 1,023 zero-center circle rows add independent constraints modulo the full group order.")
 
 
 if __name__ == "__main__":

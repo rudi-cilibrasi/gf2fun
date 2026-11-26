@@ -10279,4 +10279,37 @@ the full exponent vector for any mask. For example, at \((u,v)=(6,246)\)
 it gives \(w_0=-2048w_{\mathtt{c2efe}}\pmod M\), which can also be checked
 by multiplying the two full norms in the certified field.
 
+\paragraph{Independence of the circle constraints after pullback.}
+In every model the 1023 zero-center norm circles give 1023 further
+independent constraints modulo \(M\). To see this, test their rows
+on solutions of the pullback system. Whenever \(t,t+1\) give two
+different leaf labels, assign their shifted coordinates \(+1,-1\)
+and set all other coordinates to zero. They have the same parent,
+so these assignments already satisfy every pullback equation and
+have \(V_\infty=0\). Both leaves are nonreal. If neither norm
+radius is \(v\), their contributions to the circles are
+\(2(e_{N(t)}-e_{N(t+1)})\), since every nonreal root of a
+zero-center numerator or denominator has norm \(v\) to \(B\).
+Enumerating these edges on \(B^\times\) gives the three components
+\(\{1\},\{v\},B^\times\setminus\{1,v\}\) in each model.
+A spanning tree of the large component gives 1020 pivots with
+coefficient two, which is invertible modulo \(M\).
+
+It remains to test the sums of the entries on each of the three
+components. Set one shifted leaf to one and the others to zero.
+Only its path to the cycle and the cycle itself can have nonzero
+values. On that path evaluate every circle using its source radius
+and the identity \(D_d(t)=0\) exactly when \(d h_1(t)=ut\).
+The root has multiplicity two exactly when \(d=u\). Subtract
+\(V_\infty\) from the shifted values to recover the original rows.
+In the five models in table order, the following triples of leaf
+masks (in hexadecimal) give three-by-three determinants coprime to \(M\):
+\[
+ (3,5,9),\quad(2,7,8),\quad(2,8,\mathtt b),\quad
+ (2,7,\mathtt{17}),\quad(2,5,\mathtt f).
+\]
+Thus the pullbacks and these circles together impose 263,679 independent
+equations on 524,800 labels. The option \texttt{--circle-rank} checks
+the components and all five unit determinants.
+
 \end{document}
