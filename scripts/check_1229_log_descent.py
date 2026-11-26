@@ -8,6 +8,7 @@ from math import gcd
 from pathlib import Path
 
 from check_1229_factor_base_orders import CIRCLE_LOGS, ISOGENY_LOGS, read_logs, read_table
+from check_1229_hermitian_descent import records as cubic_records, relation as cubic_relation
 from check_1229_isogeny_logs import H0, H1, Q
 from check_degree_1229 import COFACTOR, KNOWN, check_known_order
 from check_factor_base import DATA, irreducible, modulus, polynomial
@@ -104,13 +105,15 @@ def reduce_task(name, target, relation, table, base, field, path):
     offset = sum(coeffs[p]*e for p, e in known.items()) % COFACTOR
     value = base.pow_mod(offset, field)
     todo = []
+    products = {}
     for p in sorted(coeffs.keys()-known.keys()):
         deg = p.bit_length()-1
         weight = coeffs[p]
-        projected = polynomial(p).pow_mod(KNOWN, field)
-        value = (value * projected.pow_mod(weight, field)) % field
+        products[weight] = (products.get(weight, polynomial(1)) * polynomial(p)) % field
         todo.append({"mask_hex": hex(p), "relative_degree": deg//gcd(deg, 20),
                      "coefficient_mod_C": str(weight)})
+    for weight, prod in products.items():
+        value = (value * prod.pow_mod(KNOWN * weight, field)) % field
     if value != target.pow_mod(KNOWN, field):
         raise ArithmeticError(f"the assembled projected relation for {name} failed in the field")
     result = {"task": name, "model_modulus_hex": hex(mask_of(field)), "K": str(KNOWN), "C": str(COFACTOR),
@@ -122,10 +125,13 @@ def reduce_task(name, target, relation, table, base, field, path):
 
 
 def main():
+    cubics = cubic_records()
+    cubic_names = {f"cubic-{p:#x}": p for p in cubics}
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--task", choices=(*CANDIDATES, *PENCIL_NAMES))
+    parser.add_argument("--task", choices=(*CANDIDATES, *PENCIL_NAMES, *cubic_names))
     parser.add_argument("--json", action="store_true", help="print the complete selected task")
     parser.add_argument("--logs", type=Path, help="check a mask,exponent CSV for the selected task")
+    parser.add_argument("--expand-cubics", action="store_true", help="substitute all available cubic descents")
     args = parser.parse_args()
     if (args.json or args.logs) and not args.task:
         parser.error("--json and --logs require --task")
@@ -135,12 +141,24 @@ def main():
     field = polynomial(field_mask)
     base = polynomial(2).pow_mod(KNOWN, field)
     cert = json.loads(CERT.read_text())
-    for name in ([args.task] if args.task else [*CANDIDATES, *PENCIL_NAMES]):
+    @cache
+    def cubic(p):
+        return cubic_relation(p, cubics[p])
+
+    for name in ([args.task] if args.task else [*CANDIDATES, *PENCIL_NAMES, *cubic_names]):
         if name in CANDIDATES:
             target, relation = sparse_quotient(name, cert["quotients"][name], field)
+        elif name in cubic_names:
+            p = cubic_names[name]
+            target, relation = polynomial(p), cubic(p)
         else:
             row, = (r for r in cert["pencils"] if int(r["target_hex"], 16) == PENCIL_NAMES[name])
             target, relation = norm_pencil(row)
+        if args.expand_cubics:
+            relation = Counter(relation)
+            for p in sorted(relation.keys() & cubics.keys()):
+                weight = relation.pop(p)
+                relation.update({m: weight*c for m, c in cubic(p).items()})
         for p in (relation.keys() & extra_logs.keys()) - table.keys():
             table[p] = checked_exponent(p, extra_logs[p], base, field)
         result = reduce_task(name, target, relation, table, base, field, args.logs)
