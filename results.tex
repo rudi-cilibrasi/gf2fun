@@ -7637,7 +7637,7 @@ It follows that the weighted count of primitive roots is
 
 It remains to bound the weight of the binary coefficients in this
 count. The Fourier transform of the untruncated function
-\(g_0(y)=6^{d-|y|}\) factors explicitly:
+\(g_0(y)=6^{d-|y|}\) is the product
 \[
  A_0(x)=7^{d-|x|}5^{|x|}.
 \]
@@ -7678,6 +7678,82 @@ gives the stated coefficient.
 Finally, \(37^{13209}<2^{2368}36^{12852}\) gives
 \(h(1/37)<64/357\). Consequently
 \(c_*<13661/62308<877/4000=0.21925\).
+\end{proof}
+
+\begin{corollary}\label{cor:fourier-weight-1229}
+In degree \(1229\), more than \(2^{621}\) primitive binary polynomials
+have weight at most \(315\). With the cofactor bound of
+Theorem~\ref{thm:1229-cofactor-bound}, more than \(2^{616}\) have
+weight at most \(313\).
+\end{corollary}
+\begin{proof}
+Write \(K_j(i;s)=[z^j](1-z)^i(1+z)^{s-i}\). Use a nonnegative
+frequency function depending only on the Hamming weight \(j\), with
+value \(g_j\) for \(0\le j\le b\) and zero otherwise. Its transform
+at middle weight \(i\) is \(A_i=\sum_{j=0}^b g_jK_j(i;d)\).
+As above, \(V=A_0^2,\ Q=\sum_i\binom di A_i^2\), and
+\(L=n-1-2d\) coefficients are free. To discard weight above \(B\),
+let \(I_i\) consist of \(0\le k\le L\) with \(2+i+k>B\) odd, and put
+\[
+ T_B=\sum_i\binom di A_i^2\sum_{k\in I_i}\binom Lk .
+\]
+We can reduce this upper bound by requiring the polynomial to be
+coprime to the product \(D\) of the six binary irreducibles of
+degrees \(2,3,3,4,4,4\). Write \(s=\deg D=20,\ r=\lfloor
+L/(s+1)\rfloor\), and let \(\delta=(3/4)(7/8)^2(15/16)^3\)
+be the proportion of units modulo \(D\). A bound on the weighted
+number of overweight polynomials still eligible is
+\[
+ T'_B=\delta T_B+\frac{2^6 Q2^L}{\sqrt{\binom Lr}} .
+\]
+
+To see this, fix the middle bits. The condition on the free bits
+\(u_j\) says that \(c+\sum_{j=0}^{L-1}u_jT^j\) is a unit modulo
+\(D\) for some fixed \(c\), since \(T\) is invertible there.
+The Fourier expansion of the unit indicator on the additive group
+of the residue ring has constant coefficient \(\delta\) and sum of
+absolute coefficients \(2^6\delta\). Indeed the ring is a product
+of six fields, and each nonzero indicator on a field of size \(q_0\)
+has constant coefficient \(1-1/q_0\) and coefficient \(-1/q_0\) at
+every nontrivial character.
+
+For a nontrivial binary linear functional \(\ell\) on the residue ring,
+the string \(\ell(T^j)\), \(0\le j<L\), has a number \(m\) of ones
+between \(r\) and \(L-r\). Any \(s\) consecutive powers are a basis,
+so their images cannot all be zero. If \(s+1\) consecutive images
+were all one, \(\ell\) would vanish on a basis obtained by multiplying
+\(s\) consecutive powers by the unit \(T+1\).
+Consequently the character sum over the free words of weight \(k\)
+is \(K_k(m;L)\), up to the sign from \(c\). Binary Fourier orthogonality
+on functions constant at each Hamming weight gives
+\(\sum_k K_k(m;L)^2/\binom Lk=2^L/\binom Lm\).
+For example, apply Parseval to the indicator of the words of weight
+\(m\) and use \(\binom Lk K_m(k;L)=\binom Lm K_k(m;L)\).
+Cauchy--Schwarz now gives
+\(\sum_k|K_k(m;L)|\le2^L/\sqrt{\binom Lr}\).
+Summing against the Fourier coefficients of the unit indicator proves
+the claimed bound for each middle assignment and its allowed set \(I_i\).
+
+For \(n=1229\) take \(P=2n+1\). Distinct prime divisors of \(N=2^n-1\)
+are \(1\bmod 2n\), and \(\prod_{i=1}^{77}(2ni+1)>N\), so there are at
+most \(w=76\) of them. For the second result take \(w=19\) as before.
+With positive integer \(a\), use the explicit frequencies
+\[
+ g_j=\left\lfloor\sqrt{a^{2(b-j)}\,b!/(b-j)!}\right\rfloor .
+\]
+The prime-degree sieve and the bound on overweight polynomials give
+at least
+\[
+ \frac{(P-w)NQ-P2^{2d}\big((w+1)2d\lceil\sqrt q\rceil V+nT'_B\big)}
+      {P2^{2d}nV}.
+\]
+distinct primitive polynomials of weight at most \(B\).
+For \((d,b,a,B,w)=(502,16,14,315,76)\) the bound exceeds \(2^{621}+1\).
+For \((509,15,14,313,19)\) it exceeds \(2^{616}+1\).
+The integer checker rounds both terms of \(T'_B\) upward and replaces
+its square-root denominator by a power of two no larger than that
+denominator. It also checks \(Q=2^d\sum_j\binom dj g_j^2\).
+The calculations are in \nolinkurl{scripts/check_primitive_weight_bound.py}.
 \end{proof}
 
 \end{document}
