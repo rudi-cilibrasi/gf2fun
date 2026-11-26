@@ -3,6 +3,7 @@
 #include <NTL/ZZ.h>
 #include <array>
 #include <iostream>
+#include <string>
 #include <vector>
 
 using NTL::GF2X;
@@ -44,11 +45,13 @@ static GF2X remove_cofactor_part(GF2X value, const ZZ& log, const Powers& powers
 }
 
 struct Row {
-    long mask, terms = 0, missing = 0;
-    ZZ log;
+    ZZ mask, log;
+    long terms = 0, missing = 0;
 };
 
-int main() {
+int main(int argc, char** argv) {
+    const bool projected_only = argc == 2 && std::string(argv[1]) == "--projected";
+    if (argc != 1 && !projected_only) return 1;
     ZZ modulus_mask;
     std::array<ZZ, 4> primes;
     if (!(std::cin >> modulus_mask >> primes[0] >> primes[1] >> primes[2] >> primes[3])) return 1;
@@ -63,9 +66,11 @@ int main() {
     const Powers powers = fixed_powers(NTL::PowerXMod(order-projector, field),
                                        NTL::NumBits(cofactor), field);
     std::vector<Row> rows;
-    long mask;
-    ZZ log;
-    while (std::cin >> mask >> log) rows.push_back({mask, 0, 0, log});
+    ZZ mask, log;
+    while (std::cin >> mask) {
+        if (!(std::cin >> log)) return 1;
+        rows.push_back({mask, log});
+    }
     if (!std::cin.eof() || rows.empty()) return 1;
     bool valid = true;
     #pragma omp parallel reduction(&&:valid)
@@ -74,13 +79,21 @@ int main() {
         #pragma omp for schedule(static)
         for (size_t i = 0; i < rows.size(); ++i) {
             Row& row = rows[i];
-            const GF2X p = binary_polynomial(NTL::to_ZZ(row.mask));
-            if (NTL::deg(p) <= 0 || 20 % NTL::deg(p) || !NTL::IterIrredTest(p) ||
-                row.log < 0 || row.log >= cofactor || NTL::GCD(row.log, cofactor) != 1) {
+            const GF2X p = binary_polynomial(row.mask);
+            if (row.mask <= 1 || NTL::deg(p) >= 1229 || !NTL::IterIrredTest(p) ||
+                row.log < 0 || row.log >= cofactor) {
                 valid = false;
                 continue;
             }
             const GF2X v = remove_cofactor_part(p, row.log, powers, local_field);
+            if (projected_only) {
+                if (!NTL::IsOne(NTL::PowerMod(v, known, local_field))) valid = false;
+                continue;
+            }
+            if (20 % NTL::deg(p) || NTL::GCD(row.log, cofactor) != 1) {
+                valid = false;
+                continue;
+            }
             const GF2X small_part = NTL::PowerMod(v, large, local_field);
             const GF2X large_part = NTL::PowerMod(v, small, local_field);
             const GF2X first = NTL::PowerMod(small_part, primes[1], local_field);
@@ -101,6 +114,10 @@ int main() {
     if (!valid) {
         std::cerr << "A field identity, irreducibility, or degree check failed.\n";
         return 1;
+    }
+    if (projected_only) {
+        std::cout << "Verified irreducibility and all " << rows.size() << " projected field identities.\n";
+        return 0;
     }
     for (const Row& row : rows)
         std::cout << row.mask << ' ' << row.terms << ' ' << row.missing << '\n';
