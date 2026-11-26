@@ -10490,4 +10490,106 @@ index of \(s\) is \(\gcd(2A+B,C)\). Equivalently, one can submit the
 logarithm of the projected cubic alone. The checker verifies submissions
 by direct powering. The two indices remain open.
 
+\section{Short relations between a field element and its translate}
+\label{sec:short-translate-relations}
+Let \(r\) have degree \(n=1229\) over \(\F\). For integers \(i,j\) put
+\(h(i,j)=\max(|i|,|j|,|i+j|)\). Among the minimal polynomials of all
+such \(r\) satisfying
+\[
+               r^i(1+r)^j=1,\qquad 0<h(i,j)<2n,
+\]
+there are exactly 3,234 distinct polynomials. Their minimum weight is
+551. This minimum is attained even among the relations
+\(r^u=(1+r)^v\) with \(1\le u,v<2n\). For the different equation
+\(1+r^a=r^m\), \(0<a<m<2n\), there are 1,078 distinct minimal
+polynomials and the minimum weight is 567. These bounds apply to
+every irreducible degree-1229 pentanomial, regardless of its order.
+
+Indeed every prime divisor \(p\) of \(2^n-1\) satisfies
+\(\ord_p(2)=n\) and \(2n\mid p-1\). All integers from 1 to \(2n-1\)
+are therefore units modulo \(2^n-1\). Divide out the common divisor of
+\(i,j\). If one of \(i,j,i+j\) vanishes, the relation forces one of
+\(r,1+r,r/(1+r)\) to be 1, impossible. The substitutions \(r\mapsto1+r\)
+and \(r\mapsto1/r\) permute the three valuations \(i,j,-i-j\) of the
+rational function at \(0,1,\infty\). Thus one of the six coordinates
+satisfies \(s^u=(1+s)^v\) for positive coprime \(u,v<2n\).
+Choose \(A,B\in\mathbb Z\) with \(Av+Bu=1\). Then
+\(z=s^A(1+s)^B\) satisfies \(z^v=s\), \(z^u=1+s\), and has degree
+\(n\) since \(s,z\) generate the same field.
+
+It suffices to find the degree-\(n\) factors of \(1+Z^a+Z^m\) with
+\(n\le m<2n\), \(\gcd(a,m)=1\), \(0<a\le m/2\). Replacing \(z\) by
+\(z^{-1}\) accounts for the other taps. The six original coordinates are
+\(z^a,z^m,z^{m-a}\) and their inverses. Conversely all six have a
+relation of height \(m\), since \(z^m=1+z^a\). For the direct trinomial
+equation a common divisor \(d>1\) of its exponents would give a
+polynomial of degree \(m/d<n\) for \(r^d\), which still has degree \(n\).
+
+Of 688,501 normalized trinomials exactly 539 have a degree-\(n\)
+factor. The gcd with \(Z^{2^n}+Z\) extracts it uniquely, since \(n\)
+is prime, there is no linear factor, and \(m<2n\).
+At \((m,a)=(1553,152)\) the coordinate \(r=z^{1553}\) gives the
+551-term minimum and satisfies \(r^{152}=(1+r)^{1553}\).
+The 567-term minimum occurs for \(z\) at \((2160,937)\).
+The NTL census checks each minimal polynomial by composition.
+An independent FLINT checker uses the gcd directly in each of the
+three new coordinates, with
+\[
+ X^m+(1+X)^a,\qquad X^a+(1+X)^m,\qquad X^a(1+X)^{m-a}+1.
+\]
+It recomputes all weights and counts distinct masks including reciprocals.
+The 539 rows are in \nolinkurl{data/degree-1229-short-relations.csv}.
+
+\section{Two sparse-root product identities in degree 1229}
+\label{sec:translate-products}
+Put \(Q(X)=1+X+X^2\). Consider partitions of the five monomials of a
+degree-1229 pentanomial into two sides, each a monomial times a product
+of \(1+X\) and \(Q(X)\). There are 770 distinct supports admitting
+such a partition. Exactly two are irreducible, a reciprocal pair with
+interior exponents \((2,4,1101)\) and \((128,1225,1227)\).
+To enumerate them, form every \((1+X)^a Q(X)^b\) with \(a+2b\le1229\)
+and at most four terms. Translate two of the resulting supports so that
+their disjoint union has endpoints 0 and 1229 and size five.
+For a root \(r\) of the first irreducible,
+\[
+                 r^{1101}(1+r)^{128}=Q(r)^2.
+\]
+Thus \(Q(r)/(1+r)^{64}\) has exactly the order of \(r\), since its
+square is \(r^{1101}\) and \(2,1101\) are units modulo \(2^{1229}-1\).
+
+Another partition allows either side to be a monomial times products
+and quotients of \(1+X^j\) for arbitrary \(j>0\). Such a side is
+reciprocal after removing its initial monomial. A three-term side
+must be an arithmetic progression, and a four-term side must have
+equal sums of its two outside and its two inside exponents. Both tests
+suffice, by \(1+T+T^2=(1+T^3)/(1+T)\) and
+\((1+X^h)(1+X^k)=1+X^h+X^k+X^{h+k}\).
+There are ten progression conditions and five four-term conditions.
+Intersecting each pair of these linear equations on the three taps
+gives 5,936 distinct supports with at least two partitions. Twelve are
+irreducible. Up to reciprocation their taps are
+\[
+ (62,93,124),\ (67,134,648),\ (163,533,1066),\
+ (166,249,332),\ (310,609,919),\ (313,626,771).
+\]
+For each irreducible, combine translated powers with indices differing
+by powers of two. The respective ranks of the partition equations on
+the resulting labels are \(2,2,2,2,3,2\). In every column an integral
+kernel vector has a component coprime to \(2^{1229}-1\).
+Consequently each individual translate logarithm can vary in the
+equations with the sparse-root logarithm held fixed.
+
+For the rank-three case write \(x=r^{310},y=r^{609}\).
+The five terms give \(yQ(x)=1+x\), hence
+\[
+ (1+x)(1+y)=r^{1229},\quad (1+x)(1+xy)=r^{609},\quad
+ \frac{1+y}{1+xy}=r^{620},\quad y(1+x^3)=(1+x)^2.
+\]
+The quotient in the third equation has exactly the sparse root's order.
+The logarithm of any one of \(1+r^{155},1+r^{465},1+r^{609},1+r^{919}\)
+determines the other three once the logarithm of \(r\) is fixed.
+Both new candidates pass the four known prime-index tests and the extra
+cofactor test. Lean certifies these order statements and product
+identities in \nolinkurl{GF2Sparse/SparseRootModels.lean}.
+
 \end{document}

@@ -80,6 +80,33 @@ theorem rational_cubic_coordinate {b t : K} (hd : t^2+t+1 ≠ 0)
   · linear_combination (norm := (try ring_nf; reduce_mod_char!)) (w+t)*quadratic + lin
   · linear_combination (norm := (try ring_nf; reduce_mod_char!)) -quadratic
 
+/-- The only quadratic factors needed in this sparse-root equation are the linear
+translate and the third cyclotomic polynomial. -/
+theorem sparse_quadratic_product {r : K}
+    (hf : r^1229 + r^1101 + r^4 + r^2 + 1 = 0) :
+    r^1101 * (1+r)^128 = (1+r+r^2)^2 := by
+  have hfrob : (1+r)^128 = 1+r^128 := by
+    simpa only [one_pow] using add_pow_expChar_pow (1 : K) r 2 7
+  rw [hfrob, CharTwo.add_sq, CharTwo.add_sq]
+  apply CharTwo.add_eq_zero.mp
+  linear_combination (norm := ring_nf) hf
+
+/-- Three products of translates obtained from one five-term equation. -/
+theorem translate_products {x y : K} (h : 1+x+y+x*y+x^2*y = 0) :
+    (1+x)*(1+y) = x^2*y ∧ (1+x)*(1+x*y) = y ∧
+      1+y = x^2*(1+x*y) ∧ y*(1+x^3) = (1+x)^2 := by
+  have h₁ : (1+x)*(1+y) = x^2*y := by
+    apply CharTwo.add_eq_zero.mp
+    linear_combination h
+  have h₂ : (1+x)*(1+x*y) = y := by
+    apply CharTwo.add_eq_zero.mp
+    linear_combination h
+  refine ⟨h₁, h₂, ?_, ?_⟩
+  · apply CharTwo.add_eq_zero.mp
+    linear_combination (norm := (try ring_nf; reduce_mod_char!)) (1+x)*h
+  · apply CharTwo.add_eq_zero.mp
+    linear_combination (norm := (try ring_nf; reduce_mod_char!)) (1+x)*h
+
 open Polynomial PackedSquare
 open GF2Sparse.Degree1229 (knownPart cofactor)
 
@@ -157,5 +184,19 @@ theorem rational_cubic_order :
       ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
         orderOf (AdjoinRoot.root (pentanomial 29 58 400)) = knownPart*t :=
   of_certified 29 58 400 4 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- The sparse quadratic product passes all four known prime tests and the cofactor test. -/
+theorem quadratic_product_order :
+    Irreducible (pentanomial 2 4 1101) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 2 4 1101)) = knownPart*t :=
+  of_certified 2 4 1101 12 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- The three-translate model passes the same order tests. -/
+theorem translate_product_order :
+    Irreducible (pentanomial 310 609 919) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 310 609 919)) = knownPart*t :=
+  of_certified 310 609 919 6 (by decide) (by decide) (by decide) (by decide +kernel)
 
 end GF2Sparse.SparseRootModels
