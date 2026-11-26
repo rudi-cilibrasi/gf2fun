@@ -8094,4 +8094,80 @@ extend the count in Section~\ref{sec:odd-1791} to 1790 of the first
 \href{https://factordb.com/index.php?query=2%5E1999-1}{FactorDB record
 for the degree-1999 group order}.
 
+\section{Translated norm circles in degree 1229}\label{sec:translated-circles}
+Use the \(q=1024\) coordinate of Section~\ref{sec:1229-frobenius-models}.
+Write \(K=\mathbb F_{q^2}\), \(\bar b=b^q\), \(y=x^q\),
+\(h_0(Y)=Y^5+Y^2+1\), and \(h_1(Y)=Y^3+Y\), so that \(x h_1(y)=h_0(y)\).
+For \(b\in K\) and \(\rho\in\mathbb F_q^\times\), take the circle
+\[
+ S_{b,\rho}=\{c\in K:(c+b)^{q+1}=\rho\}.
+\]
+Its \(q+1\) distinct points give the monic polynomial
+\((T+b)^{q+1}+\rho\). Evaluating at \(x\) gives
+\[
+ h_1(y)\prod_{c\in S_{b,\rho}}(x+c)=P_{b,\rho}(y),\qquad
+ P_{b,\rho}(Y)=(h_0(Y)+b h_1(Y))(Y+\bar b)+\rho h_1(Y).
+\]
+Suppose the monic sextic \(P_{b,\rho}\) has six distinct roots \(A\)
+in \(K\). For \(z\in K\), write \(B_z\) for its binary minimal polynomial
+and \(e_z=20/\deg B_z\). The constant-field norm from the compositum
+with \(\mathbb F_{2^{1229}}\) fixes \(x\) and gives
+\[
+ \bigl(x(x+1)^2\bigr)^{20q}
+       \prod_{c\in S_{b,\rho}} B_c(x)^{e_c}
+       = \prod_{a\in A} B_a(x)^{q e_a}.
+\]
+Indeed \(\gcd(1229,20)=1\), and \(y+a=(x+\bar a)^q\) with
+\(B_{\bar a}=B_a\). All the factors are nonzero in the target field.
+
+\paragraph{Census.}
+Binary conjugation acts simultaneously on \(b,\rho\). Burnside's
+lemma gives
+\[
+ \frac1{20}\sum_{j=0}^{19}2^{\gcd(20,j)}
+          \bigl(2^{\gcd(10,j)}-1\bigr)=53\,687\,152
+\]
+orbits. The counts according to the number of distinct roots of the
+sextic in \(K\) are
+\[
+\begin{array}{c|rrrrrrr}
+\#A&0&1&2&3&4&5&6\\ \hline
+\#\text{orbits}&19363739&19661762&10268154&3117528&1182986&73&92910 .
+\end{array}
+\]
+To enumerate, fix a possible root \(a\). At a pole \(a=0,1\) the
+unique center is \(b=a\) and every nonzero radius works. Otherwise put
+\(t=h_0(a)/h_1(a)\) and \(D=a+\bar t\). The radius is forced to be
+\(\rho=(t+b)(a+\bar b)\). It lies in the base field precisely when
+\[
+     bD+\overline{bD}=ta+\overline{ta}.
+\]
+If \(D=0\) this holds at every center. Otherwise the centers form
+the affine line \((\theta(ta+\overline{ta})+\mathbb F_q)/D\),
+where \(\theta+\bar\theta=1\). Discard zero radii. The enumerator
+visits one representative of each binary orbit of \(a\), restoring
+its conjugates when counting at the least representative of a center.
+It then takes one radius under the stabilizer of that center and
+checks every reported root by direct sextic evaluation.
+
+\paragraph{Eliminating factor-base values.}
+There are 52,488 binary irreducibles of degrees dividing 20, one for
+each binary orbit in \(K\). Taking logarithms in the cyclic target
+group produces an integer row for each split circle. A square minor
+on 1,536 degree-20 columns has integer determinant of bit length 2739,
+coprime to \(2^{1229}-1\). Hence these 1,536 values can be expressed
+in terms of the other 50,952 modulo the full group order. The same
+elimination works in the quotient by a candidate sparse root.
+
+The checker represents \(K\) in the basis with modulus \(Z^{20}+Z^3+1\).
+It chooses columns by a fixed permutation of the least degree-20 orbit
+representatives, omitting the orbit satisfying \(h_0(a)=\bar a h_1(a)\).
+It takes split circles whose six sextic roots avoid these columns.
+The entries of the minor are therefore just the counts of circle points
+in its orbits. FLINT computes the integer determinant. An independent
+calculation scans every possible root at six centers and directly
+evaluates seven full norm identities in the target field. See
+\nolinkurl{scripts/enumerate_1229_translated_circles.cpp} and
+\nolinkurl{scripts/check_1229_translated_circles.py}.
+
 \end{document}

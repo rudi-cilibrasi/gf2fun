@@ -195,6 +195,14 @@ uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_circle_relations.py --q 1024 --relations > /tmp/gf2-circle-1024.jsonl
 ~~~
 
+Allowing all centers in the auxiliary field gives 92,910 split circles up to binary conjugation. Their equations eliminate at least 1,536 of the 52,488 factor-base values modulo the full group order. The CSV contains the center, norm radius and six roots of each sextic, encoded as polynomial-basis integers. The Python checker verifies an integer determinant coprime to $2^{1229}-1$. [Circle equations and proof](results.pdf#page=105)
+
+~~~sh
+g++ -O3 -std=c++17 scripts/enumerate_1229_translated_circles.cpp -o /tmp/gf2-translated-circles
+/tmp/gf2-translated-circles --csv > /tmp/gf2-translated-circles.csv
+uv run --no-project --with numpy --with sympy --with python-flint==0.9.0 python scripts/check_1229_translated_circles.py /tmp/gf2-translated-circles.csv --minor 1536
+~~~
+
 ~~~sh
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_period_relations.py --wheel
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_period_relations.py --wheel --candidate seroussi --logs /path/to/period-logs.csv
