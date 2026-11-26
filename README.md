@@ -108,6 +108,15 @@ uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_dyadic.py --backend /tmp/gf2-dyadic --sample
 ~~~
 
+Each degree-16 parent also has a compact index for every degree-eight child. Use `--candidate product --depth 3` or `--candidate seroussi --depth 3` to replay an entire candidate. The first command below checks all 1,029 degree-eight pencils under a single parent. The second reconstructs the selected pencil, multiplies out its unprojected identity in the original binary field, and exports its quartic logarithms. [All 4,235,364 indices](data/degree-1229-dyadic-level3.bin.gz)
+
+~~~sh
+parent=0x100025fa5082778e43947101d9faeb698dae872213daf86a5f4905d7971915636b233741c429cfdf7
+child=0x10012a066403a92ecc429020b41280eced2ba647f
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_dyadic.py --backend /tmp/gf2-dyadic --parent "$parent" --depth 3
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_dyadic.py --backend /tmp/gf2-dyadic --parent "$parent" --child "$child" --json
+~~~
+
 To certify the Seroussi pentanomial using one logarithm, solve the single row in the degree-57 task. The product candidate has a degree-58 task in the same field. Use the binary polynomial marked `mask_hex` in `remaining` and find $e$ satisfying $(x^K)^e=P(x)^K$. The checker accepts a CSV with header `mask,exponent`, verifies the exponent by powering in the field, and computes the original sparse root's exact index. Index one certifies primitivity. [Seroussi task](data/degree-1229-seroussi-known-offset-task.json) · [Product task](data/degree-1229-product-known-offset-task.json)
 
 ~~~sh
