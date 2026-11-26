@@ -8732,8 +8732,17 @@ degree-1229 group order and \(C_0=(2^{1229}-1)/K_0\).
 \]
 Lean checks the strict integer inequalities in
 \nolinkurl{GF2Sparse/NormCoverBounds.lean}. The table proves existence
-for arbitrary prescribed targets. Section~\ref{sec:norm-quotients}
-gives actual coefficients for specified targets with its norm to \(C(t)\).
+for arbitrary prescribed targets. For each of the twelve explicit targets
+\(a\) in Section~\ref{sec:norm-quotients}, set \(w_a=U_a(t)/V_a(t)\).
+Those certificates also give a logarithm problem entirely in \(E^\times\).
+Indeed \(a\in E\), and \([C(t):E]=6\), so transitivity gives
+\[
+       \operatorname{Norm}_{F/E}(w_a)
+       =\operatorname{Norm}_{C(t)/E}(a)=a^6.
+\]
+Since \(2^{1229}-1\equiv1\bmod6\), the sixth-power map is an
+automorphism of \(E^\times\). Thus \(a=b^e\) holds exactly when
+\(\operatorname{Norm}_{F/E}(w_a)=\operatorname{Norm}_{F/E}(w_b)^e\).
 
 For either sparse degree-1229 root \(r\), there is also a quantitative
 test of what full order would imply on this line. If \(H=\langle

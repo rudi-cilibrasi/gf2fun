@@ -67,7 +67,7 @@ cc=binpol({modulus}); check(poldegree(cc)=={d} && polisirreducible(cc));
 t=ffgen(f,'w); z=value({record['constant_generator_hex']},t); check(subst(cc,x,z)==0);
 aa=value({record['a']},z); bb=value({record['b']},z); c=value({record['c']},z);
 check(aa*bb*c!=0 && t^({q}+{b})==aa*t^2+bb*t+c);
-p=value({record['period_hex']},t); check(p!=0 && isprime(2459) && znorder(Mod(2,2459))==2458);
+p=value({record['period_hex']},t); check(p!=0 && p^(2^{n})==p && isprime(2459) && znorder(Mod(2,2459))==2458);
 u=t*0; v=p; bits=digits(2459,2);
 for(i=1,#bits,w=u*v+p;if(bits[i],u=w;v=v^2,v=w;u=u^2));
 check(u==0);
