@@ -7,7 +7,7 @@ from collections import Counter
 from functools import lru_cache
 from pathlib import Path
 
-from check_1229_factor_base_orders import read_table
+from check_1229_factor_base_orders import ISOGENY_LOGS, read_logs, read_table
 from check_degree_1229 import COFACTOR, PRIMES
 from check_factor_base import polynomial
 from period_coordinate import mask_of
@@ -107,6 +107,8 @@ if __name__ == "__main__":
     if args.second_step:
         second, _ = derive(new_logs, table | new_logs)
         new_logs.update(second)
+        if sorted(new_logs.items()) != list(read_logs(ISOGENY_LOGS)):
+            raise ArithmeticError("the regenerated exponents differ from the published table")
     counts = Counter(m.bit_length()-1 for m in new_logs)
     print(f"Derived {len(new_logs):,} new projected logarithms. Counts by degree: {dict(sorted(counts.items()))}.", flush=True)
     if args.verify_powers:

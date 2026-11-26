@@ -1,14 +1,13 @@
 """Verify sparse-root decompositions and export or check their individual projected-log tasks."""
 
 import argparse
-import csv
 import json
 from collections import Counter
 from functools import cache
 from math import gcd
 from pathlib import Path
 
-from check_1229_factor_base_orders import read_table
+from check_1229_factor_base_orders import CIRCLE_LOGS, ISOGENY_LOGS, read_logs, read_table
 from check_1229_isogeny_logs import H0, H1, Q
 from check_degree_1229 import COFACTOR, KNOWN, check_known_order
 from check_factor_base import DATA, irreducible, modulus, polynomial
@@ -80,19 +79,20 @@ def norm_pencil(row):
     return target, {p: inv*c for p, c in relation.items()}
 
 
+def checked_exponent(p, e, base, field):
+    if not 0 <= e < COFACTOR:
+        raise ValueError(f"out-of-range logarithm at {p:#x}")
+    if base.pow_mod(e, field) != polynomial(p).pow_mod(KNOWN, field):
+        raise ArithmeticError(f"incorrect projected logarithm at {p:#x}")
+    return e
+
+
 def submitted(path, required, base, field):
     result = {}
-    with path.open(newline="") as stream:
-        reader = csv.DictReader(stream)
-        if reader.fieldnames != ["mask", "exponent"]:
-            raise ValueError("expected mask,exponent columns")
-        for row in reader:
-            p, e = int(row["mask"], 0), int(row["exponent"])
-            if p not in required or p in result or not 0 <= e < COFACTOR:
-                raise ValueError(f"unexpected, repeated or out-of-range logarithm at {p:#x}")
-            if base.pow_mod(e, field) != polynomial(p).pow_mod(KNOWN, field):
-                raise ArithmeticError(f"incorrect projected logarithm at {p:#x}")
-            result[p] = e
+    for p, e in read_logs(path):
+        if p not in required or p in result:
+            raise ValueError(f"unexpected or repeated logarithm at {p:#x}")
+        result[p] = checked_exponent(p, e, base, field)
     return result
 
 
@@ -130,6 +130,8 @@ def main():
     if (args.json or args.logs) and not args.task:
         parser.error("--json and --logs require --task")
     field_mask, table = read_table()
+    extra_logs = dict(read_logs(CIRCLE_LOGS))
+    extra_logs.update(read_logs(ISOGENY_LOGS))
     field = polynomial(field_mask)
     base = polynomial(2).pow_mod(KNOWN, field)
     cert = json.loads(CERT.read_text())
@@ -139,6 +141,8 @@ def main():
         else:
             row, = (r for r in cert["pencils"] if int(r["target_hex"], 16) == PENCIL_NAMES[name])
             target, relation = norm_pencil(row)
+        for p in (relation.keys() & extra_logs.keys()) - table.keys():
+            table[p] = checked_exponent(p, extra_logs[p], base, field)
         result = reduce_task(name, target, relation, table, base, field, args.logs)
         if args.json:
             print(json.dumps(result, indent=2))

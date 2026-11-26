@@ -18,20 +18,29 @@ from period_coordinate import mask_of
 
 METADATA = DATA / "degree-1229-q1024-certificate.json"
 LOGS = DATA / "degree-1229-q1024-projected-logs.csv.gz"
+ISOGENY_LOGS = DATA / "degree-1229-isogeny-logs.csv.gz"
+CIRCLE_LOGS = DATA / "degree-1229-partial-circle-logs.csv"
 EXPECTED_DEGREES = {1: 2, 2: 1, 4: 3, 5: 6, 10: 99, 20: 52377}
 LIGHTEST = {0x11C4B7, 0x193377}
 EXCEPTION = 0x16FEC7
+
+
+def read_logs(path):
+    opener = gzip.open if path.suffix == ".gz" else open
+    with opener(path, "rt", newline="") as stream:
+        reader = csv.DictReader(stream)
+        if reader.fieldnames != ["mask", "exponent"]:
+            raise ValueError("expected mask,exponent columns")
+        for row in reader:
+            mask = row["mask"].strip()
+            yield int(mask, 16 if mask.lower().startswith("0x") else 10), int(row["exponent"])
 
 
 def read_table():
     cert = json.loads(METADATA.read_text())
     if hashlib.sha256(LOGS.read_bytes()).hexdigest() != cert["csv_gz_sha256"]:
         raise ValueError("projected-log table digest mismatch")
-    with gzip.open(LOGS, "rt", newline="") as stream:
-        reader = csv.DictReader(stream)
-        if reader.fieldnames != ["mask", "exponent"]:
-            raise ValueError("unexpected projected-log columns")
-        entries = [(int(row["mask"]), int(row["exponent"])) for row in reader]
+    entries = list(read_logs(LOGS))
     logs = dict(entries)
     if (len(logs) != len(entries) or Counter(m.bit_length()-1 for m in logs) != EXPECTED_DEGREES
             or logs.get(2) != 1 or any(not 0 <= e < COFACTOR or gcd(e, COFACTOR) != 1 for e in logs.values())):

@@ -9242,12 +9242,46 @@ number and largest relative degree of the remaining logarithms.
  \text{remaining}&\text{max. degree}\\\hline
  \text{Seroussi quotient}&\mathtt{d3}&7&(\mathtt c,\mathtt b)&44&3\\
  \text{product quotient}&\mathtt{bf}&7&(\mathtt{26},\mathtt b)&62&5\\
- \text{product quotient}&\mathtt{35d5}&13&(\mathtt{13e},\mathtt d)&92&8\\
+ \text{product quotient}&\mathtt{35d5}&13&(\mathtt{13e},\mathtt d)&91&8\\
  \text{product single shift}&\mathtt{91}&7&(\mathtt{17},\mathtt e)&59&4\\
  \text{Seroussi single shift}&\mathtt{c19}&11&(\mathtt{2f},\mathtt{29})&66&5
 \end{array}
 \]
 The quotients, pencils and partial-log verifier are in
 \nolinkurl{scripts/check_1229_log_descent.py}.
+
+\paragraph{Six hundred individual logarithms from circle and trace equations.}
+The product-factor pencil for \(\mathtt{35d5}\) initially has 92
+unknowns. One is \(L(T^3+T+1)\). The identity
+\[
+ (y^2+y+1)(y^3+y+1)=y h_1(y)+h_0(y)=h_1(y)(x^q+x)
+\]
+determines it, since \(X^q+X\) is the product of the binary
+irreducibles whose degrees divide ten. This gives the reported 91.
+
+More generally, let \(M=a/b\) be a binary fractional linear map.
+Each equation \(M(X)^{q+1}=s\) for \(s\in\mathbb F_q^\times\) or
+\(M(X)^q+M(X)=s\) for \(s\in\mathbb F_q\) has its projective
+solutions in \(\mathbb F_{q^2}\). Taking a product over the binary
+conjugates of \(s\) expresses the entire left side using the original
+logarithm table. On the right substitute \(x=R(y)\) and clear the
+denominator. For the norm equations use \(M=T,T+1,T/(T+1)\).
+For the trace equations use \(M=T,1/T,1/(T+1)\), including the
+pole of \(M\) in each homogenized trace line. This gives 645 equations.
+
+For a further 214, take \(b,d\) lying together in \(\mathbb F_{16}\)
+or \(\mathbb F_{32}\), with \(d^q=d\) and \(b^{q+1}+d\ne0\), up to
+simultaneous binary conjugacy. The polynomial
+\(X^{q+1}+bX^q+b^qX+d\) splits over \(\mathbb F_{q^2}\).
+Substitution gives numerator
+\((y+b^q)h_0(y)+(by+d)h_1(y)\) over denominator \(h_1(y)\).
+Taking the coefficient norm to \(\F\) gives a binary relation.
+Whenever all but one factor logarithm in either kind of relation are
+known, its remaining logarithm follows by division by its multiplicity
+modulo \(C\). These 859 equations give 600 distinct new exponents.
+They are disjoint from both isogeny lifts, bringing the verified total
+to \(90{,}839\). The table is
+\nolinkurl{data/degree-1229-partial-circle-logs.csv}, and
+\nolinkurl{scripts/check_1229_partial_circles.py} reconstructs it.
 
 \end{document}
