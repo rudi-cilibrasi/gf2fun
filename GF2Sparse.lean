@@ -50,6 +50,7 @@ import GF2Sparse.ShortProducts
 import GF2Sparse.SubfieldProducts
 import GF2Sparse.SignedDegreeChoices
 import GF2Sparse.SignedTriples
+import GF2Sparse.SparseRootModels
 import GF2Sparse.TranslatedInterval
 import GF2Sparse.TripleObstruction
 import GF2Sparse.TrinomialOrder

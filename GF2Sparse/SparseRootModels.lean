@@ -1,0 +1,131 @@
+import GF2Sparse.Degree1229
+import GF2Sparse.PackedOrder
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Ring
+
+/-! Two changes of coordinate for five-term binary equations of degree 1229. -/
+
+namespace GF2Sparse.SparseRootModels
+
+variable {K : Type*} [Field K] [CharP K 2]
+
+/-- A quadratic value and a linear ratio in the coordinate a = 1/(1+x). -/
+theorem quadratic_values {x y : K} (hx : 1 + x ≠ 0)
+    (h : y * (1 + x)^2 = 1 + x + x^2) :
+    let a := (1 + x)⁻¹
+    a^2 + a + 1 = y ∧ (a + 1) / a = x := by
+  dsimp only
+  have hquad : ((1 + x)⁻¹)^2 - (1 + x)⁻¹ + 1 = y := by
+    field_simp [hx]
+    linear_combination -h
+  have hratio : (1 - (1 + x)⁻¹) / (1 + x)⁻¹ = x := by
+    field_simp [hx]
+    ring
+  exact ⟨by simpa only [CharTwo.sub_eq_add] using hquad,
+    by simpa only [CharTwo.sub_eq_add, add_comm (1 : K) ((1 + x)⁻¹)] using hratio⟩
+
+/-- The degree-1229 pentanomial supplies both powers and the nonzero denominator. -/
+theorem sparse_quadratic_values {r : K}
+    (hf : r^1229 + r^1066 + r^533 + r^163 + 1 = 0) :
+    let a := (1 + r^533)⁻¹
+    a^2 + a + 1 = r^163 ∧ (a + 1) / a = r^533 := by
+  have h : r^163 * (1 + r^533)^2 = 1 + r^533 + (r^533)^2 := by
+    rw [CharTwo.add_sq, one_pow]
+    apply CharTwo.add_eq_zero.mp
+    linear_combination hf
+  apply quadratic_values _ h
+  intro hx
+  have hr : r^533 = 1 := (CharTwo.add_eq_zero.mp hx).symm
+  rw [hx, hr] at h
+  simp at h
+
+omit [CharP K 2] in
+
+/-- The two powers recover the original root by Bézout's identity. -/
+theorem recover_root {r : K} (hr : r ≠ 0) : (r^533)^63 / (r^163)^206 = r := by
+  apply (div_eq_iff (pow_ne_zero _ (pow_ne_zero _ hr))).2
+  simp only [← pow_mul]
+  change r^(33578+1) = r*r^33578
+  rw [pow_succ, mul_comm]
+
+omit [CharP K 2] in
+/-- Substituting the fifth power in the second pentanomial gives a quadratic
+equation in z over its 256th Frobenius power. -/
+theorem quadratic_frobenius (z : K) :
+    (z^5)^1229 + (z^5)^922 + (z^5)^461 + (z^5)^256 + 1 =
+      (z^256)^18*z^2 + ((z^256)^9 + (z^256)^24)*z + 1 + (z^256)^5 := by
+  ring
+
+open Polynomial PackedSquare
+open GF2Sparse.Degree1229 (knownPart cofactor)
+
+set_option maxRecDepth 16384
+set_option maxHeartbeats 4000000
+set_option exponentiation.threshold 4096
+
+noncomputable def pentanomial (a b c : ℕ) : BinaryPoly :=
+  X^1229 + (X^c + (X^b + (X^a + 1)))
+
+private def primes : List ℕ :=
+  [36871, 46703, 10543179280661916121033, 9536289355314392579996071515160583098298616686033085857]
+
+private def certified (js : List ℕ) (fuel : ℕ) : Bool :=
+  let stages := stagesFor 11
+  let e := 2^1229-1
+  (xorShifts js 1).log2 == 1229 && powerBits 1229 1229 fuel stages js (e.log2+1) e == some 1 &&
+    nontrivialPower 1229 fuel stages js knownPart &&
+    primes.all (fun p => nontrivialPower 1229 fuel stages js (cofactor*(knownPart/p)))
+
+private theorem basis : checkBasis 1229 (stagesFor 11) = true := by decide +kernel
+
+private theorem of_certified (a b c fuel : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
+    (h : certified [1229,c,b,a,0] fuel = true) :
+    Irreducible (pentanomial a b c) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧ orderOf (AdjoinRoot.root (pentanomial a b c)) = knownPart*t := by
+  let js := [1229,c,b,a,0]
+  let mask := xorShifts js 1
+  have heq : decode mask = pentanomial a b c := by
+    simp only [mask, js, xorShifts, decode_xor, decode_shift_by, decode_one, decode_zero,
+      pow_zero, mul_one, add_zero, pentanomial]
+  change certified js fuel = true at h
+  simp only [certified, Bool.and_eq_true, beq_iff_eq, List.all_eq_true] at h
+  obtain ⟨⟨⟨hd,hfull⟩,hextra⟩,hp⟩ := h
+  have hdeg : (decode mask).natDegree = 1229 := (natDegree_decode _).trans hd
+  have full : AdjoinRoot.root (decode mask)^(2^1229-1) = 1 := by
+    have he := powerBits_sound basis (show xorShifts js 1 = mask from rfl) Nat.lt_log2_self hfull
+    simpa using he.symm
+  have proper {e : ℕ} (ht : nontrivialPower 1229 fuel (stagesFor 11) js e = true) :
+      AdjoinRoot.root (decode mask)^e ≠ 1 :=
+    nontrivialPower_sound basis rfl hd (by decide) ht
+  rw [← heq]
+  constructor
+  · apply irreducible_of_prime_degree_power (f := decode mask) (by rw [hdeg]; norm_num)
+    · intro z
+      rw [heq]
+      have hz : z = 0 ∨ z = 1 := by
+        fin_cases z
+        · exact Or.inl rfl
+        · exact Or.inr rfl
+      rcases hz with rfl | rfl
+      · simp [pentanomial, zero_pow ha, zero_pow hb, zero_pow hc]
+      · simp only [pentanomial, eval_add, eval_pow, eval_X, eval_one, one_pow]
+        decide
+    · simpa only [hdeg] using full
+  · exact Degree1229.order_split_of_powers _ full (proper hextra) (fun p hm => proper (hp p hm))
+
+/-- Irreducibility and the four known prime projections for the quadratic-value model. -/
+theorem quadratic_value_order :
+    Irreducible (pentanomial 163 533 1066) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 163 533 1066)) = knownPart*t :=
+  of_certified 163 533 1066 10 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- Irreducibility and the same order projections for the quadratic Frobenius model. -/
+theorem frobenius_model_order :
+    Irreducible (pentanomial 256 461 922) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 256 461 922)) = knownPart*t :=
+  of_certified 256 461 922 6 (by decide) (by decide) (by decide) (by decide +kernel)
+
+end GF2Sparse.SparseRootModels

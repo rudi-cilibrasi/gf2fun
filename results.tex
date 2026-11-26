@@ -7774,4 +7774,152 @@ lower-weight witnesses for 1643 of the first 1792 degrees.
 \href{https://factordb.com/index.php?query=2%5E1783-1}{FactorDB record
 for the degree-1783 group order}.
 
+\section{A quadratic value with a known logarithm in degree 1229}
+\label{sec:sparse-quadratic-value}
+Consider the five-term polynomial
+\[
+ f=X^{1229}+X^{1066}+X^{533}+X^{163}+1 .
+\]
+For a root \(r\) put \(a=(1+r^{533})^{-1}\). Then
+\[
+ \frac{a+1}{a}=r^{533},\qquad a^2+a+1=r^{163},\qquad
+ r=\frac{((a+1)/a)^{63}}{(a^2+a+1)^{206}} .
+\]
+Thus the unique monic irreducible quadratic over \(\F\), evaluated at
+\(a\), has a known logarithm to base \(r\). Its value generates exactly
+\(\langle r\rangle\), since \(\gcd(163,2^{1229}-1)=1\).
+One additional logarithm \(a^K=(r^K)^e\), if found, would give both
+monic linear values after projection, since \((a+1)^K=(r^K)^{e+533}\).
+Here \(K\) is the known part of the group order from
+Theorem~\ref{thm:1229-cofactor-bound}.
+
+\begin{theorem}\label{thm:sparse-coordinate-transfer}
+Let \(P\in\F[T]\) be monic of positive degree \(d\), with \(P(0)=P(1)=1\).
+For coprime positive \(u,v\), set
+\[
+ \begin{split}
+ F(X)&=X^v(1+X^u)^d+P(X^u),\\
+ Q(T)&=T^dP((T+1)/T),\\
+ G(T)&=(T+1)^v+T^v Q(T)^u .
+ \end{split}
+\]
+The algebras \(\F[X]/(F)\) and \(\F[T]/(G)\) are isomorphic. Both
+moduli have degree \(du+v\), and they are simultaneously irreducible.
+Writing \(r\) and \(a\) for the respective coordinates under the
+isomorphism gives \(A=(a+1)/a=r^u\) and \(B=Q(a)=r^v\).
+In particular \(\langle A,B\rangle=\langle r\rangle\).
+\end{theorem}
+\begin{proof}
+The polynomial \(Q\) has constant and leading coefficients one and
+\(Q(1)=1\). In the first quotient \(r\) is a unit, as is \(1+r^u\)
+since \(F\) reduces to \(P(1)=1\) modulo \(1+X^u\).
+Taking \(a=(1+r^u)^{-1}\) gives \(A=r^u\) and \(Q(a)=r^v\) by the
+defining equation. Hence \(G(a)=0\).
+
+In the second quotient \(a,a+1,Q(a)\) are units. Indeed
+\(G(0)=G(1)=1\), and any common factor of \(Q\) and \(G\) divides
+\((T+1)^v\), which is coprime to \(Q\). Here \(A^v=B^u\).
+Choose integers \(i,j\) with \(ui+vj=1\). Then \(r=A^iB^j\)
+satisfies \(r^u=A,\ r^v=B\), and \(1+r^u=1/a\) gives \(F(r)=0\).
+The maps are inverse on their respective generators. These same
+identities give the subgroup equality.
+\end{proof}
+
+Take \(d\) a power of two and \(P=1+T^b+T^d\) irreducible. The
+interior exponents of \(F\) are \(bu,du,v\) when these are distinct.
+Swan's theorem excludes \(8\mid d\). In degree \(du+v=1229\),
+\((d,b)=(2,1),(4,1),(4,3)\) give 1228 presentations. Exactly
+one gives an irreducible \(F\), at \((d,b,u,v)=(2,1,533,163)\).
+Here \(Q=T^2+T+1\), \(533\cdot63-163\cdot206=1\), and \(a\)
+has irreducible minimal polynomial
+\[
+ (T+1)^{163}+T^{163}(T^2+T+1)^{533}.
+\]
+The quadratic value \(B=r^{163}\) itself has a 51-term minimal
+polynomial. To obtain it without a field change, note
+\((1+B)(A+A^{-1})=1\) and \(A^v=B^u\). For binary Dickson polynomials
+\(D_j(t+t^{-1})=t^j+t^{-j}\), these identities give
+\(D_v((1+B)^{-1})=B^u+B^{-u}\). Define
+\(E_j(Z)=(1+Z)^jD_j((1+Z)^{-1})\), so \(E_0=0,\ E_1=1\) and
+\(E_{j+2}=E_{j+1}+(1+Z)^2E_j\). Clearing denominators gives the
+monic polynomial
+\[
+ Z^u E_v(Z)+(1+Z)^v(1+Z^{2u}).
+\]
+It has degree \(2u+v=1229\), and \(B\) generates the same field as
+\(r\), so it is minimal. The recurrence gives its weight directly.
+
+PARI and FLINT verify \(r^{(2^{1229}-1)/p}\ne 1\) for each of the
+four known primes \(p\), and \(r^K\ne 1\). Thus \(r\) and
+\(a^2+a+1\) both have order \(Kt>2^{345}\), where \(t>1\)
+divides the remaining cofactor. Equality of \(t\) with the cofactor is open.
+\href{https://doi.org/10.2140/pjm.1962.12.1099}{Swan on binary trinomials}.
+
+\section{A quadratic Frobenius equation and a restriction on binomial multiples}
+\label{sec:quadratic-frobenius-support}
+The irreducible pentanomial
+\[
+ g=X^{1229}+X^{922}+X^{461}+X^{256}+1
+\]
+admits a coordinate \(z\) whose fifth power is a root \(s\). Taking
+the fifth root is unique in \(\mathbb F_{2^{1229}}\), since
+\(\gcd(5,2^{1229}-1)=1\). Thus \(z\) and \(s\) generate the same
+subgroup. With \(y=z^{256}\), direct substitution gives
+\[
+       y^{18}z^2+(y^9+y^{24})z+1+y^5=0 .
+\]
+The root \(s\) also passes the four known prime tests and the test
+\(s^K\ne1\), with the same order bound as above. Among five-term
+degree-1229 supports, exactly 516 give three consecutive allowed
+residues modulo 256 after multiplying the exponents by five. Indeed
+the residues of the endpoints are 0 and 1, so the allowed residues
+must be \(\{-1,0,1\}\) or \(\{0,1,2\}\). Listing triples of interior
+exponents in their union of eligible supports gives 516 distinct
+supports. Exactly two are irreducible, \(g\) and its reciprocal.
+
+\begin{theorem}\label{thm:binomial-two-residues}
+Let \(F\in\F[X]\) have constant term one, odd degree and odd weight
+\(w\). Let \(q\ge4\) be a power of two with \(q>w\).
+If \((1+X^m)F\), \(m>0\), is supported in two residue classes of
+opposite parity modulo \(q\), then \(q\mid m\) and \(F\) is already
+supported in those classes.
+\end{theorem}
+\begin{proof}
+Partition the support of \(F\) into maximal chains with step \(m\).
+A chain starting at \(j\) of length \(\ell\) contributes just \(j\)
+and \(j+\ell m\) to the product. These endpoints are distinct
+across chains. If \(m\) is even, both endpoints have the same
+parity and hence are congruent modulo \(q\). Thus \(q/\gcd(q,m)\)
+divides every chain length and their odd sum \(w\). It follows that
+\(q\mid m\), and every member of a chain has the residue of its start.
+
+If \(m\) is odd, it is invertible modulo \(q\). As \(1\le\ell\le w<q\),
+the endpoints are in different classes. Two chains running between
+the classes in opposite directions would satisfy \(q\mid\ell+\ell'\),
+where \(0<\ell+\ell'\le w\). Thus all chains start in the same
+class as the chain at zero. Their endpoints differ by an odd number,
+so their lengths are odd and their last exponents \(j+(\ell-1)m\)
+are even. The largest exponent of \(F\) would be even.
+\end{proof}
+The next odd weight permits a counterexample for every \(q\ge4\).
+Take \(m=1\) and \(F=1+X^q+\sum_{j=2q+1}^{3q-1}X^j\).
+It has weight \(q+1\), and its product has residues zero and one.
+
+For an irreducible \(f\) of degree \(n\equiv3,5\bmod 8\), apply
+the theorem to \(F=f(X^t)\) with \(t\) odd. If a binomial multiple
+were supported in two opposite-parity classes modulo \(q>w(f)\),
+then \(f(X^t)\) would occupy only two such classes modulo four.
+The constant and leading terms and the invertibility of \(t\) modulo
+four force the exponents of \(f\) into \(0,n\bmod4\). This contradicts
+Theorem~\ref{thm:two-residue-parity}. The same last argument applies
+directly to \(f(X^t)\) itself. An overall monomial shift only shifts
+the classes. Consequently degree two in \(z\) is minimal for the
+displayed kind of relation at \(q=256\), allowing direct substitution,
+a monomial shift and an optional binomial multiplier.
+
+The two searches and both changes of coordinate can be reproduced with
+\nolinkurl{scripts/check_sparse_root_models.py}. Lean certificates
+for the field identities and both partial orders are in
+\nolinkurl{GF2Sparse/SparseRootModels.lean}.
+
 \end{document}

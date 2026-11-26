@@ -58,10 +58,24 @@ private theorem reduced_ne_one {f r : ℕ} (hf : f ≠ 0) (hr : r ≠ 1)
   simpa only [map_add, map_one, map_zero] using
     congrArg (AdjoinRoot.of (decode f)) (show (1 : ZMod 2) + 1 = 0 by decide)
 
-private def nontrivialPower (n fuel : ℕ) (stages : List (ℕ × ℕ)) (js : List ℕ) (e : ℕ) : Bool :=
+def nontrivialPower (n fuel : ℕ) (stages : List (ℕ × ℕ)) (js : List ℕ) (e : ℕ) : Bool :=
   match powerBits n n fuel stages js (e.log2+1) e with
   | some v => v != 1 && v < 2^n
   | none => false
+
+/-- A reduced nonidentity residue certifies a proper-power test for any tap list. -/
+theorem nontrivialPower_sound {n fuel e f : ℕ} {stages : List (ℕ × ℕ)} {js : List ℕ}
+    (hb : checkBasis n stages = true) (hf : xorShifts js 1 = f) (hd : f.log2 = n)
+    (hn : 0 < n) (h : nontrivialPower n fuel stages js e = true) :
+    AdjoinRoot.root (decode f)^e ≠ 1 := by
+  have hf0 : f ≠ 0 := by rintro rfl; simp at hd; omega
+  unfold nontrivialPower at h
+  split at h
+  · rename_i v hv
+    rw [← powerBits_sound hb hf Nat.lt_log2_self hv]
+    simp only [Bool.and_eq_true, bne_iff_ne, decide_eq_true_eq] at h
+    exact reduced_ne_one hf0 h.1 (hd ▸ h.2) (hd ▸ hn)
+  · contradiction
 
 /-- The factor list includes multiplicities. Test each distinct prime once. -/
 def checkOrder (n u v : ℕ) (ps : List ℕ) : Bool :=
@@ -93,15 +107,7 @@ theorem primitive_product_of_checkOrder {n u v : ℕ} (hn : 0 < n) (ps : List �
   · rw [hdeg]
     intro p hq hdiv
     have hm := mem_list_primes_of_dvd_prod hq.prime (fun q h => (hprime q h).prime) (hp ▸ hdiv)
-    specialize hproper p (List.mem_eraseDups.2 hm)
-    unfold nontrivialPower at hproper
-    split at hproper
-    · rename_i x hx
-      have hh := powerBits_sound hb hf Nat.lt_log2_self hx
-      rw [← hh]
-      simp only [Bool.and_eq_true, bne_iff_ne, decide_eq_true_eq] at hproper
-      exact reduced_ne_one hf0 hproper.1 (hd ▸ hproper.2) (hd ▸ hn)
-    · contradiction
+    exact nontrivialPower_sound hb hf hd hn (hproper p (List.mem_eraseDups.2 hm))
 
 def productEntry (n u v : ℕ) (primes : List ProvenPrime)
     (hc : checkOrder n u v (primes.map Subtype.val) = true)
