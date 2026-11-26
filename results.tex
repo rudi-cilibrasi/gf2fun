@@ -13046,4 +13046,77 @@ reproduced by \nolinkurl{scripts/check_ore_trace_coordinate.py}
 and \nolinkurl{scripts/census_2047_trace_powers.cpp}.
 \end{proof}
 
+
+\section{Two norm-circle matrices for a degree-2047 trinomial}
+\label{sec:ore-circles}
+Let \(K=\mathbb F_{2^{2047}}\), \(f(T)=T^{2047}+T^{511}+1\),
+\(r=T\bmod f\), and \(H=\langle r\rangle\). Use \(M=2^{2047}-1=AB\)
+and the seven prime factors of \(A\) from Section~\ref{sec:ore2047}.
+The known prime-index powers imply \([K^\times:H]\mid B\).
+
+\begin{theorem}\label{thm:2047-circle-criterion}
+For \(q=512,1024\) the following construction gives two anchored integer
+matrices, of dimensions 14,602 and 52,488. If their determinants are
+units modulo \(B\), then \(r\) has order \(M\).
+\end{theorem}
+\begin{proof}
+Set \(m=2\log_2 q\), \(E=\mathbb F_{q^2}\), and work in the compositum
+\(KE\). Put \(t=r^{512}\), \(X(T)=T^4+T\), and take \(Y(T)=T\)
+for \(q=512\) or \(Y(T)=T^2\) for \(q=1024\).
+The identity \(r^{2048}=r^{512}+r\) gives \(X(t)=r\) and
+\(Y(t)=r^q\) in both cases. Write \(\bar b=b^q\) and let \(P_b\)
+be the binary minimal polynomial of \(b\in E\).
+For \(b\in E,d\in\mathbb F_q\) and \(c=b\bar b+d\ne0\), the circle
+\(C=\{\gamma:(\gamma+b)(\bar\gamma+\bar b)=c\}\)
+gives a monic polynomial identity
+\[
+  \prod_{\gamma\in C}(Z+\gamma)=(Z+b)(Z^q+\bar b)+c.
+\]
+Take the residual polynomial \(G=(X+b)(Y+\bar b)+c\).
+If \(G\) splits into distinct linear factors in \(E[T]\), evaluation at
+\(t\) and the norm from \(KE\) to \(K\) give
+\[
+ \prod_{\gamma\in C}P_\gamma(r)^{m/\deg P_\gamma}
+   =\prod_{G(\delta)=0}P_\delta(r)^{512m/\deg P_\delta}.
+\]
+Indeed \(\gcd(2047,m)=1\), so the norm visits every binary conjugate
+of a constant with equal multiplicity, and
+\(P_\delta(t)=P_\delta(r)^{512}\).
+
+Enumerate \(b\) up to binary Frobenius and every \(d\) in the subfield.
+There are 67,314 splitting circles for \(q=512\) and 83,168 for
+\(q=1024\). They can be recovered by enumerating root incidences.
+For a putative root \(z\ne0\), set \(x=X(z),y=Y(z)\).
+The condition \(d=xy+by+\bar b x\in\mathbb F_q\) is equivalent to
+\(b(y+\bar x)=xy+u\) for some \(u\in\mathbb F_q\).
+The denominator is nonzero: its vanishing would imply
+\(z^{2048}+z^{512}+z=0\), whereas \(f\) has degree 2047 and is
+irreducible. The root \(z=0\) occurs exactly at \(d=0\).
+Convert each circle to its signed exponent row. Divide each row by
+the positive gcd of its coefficients, which is checked to be a unit
+modulo \(B\). Order the distinct normalized rows by SHA-256 of their
+packed entries. Retain the first \(N-1\), where \(N\) is the factor-base
+size, and append a unit row at the column of \(T\).
+The generator and row selection are in
+\nolinkurl{scripts/gen_2047_ore_circles.cpp} and
+\nolinkurl{scripts/check_2047_ore_circles.py}.
+
+In \(K^\times/H\) the values of the factor-base polynomials satisfy
+these homogeneous equations, including the anchor since \(r\in H\).
+The group order divides \(B\), so invertibility modulo \(B\) makes
+every value trivial in the quotient. Combining the two bases gives
+the 67,087 irreducibles of degrees dividing 18 or 20, counting the
+three common polynomials once. Every prime \(p\mid B\) satisfies
+\(p\equiv1\pmod{4094}\) by Section~\ref{sec:ore2047}, and trial
+division excludes every candidate through \(10^6\).
+Apply Theorem~\ref{thm:factor-moments} with \(J=10^6,L=63\) and
+\(c_i=(i+1)(64-i)\) times \(5\) for even \(i\) and \(7/\sqrt2\)
+for odd \(i\). The exact score is
+\[
+ \frac{8528049275675000138708959}{3893285176287122423808}
+   >2045=2047-2,
+\]
+forcing \(H=K^\times\).
+\end{proof}
+
 \end{document}
