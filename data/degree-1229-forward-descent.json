@@ -20,6 +20,10 @@
       "lift_low_multipliers": {
         "product": 62852,
         "seroussi": 60146
+      },
+      "relative_lift_low_multipliers": {
+        "product": 283,
+        "seroussi": 1618
       }
     },
     {
@@ -42,6 +46,10 @@
       "lift_low_multipliers": {
         "product": 51888,
         "seroussi": 48843
+      },
+      "relative_lift_low_multipliers": {
+        "product": 1096,
+        "seroussi": 323
       }
     }
   ],

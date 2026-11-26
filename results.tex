@@ -8452,4 +8452,90 @@ known denominator. The data and verification are in
 \nolinkurl{data/degree-1229-forward-descent.json} and
 \nolinkurl{scripts/check_1229_forward_descent.py}.
 
+\section{Single norms for the sparse roots and for arbitrary targets}
+\label{sec:single-norm-lifts}
+Keep \(C,K,t\) from either degree-1229 model of the preceding section.
+Put \(Q=|C|\), \(j=[K:C]=m/d\), \(n=1229\), and let \(I\in C[T]\) be the
+monic minimal polynomial of \(t\). A monic irreducible \(G\in C[T]\)
+of degree \(B=j2^e\) splits into \(j\) conjugate irreducibles of degree
+\(2^e\) over \(K\). For any one of them \(U\),
+\[
+ G(t)=\operatorname{Norm}_{K(t)/C(t)}U(t).
+\]
+Indeed \(\operatorname{Gal}(K/C)\) acts transitively on the factors and
+extends to \(K(t)\) fixing \(t\). Thus a descent for one factor suffices
+to express \(G(t)\) by the norms of its descendants.
+
+For both specified sparse roots \(r\) there are explicit lifts of this
+form. Write \(V\) for the remainder of their binary power-basis
+representative modulo \(I\), and take
+\[
+ G= V+I\bigl(T^{B-n}+S(T)\bigr).
+\]
+The masks \(S\) below use only binary coefficients, while \(V,I,G\)
+have coefficients in \(C\).
+\[
+\begin{array}{r|r|r|r|r|r|r}
+d&j&B&S_{\rm product}&S_{\rm Seroussi}&\deg_K U&
+   \text{halving stages}\\\hline
+6&39&1248&283&1618&32&5\\
+9&22&1408&1096&323&64&6
+\end{array}
+\]
+The checker computes \(I\) by taking the monic gcd of \(M\) and the
+forward equation over \(C\) and checks its degree \(n\). It multiplies
+the \(d\) coefficient conjugates of \(G\). Their binary product is
+irreducible of degree \(dB\) and passes all three trap exclusions from
+Section~\ref{sec:forward-descent}. Consequently \(G\) is irreducible
+over \(C\) and every factor \(U\) in its norm is good. In particular,
+the first model gives each sparse root as a single norm of a good
+degree-32 polynomial value.
+
+\begin{theorem}
+Every nonzero \(a\in C(t)\) is the norm of a good monic irreducible
+polynomial value \(U(t)\) with \(\deg_K U=64\) in the \(d=6\) model,
+or \(\deg_K U=128\) in the \(d=9\) model. More precisely, for
+\(H=j\deg_K U\), at least \(Q^{H-n}/(2H)\) monic degree-\(H\)
+representatives of \(a\) give such a norm.
+\end{theorem}
+\begin{proof}
+Let \(\pi_a(H)\) count monic irreducibles of degree \(H\) in the residue
+class \(a\) modulo \(I\). Weight each prime power \(P^s\) of degree
+\(H\) by \(\deg P\). By character orthogonality the principal character
+contributes at least \((Q^H-n)/(Q^n-1)\), which is at least
+\(Q^{H-n}\) for the stated \(H\). For any nontrivial character the
+absolute value of the weighted sum is at most
+\((n-1)Q^{H/2}\) by the function-field Riemann hypothesis, using the
+logarithmic derivative as in Theorem~\ref{thm:factor-moments}.
+This estimate allows the inverse root 1 for even characters as well.
+Prime powers with \(s\ge2\) have total weight at most
+\(\sum_{i=1}^{\lfloor H/2\rfloor}Q^i\le2Q^{H/2}\). In particular
+\[
+ H\pi_a(H)\ \ge\ Q^{H-n}-(n+3)Q^{H/2}.
+\]
+
+For a root \(\alpha\) of a degree-\(H\) irreducible over \(C\), its
+degree over \(K\) is \(H/j\), and the intermediate field of index two
+in \(K(\alpha)\) is \(\mathbb F_{Q^{H/2}}\). The poles and the two
+Frobenius trap equations account for at most \(2\), \(q+2\), and
+\(qQ^{H/2}+2\) roots respectively. The degree-two rational function
+\(R\) takes values in that intermediate field at a further
+\(2Q^{H/2}\) points at most. These sets are stable under \(Q\)-power
+Frobenius, so a degree-\(H\) irreducible having a bad root accounts
+for \(H\) distinct roots in their union. Removing them gives the lower
+bound
+\[
+ Q^{H-n}-(n+3+2q+8)Q^{H/2}
+\]
+on \(H\) times the number of good representatives.
+The two values \(H=2496,2816\) give
+\(Q^{H/2-n}=2^{114},2^{1611}\), respectively. Both exceed
+\(2(n+3+2q+8)\). The norm identity above finishes the proof.
+\end{proof}
+Among all monic degree-\(H\) lifts of a given target, a uniform sample
+therefore succeeds with probability at least \(1/(2H)\). This applies
+in particular to every period target in the smaller binary field. The
+special lifts in the table save one degree-halving stage for the two
+known sparse roots.
+
 \end{document}

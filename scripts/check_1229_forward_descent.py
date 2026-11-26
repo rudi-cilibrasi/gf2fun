@@ -44,8 +44,9 @@ def check_model(record, periods, gp):
     h, rem = divmod(L, m)
     if n != 1229 or b not in (1, 2) or rem or h < 2 or h & (h-1) or L <= D:
         raise ArithmeticError("incorrect lift degree or parent polynomial")
-    # Doubling L gives a uniform good-lift bound for every nonzero residue.
-    if (1 << (L-D)) <= 2*(D+3+d*(2*q+8)):
+    # Over the small constant field the uniform degree is twice the witness degree.
+    relative_degree = L//d
+    if (1 << (d*(relative_degree-n))) <= 2*(n+3+2*q+8):
         raise ArithmeticError("insufficient margin in uniform lift estimate")
     modulus = record["constant_modulus"]
     body = f"""
@@ -59,24 +60,42 @@ u=t*0; v=p; bits=digits(2459,2);
 for(i=1,#bits,w=u*v+p;if(bits[i],u=w;v=v^2,v=w;u=u^2));
 check(u==0);
 independent(vv)=matdet(matrix(4,4,i,j,vv[j]^(2^({d}*(i-1)))))!=0;
+good(F)={{
+  check(poldegree(F)=={L} && polisirreducible(F));
+  my(y=ffgen(F,'ylift), ybar=y^(2^{L//2}), test);
+  check(y!=0 && y!=ybar);
+  check(independent([y^0,y,y^2,y^{b}*y^{q}]));
+  check(independent([y^0,y,y^2,y^{b}*ybar^{q}]));
+  test=if({b}==1,y*ybar,1/y+1/ybar); check(test^(2^{d})!=test);
+}};
+binarynorm(P)={{
+  my(g=P, acc=P, co);
+  for(i=2,{d},g=Pol(apply(a->a^2,Vec(g)));acc*=g);
+  co=Vec(acc); check(sum(i=1,#co,co[i]!=0 && co[i]!=1)==0);
+  Mod(1,2)*Pol(apply(a->a!=0,co))
+}};
+zz=ffgen(cc,'cbase); one=zz^0;
+parent=one*x^{q+b}+value({record['a']},zz)*x^2+value({record['b']},zz)*x+value({record['c']},zz);
+basepol=gcd(f*one,parent); basepol/=pollead(basepol); check(poldegree(basepol)=={n});
 """
     for family, taps in TAPS.items():
         root = record["sparse_root_hex"][family]
         low = record["lift_low_multipliers"][family]
+        relative_low = record["relative_lift_low_multipliers"][family]
         i, j, k = taps
         body += f"""
 rep=binpol({root}); r=subst(rep,x,t); check(r==value({periods[family]},p));
 check(r^{n}+r^{k}+r^{j}+r^{i}+1==0 && r^(2^{n})==r);
 candidate=rep+f*(x^{L-D}+binpol({low}));
-check(poldegree(candidate)=={L} && candidate%f==rep && polisirreducible(candidate));
-y=ffgen(candidate,'v); ybar=y^(2^{L//2}); check(y!=0 && y!=ybar);
-check(independent([y^0,y,y^2,y^{b}*y^{q}]));
-check(independent([y^0,y,y^2,y^{b}*ybar^{q}]));
-test=if({b}==1,y*ybar,1/y+1/ybar); check(test^(2^{d})!=test);
+check(candidate%f==rep); good(candidate);
+relative=(rep*one)%basepol;
+g=relative+basepol*(x^{relative_degree-n}+binpol({relative_low})*one);
+check(poldegree(g)=={relative_degree} && g%basepol==relative); good(binarynorm(g));
 """
     pari(gp, body)
-    print(f"At degree {n} with q={q}, both lifts have {m} good degree-{h} factors "
-          f"in {d} conjugacy orbits each.", flush=True)
+    print(f"At degree {n} with q={q}, each sparse root has two verified lifts. "
+          f"The binary lift has {d} orbits of good degree-{h} factors "
+          f"and the relative lift has one orbit of size {m//d}.", flush=True)
 
 
 def coefficient_norm(record):
