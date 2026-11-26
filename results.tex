@@ -10968,7 +10968,13 @@ is the minimal polynomial of a cube and has the same root order.
 The file \nolinkurl{GF2Sparse/CubicImage.lean} proves the divisibility
 \(P\mid C(P)(X^3)\), equality of the degrees for arbitrary components,
 and the equivalence of primitivity of \(C(P)\) with primitivity of
-\(P\) and odd degree for positive degree.
+\(P\) and odd degree for positive degree. The operator
+\nolinkurl{CubicImage.cubed} extracts the three residue components from any
+binary polynomial. More generally, if \(P\mid F(X^m)\) with equal degrees
+\(n\) and \(\gcd(m,2^n-1)=1\), the file proves
+\(F\) irreducible exactly when \(P\) is irreducible. For \(m>0\) it
+also proves preservation of the exact multiplicative order of each
+root of an irreducible \(P\).
 
 \begin{theorem}\label{thm:cubed-supports}
 Let \(P\) have five terms, constant coefficient one and exponent gcd one.
@@ -11127,13 +11133,16 @@ including reciprocals:
 The checker \nolinkurl{scripts/check_cubed_parity.py} independently
 tests the 239 reciprocal representatives for reducibility and verifies
 the weight-seven example by modular composition and irreducibility.
+The Lean kernel also verifies irreducibility for the explicit five-
+and seven-term polynomials in \nolinkurl{GF2Sparse/CubedExamples.lean}.
 Its \texttt{--census} option reads the \texttt{--list} output of
 \nolinkurl{scripts/census_1229_pentanomials.cpp}.
 
 In degree 27, \(X^{27}+X^{17}+X^{10}+X^7+1\) and its cube image
 \(X^{27}+X^{10}+X^9+X^7+1\) are both primitive, although all 26
 degree-27 trinomials are reducible. The checker verifies both orders
-using \(2^{27}-1=7\cdot73\cdot262657\). The source belongs to
+using \(2^{27}-1=7\cdot73\cdot262657\). The same Lean file certifies both
+primitive polynomials and their cubic relation. The source belongs to
 template 4, with \(t=7,\ u=10,\ v=-7\) in the translated support.
 
 

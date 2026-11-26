@@ -1,4 +1,4 @@
-import GF2Sparse.Progressions
+import GF2Sparse.ProgressionTriples
 
 /-! The polynomial of cubed roots from the three residue classes of exponents. -/
 
@@ -119,4 +119,100 @@ theorem primitive_image_iff (a b c : BinaryPoly) (hn : 0 < (source a b c).natDeg
     (source_dvd_expand_image a b c)
   rwa [hd, mersenne_coprime_three_iff_odd] at h
 
+/-- Recover the input polynomial by separating exponents modulo three. -/
+theorem source_contract (p : BinaryPoly) :
+    source (contract 3 p) (contract 3 p.divX) (contract 3 p.divX.divX) = p := by
+  have select (f : BinaryPoly) (k : ℕ) :
+      (expand (ZMod 2) 3 (contract 3 f)).coeff k = if 3 ∣ k then f.coeff k else 0 := by
+    rw [coeff_expand (by decide : 0 < 3)]
+    split_ifs with h
+    · rw [coeff_contract (by decide : 3 ≠ 0), Nat.div_mul_cancel h]
+    · rfl
+  ext k
+  rcases k with _ | k
+  · simp [source, select]
+  rcases k with _ | k
+  · simp [source, coeff_X_pow_mul', select, coeff_divX]
+  simp only [source, coeff_add, coeff_X_mul, coeff_X_pow_mul, select,
+    coeff_divX]
+  split_ifs <;> simp_all <;> omega
+
+/-- The cube image of an arbitrary binary polynomial. -/
+noncomputable def cubed (p : BinaryPoly) : BinaryPoly :=
+  image (contract 3 p) (contract 3 p.divX) (contract 3 p.divX.divX)
+
+theorem natDegree_cubed (p : BinaryPoly) : (cubed p).natDegree = p.natDegree := by
+  rw [cubed, degree_image, source_contract]
+
+theorem dvd_expand_cubed (p : BinaryPoly) : p ∣ expand (ZMod 2) 3 (cubed p) := by
+  simpa only [cubed, source_contract] using
+    source_dvd_expand_image (contract 3 p) (contract 3 p.divX) (contract 3 p.divX.divX)
+
+theorem primitive_cubed_iff {p : BinaryPoly} (hn : 0 < p.natDegree) :
+    Primitive (cubed p) ↔ Primitive p ∧ Odd p.natDegree := by
+  rw [← source_contract p] at hn
+  simpa only [cubed, source_contract] using primitive_image_iff _ _ _ hn
+
 end GF2Sparse.CubicImage
+
+namespace GF2Sparse
+open Polynomial
+
+/-- A power coprime to the size of the multiplicative group preserves each root order. -/
+theorem orderOf_pow_root_of_coprime {K : Type*} [Field K] [Algebra (ZMod 2) K]
+    {p : BinaryPoly} (hp : Irreducible p) {z : K} (hz : aeval z p = 0) {m : ℕ}
+    (hm : 0 < m) (hc : (2^p.natDegree-1).Coprime m) : orderOf (z^m) = orderOf z := by
+  by_cases hzero : z = 0
+  · subst z
+    simp [zero_pow hm.ne']
+  have hpow : z^(2^p.natDegree-1) = 1 := by
+    apply mul_right_cancel₀ hzero
+    rw [one_mul, ← pow_succ, Nat.sub_add_cancel (Nat.two_pow_pos _)]
+    exact (degree_dvd_iff_frobenius hp hz _).1 dvd_rfl
+  exact (hc.of_dvd_left (orderOf_dvd_of_pow_eq_one hpow)).orderOf_pow
+
+/-- A coprime power permutes Frobenius orbits in a binary extension. -/
+theorem irreducible_iff_of_coprime_sampling {p f : BinaryPoly} {m : ℕ}
+    (hd : p.natDegree = f.natDegree) (hpf : p ∣ expand (ZMod 2) m f)
+    (hc : (2^p.natDegree-1).Coprime m) : Irreducible f ↔ Irreducible p := by
+  refine ⟨fun hf => irreducible_of_dvd_expand_same_degree hf hd hpf, ?_⟩
+  intro hp
+  have hf : f ≠ 0 := by
+    intro he
+    have := hp.natDegree_pos
+    simp [he] at hd
+    omega
+  letI : Fact (Irreducible p) := ⟨hp⟩
+  let e := (AdjoinRoot.powerBasisAux hp.ne_zero).equivFun.toEquiv
+  letI : Fintype (AdjoinRoot p) := Fintype.ofEquiv _ e.symm
+  let z := AdjoinRoot.root p
+  have hz : aeval z p = 0 := (AdjoinRoot.aeval_eq _).trans AdjoinRoot.mk_self
+  have hzf : aeval (z^m) f = 0 := by
+    obtain ⟨g, hg⟩ := hpf
+    rw [← expand_aeval, hg, map_mul, hz, zero_mul]
+  let q := minpoly (ZMod 2) (z^m)
+  have hi : IsIntegral (ZMod 2) (z^m) := ⟨f, binary_monic hf, hzf⟩
+  have hq : Irreducible q := minpoly.irreducible hi
+  have hfixed := (degree_dvd_iff_frobenius hq (minpoly.aeval (ZMod 2) (z^m)) q.natDegree).1 dvd_rfl
+  have hzfixed : z^(2^q.natDegree) = z := by
+    by_cases hzero : z = 0
+    · simp [hzero]
+    let t := z^(2^q.natDegree)/z
+    have ht : t ≠ 0 := div_ne_zero (pow_ne_zero _ hzero) hzero
+    have hcard := FiniteField.pow_card_sub_one_eq_one t ht
+    rw [card_adjoinRoot hp.ne_zero] at hcard
+    apply (div_eq_one_iff_eq hzero).1
+    apply (pow_eq_one_iff_of_coprime hc).1
+    refine ⟨hcard, ?_⟩
+    rw [div_pow, pow_right_comm, hfixed, div_self (pow_ne_zero _ hzero)]
+  have hle := Nat.le_of_dvd hq.natDegree_pos ((degree_dvd_iff_frobenius hp hz _).2 hzfixed)
+  have heq := eq_of_monic_of_dvd_of_natDegree_le (binary_monic hq.ne_zero) (binary_monic hf)
+    (minpoly.dvd _ _ hzf) (hd ▸ hle)
+  exact heq ▸ hq
+
+theorem CubicImage.irreducible_cubed_iff {p : BinaryPoly} (hn : Odd p.natDegree) :
+    Irreducible (CubicImage.cubed p) ↔ Irreducible p :=
+  irreducible_iff_of_coprime_sampling (CubicImage.natDegree_cubed p).symm
+    (CubicImage.dvd_expand_cubed p) ((mersenne_coprime_three_iff_odd _).2 hn)
+
+end GF2Sparse
