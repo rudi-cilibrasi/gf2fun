@@ -4,13 +4,14 @@ import argparse
 import csv
 import sys
 from collections import defaultdict
-from functools import lru_cache
-from math import comb, gcd
+from concurrent.futures import ProcessPoolExecutor
+from functools import lru_cache, partial
+from math import comb, gcd, prod
 
 from sympy import factorint
 
 from check_factor_base import polynomial
-from make_witnesses import exact_quotient, mask_product, primitive
+from make_witnesses import exact_quotient, mask_product, primitive, remainder
 from period_coordinate import mask_of
 
 
@@ -19,8 +20,8 @@ def degree_bounds(weight):
     return 2 * edges**3 // 27, comb(edges, 4)
 
 
-def divisors(factors, limit, index=0, value=1):
-    if index == len(factors):
+def divisors(factors, limit, index=0, value=1, stop_degree=None):
+    if index == len(factors) or (stop_degree is not None and value.bit_length()-1 >= stop_degree):
         yield value
         return
     p, multiplicity = factors[index]
@@ -29,7 +30,42 @@ def divisors(factors, limit, index=0, value=1):
     for power in range(min(multiplicity, capacity) + 1):
         if power:
             value = mask_product(value, p)
-        yield from divisors(factors, limit, index + 1, value)
+        yield from divisors(factors, limit, index + 1, value, stop_degree)
+
+
+@lru_cache(maxsize=512)
+def sparse_multiples(divisor, limit):
+    """Find 1 + X^a + X^b + X^c + X^d divisible by divisor, with a < b < c < d."""
+    powers = [1]
+    for _ in range(limit):
+        powers.append(remainder(powers[-1] << 1, divisor))
+    pairs = defaultdict(list)
+    multiples = []
+    for c in range(3, limit):
+        b = c-1
+        for a in range(1, b):
+            pairs[powers[a] ^ powers[b]].append((1 << a) | (1 << b))
+        for d in range(c+1, limit+1):
+            high = (1 << c) | (1 << d) | 1
+            for low in pairs.get(1 ^ powers[c] ^ powers[d], ()):
+                multiples.append(high | low)
+    return tuple(multiples)
+
+
+def five_term_divisors(factors, parent, limit):
+    if prod(e+1 for _, e in factors) <= 32768:
+        yield from (f for f in divisors(factors, limit) if f.bit_count() == 5)
+        return
+    # A divisor with degree at least 14 contains one of the prefix products.
+    # Complete its four positive exponents by matching two pairs of residues.
+    candidates = set()
+    for prefix in divisors(factors, limit, stop_degree=14):
+        if prefix.bit_length()-1 < 14:
+            if prefix.bit_count() == 5:
+                candidates.add(prefix)
+        else:
+            candidates.update(sparse_multiples(prefix, limit))
+    yield from (f for f in candidates if remainder(parent, f) == 0)
 
 
 def reverse(mask):
@@ -40,26 +76,40 @@ def normalized(mask):
     return gcd(*(i for i in range(1, mask.bit_length()) if mask >> i & 1)) == 1
 
 
-def find_products(max_weight):
+def products_for_degree(degree, max_weight):
+    nmax, _ = degree_bounds(max_weight)
+    rows = []
+    for tap in range(1, degree // 2 + 1):
+        parent = (1 << degree) | (1 << tap) | 1
+        factors = [(mask_of(p), e) for p, e in polynomial(parent).factor()[1]]
+        for f in five_term_divisors(factors, parent, nmax):
+            if not normalized(f):
+                continue
+            g = exact_quotient(parent, f)
+            weight = g.bit_count()
+            if weight > max_weight:
+                continue
+            n = f.bit_length() - 1
+            nb, mb = degree_bounds(weight)
+            if n > nb or degree - n > mb or mask_product(f, g) != parent:
+                raise ArithmeticError("product or degree bound failed")
+            rows.append((weight, degree, tap, f, g))
+            if 2*tap != degree:
+                rows.append((weight, degree, degree - tap, reverse(f), reverse(g)))
+    return rows
+
+
+def find_products(max_weight, jobs=1):
     nmax, mmax = degree_bounds(max_weight)
-    for degree in range(4, nmax + mmax + 1):
-        for tap in range(1, degree // 2 + 1):
-            parent = (1 << degree) | (1 << tap) | 1
-            factors = [(mask_of(p), e) for p, e in polynomial(parent).factor()[1]]
-            for f in divisors(factors, nmax):
-                if f.bit_count() != 5 or not normalized(f):
-                    continue
-                g = exact_quotient(parent, f)
-                weight = g.bit_count()
-                if weight > max_weight:
-                    continue
-                n = f.bit_length() - 1
-                nb, mb = degree_bounds(weight)
-                if n > nb or degree - n > mb or mask_product(f, g) != parent:
-                    raise ArithmeticError("product or degree bound failed")
-                yield weight, degree, tap, f, g
-                if 2*tap != degree:
-                    yield weight, degree, degree - tap, reverse(f), reverse(g)
+    degrees = range(4, nmax + mmax + 1)
+    search = partial(products_for_degree, max_weight=max_weight)
+    if jobs == 1:
+        for degree in degrees:
+            yield from search(degree)
+    else:
+        with ProcessPoolExecutor(max_workers=jobs) as pool:
+            for rows in pool.map(search, degrees):
+                yield from rows
 
 
 @lru_cache(maxsize=None)
@@ -79,9 +129,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--through", type=int, choices=(3, 5, 7, 9), default=7)
     parser.add_argument("--list", action="store_true", help="print both supports for every product")
+    parser.add_argument("--jobs", type=int, default=1, help="parallel parent degrees")
     args = parser.parse_args()
+    if args.jobs < 1:
+        parser.error("--jobs must be positive")
     results = defaultdict(list)
-    for row in find_products(args.through):
+    for row in find_products(args.through, args.jobs):
         results[row[0]].append(row)
     expected = {3: (17, 15, 7, 8, 7), 5: (36, 32, 11, 10, 8),
                 7: (67, 57, 13, 30, 13), 9: (77, 69, 18, 26, 17)}
