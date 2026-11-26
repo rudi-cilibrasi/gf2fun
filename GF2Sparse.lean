@@ -1,4 +1,5 @@
 import GF2Sparse.BalancedSieve
+import GF2Sparse.BinomialTail
 import GF2Sparse.AdditiveOrbit
 import GF2Sparse.ConjugateProducts
 import GF2Sparse.Coverage

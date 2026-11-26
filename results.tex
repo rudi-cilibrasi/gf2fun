@@ -10834,4 +10834,67 @@ a checker for both the orbit computation and this explicit identity
 are in \nolinkurl{data/degree-1229-direction-logs.csv} and
 \nolinkurl{scripts/check_1229_direction_logs.py}.
 
+\section{Exact primitivity and irreducibility tests for binomial tails}
+\label{sec:binomial-tail}
+Let \(0<k<n\), write \(M=2^n-1\), and put
+\[
+ F(X)=X^n+(X+1)^k,\qquad G(T)=T^n+T^k+1 .
+\]
+Then
+\begin{align*}
+ F\text{ is irreducible}
+    &\iff G\text{ is irreducible and }\gcd(n,k)=1,\\
+ F\text{ is primitive}
+    &\iff G\text{ is primitive and }\gcd(k,M)=1,\\
+ F(X+1)\text{ is primitive}
+    &\iff G\text{ is primitive and }\gcd(n,M)=1 .
+\end{align*}
+If \(k\) has exactly two one-bits, \((X+1)^k\) is a product of
+two distinct binomials \(X^{2^a}+1\) and \(X^{2^b}+1\).
+Hence \(F\) has precisely five terms. More generally its weight
+is \(1+2^{\mathrm{wt}_2(k)}\), by multiplying one binomial for
+each one-bit. In particular, Swan's exclusion of irreducible
+trinomials in degrees divisible by eight excludes every \(F\) above
+in those degrees. See
+\href{https://doi.org/10.2140/pjm.1962.12.1099}{Swan, \emph{Factorization of polynomials over finite fields}}.
+
+To prove the first equivalence, if \(d=\gcd(n,k)>1\) then
+\(X^{n/d}+(X+1)^{k/d}\) is a proper factor of positive degree.
+For coprime exponents the map \(t\mapsto t^k\) is a bijection
+from the roots of \(G\) to the roots of \(F\) in every binary
+extension field. Indeed, \(t^n=1+t^k\).
+In the other direction, choose \(a,b\in\mathbb Z\) with \(ak+bn=1\).
+For a root \(r\) of \(F\), neither \(r\) nor \(r+1\) vanishes,
+and \(t=r^a(r+1)^b\) satisfies \(t^k=r\), \(t^n=r+1\).
+This also proves uniqueness. The maps commute with Frobenius.
+Both polynomials have simple roots. Differentiating and using the
+root equation rules out a repeated root when both exponents are odd,
+and if exactly one is odd its derivative has no common root.
+The irreducible factor degrees therefore agree with multiplicity.
+
+For the order tests the identities \(G(T)\mid F(T^k)\) and
+\(G(T)\mid F(T^n+1)\) suffice without any coprimality assumption.
+They follow by subtracting like powers using \(T^n=T^k+1\) modulo \(G\).
+The two images of \(t\) are \(t^k\) and \(t^n=1+t^k\).
+The equal-degree power-substitution criterion then gives the two
+primitivity equivalences. For every primitive root \(r\) of \(F\),
+\[
+                   \ord(1+r)=\frac{M}{\gcd(n,M)}.
+\]
+
+The product-witness CSVs contain 38 supports with both taps powers of
+two. They give 38 primitive trinomials by the second equivalence.
+The translates of the pentanomial roots are primitive in 34 cases.
+Their indices in the other four degrees \(6,63,726,2574\) are
+\(3,7,3,9\), respectively. For example,
+\[
+ T^{2574}+T^5+1,\qquad X^{2574}+X^5+X^4+X+1
+\]
+are both primitive. FLINT independently checks the full orders in
+these two fields and the translate's exact order \((2^{2574}-1)/9\).
+The general criteria, the root bijection, and the order formula are
+proved in \nolinkurl{GF2Sparse/BinomialTail.lean}. The script
+\nolinkurl{scripts/check_binomial_tails.py} lists the 38 witnesses
+and replays the three degree-2574 order checks.
+
 \end{document}
