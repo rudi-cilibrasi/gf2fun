@@ -6,6 +6,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **14,602 certified logarithms at a root of the degree-2047 trinomial.** Every binary irreducible whose degree divides 18 evaluates to an element of the root subgroup. Direct powering verifies each projected logarithm. Reduced fractions from this one table already prove the root order exceeds $2^{1083}$. [Logarithms](data/degree-2047-q512-projected.bin.gz) · [Independent CPU verifier](scripts/verify_2047_ore_logs.cpp)
 - **Two explicit rank checks suffice for a degree-2047 primitive trinomial.** In the field of $X^{2047}+X^{511}+1$, 67,314 and 83,168 splitting norm circles give matrices of sizes 14,602 and 52,488. If both determinants are units modulo the remaining cofactor, the character estimate proves the root primitive. [Proof](results.pdf#page=170) · [Circle generator](scripts/gen_2047_ore_circles.cpp) · [Matrix and character-bound checker](scripts/check_2047_ore_circles.py)
 - **A uniform order bound for sparse Ore lifts.** If a primitive binary seed has degree $s\ge40$, every root of its lift of degree $n=2^s-1$ has order greater than $2^{5\sqrt{n+1}}$. A three- or five-term seed gives a lift with the same number of terms. [Proof](results.pdf#page=168) · [Integer certificate](scripts/check_ore_uniform_order.py)
 - **Explicit logarithms at roots of irreducible Ore lifts.** Logarithms in the seed field determine products of binary irreducibles with prescribed Frobenius annihilator. For each of two degree-2047 trinomials, Lean and direct powering verify 47 identities through factor degree 31, including 38 individual irreducibles. Counting reduced fractions through degree 1023 gives an order bound above $2^{218}$ for every primitive degree-11 seed. [Proof](results.pdf#page=167) · [Lean certificate](GF2Sparse/OreClassLogs2047.lean) · [Reproduce the logarithms and bounds](scripts/check_ore_logarithms.py)
@@ -656,6 +657,14 @@ c++ -O3 -fopenmp scripts/census_2047_trace_powers.cpp -lntl -lgmp -o /tmp/gf2-or
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_ore_trace_coordinate.py --census /tmp/gf2-ore-trace --jobs 4
 ~~~
 
+The degree-2047 logarithm archive contains binary polynomial masks and exponents. Each identity can be checked directly with NTL on a CPU. The character and reduced-fraction bounds use exact rational and integer arithmetic.
+
+~~~sh
+c++ -O3 -std=c++17 -fopenmp scripts/verify_2047_ore_logs.cpp -lntl -lgmp -o /tmp/gf2-ore-logs
+gzip -dc data/degree-2047-q512-projected.bin.gz | /tmp/gf2-ore-logs 4
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_2047_ore_circles.py --fraction-bound
+~~~
+
 To reconstruct the two matrices for the degree-2047 trinomial, run
 
 ~~~sh
@@ -664,6 +673,16 @@ c++ -O3 -std=c++17 scripts/gen_2047_ore_circles.cpp -o .lake/ore-2047/circles
 for q in 512 1024; do
   .lake/ore-2047/circles "$q" ".lake/ore-2047/q$q.bin"
   uv run --no-project --with numpy --with sympy --with python-flint==0.9.0 python scripts/check_2047_ore_circles.py --q "$q" --relations ".lake/ore-2047/q$q.bin"
+done
+~~~
+
+After reconstructing a matrix, the following regenerates its projected logarithms. The two matrix-vector phases use a CUDA 12 GPU and resume from checkpoints. The polynomial phase uses FLINT on the CPU.
+
+~~~sh
+uv venv .lake/ore-2047/venv
+uv pip install --python .lake/ore-2047/venv/bin/python numpy sympy python-flint==0.9.0 cupy-cuda12x nvidia-cuda-nvrtc-cu12 nvidia-cuda-runtime-cu12
+for phase in moments polynomial recover; do
+  .lake/ore-2047/venv/bin/python scripts/solve_2047_ore_circles.py "$phase" 512
 done
 ~~~
 

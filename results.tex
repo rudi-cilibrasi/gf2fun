@@ -13119,4 +13119,32 @@ for odd \(i\). The exact score is
 forcing \(H=K^\times\).
 \end{proof}
 
+
+\begin{theorem}\label{thm:2047-first-table}
+For every binary irreducible \(P\) whose degree divides 18, \(P(r)\)
+lies in \(H\). Consequently \(|H|>2^{1083}\). The same bound holds
+at a root of \(T^{2047}+T^3+1\).
+\end{theorem}
+\begin{proof}
+For the smaller matrix, a scalar Wiedemann sequence of length 29,204
+gives a recurrence of degree 14,602 with unit constant term modulo
+\(B\), using the polynomial identities of Section~\ref{sec:quaternary-rank}.
+Horner evaluation of that recurrence recovers the coordinates at
+the anchor. The resulting certificate gives a separate proof which
+requires only exponentiation. For each of the 14,602 distinct masks
+in \nolinkurl{data/degree-2047-q512-projected.bin.gz}, it verifies
+\[
+                        P(r)^A=(r^A)^{e_P},\qquad 0\le e_P<B.
+\]
+Since \([K^\times:H]\mid B\) and \(\gcd(A,B)=1\), this implies
+\(P(r)\in H\). Direct NTL powering and irreducibility tests verify
+every row and the completeness of the list in
+\nolinkurl{scripts/verify_2047_ore_logs.cpp}.
+Counting reduced fractions with numerator and denominator degrees at
+most 1023 gives an integer strictly between \(2^{1083}\) and
+\(2^{1084}\) by the fraction lemma in Section~\ref{sec:factor-base}.
+The reciprocal-seed exponent is a unit modulo \(M\), so the two
+trinomial roots have equal orders.
+\end{proof}
+
 \end{document}

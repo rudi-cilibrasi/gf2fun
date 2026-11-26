@@ -10,7 +10,7 @@ from pathlib import Path
 
 from flint import fmpz
 from check_cubed_parity import BINARY, X
-from check_factor_base import irreducible_counts, moment_bound
+from check_factor_base import irreducible_counts, moment_bound, ratio_bound
 from check_ore_2047 import KNOWN_PRIMES
 
 
@@ -112,10 +112,18 @@ def main():
     parser.add_argument("--q", choices=FIELD_DEGREES, type=int)
     parser.add_argument("--relations", type=Path, help="binary output of gen_2047_ore_circles.cpp")
     parser.add_argument("--work-dir", type=Path, default=Path(".lake/ore-2047"))
+    parser.add_argument("--fraction-bound", action="store_true",
+                        help="compute the order bound from just the degree-18 field")
     args = parser.parse_args()
     if (args.q is None) != (args.relations is None):
         parser.error("--q and --relations are used together")
     check_bound()
+    if args.fraction_bound:
+        counts = {d: n for d, n in irreducible_counts(18).items() if 18 % d == 0}
+        lower = ratio_bound(DEGREE, counts)
+        if not (1 << 1083) < lower < (1 << 1084):
+            raise ArithmeticError("unexpected degree-18 reduced-fraction count")
+        print("The degree-18 factor base alone gives root order greater than 2^1083.")
     if args.q:
         pack(args.q, args.relations, args.work_dir)
 
