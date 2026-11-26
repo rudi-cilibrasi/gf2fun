@@ -11025,4 +11025,111 @@ exponents. Their difference is \(i u+j v=n\) for fixed small integers
 support. This proves the stated enumeration bound.
 \end{proof}
 
+
+\begin{theorem}\label{thm:cubed-parity}
+Suppose \(n>17\), \(\gcd(n,6)=1\) and \(n\equiv3,5\pmod8\). If a
+degree-\(n\) irreducible pentanomial has exponent gcd one and its cubed
+roots have minimal polynomial of weight at most five, then, up to
+reciprocation, it is one of just two possibilities:
+\[
+\begin{array}{ll}
+ X^n+(1+X^{(n-2)/3})^3, & n\equiv2\pmod9,\\
+ X^n+X^4+X^3+X+1, & n\equiv5\pmod{24}.
+\end{array}
+\]
+In particular, for \(n>17\) with \(n\equiv13,19\pmod{24}\), no
+primitive polynomial of weight at most five has a cube image of
+weight at most five.
+\end{theorem}
+\begin{proof}
+In template 3 of Theorem~\ref{thm:cubed-supports}, the extremes lie
+among \(0,2u,2v\), giving even degree. In template 4 we may take
+\(u>0\) by reversing all exponents. For \(0\le v\le u\) the span is
+\(2u\). For \(v>u\) or \(v<0\), respectively, it is \(u+v\) or
+\(2u-v\), both divisible by three. In templates 1 and 2 the span of
+the four collinear terms is respectively \(3|u|\) and \(4|u|\).
+The isolated term must therefore be an extreme. After a translation
+and possible reciprocation the first two families are
+\[
+ A_{n,u}=X^n+(1+X^u)^3,\quad 3\mid u,\qquad
+ B_{n,u}=X^n+(1+X^u)(1+X^{3u}),\quad n\equiv-u\pmod3.
+\]
+Here \(u>0,\ \gcd(n,u)=1\), and the tails have degree below \(n\).
+
+Irreducibility of \(A_{n,u}\) forces irreducibility of
+\(X^n+X^{3u}+1\) by the same-degree sampling argument.
+Choose its orientation with even interior exponent \(k\). Since
+\(\gcd(n,k)=1\), Swan's trinomial criterion excludes every \(k\ne2\)
+in the indicated classes modulo eight since an even divisor of \(2n\)
+coprime to \(n\) must be two. Thus \(n-3u=2\), giving \(n\equiv2\bmod9\).
+\href{https://msp.org/pjm/1962/12-3/pjm-v12-n3-p27-p.pdf}{R.~G. Swan,
+\emph{Factorization of polynomials over finite fields}, Corollary~5}.
+
+For \(B_{n,u}\) we obtain the following parity formula in
+\emph{every} odd degree coprime to three under these tap conditions.
+The polynomial is squarefree. For \(u>1\) its number of irreducible
+factors is odd exactly for \(n\equiv1,7\bmod8\), and for \(u=1\)
+it is odd exactly for \(n\equiv1\bmod4\).
+Indeed, if \(u\) is even, the first two divisibility indicators in
+Theorem~\ref{thm:all-even-taps} cancel. The last two require
+\(3\mid n\) or \(3\mid n-u\), both excluded. For odd \(u\), apply
+Theorem~\ref{thm:odd-tap-parity} with \(h=2u,\ d=u,\ a=(n-u)/2\).
+Modulo \(Y^{2u}+1\), the inverse of \(P=Y^a+1+Y^u\) is
+\[
+ H=Y^{-a}+Y^{-2a}(1+Y^u),
+\]
+since \((1+Y^u)^2=0\). This proves squarefreeness. The parity
+correction is the constant coefficient modulo \(Y^{4u}+1\) of
+\[
+ Y^w\big(Y^u+(a\bmod2)Y^a\big)(1+Y^u+Y^a)
+ \big(Y^{-2a}+Y^{-4a}(1+Y^{2u})\big),
+\]
+where \(w\) is the unique one of \(u,3u\) with \(4\mid n+w\).
+For \(u>1\) odd we have \(u\ge5\) and \(\gcd(u,a)=1\).
+If a term contributes, it must first have exponent zero modulo \(u\).
+Writing \(j\in\{0,1,2\}\) for the number of \(Y^a\) terms selected
+from the two middle factors, this requires \(u\mid j-2\) or
+\(u\mid j-4\). Only \(j=2\) with \(Y^{-2a}\) can contribute,
+and the exponent then equals \(w\), nonzero modulo \(4u\).
+For \(u=1\), direct substitution for \(n=1,3,5,7\bmod8\) gives
+correction bits \(0,0,1,1\), respectively. This proves the formula.
+Thus in the two classes of the theorem, \(B_{n,u}\) requires
+\(u=1,\ n\equiv5\bmod8,\ n\equiv2\bmod3\).
+
+A primitive polynomial has exponent gcd one by the order bound for
+dilations used in Theorem~\ref{thm:progression}. In the two classes
+\(13,19\bmod24\), neither displayed pentanomial is possible. Swan
+again reduces any primitive trinomial to the even tap two, and
+\(X^n+X^2+1\) vanishes at \(\omega\) since \(n\equiv1\bmod3\).
+All even weights vanish at one.
+\end{proof}
+
+For degree 1229 the four templates give exactly 478 pentanomials with
+sparse cube images. Here \(1229\equiv5\bmod9\), so only the quartic
+tail and its reciprocal survive the parity test. The quartic tail
+has factor \(X^3+X+1\). Modulo this factor \(X^7=1\) and
+\(1229\equiv4\bmod7\). Consequently the minimum cube weight among
+all irreducible degree-1229 pentanomials is at least seven. Equality
+is attained by the irreducible polynomial with interior taps
+\((11,33,66)\). Its cube image has interior exponents
+\(33,55,66,417,823\). The full census has the following counts,
+including reciprocals:
+\[
+\begin{array}{c|rrrrrr}
+ \text{cube weight}&7&9&11&13&15&17\\\hline
+ \text{irreducible pentanomials}&18&2804&7982&564772&1146&62444
+\end{array}
+\]
+The checker \nolinkurl{scripts/check_cubed_parity.py} independently
+tests the 239 reciprocal representatives for reducibility and verifies
+the weight-seven example by modular composition and irreducibility.
+Its \texttt{--census} option reads the \texttt{--list} output of
+\nolinkurl{scripts/census_1229_pentanomials.cpp}.
+
+In degree 27, \(X^{27}+X^{17}+X^{10}+X^7+1\) and its cube image
+\(X^{27}+X^{10}+X^9+X^7+1\) are both primitive, although all 26
+degree-27 trinomials are reducible. The checker verifies both orders
+using \(2^{27}-1=7\cdot73\cdot262657\). The source belongs to
+template 4, with \(t=7,\ u=10,\ v=-7\) in the translated support.
+
 \end{document}
