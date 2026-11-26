@@ -9502,4 +9502,82 @@ factors and full order of \(X\) modulo the displayed pentanomial.
 It checks each of the 85 distinct prime-index powers in a separate
 kernel theorem.
 
+\section{Optimal direct norm quotients for the two sparse roots}
+\label{sec:1229-norm-height}
+Let \(x\) be the certified generator in the \(q=1024\) model of
+Theorem~\ref{thm:1229-q1024-primitive}, with binary modulus \(I\) of
+degree 1229. Write \(k=\mathbb F_{2^{20}}\). For \(A\in k[T]\), let
+\(N(A)\in\F[T]\) be the product of its twenty coefficient conjugates.
+For either designated pentanomial root \(r\), consider representations
+\[
+ r^{2^j}=N(A)(x)/N(B)(x),\qquad 0\le j<1229,\quad A,B\in k[T].
+\]
+The quotient is evaluated only when both values are nonzero.
+Changing the conjugate preserves the multiplicative order.
+
+\begin{theorem}
+For each of the two sparse roots, the minimum of
+\(\deg A+\deg B\) is 62, and the minimum of
+\(\max(\deg A,\deg B)\) is 31. Each minimum is attained with
+\(A,B\) irreducible of degree 31. The minimum total is also
+attained with irreducible \(A\) of degree 62 and \(B=1\).
+\end{theorem}
+
+\begin{proof}
+A monic binary irreducible \(P\) of degree \(d\) splits over \(k\) into
+\(g=\gcd(20,d)\) coefficient conjugates. The norm of any one is
+\(P^{20/g}\). Consequently a nonzero binary polynomial is a norm
+exactly when the multiplicity of every \(P\) is divisible by \(20/g\).
+The criterion persists in both parts of a reduced norm fraction,
+since cancelling common factors subtracts the smaller of two
+multiplicities. Norm degrees are multiples of 20.
+
+Fix \(w=r^{2^j}\), represented in \(\F[T]\) with degree below 1229.
+Start the polynomial Euclidean algorithm with vectors
+\((a,c)=(I,0)\) and \((b,d)=(w,1)\). At each step both vectors
+represent \(w\) modulo \(I\), and \(ad-bc=I\).
+The numerators strictly decrease in degree and the denominators
+strictly increase. In particular \(\deg a+\deg d=1229\), since
+\(ad\) has higher degree than \(bc\). Every nonzero convergent
+\(b/d\) is reduced because its common divisors divide \(I\).
+
+Suppose a reduced fraction \(U/V\) represents \(w\) and
+\(\deg U+\deg V<1229\). Take the first convergent for which
+\(\deg b\le\deg U\). It exists because the last nonzero remainder
+is 1. Then \(\deg a>\deg U\) and
+\(\deg d=1229-\deg a<1229-\deg U\).
+Both \(bV\) and \(dU\) have degree below 1229.
+Their difference is a multiple of \(I\), so \(bV=dU\), and the reduced
+fractions coincide. This gives an exhaustive test for norm quotients of
+total degree at most 61, whose binary degrees sum to at most 1220.
+
+Across all 1229 conjugates, the product candidate gives 81 convergents
+with both degrees divisible by 20 and sum at most 1220. The Seroussi
+candidate gives 78. Binary factorization rejects every one by the norm
+criterion above. The displayed upper bounds follow from the explicit
+irreducibles in \nolinkurl{data/degree-1229-q1024-norm-quotients.json}.
+The checker multiplies their twenty conjugates and verifies each
+quotient modulo \(I\).
+\end{proof}
+
+The conjugate indices in the four certificates are
+\[
+\begin{array}{c|rrrr}
+(\deg A,\deg B)&(31,31)&(32,32)&(62,0)&(64,0)\\\hline
+ X^{1229}+X^{77}+X^{50}+X^{27}+1&47&0&0&0\\
+ X^{1229}+X^{15}+X^6+X^2+1&99&0&1&0
+\end{array}
+\]
+The degree-32 pair and degree-64 single factor give alternatives with
+power-of-two degrees. Write \(L(P)\) for the exponent modulo \(C\)
+defined by \((x^K)^{L(P)}=P(x)^K\). For a row with conjugate index \(j\),
+\[
+ L(r)=2^{-j}\bigl(L(N(A))-L(N(B))\bigr)\pmod C.
+\]
+As both pentanomials pass the four known-prime tests, their exact
+indices are \(\gcd(L(r),C)\). The two exponents in a pair can be
+submitted independently. The scope of the minimum is the displayed
+direct quotient in this field model. Multiplying by an element with
+a known logarithm changes the representation problem.
+
 \end{document}
