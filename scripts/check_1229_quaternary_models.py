@@ -5,11 +5,12 @@ import csv
 import gzip
 import json
 import subprocess
+from math import gcd
 from pathlib import Path
 
 from flint import fq_default_ctx, fq_default_poly_ctx
 
-from check_degree_1229 import COFACTOR, KNOWN
+from check_degree_1229 import COFACTOR, GROUP, KNOWN, PRIMES
 from check_factor_base import DATA, polynomial
 from period_coordinate import CANDIDATES, DEGREE, mask_of, period_polynomial
 
@@ -55,6 +56,13 @@ def verify(row, old):
         if (polynomial(int(old["sparse_root_hex"][name], 16)).compose_mod(gen, binary) != r
                 or 1+sum((r.pow_mod(i, binary) for i in (*taps, DEGREE)), polynomial(0)) != 0):
             raise ArithmeticError(f"invalid embedding of the {name} root")
+    if row["id"] == 21149:
+        x = polynomial(2)
+        norm = x*x.pow_mod(1 << DEGREE, binary) % binary
+        anchor = norm.pow_mod(9, binary)
+        if (anchor.pow_mod(GROUP, binary) != 1 or anchor.pow_mod(KNOWN, binary) == 1
+                or any(anchor.pow_mod(GROUP//p, binary) == 1 for p in PRIMES)):
+            raise ArithmeticError("the quaternary anchor failed a known order projection")
     return binary, gen
 
 
@@ -82,7 +90,8 @@ def verify_logarithms(model, backend):
         for t in sorted(labels):
             row = next(rows)
             e = int(row["exponent"])
-            if int(row["mask"], 0) != t or not 0 <= e < COFACTOR or (t == 0 and e != 1):
+            if (int(row["mask"], 0) != t or not 0 <= e < COFACTOR
+                    or gcd(e, COFACTOR) != 1 or (t == 0 and e != 1)):
                 raise ValueError("incorrect label, exponent or anchor normalization")
             lines.append(f"{t} {e}")
         if next(rows, None) is not None or len(labels) != 29144:

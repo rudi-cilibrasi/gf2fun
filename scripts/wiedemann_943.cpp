@@ -4,9 +4,9 @@
 //   - 15-limb 64-bit Montgomery arithmetic (960 bits > 943-bit C) for exact reductions & muls
 //   - 20-limb 48-bit redundant-radix AVX2 accumulation (5 YMM regs) for blazing-fast +1 SpMV!
 // Modes:
-//   ./wiedemann_943 --selftest          (tests 943-bit arithmetic + full Phase1/3 on a small random system)
-//   ./wiedemann_943 --phase1 <rels.bin> <seq.bin> [--threads 16]
-//   ./wiedemann_943 --phase3 <rels.bin> <poly.bin> <sol.bin> [--threads 16]
+//   ./wiedemann_943 --selftest          (tests the 943-bit arithmetic)
+//   ./wiedemann_943 --phase1 <rels.bin> <seq.bin> [threads]
+//   ./wiedemann_943 --phase3 <rels.bin> <poly.bin> <sol.bin> [threads]
 // Compile: g++ -O3 -march=native -fopenmp wiedemann_943.cpp -o wiedemann_943
 #include <bits/stdc++.h>
 #include <immintrin.h>
@@ -252,13 +252,14 @@ string u960_to_hex(const U960 &a) {
 }
 
 // Matrix structure (exact same row selection & seed as check_rank_modp.cpp!)
+template<class Column>
 struct Matrix {
     uint32_t N;
     vector<uint32_t> masks;
     vector<uint32_t> p1_off, n1024_off, oth_off;
-    vector<uint16_t> p1_col;       // expanded positive small coeffs 1..20 (zero mod_mul_u64!)
-    vector<uint16_t> n1024_col;    // batched -1024 entries (one mod_mul_u64 per row!)
-    vector<pair<uint16_t, int32_t>> oth_col; // rare remaining entries (e.g. +20480, +40960)
+    vector<Column> p1_col;       // expanded positive small coeffs 1..20 (zero mod_mul_u64!)
+    vector<Column> n1024_col;    // batched -1024 entries (one mod_mul_u64 per row!)
+    vector<pair<Column, int32_t>> oth_col; // rare remaining entries (e.g. +20480, +40960)
     vector<uint64_t> diag; // random 60-bit preconditioner (nonzero)
     vector<uint64_t> u_vec; // random 60-bit projection vector
 
@@ -273,18 +274,19 @@ struct Matrix {
         in.read((char *)masks.data(), 4 * N);
 
         struct RawRow {
-            vector<uint16_t> p1;
-            vector<uint16_t> n1024;
-            vector<pair<uint16_t, int32_t>> oth;
+            vector<Column> p1;
+            vector<Column> n1024;
+            vector<pair<Column, int32_t>> oth;
         };
         vector<RawRow> all_rows(num_rels);
         for (uint32_t r = 0; r < num_rels; ++r) {
             uint16_t nt;
-            in.read((char *)&nt, 2);
+            if (!in.read((char *)&nt, sizeof(nt))) throw runtime_error("Missing matrix row");
             for (uint16_t k = 0; k < nt; ++k) {
-                uint16_t vid; int32_t coef;
-                in.read((char *)&vid, 2);
-                in.read((char *)&coef, 4);
+                Column vid; int32_t coef;
+                in.read((char *)&vid, sizeof(vid));
+                if (!in.read((char *)&coef, sizeof(coef)) || vid >= N)
+                    throw runtime_error("Invalid matrix entry");
                 if (coef >= 1 && coef <= 20) {
                     for (int rep = 0; rep < coef; ++rep) all_rows[r].p1.push_back(vid);
                 } else if (coef == -1024) {
@@ -296,7 +298,7 @@ struct Matrix {
         }
         in.close();
 
-        // EXACT SAME shuffle seed as check_rank_modp.cpp (which PROVED corank == 1, L == 52488!!)
+        // Preserve the row order and projections used by the published certificates.
         vector<uint32_t> perm(num_rels);
         iota(perm.begin(), perm.end(), 0);
         mt19937_64 rng(20261125ULL);
@@ -309,8 +311,8 @@ struct Matrix {
             p1_off[i] = (uint32_t)p1_col.size();
             n1024_off[i] = (uint32_t)n1024_col.size();
             oth_off[i] = (uint32_t)oth_col.size();
-            for (uint16_t c : all_rows[perm[i]].p1) p1_col.push_back(c);
-            for (uint16_t c : all_rows[perm[i]].n1024) n1024_col.push_back(c);
+            for (Column c : all_rows[perm[i]].p1) p1_col.push_back(c);
+            for (Column c : all_rows[perm[i]].n1024) n1024_col.push_back(c);
             for (auto &pr : all_rows[perm[i]].oth) oth_col.push_back(pr);
         }
         p1_off[N - 1] = (uint32_t)p1_col.size();
@@ -387,7 +389,7 @@ struct Matrix {
 
             uint32_t s2 = oth_off[i], e2 = oth_off[i + 1];
             for (uint32_t j = s2; j < e2; ++j) {
-                uint16_t col = oth_col[j].first;
+                Column col = oth_col[j].first;
                 int32_t cf = oth_col[j].second;
                 if (cf > 0) {
                     U960 term = mod_mul_u64(v[col], (uint64_t)cf);
@@ -466,7 +468,8 @@ void selftest() {
     cerr << "SELFTEST 1000 random 943-bit arithmetic identities PASSED!\n";
 }
 
-int main(int argc, char **argv) {
+template<class Column>
+int run_solver(int argc, char **argv) {
     if (argc < 2) {
         cerr << "Usage: --selftest | --phase1 <rels.bin> <seq.bin> [threads] | --phase3 <rels.bin> <poly.bin> <sol.bin> [threads]\n";
         return 1;
@@ -482,7 +485,7 @@ int main(int argc, char **argv) {
         string rels_path = argv[2], seq_path = argv[3];
         int threads = (argc > 4) ? stoi(argv[4]) : 16;
         omp_set_num_threads(threads);
-        Matrix M;
+        Matrix<Column> M;
         M.load(rels_path);
         uint32_t N = M.N;
         uint32_t seq_len = 2 * N;
@@ -549,7 +552,7 @@ int main(int argc, char **argv) {
         string rels_path = argv[2], poly_path = argv[3], sol_path = argv[4];
         int threads = (argc > 5) ? stoi(argv[5]) : 16;
         omp_set_num_threads(threads);
-        Matrix M;
+        Matrix<Column> M;
         M.load(rels_path);
         uint32_t N = M.N;
 
@@ -609,4 +612,24 @@ int main(int argc, char **argv) {
         return 0;
     }
     return 1;
+}
+
+// Matrix files use 16-bit term counts. The number of variables selects the column width.
+int main(int argc, char **argv) {
+    if (argc < 2 || string(argv[1]) == "--selftest") return run_solver<uint16_t>(argc, argv);
+    const string mode = argv[1];
+    if ((mode == "--phase1" && argc < 4) || (mode == "--phase3" && argc < 5) ||
+        (mode != "--phase1" && mode != "--phase3")) {
+        cerr << "Expected --phase1 matrix sequence or --phase3 matrix polynomial solution.\n";
+        return 1;
+    }
+    ifstream input(argv[2], ios::binary);
+    uint32_t count, rows;
+    if (!input.read(reinterpret_cast<char*>(&count), sizeof(count)) ||
+        !input.read(reinterpret_cast<char*>(&rows), sizeof(rows)) || !count || rows < count-1) {
+        cerr << "Invalid matrix dimensions.\n";
+        return 1;
+    }
+    if (count > uint32_t(numeric_limits<uint16_t>::max())+1) return run_solver<uint32_t>(argc, argv);
+    return run_solver<uint16_t>(argc, argv);
 }

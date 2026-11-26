@@ -294,6 +294,13 @@ theorem height_two_cofactor {K : Type*} [Field K] (Q B : K[X])
   rw [natDegree_mul (left_ne_zero_of_mul nonzero) (right_ne_zero_of_mul nonzero), target] at bound
   omega
 
+/-- Squaring a norm circle clears one denominator in the doubled Frobenius model. -/
+theorem doubled_circle {R : Type*} [CommRing R] [CharP R 2]
+    (x y b bbar d h₀ h₁ : R) (model : h₀ = x^2*h₁) :
+    h₁*(x*(y+b)+(bbar*y+d))^2 = (y+b)^2*h₀+(bbar*y+d)^2*h₁ := by
+  rw [CharTwo.add_sq, mul_pow, model]
+  ring
+
 /-- Translating all logarithms by the same scalar removes the common pole term. -/
 theorem shift_pullback {R : Type*} [CommRing R] (q p h c a b : R)
     (row : c = q*(a+b-p)) (shift : (1-2*q)*h = q*p) :

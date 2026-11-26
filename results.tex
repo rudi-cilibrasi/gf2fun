@@ -10387,4 +10387,54 @@ binary conjugates in the degree-2458 field. All \(e_t\) are coprime to
 The four known prime-index tests for \(U_0\) all pass and \(U_0^K\ne1\).
 Its exact order and the orders of the sparse roots remain open.
 
+\section{A second circle system for the same quaternary coordinate}
+\label{sec:quaternary-doubled}
+Keep the coordinate \(x\) of model 21149, and put \(q=1024\),
+\(k=\mathbb F_{q^2}=\mathbb F_{4^{10}}\), \(L=Ek\), and \(a=N_{E/H}(x)\).
+The norms \(V_c=N_{L/H}(x+c)\) generate \(H^\times\). Indeed the argument
+of Section~\ref{sec:quadratic-frobenius} applies over \(\mathbb F_4\)
+at \(m=10\), since \(2\cdot1229^2=3{,}020{,}882<3\cdot4^{10}\).
+For a label of degree \(d\mid10\), its norm is
+\(N_{E/H}(p_c(x))^{10/d}\), where \(p_c\) is its minimal polynomial
+over \(\mathbb F_4\). Every \(10/d\) is coprime to \(M=2^{1229}-1\).
+The norms agree on fourth-power orbits. Burnside's lemma gives
+\((4^{10}+4^5+4\cdot4^2+4\cdot4)/10=104{,}968\) labels, including
+\(V_0=a^{10}\). The earlier table has base \(U_0=a^9\).
+
+Write \(A=h_0^{(2)}\) for the result of squaring each coefficient
+of the original quartic and \(B(T)=T^2+T\). Squaring the original
+field equation gives \(x^2B(y)=A(y)\) for \(y=x^q\). With
+\(\bar b=b^q\), \(d\in\mathbb F_q\), and \(S(X)=X^{q+1}+bX+\bar b X^q+d\),
+one has
+\[
+ B(y)S(x)^2=D(y),\qquad
+ D(T)=(T+b)^2 A(T)+(\bar b T+d)^2B(T).
+\]
+Every nonzero scalar in \(k\) has norm one to \(H\) because \(k\cap H=\F\).
+Thus a nonsingular split circle gives its 1025 source points with
+coefficient one, each root of \(B\) with coefficient \(+512\), and
+each root of \(D\) with coefficient \(-512\) counted with multiplicity.
+Here taking \(q\)-th powers fixes the fourth-power orbit labels.
+
+At a nonpole \(t\), use \(r=\sqrt{A(t)/B(t)}\). The same trace-line
+enumeration as at \(q=512\) applies. A repeated root requires \(b=t\)
+or \((A/B)'(t)=0\), since differentiating the squared linear
+coefficients gives zero. A pole forces \(b=t\); polynomial division
+checks its multiplicity. This counts 1,610,823 split nonsingular circles
+in 172,222 fourth-power orbits. Independent FLINT and NTL calculations
+reconstructed the same 1,327,343,812-byte signed coefficient matrix.
+The archived parameters and the option \texttt{--q 1024} of the
+quaternary pencil checker reproduce it.
+
+If the circle rows augmented by the coordinate \(V_0\) have full
+rank modulo each prime of \(C\), then \(a\) is primitive. To see this,
+suppose some prime \(p\mid M\) divides the index of \(\langle a\rangle\).
+The four known tests on \(a^9\) exclude those primes, so \(p\mid C\).
+Take a character \(H^\times\to\mathbb Z/p\mathbb Z\) of order \(p\).
+Its values on the \(V_c\) satisfy the homogeneous circle equations
+and vanish at \(V_0\). Full rank would force all these values to
+vanish, contrary to generation. The same conclusion would give
+exact order \(C\) for every projection in the \(q=512\) table,
+since \(9\) and every published exponent are coprime to \(C\).
+
 \end{document}
