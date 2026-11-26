@@ -1,7 +1,43 @@
-"""Check the exact polynomial counts in the primitive-weight bound for degree 1229."""
+"""Check the asymptotic weight and entropy bounds and the exact counts for degree 1229."""
 
 from fractions import Fraction
 from math import ceil, comb, factorial, isqrt, prod
+
+
+def reduced_log_bounds(x):
+    """Enclose the natural logarithm of a rational in [1,2] by its atanh series."""
+    assert 1 <= x <= 2
+    t = (x-1)/(x+1)
+    partial = 2*sum(t**(2*j+1)/(2*j+1) for j in range(12))
+    return partial, partial + 2*t**25/(25*(1-t*t))
+
+
+def entropy_bounds(p):
+    ln2_lo, ln2_hi = reduced_log_bounds(Fraction(2))
+    lower = upper = Fraction(0)
+    for mass in (p, 1-p):
+        x, k = 1/mass, 0
+        while x >= 2:
+            x /= 2
+            k += 1
+        lo, hi = reduced_log_bounds(x)
+        lower += mass*(k+lo/ln2_hi)
+        upper += mass*(k+hi/ln2_lo)
+    return lower, upper
+
+
+def check_entropy_rate():
+    r = Fraction(1, 36)
+    scale = 10**12
+    root = isqrt(35*scale**2)
+    p_lo = Fraction(1, 2) - Fraction(root+1, 36*scale)
+    p_hi = Fraction(1, 2) - Fraction(root, 36*scale)
+    h_lo, h_hi = entropy_bounds(r)
+    delta_lo, delta_hi = 1/(2*(1+h_hi)), 1/(2*(1+h_lo))
+    # Entropy is increasing up to one half. These bounds round outwards.
+    assert 0 < p_lo < p_hi < Fraction(1, 2)
+    assert Fraction(1, 2) - (1-p_hi)*delta_lo < Fraction(219245, 10**6)
+    assert 1 - (2-entropy_bounds(p_lo)[0])*delta_hi > Fraction(5438, 10**4)
 
 
 def odd_prime(n):
@@ -145,6 +181,7 @@ def fourier_count(n, block, radius, base, cutoff, prime_count, paired=False):
 
 
 def main():
+    check_entropy_rate()
     # These inequalities give the strict decimal bound on the asymptotic coefficient.
     assert 7**462 < 2**1297
     assert 713 * 5000 < 1159 * 3076

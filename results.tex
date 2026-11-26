@@ -13925,4 +13925,72 @@ such that \(r^K=(g^K)^e\). The four known prime projections of
 \nolinkurl{scripts/check_1229_power_images.py} checks the published
 split and accepts partial submissions with \texttt{--split elliptic}.
 
+\section{Counting primitive polynomials in two coefficient-weight windows}
+\label{sec:weight-entropy-rate}
+Let \(h\) denote binary entropy. Fix \(0<r<1/2\) and put
+\[
+ p=\tfrac12-\sqrt{r(1-r)},\qquad
+ \delta=\frac1{2(1+h(r))},\qquad
+ c=\tfrac12-(1-p)\delta,\qquad s=1-(2-h(p))\delta .
+\]
+\begin{theorem}\label{thm:weight-entropy-rate}
+There is a choice \(d=\delta n+O_r(\sqrt{n\log n})\) with the
+following property. Set \(L=n-1-2d\) and \(u=4\sqrt{n\log n}\).
+Among monic binary polynomials of degree \(n\) with constant one,
+require coefficients \(1\) through \(d\) to vanish, the next \(d\)
+coefficients to have weight within \(u\) of \(pd\), and the last
+\(L\) interior coefficients to have weight within \(u\) of \(L/2\).
+The base-two logarithm of the number of primitive polynomials in
+these windows is
+\[
+ L+d h(p)+O_r(\sqrt{n\log n})=sn+O_r(\sqrt{n\log n}).
+\]
+In particular, for every sufficiently large \(n\), at least
+\(2^{0.5438n}\) distinct primitive binary polynomials of degree \(n\)
+have at most \(0.219245n\) terms.
+\end{theorem}
+\begin{proof}
+Let \(a=\sqrt{(1-r)/r}\), \(b=\lfloor rd+u\rfloor\), and choose
+\[
+ d=\left\lfloor
+ \frac{n/2-\sqrt n-7\log_2 n-u h'(r)}{1+h(r)}\right\rfloor .
+\]
+Use the Fourier transform \(A\) of
+\(a^{d-|y|}{\bf1}_{|y|\le b}\) on the middle block, as in
+Theorem~\ref{thm:fourier-weight}. The support has size at most
+\(2^{dh(r)+uh'(r)}\) by the entropy bound and concavity. The same
+sieve therefore gives primitive-root weight
+\(\gg\theta NQ/2^{2d}\), where \(Q=\sum_x A(x)^2\),
+\(N=2^n-1\), and \(\theta\ge1/(n+1)\). Indeed the relative
+character error is \(O(n^2)2^{\sqrt n-n/2+(1+h(r))d+uh'(r)}
+=O(n^{-5})\). Each primitive polynomial has \(n\) roots. Thus under
+the probability measure assigning each polynomial mass
+\(A(x)^2/(Q2^L)\), the primitive event has probability \(\gg n^{-2}\),
+since \(2d+L=n-1\).
+
+The untruncated transform is \(A_0(x)=(a+1)^{d-|x|}(a-1)^{|x|}\).
+Parseval and the binomial tail of parameter \(r\) give
+\(\|A-A_0\|_2/\|A_0\|_2\le n^{-16}\).
+For two unit vectors \(v,w\), Cauchy--Schwarz gives
+\(\sum_x|v(x)^2-w(x)^2|\le2\|v-w\|_2\). Normalizing \(A,A_0\)
+therefore changes the squared-weight distributions by \(O(n^{-16})\)
+in total variation. Appending independent fair bits preserves this
+bound. The primitive event still has probability \(\gg n^{-2}\)
+under the product distribution with middle-bit probability
+\((a-1)^2/(2(a^2+1))=p\). Hoeffding's inequality places all but
+\(O(n^{-32})\) of its mass in the two stated windows.
+
+A particular polynomial of middle weight \(i\) has probability
+\(2^{-L}p^i(1-p)^{d-i}\). For \(|i-pd|\le u\) its base-two logarithm
+equals \(-L-dh(p)+O_r(u)\). Dividing the primitive mass in the
+windows by the largest such probability proves the lower bound.
+Dividing one by the smallest proves the upper bound.
+The total weight there is at most \(2+pd+L/2+2u=cn+O_r(u)\).
+At \(r=1/36\), one has \(p=1/2-\sqrt{35}/36\),
+\(c=0.2192447139\ldots\) and \(s=0.5438379957\ldots\).
+The rational interval calculation in
+\nolinkurl{scripts/check_primitive_weight_bound.py} verifies the
+strict inequalities \(c<0.219245\) and \(s>0.5438\).
+\end{proof}
+
 \end{document}
