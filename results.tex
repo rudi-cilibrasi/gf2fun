@@ -10211,4 +10211,72 @@ and both sparse-root orders remain open. The relation checker
 exports a signed row from its pencil parameters, and the model
 checker exports an individual \(W_c\) as a forward-logarithm task.
 
+\section{Halving the degree-1229 generating set by rational pullback}
+\label{sec:linear-pullback}
+The five models of Section~\ref{sec:height-two-models} each have a generating
+set of exactly \(262{,}144\) specified linear norms for the entire group
+\(H^\times\). Every other linear norm is an explicit product of these
+generators. Write \(M=2^{1229}-1\), and in this section let
+\(w_c=\log_a N_{L/H}(x+c)\pmod M\), with \(w_\infty=0\). All
+identities also reduce modulo \(C\) to the preceding projected logarithms.
+As before, \(w_{\bar c}=w_c\). On the conjugacy classes of
+\(\mathbb P^1(k)\) use the map
+\[
+            R(t)=u/(t^2+t+v),\qquad R(\infty)=0 .
+\]
+For a split fiber set \(T_c=\sum_{R(t)=c}w_t\), taking one representative
+of \(c\) and counting its two preimages with multiplicity. Factoring
+\(x+c=(c h_1(y)+u)/h_1(y)\) gives \(w_c=q(T_c-T_\infty)\);
+at \(c=0\) use \(T_0=2w_\infty\). The number \(1-2q\) is a unit
+modulo \(M\), since \(\gcd(11,1229)=1\). With
+\(h=qT_\infty/(1-2q)\) and \(V_c=w_c+h\), this becomes
+\[
+                     V_c=q\sum_{R(t)=c}V_t .
+\]
+
+A finite nonzero \(c\) has an empty fiber over \(k\) exactly when
+\(\operatorname{Tr}_{k/\mathbb F_2}(u/c)=1\), by the
+Artin--Schreier test and \(v\in B\). All such points are nonreal.
+They occur in conjugate pairs, giving precisely \(q^2/4\) classes
+with empty fiber, called leaves. On each incoming tree, successive
+substitution expresses \(V_c\) in the leaf values. On a cycle of length
+\(m\), returning to the first value gives \(V_c=D V_c+b\), where
+\(b\) is a linear combination of incoming tree values. All the recorded
+cycles avoid the critical point \(\infty\); the cycle multiplier is
+\(D=q^m\). Indeed a cycle is entirely real or entirely nonreal; two
+conjugate children folding to the same label at a real vertex cannot
+lie on its cycle. Direct enumeration gives the following statistics.
+\[
+\begin{array}{c|r|r|r}
+(u,v)&\text{cycles}&\text{longest cycle}&\text{leaves in }V_\infty\\\hline
+(3,1019)&10&493&3\\
+(6,246)&7&89&1\\
+(6,285)&9&220&41{,}600\\
+(6,454)&9&521&17\\
+(7,88)&7&27&2
+\end{array}
+\]
+Every \(1-D\) is a unit modulo \(M\) since \(1229\nmid 10m\).
+Consequently the resulting leaf form \(A_c\) of \(V_c\) is unique.
+Write \(s_c=A_c(\mathbf1)\). In all five models Euclid's algorithm
+gives \(\gcd(1-s_\infty,M)=1\). Solving
+\(h=A_\infty(w_{\rm leaves})+s_\infty h\) gives the explicit reduction
+\[
+ w_c=A_c(w_{\rm leaves})+
+      \frac{s_c-1}{1-s_\infty}A_\infty(w_{\rm leaves})\pmod M .
+\]
+Conversely arbitrary leaf values extend by this formula to a solution of
+all the split linear pullback equations. Thus the system has exactly
+\(524{,}800-262{,}144=262{,}656\) independent equations over
+\(\mathbb Z/M\mathbb Z\). The linear norms generate \(H^\times\) by the
+character argument of Section~\ref{sec:prime-factor-generation}, applied
+over \(B\) with \(m=2\) as in the earlier quadratic model. A real label
+contributes the square of a linear evaluation, and squaring is an
+automorphism of \(H^\times\); the nonreal labels contribute the evaluations
+of monic irreducible quadratics over \(B\).
+The checker \nolinkurl{scripts/check_1229_height_two_pullback.py} exports
+the full exponent vector for any mask. For example, at \((u,v)=(6,246)\)
+it gives \(w_0=-2048w_{\mathtt{c2efe}}\pmod M\), which can also be checked
+by multiplying the two full norms in the certified field.
+
 \end{document}

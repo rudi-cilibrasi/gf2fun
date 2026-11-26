@@ -294,4 +294,25 @@ theorem height_two_cofactor {K : Type*} [Field K] (Q B : K[X])
   rw [natDegree_mul (left_ne_zero_of_mul nonzero) (right_ne_zero_of_mul nonzero), target] at bound
   omega
 
+/-- Translating all logarithms by the same scalar removes the common pole term. -/
+theorem shift_pullback {R : Type*} [CommRing R] (q p h c a b : R)
+    (row : c = q*(a+b-p)) (shift : (1-2*q)*h = q*p) :
+    c+h = q*((a+h)+(b+h)) := by
+  calc
+    c+h = q*((a+h)+(b+h)) + ((1-2*q)*h-q*p) := by rw [row]; ring
+    _ = _ := by rw [shift, sub_self, add_zero]
+
+/-- Closing an affine recurrence around a cycle only requires the inverse of
+one minus the cycle multiplier, also over a composite modulus. -/
+theorem close_pullback_cycle {R : Type*} [CommRing R] (m u v b : R)
+    (unit : u*(1-m) = 1) (cycle : v = m*v+b) : v = u*b := by
+  have fixed : (1-m)*v = b := by
+    calc
+      (1-m)*v = v-m*v := by ring
+      _ = b := by conv_lhs => lhs; rw [cycle]
+                  ring
+  calc
+    v = (u*(1-m))*v := by rw [unit, one_mul]
+    _ = u*b := by rw [mul_assoc, fixed]
+
 end GF2Sparse.HermitianDescent
