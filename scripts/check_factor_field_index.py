@@ -1,4 +1,4 @@
-"""Check the uniform index bound for the factor bases from two adjacent even degrees."""
+"""Verify the uniform generation and index bounds for low-degree polynomial values."""
 
 import argparse
 from fractions import Fraction
@@ -53,6 +53,54 @@ def uniform_bound():
     print("The decreasing tail bound at d=11 proves the index is at most 83q for every d >= 11.")
 
 
+# Each row specifies the high-degree interval length, excluded index, the
+# guaranteed small degrees, and two lists of weights. Odd-position weights
+# are divided by sqrt(2). The second list starts at position 2d.
+INTERVALS = (
+    (3, 41, 3, (0, 7, 13, 28, 22, 27, 12, 7), (5, 17, 19, 31, 20, 19, 5)),
+    (4, 8, 4, (0, 0, 2, 4, 3, 3, 1), (1, 3, 3, 4, 2)),
+    (5, 5, 5, (0, 0, 1, 3, 2, 2, 1), (1, 2, 2, 3, 1)),
+    (7, 3, 5, (0, 0, 0, 0, 3, 6, 3, 3, 1, 1), (1, 2, 2, 4, 4, 4)),
+)
+
+
+def norm(block):
+    return sum(Fraction(v*v, 2**(i%2)) for i, v in enumerate(block))
+
+
+def weighted_pair(i, u, j, v):
+    # Includes 2^((j-i)/2) and the odd-position weight denominators.
+    return u*v * Fraction(2)**((j-i-i%2-j%2)//2)
+
+
+def interval_bounds():
+    for width, index, small, left, right in INTERVALS:
+        bad = Fraction(-1, index-1)
+        good = Fraction(197, 200) if width == 7 else 1
+        denom = norm(left) + norm(right)
+        cross = sum(weighted_pair(i, u, j, v) * (good if 1-width <= j-i <= 0 else bad)
+                    for i, u in enumerate(left) for j, v in enumerate(right))
+        within = sum(weighted_pair(i, u, j, v) * (1 if j-i <= small else bad)
+                     for block in (left, right) for i, u in enumerate(block)
+                     for j, v in enumerate(block) if i < j)
+        leading, constant = 4*cross/denom, 2*within/denom
+        if leading <= 4 or constant < 0:
+            raise ArithmeticError(f"insufficient bound for {width} consecutive fields")
+        print(f"{width} fields: score at least ({leading})q + {constant}, excluding index >= {index}.")
+        if width == 7:
+            # The supports overlap only at d=4. Work directly with their sum.
+            combined = list(left) + [0]*(8+len(right)-len(left))
+            for j, v in enumerate(right):
+                combined[8+j] += v
+            score = 2*sum(weighted_pair(i, u, j, v) *
+                          (1 if j-i <= small else good if j-i <= 8 else bad)
+                          for i, u in enumerate(combined) for j, v in enumerate(combined) if i < j)
+            score /= norm(combined)
+            if score != Fraction(83008, 2125) or score <= 32:
+                raise ArithmeticError("d=4 does not pass the seven-field bound")
+            print(f"The overlapping d=4 case gives {score} > 32.")
+
+
 def multipliers(n):
     return [k for k in range(1, 21) if (2*k*n+1) % 8 in (1, 7) and gcd(2*k*n+1, 15) == 1]
 
@@ -62,6 +110,7 @@ def main():
     parser.add_argument("--degree", type=int, help="list small prime-index tests for a prime degree")
     args = parser.parse_args()
     uniform_bound()
+    interval_bounds()
     residues = [a for a in range(60) if gcd(a, 60) == 1]
     maximum = max(len(multipliers(a)) for a in residues)
     if maximum != 6:

@@ -48,4 +48,40 @@ theorem degree1229_sieve :
     (((multipliers 1229).map (fun k => 2458*k+1)).filter (fun p =>
       decide (p ≤ 42496 ∧ p ∣ 2^1229-1))) = [36871] := by decide +kernel
 
+/-- A block stores integer numerators. Position i has the extra denominator
+sqrt(2) if i is odd. The square roots cancel in every entry below. -/
+private def blockNorm (s : List ℕ) : ℚ :=
+  (s.zipIdx.map fun (u,i) => (u:ℚ)^2 / 2^(i%2)).sum
+
+private def pairs (s t : List ℕ) (coeff : ℕ → ℕ → ℚ) : ℚ :=
+  (s.zipIdx.map fun (u,i) => (t.zipIdx.map fun (v,j) =>
+    (u:ℚ)*v * (2:ℚ)^(((j:ℤ)-i-(i%2:ℕ)-(j%2:ℕ))/2) * coeff i j).sum).sum
+
+private def intervalOK (w small : ℕ) (bad good : ℚ) (s t : List ℕ) : Prop :=
+  let cross := pairs s t (fun i j => if j ≤ i ∧ i < j+w then good else bad)
+  let inside := fun i j => if j ≤ i then (0:ℚ) else if j-i ≤ small then 1 else bad
+  4*(blockNorm s + blockNorm t) < 4*cross ∧ 0 ≤ pairs s s inside + pairs t t inside
+
+instance (w small : ℕ) (bad good : ℚ) (s t : List ℕ) :
+    Decidable (intervalOK w small bad good s t) := by unfold intervalOK; infer_instance
+
+theorem three_fields : intervalOK 3 3 (-1/40) 1
+    [0,7,13,28,22,27,12,7] [5,17,19,31,20,19,5] := by decide +kernel
+
+theorem four_fields : intervalOK 4 4 (-1/7) 1
+    [0,0,2,4,3,3,1] [1,3,3,4,2] := by decide +kernel
+
+theorem five_fields : intervalOK 5 5 (-1/4) 1
+    [0,0,1,3,2,2,1] [1,2,2,3,1] := by decide +kernel
+
+theorem seven_fields : intervalOK 7 5 (-1/2) (197/200)
+    [0,0,0,0,3,6,3,3,1,1] [1,2,2,4,4,4] := by decide +kernel
+
+/-- The two blocks for seven intervals overlap at 2d = 8. -/
+theorem seven_fields_first :
+    let s := [0,0,0,0,3,6,3,3,2,3,2,4,4,4]
+    32 * blockNorm s < 2 * pairs s s (fun i j =>
+      if j ≤ i then 0 else if j-i ≤ 5 then 1 else if j-i ≤ 8 then 197/200 else -1/2) :=
+  by decide +kernel
+
 end GF2Sparse.FactorFieldIndex
