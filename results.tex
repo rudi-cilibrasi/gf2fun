@@ -7760,4 +7760,18 @@ See \nolinkurl{scripts/check_primitive_weight_bound.py} and
 \nolinkurl{GF2Sparse/FourierWeightBounds.lean}.
 \end{proof}
 
+\section{Thirty-three further primitive pentanomial degrees}\label{sec:odd-1791}
+In the odd degrees from 1537 through 1791 the complete group-order
+factorizations in \nolinkurl{data/mersenne-odd-1537-1791.json} cover
+33 degrees. PARI/GP found a primitive product pentanomial in each.
+For example, in degree 1783 one is \(X^{1783}+X^{27}+X^{20}+X^7+1\).
+The 33 supports appear in \nolinkurl{data/odd-product-witnesses-1537-1791.csv}.
+FLINT independently proved all 347 distinct group-order factors
+prime, multiplied the factors back to \(2^n-1\), and checked the
+full power and each prime-index power in the polynomial quotient.
+Including the previously certified even degrees gives five-term or
+lower-weight witnesses for 1643 of the first 1792 degrees.
+\href{https://factordb.com/index.php?query=2%5E1783-1}{FactorDB record
+for the degree-1783 group order}.
+
 \end{document}
