@@ -7571,4 +7571,113 @@ Lean independently checks both inequalities by summing over the free
 weight first in \nolinkurl{GF2Sparse/WeightBounds.lean}.
 \end{proof}
 
+\section{A stronger weight bound from the binary Fourier transform}\label{sec:fourier-weight}
+\begin{theorem}\label{thm:fourier-weight}
+With \(h\) the binary entropy, put
+\[
+ c_*=\frac12-\frac{49}{148(1+h(1/37))}=0.21924581\ldots .
+\]
+For all sufficiently large \(n\), at least \(2^{n/2}\) distinct primitive
+binary polynomials of degree \(n\) have weight at most
+\(c_*n+O(\sqrt{n\log n})\). In particular their weights are at most
+\(0.21925n\) for all sufficiently large \(n\).
+\end{theorem}
+\begin{proof}
+Keep the notation of Lemma~\ref{lem:weight-characters}. In \(U_{2d}\),
+the units
+\[
+ v(x)=1+\sum_{i=1}^d x_iT^{d+i},\qquad x\in\F^d,
+\]
+form a subgroup \(H\) isomorphic to the additive group \(\F^d\).
+For a real function \(g\ge0\) on \(\F^d\), form
+\[
+ A(x)=\sum_{y\in\F^d}g(y)(-1)^{x\cdot y},\qquad F(v(x))=A(x)^2
+\]
+and set \(F=0\) off \(H\). Write \(Q=\sum_{v\in U_{2d}}F(v)\) and
+\(V=F(1)\). Each character of \(U_{2d}\) restricts on \(H\) to a
+binary character \(x\mapsto(-1)^{x\cdot z}\). Thus its Fourier
+coefficient for \(F\) is \(2^d\sum_y g(y)g(y+z)\ge0\).
+In particular the sum of the coefficients divided by \(2^{2d}\) is
+\(V\), and \(F(v)\le V\). Parseval and Cauchy--Schwarz give
+\[
+ Q=2^d\sum_y g(y)^2,\qquad
+ V=\left(\sum_y g(y)\right)^2,\qquad
+ Q/V\ge 2^d/|\operatorname{supp}g|
+\]
+when \(g\ne0\). Equation~\eqref{eq:weight-main} and
+Lemma~\ref{lem:weight-sieve} therefore apply with main term
+\(M=NQ/2^{2d}\) and individual character error \(2d\sqrt q\,V\).
+
+Set \(r=1/37,\ u=4\sqrt{n\log n}\), and choose
+\[
+ d=\left\lfloor
+ \frac{n/2-\sqrt n-7\log_2 n-u\log_2 36}{1+h(r)}
+ \right\rfloor,\qquad k=\lfloor rd+u\rfloor .
+\]
+For sufficiently large \(n\) we have \(0<2d<n\) and \(0<k<d/2\).
+Use the function
+\[
+ g(y)=6^{d-|y|}\,{\bf1}_{|y|\le k},
+\]
+where \(|y|\) counts ones. The number of words in its support is at
+most \(2^{dh(k/d)}\). This follows by summing the binomial
+probabilities with parameter \(k/d\) up to weight \(k\), where each
+word has probability at least \(2^{-dh(k/d)}\).
+Concavity of entropy and \(h'(r)=\log_2 36\) now give
+\[
+ |\operatorname{supp}g|\le 2^{dh(r)+u\log_2 36}.
+\]
+Use the prime sets from the proof of Theorem~\ref{thm:primitive-weight-quarter}.
+The relative error \((w+1)2^t2d\sqrt q\,V/M\) is at most
+\[
+ O(n^2)\,2^{\,t-n/2+(1+h(r))d+u\log_2 36}=O(n^{-5}).
+\]
+It follows that the weighted count of primitive roots is
+\(\gg\theta M\).
+
+It remains to bound the weight of the binary coefficients in this
+count. The Fourier transform of the untruncated function
+\(g_0(y)=6^{d-|y|}\) factors explicitly:
+\[
+ A_0(x)=7^{d-|x|}5^{|x|}.
+\]
+In the probability distribution proportional to \(g_0(y)^2\) the
+coordinates are independent with one-probability \(1/37\).
+In the distribution proportional to \(A_0(x)^2\) this probability is
+\(25/74\). By Parseval and Hoeffding,
+\[
+ \frac{\|A-A_0\|_2^2}{\|A_0\|_2^2}
+ =\Pr(\operatorname{Bin}(d,r)>k)
+ \le e^{-2u^2/d}\le n^{-32}.
+\]
+Also \(\|A\|_2^2/\|A_0\|_2^2\ge1-n^{-32}\).
+Append \(L=n-1-2d\) independent, unrestricted coefficient bits.
+Under the untruncated squared weights the polynomial weight has law
+\(2+\operatorname{Bin}(d,25/74)+\operatorname{Bin}(L,1/2)\), with
+independent summands. Its probability of exceeding
+\[
+ B=2+(25/74)d+L/2+u=n/2+3/2-(49/74)d+u
+\]
+is at most \(e^{-2u^2/(d+L)}\le n^{-32}\). For the truncated
+weights, sum \(A^2\le2A_0^2+2(A-A_0)^2\) on that same event,
+averaging over the unrestricted bits. Its probability is at most
+\(4n^{-32}/(1-n^{-32})\).
+
+The total weight of all polynomials is \(Q2^L\). Removing the
+primitive polynomials above \(B\) costs \(O(n^{-31}Q2^L)=o(\theta M)\)
+in the root count. Each remaining polynomial contributes at most
+\(nV\), so their number is
+\[
+ \gg\frac{\theta NQ}{n2^{2d}V}
+ \gg\frac{2^{\,n-(1+h(r))d-u\log_2 36}}{n(n+1)}
+ \ge 2^{n/2}
+\]
+for all sufficiently large \(n\), using the \(\sqrt n+7\log_2 n\)
+margin in the definition of \(d\). Substituting \(d\) into \(B\)
+gives the stated coefficient.
+Finally, \(37^{13209}<2^{2368}36^{12852}\) gives
+\(h(1/37)<64/357\). Consequently
+\(c_*<13661/62308<877/4000=0.21925\).
+\end{proof}
+
 \end{document}

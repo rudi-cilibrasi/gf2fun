@@ -1,7 +1,7 @@
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Sqrt
 
-/-! Exact arithmetic for the character-sum weight bounds in Section 76 of the note. -/
+/-! Exact arithmetic for the character-sum weight bounds in the note. -/
 
 namespace GF2Sparse.WeightBounds
 
@@ -26,6 +26,10 @@ def countInequality (n d a cutoff primes count : ℕ) : Prop :=
 
 theorem entropyComparison : 7 ^ 462 < (2 : ℕ) ^ 1297 ∧
     713 * 5000 < 1159 * 3076 := by decide +kernel
+
+theorem fourierEntropyComparison :
+    (37 : ℕ) ^ 13209 < 2 ^ 2368 * 36 ^ 12852 ∧
+    13661 * 4000 < 877 * 62308 := by decide +kernel
 
 theorem orderPrimeCount1229 : (2 : ℕ) ^ 1229 - 1 < 2459 ^ 110 := by decide +kernel
 

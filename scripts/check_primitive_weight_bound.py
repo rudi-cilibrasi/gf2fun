@@ -50,6 +50,8 @@ def main():
     # These inequalities give the strict decimal bound on the asymptotic coefficient.
     assert 7**462 < 2**1297
     assert 713 * 5000 < 1159 * 3076
+    assert 37**13209 < 2**2368 * 36**12852
+    assert 13661 * 4000 < 877 * 62308
 
     n = 1229
     elementary_count = max_factor_count((1 << n) - 1, 2 * n + 1)
