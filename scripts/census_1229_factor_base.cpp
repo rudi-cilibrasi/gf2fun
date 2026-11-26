@@ -51,7 +51,8 @@ struct Row {
 
 int main(int argc, char** argv) {
     const bool projected_only = argc == 2 && std::string(argv[1]) == "--projected";
-    if (argc != 1 && !projected_only) return 1;
+    const bool extended = argc == 2 && std::string(argv[1]) == "--extended";
+    if (argc != 1 && !projected_only && !extended) return 1;
     ZZ modulus_mask;
     std::array<ZZ, 4> primes;
     if (!(std::cin >> modulus_mask >> primes[0] >> primes[1] >> primes[2] >> primes[3])) return 1;
@@ -90,7 +91,7 @@ int main(int argc, char** argv) {
                 if (!NTL::IsOne(NTL::PowerMod(v, known, local_field))) valid = false;
                 continue;
             }
-            if (20 % NTL::deg(p) || NTL::GCD(row.log, cofactor) != 1) {
+            if ((!extended && 20 % NTL::deg(p)) || NTL::GCD(row.log, cofactor) != 1) {
                 valid = false;
                 continue;
             }

@@ -1,0 +1,31 @@
+{
+  "elements": 90839,
+  "primitive": 90835,
+  "minimum_weight": 545,
+  "minimizers": [
+    "0x11c4b7",
+    "0x193377"
+  ],
+  "exceptions": [
+    {
+      "mask_hex": "0x16fec7",
+      "weight": 653,
+      "index": 46703
+    },
+    {
+      "mask_hex": "0x11019bdcb320b6d1b5cd822d75",
+      "weight": 631,
+      "index": 46703
+    },
+    {
+      "mask_hex": "0x159bdd43ed24bc9cab52df7463",
+      "weight": 601,
+      "index": 36871
+    },
+    {
+      "mask_hex": "0x11118acd70f4947cdef272b0ddb39ac399f9a33acc80dc5755d57bdc71691ae3d46042f994eb3638ed63ec7a27cac79235df01a13dfa1e45ad9afae4d69965",
+      "weight": 639,
+      "index": 46703
+    }
+  ]
+}

@@ -9284,4 +9284,18 @@ to \(90{,}839\). The table is
 \nolinkurl{data/degree-1229-partial-circle-logs.csv}, and
 \nolinkurl{scripts/check_1229_partial_circles.py} reconstructs it.
 
+\paragraph{Exact orders and weights in the three tables.}
+All \(90{,}839\) normalized exponents are relatively prime to \(C\).
+The orders of their field values therefore contain the entire factor
+\(C\). Testing the four prime divisors of \(K\) gives exactly
+\(90{,}835\) primitive elements. One of the other four has group
+index \(36{,}871\), and three have index \(46{,}703\). Computing the
+minimal polynomial of every value gives least weight 545, attained
+only at masks \(\mathtt{11c4b7}\) and \(\mathtt{193377}\).
+The four exceptional indices and all six extremal examples are
+independently checked using direct powers and polynomial-basis
+expansion in \nolinkurl{scripts/check_1229_factor_base_orders.py}.
+The complete list of exceptions is in
+\nolinkurl{data/degree-1229-extended-order-census.json}.
+
 \end{document}
