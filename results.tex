@@ -11544,4 +11544,28 @@ The lower bounds apply in particular to any primitive pentanomial
 in the degrees they cover. They concern re-expressing its original
 terms by a single power substitution and a common monomial.
 
+\section{Primitive pentanomials in 48 degrees from 2689 through 2816}
+\label{sec:products-2816}
+For 39 even degrees and nine odd degrees in this interval there is
+a verified primitive pentanomial of the form \(X^n+(1+X^u)(1+X^v)\).
+The odd degrees are \(2699,2715,2733,2749,2785,2789,2793,2799,2805\).
+For example, \(X^{2785}+X^{19}+X^{17}+X^2+1\) is primitive.
+Together with Section~\ref{sec:products-2688} this gives explicit
+witnesses in at least 2167 of the first 2816 degrees.
+
+The table \nolinkurl{data/product-witnesses-2689-2816.csv} gives the
+exponents. The accompanying \nolinkurl{data/mersenne-2689-2816.json}
+gives all prime factors of \(2^n-1\) with multiplicities for these
+48 degrees. The factor inputs come from the
+\href{https://github.com/postvakje/Reformatted-Cunningham-Project-tables/tree/dff2e282ff15399b16b4fb840a410aa2a37076b7}{Cunningham tables}
+and \href{https://factordb.com/index.php?query=2\%5E2785-1}{FactorDB}.
+PARI/GP checked irreducibility and computed each root order.
+FLINT independently proved all 1204 distinct integer factors prime
+and the checker verified that their products are the group orders.
+In the respective quotient rings it checked 48 full powers and 1461
+inequalities \(X^{(2^n-1)/p}\ne1\), one for every distinct prime
+in each degree. These checks give all \(2^n-1\) nonzero residues as
+powers of \(X\). Both computations can be repeated using
+\nolinkurl{scripts/check_product_range.py}.
+
 \end{document}

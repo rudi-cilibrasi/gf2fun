@@ -6,6 +6,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Primitive pentanomials are verified in at least 2,167 of the first 2,816 degrees.** The interval 2689–2816 adds 48 verified degrees, including the primitive pentanomial $X^{2785}+X^{19}+X^{17}+X^2+1$. PARI/GP and FLINT checked the full multiplicative orders. [Proof](results.pdf#page=150) · [Witness table](data/product-witnesses-2689-2816.csv) · [Complete group factorizations](data/mersenne-2689-2816.json) · [Verifier](scripts/check_product_range.py)
 - **A fixed Frobenius bidegree can cover only logarithmically many degrees through $X$.** This holds for primitive binary polynomials of every weight when their original terms are rewritten in a root coordinate and its Frobenius conjugate. For each fixed $\varepsilon>0$, the degrees permitting both variables to have degree at most $n^{1/2-\varepsilon}$ have density zero. Writing each exponent in base $2^s$ gives a side length below $2\sqrt n$ for every degree. [Proof](results.pdf#page=150) · [Lean proof of the area bound](GF2Sparse/FrobeniusBoxes.lean)
 - **Exactly 24 degree-1229 pentanomials can fit their five terms in degree 12 in both a root coordinate and its Frobenius conjugate.** This is the smallest possible square, allowing any generator of the sparse root's subgroup. The smallest sum of the two degrees is 18. Only the pentanomial with taps $(3,410,822)$ and its reciprocal attain it. For the former, setting $z^5=r$ and $y=z^{2048}$ gives $zy^3+z^{14}y^2+z^2y+z^{15}+1=0$. The full order of $r$ remains open. [Proof](results.pdf#page=148) · [List the twelve reciprocal pairs](scripts/check_1229_frobenius_boxes.py) · [Lean identities and partial orders](GF2Sparse/SparseRootModels.lean)
 - **4,944 specified logarithms would certify the degree-1229 Seroussi pentanomial.** A new identity using $21+8\cdot151=1229$ and an exact character-sum bound reduce the previous 4,993 inputs in the sparse root’s own coordinate. The checker accepts partial submissions and verifies both ordinary and projected logarithms. [Proof](results.pdf#page=148) · [Download the target masks](data/degree-1229-seroussi-direct-targets.csv) · [Verify the criterion or a submission](scripts/check_1229_direct_moment.py) · [Lean identities](GF2Sparse/Seroussi1229.lean)
@@ -521,7 +522,7 @@ The odd-degree table from 1281 through 1535 uses every odd degree with a complet
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 1281 --end 1535 --step 2 --available --factor-table /tmp/gf2-cunningham.json --factor-table data/mersenne-odd-1281-1535-extra.json --verify data/odd-product-witnesses-1281-1535.csv --jobs 4
 ~~~
 
-The next six tables include the complete factorizations needed to verify their 259 witnesses locally.
+The next seven tables include the complete factorizations needed to verify their 307 witnesses locally.
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 1537 --end 1791 --step 2 --available --factor-table data/mersenne-odd-1537-1791.json --verify data/odd-product-witnesses-1537-1791.csv --jobs 4
@@ -530,6 +531,7 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_product_rang
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 2293 --end 2416 --available --factor-table data/mersenne-2293-2416.json --verify data/product-witnesses-2293-2416.csv --jobs 4
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 2417 --end 2560 --available --factor-table data/mersenne-2417-2560.json --verify data/product-witnesses-2417-2560.csv --jobs 4
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 2561 --end 2688 --available --factor-table data/mersenne-2561-2688.json --verify data/product-witnesses-2561-2688.csv --jobs 4
+uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 2689 --end 2816 --available --factor-table data/mersenne-2689-2816.json --verify data/product-witnesses-2689-2816.csv --jobs 4
 ~~~
 
 The following commands replay the polynomial-tail theorem, list the 55 trinomial witnesses and verify the published degree-1229 factors.
