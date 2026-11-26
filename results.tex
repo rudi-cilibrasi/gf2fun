@@ -12336,4 +12336,81 @@ exhausts the remaining powers. In degree 153 this gives precisely
 sixteen outputs over the full range \(1\le e\le153\).
 \end{proof}
 
+\section{Smaller factor logarithms for the four seventh-power candidates}
+\label{sec:seventh-descent}
+Use the model \(x=H_0(y)/H_1(y)\), \(y=x^q\), \(q=1024\), where
+\(H_0=T^5+T^2+1\) and \(H_1=T^3+T\). All relative degrees in this
+section are over \(\mathbb F_{q^2}\). The common index of the four
+roots from Section~\ref{sec:seventh-pair} has an expression using
+2,144 factor logarithms, each of relative degree at most eleven.
+Independently, the degree-five input in the first six-factor split
+of Section~\ref{sec:seventh-split} can be expressed using only
+quadratic logarithms.
+
+For the first assertion, extended Euclidean reduction at index
+\(10542=8\cdot1229+710\) gives a quotient for
+\(r^{2^{710}} x^{518536}\). After the known offset, the six binary
+factor degrees are \(13,90,110,220,400,400\). For the binary
+degree-13 mask \(\mathtt{2413}_{16}\) the norm pencil of
+\(f=\mathtt{f1}_{16}\), \(g=\mathtt{c0}_{16}\) yields 83 logarithms
+of relative degrees two through six. The two degree-400 factors have
+degree-halving pencils at indices 12 and 25 in the enumeration of
+Section~\ref{sec:dyadic-1229}. Each yields 1,029 distinct binary
+degree-200 factors. The two sets are disjoint. Substitution and direct
+powering in the degree-1229 field give the following counts.
+\[
+\begin{array}{c|rrrrrrrr}
+\text{relative degree}&2&3&4&5&6&9&10&11\\\hline
+\text{number of inputs}&25&16&11&9&22&1&2058&2
+\end{array}
+\]
+Each of the 2,058 degree-ten inputs also has an indexed halving into
+factors of relative degree at most five. Replaying their quartic
+splitting tests gives 2,117,682 linear factors before taking binary
+norms and combining repeated terms. The file
+\nolinkurl{data/degree-1229-seventh-power-halvings.json.gz} records
+every index. An individual branch can be expanded and checked by
+direct multiplication in the field.
+
+For the other split, let \(P=\mathtt{564d8a15287bb}_{16}\) be its
+binary degree-50 factor. The relative quintic factor of \(P\) already
+has coefficients in \(\mathbb F_q\). Choose two cubics \(g,h\) over
+\(\mathbb F_q\), with coefficients given in increasing order in
+the basis \(z^{20}+z^3+1=0\) of \(\mathbb F_{q^2}\),
+\[
+ g=(14251,28179,43724,77694),\qquad h=(0,618526,270868,359598).
+\]
+For a cubic \(f\) put \(\widetilde f=H_1^3 f(H_0/H_1)\), and form
+\[
+  D=\widetilde g(g+h)+\widetilde h g,\qquad
+  S=g^{q+1}+g^q h+g h^q .
+\]
+Then \(D(y)=H_1(y)^3 S(x)\). One can split \(S\) using only real
+coefficients. The \(q\) roots of \(t^q+t=1\) form pairs
+\(\{t,t+1\}\); their values \(u=t^2+t\) run through the elements
+of \(\mathbb F_q\) of absolute trace one. Consequently
+\[
+  S=g\prod_{\operatorname{Tr}(u)=1}(h^2+hg+ug^2).
+\]
+Each of the 512 displayed factors splits into two polynomials of
+degree at most three over \(\mathbb F_{q^2}\).
+
+Let \(N\) multiply the ten coefficient conjugates over \(\F\), and
+let \(b\) be the multiplicity of \(P\) in \(N(D)\). Taking norms
+and projected logarithms \(L\) gives
+\[
+  bL(P)=q^{-1} L(N(S))+30 L(H_1)-L(N(D)/P^b)\pmod C .
+\]
+Factoring the two sides, collecting identical binary masks, and
+applying the known logarithms leaves 275 quadratics and 149 cubics.
+For each cubic the certificate gives the Hermitian matrix and
+relative factor in the construction of Section~\ref{sec:hermitian-descent}.
+All 149 substituted numerators leave only linear and quadratic factors
+after removal of the designated cubic. Combining these relations
+and applying two directly verified exponents from the quadratic
+catalogue leaves 76,921 distinct quadratics. Either expression for
+\(L(P)\) can be checked by powering in the binary field; the checker
+also accepts logarithms for any individual cubic branch.
+See \nolinkurl{scripts/check_1229_seventh_descent.py}.
+
 \end{document}

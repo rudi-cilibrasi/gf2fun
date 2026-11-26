@@ -112,11 +112,15 @@ def product(polys):
     return polys[0]
 
 
-def coefficient_norm(p):
-    """Product of all twenty coefficient conjugates, returned as a binary polynomial."""
+def coefficient_norm(p, degree=20):
+    """Norm of a polynomial with coefficients in F_(2^degree) down to F_2."""
+    if degree <= 0 or 20 % degree:
+        raise ValueError("invalid constant field degree")
+    if degree < 20 and any(c.frobenius(degree) != c for c in p.coeffs()):
+        raise ValueError("polynomial coefficients lie outside the specified constant field")
     coeffs = p.coeffs()
     value = K.one()
-    for _ in range(20):
+    for _ in range(degree):
         value *= K(coeffs)
         coeffs = [c.frobenius(1) for c in coeffs]
     binary = value.coeffs()

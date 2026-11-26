@@ -129,6 +129,21 @@ A verified split uses six factor logarithms, of degrees 5, 7, 9, 11, 19, and 21 
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_power_images.py --split 6
 ~~~
 
+The degree-20 split also gives a task for the common root order with **2,144 logarithms of relative degree at most eleven**. Its 2,058 degree-ten factors each have a verified split into factors of relative degree at most five. The quintic in the other six-factor split gives a choice of 275 quadratics and 149 cubics, or 76,921 quadratics. Add `--json` to export a task and `--logs answers.csv` to verify partial answers. Select a cubic by passing its binary mask to `--task`. [Factor identities](results.pdf#page=161) · [Cubic pencils](data/degree-1229-seventh-power-cubic-pencils.json) · [Degree-halving indices](data/degree-1229-seventh-power-halvings.json.gz)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh_descent.py
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh_descent.py --task quintic
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh_descent.py --task quintic --quadratics
+~~~
+
+Build the NTL checker to replay the 2,058 indices. To expand a single degree-ten factor, supply the same backend and pass its binary mask to `--task`.
+
+~~~sh
+g++ -O3 -std=c++17 scripts/degree_1229_dyadic.cpp -lntl -o /tmp/gf2-dyadic
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_seventh_descent.py --audit-branches --backend /tmp/gf2-dyadic
+~~~
+
 To reproduce the six-factor discovery, build the NTL finder and search index 6618. The three arguments after `--smooth` specify the maximum relative factor degree, the starting index, and the number of indices. Different computers can search disjoint intervals. Each output line is a quotient that the Python checker can certify on its own. [Finder](scripts/find_1229_known_offset.cpp)
 
 ~~~sh
