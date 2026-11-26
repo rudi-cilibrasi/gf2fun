@@ -8571,4 +8571,64 @@ in particular to every period target in the smaller binary field. The
 special lifts in the table save one degree-halving stage for the two
 known sparse roots.
 
+\section{Optimal norm quotients in the degree-1229 model}\label{sec:norm-quotients}
+Use the \(q=8192\) model of Section~\ref{sec:forward-descent}, with
+\(C=\mathbb F_{64}\), \(K=\mathbb F_{2^{234}}\), and \([K:C]=39\).
+For either sparse root \(r\) there are explicit monic good irreducibles
+\(U,V\in K[T]\) of degree 16 such that
+\[
+              r=\operatorname{Norm}_{K(t)/C(t)}\bigl(U(t)/V(t)\bigr).
+\]
+The same statement holds for the period targets with masks 2 and 19.
+In each case 16 is the least possible value of
+\(\max(\deg U,\deg V)\), even allowing reducible polynomials and arbitrary
+nonzero leading coefficients. For a single polynomial norm the least
+degree is 32. The quotients give two inputs with at most four halving
+stages each in the same constant field as the degree-32 factors.
+
+\begin{proof}
+Write \(I\) for the monic degree-1229 minimal polynomial of \(t\) over
+\(C\), and \(\rho\) for the target representative modulo \(I\).
+The coefficient lists of \(U,V\) are in
+\nolinkurl{data/degree-1229-norm-quotients.json}. Multiplying the
+39 coefficient conjugates gives monic \(P,Q\in C[T]\) of degree 624.
+The checker verifies \(Q(t)\ne0\) and \(P\equiv\rho Q\bmod I\).
+The products of all six binary coefficient conjugates of \(P\) and of
+\(Q\) are irreducible of degree 3744. The three tests from
+Section~\ref{sec:forward-descent} exclude all traps on both root orbits.
+
+The lower bound comes from the module of pairs
+\((A,B)\in C[T]^2\) satisfying \(A\equiv\rho B\bmod I\).
+Start its basis at \((I,0),(\rho,1)\). For successive columns
+\((p_0,b_0),(p_1,b_1)\), take the quotient \(c\) of \(p_0\) by \(p_1\)
+and replace the columns by
+\((p_1,b_1),(p_0-cp_1,b_0-cb_1)\). Stop at
+\(\deg p_1\le\deg b_1\). Every update is unimodular.
+Put \(d_i=\max(\deg p_i,\deg b_i)\), and let \(L_i\in C^2\)
+be its vector of coefficients of degree \(d_i\). In the certified
+examples the checker verifies
+\[
+  d_0+d_1=1229,\qquad \det[L_0,L_1]\ne0,\qquad
+  \min(d_0,d_1)>585.
+\]
+Independence of the leading vectors makes the degree of a nonzero
+combination with multipliers \(u,v\) exactly
+\(\max(d_0+\deg u,d_1+\deg v)\), with \(\deg0=-\infty\).
+Norms of two polynomials of degrees at most 15 would give a nonzero
+module pair of degrees at most \(39\cdot15=585\), a contradiction.
+For a single norm of degree at most 31 the norm polynomial would have
+degree at most 1209. The unique representative \(\rho\) has degree
+1228 in each case, which proves the second lower bound by the
+degree-32 constructions of Section~\ref{sec:single-norm-lifts}.
+\end{proof}
+
+To reproduce the upper bound, solve \([L_0,L_1](a,b)^{\mathsf T}
+=(1,1)^{\mathsf T}\). Use multipliers
+\(u=aT^{624-d_0}+S(T)\) and \(v=bT^{624-d_1}+c\).
+The base-64 digits of the supplied seed give the successive
+coefficients of \(S\) in the basis of \(C\), starting with the constant
+coefficient. The recorded shift gives \(c\). This fixes both norm
+polynomials and their leading coefficients before checking the
+displayed factors over \(K\).
+
 \end{document}

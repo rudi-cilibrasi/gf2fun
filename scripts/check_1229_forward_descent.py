@@ -12,6 +12,7 @@ from check_1229_quadratic_model import TABLE as PERIOD_TABLE, multiply
 
 TABLE = Path(__file__).resolve().parents[1] / "data" / "degree-1229-forward-descent.json"
 FACTORS = TABLE.with_name("degree-1229-norm-factors.json")
+QUOTIENTS = TABLE.with_name("degree-1229-norm-quotients.json")
 WHEEL = TABLE.with_name("degree-1229-period-wheel.csv")
 TAPS = {"product": (27, 50, 77), "seroussi": (2, 6, 15)}
 
@@ -38,7 +39,7 @@ def constant_extension(record):
     return m
 
 
-def check_model(record, periods, factors, gp):
+def check_model(record, periods, factors, quotients, gp, quotients_only=False):
     d, n, q = (record[key] for key in ("constant_degree", "degree", "q"))
     b = record["pole"]
     D = d*n
@@ -69,9 +70,9 @@ u=t*0; v=p; bits=digits(2459,2);
 for(i=1,#bits,w=u*v+p;if(bits[i],u=w;v=v^2,v=w;u=u^2));
 check(u==0);
 independent(vv)=matdet(matrix(4,4,i,j,vv[j]^(2^({d}*(i-1)))))!=0;
-good(F)={{
-  check(poldegree(F)=={L} && polisirreducible(F));
-  my(y=ffgen(F,'ylift), ybar=y^(2^{L//2}), test);
+good(F,degree)={{
+  check(poldegree(F)==degree && polisirreducible(F));
+  my(y=ffgen(F,'ylift), ybar=y^(2^(degree/2)), test);
   check(y!=0 && y!=ybar);
   check(independent([y^0,y,y^2,y^{b}*y^{q}]));
   check(independent([y^0,y,y^2,y^{b}*ybar^{q}]));
@@ -90,13 +91,16 @@ kp=binpol({factors['modulus']}); check(poldegree(kp)=={m} && polisirreducible(kp
 xi=ffgen(kp,'kgen); zk=value({factors['base_generator']},xi); check(subst(cc,x,zk)==0);
 ctab=vector(2^{d},i,value(i-1,zk));
 inlarge(a)=ctab[1+fromdigits(liftall(Vec((a*one).pol)),2)];
-relativecheck(residue,low,coeffs)={{
-  my(g=residue+basepol*(x^{relative_degree-n}+binpol(low)*one));
-  check(poldegree(g)=={relative_degree} && g%basepol==residue); good(binarynorm(g));
+normcheck(g,coeffs,h)={{
+  check(poldegree(g)=={m//d}*h && pollead(g)==1); good(binarynorm(g),{m}*h);
   my(v=Polrev(apply(a->value(a,xi),coeffs)), prod=v);
-  check(poldegree(v)=={h} && pollead(v)==1);
+  check(poldegree(v)==h && pollead(v)==1);
   for(i=2,{m//d},v=Pol(apply(a->a^(2^{d}),Vec(v)));prod*=v);
   check(prod==Pol(apply(inlarge,Vec(g))));
+}};
+relativecheck(residue,low,coeffs)={{
+  my(g=residue+basepol*(x^{relative_degree-n}+binpol(low)*one));
+  check(g%basepol==residue); normcheck(g,coeffs,{h});
 }};
 """
     for family, taps in TAPS.items():
@@ -108,22 +112,68 @@ relativecheck(residue,low,coeffs)={{
         body += f"""
 rep=binpol({root}); r=subst(rep,x,t); check(r==value({periods[family]},p));
 check(r^{n}+r^{k}+r^{j}+r^{i}+1==0 && r^(2^{n})==r);
+"""
+        if quotients_only:
+            continue
+        body += f"""
 candidate=rep+f*(x^{L-D}+binpol({low}));
-check(candidate%f==rep); good(candidate);
+check(candidate%f==rep); good(candidate,{L});
 relativecheck((rep*one)%basepol,{relative_low},{coefficients});
 """
     body += f"periodmod=Mod(binpol({record['period_hex']})*one,basepol);\n"
-    for row in targets:
+    for row in ([] if quotients_only else targets):
         coefficients = [int(c, 16) for c in row["coefficients_hex"]]
         body += (f"residue=lift(subst(binpol({row['mask']})*one,x,periodmod));"
                  f"relativecheck(residue,{row['low_multiplier']},{coefficients});\n")
+    if quotients:
+        body += quotient_checks(record, quotients)
     pari(gp, body)
+    if quotients:
+        print(f"Verified {len(quotients)} norm quotients of optimal degree 16.", flush=True)
+    if quotients_only:
+        return
     print(f"At degree {n} with q={q}, each sparse root has two verified lifts. "
           f"The binary lift has {d} orbits of good degree-{h} factors "
           f"and the relative lift has one orbit of size {m//d}.", flush=True)
     if targets:
         print(f"Verified explicit norms of good degree-{h} factors for all {len(targets)} "
               "listed period targets of degree at most six.", flush=True)
+
+
+def quotient_checks(record, rows):
+    """Reconstruct both monic polynomials in the rational approximation to each target."""
+    if record["constant_degree"] != 6:
+        raise ValueError("the quotient certificates use the degree-six constant field")
+    body = """
+quotientcheck(residue,shift,seed,top,bottom)={
+  check(poldegree(residue)==1228);
+  my(p0=basepol,p1=residue,b0=0*zz,b1=one,qr,bb);
+  while(poldegree(p1)>poldegree(b1),
+    qr=divrem(p0,p1); bb=b0+qr[1]*b1; p0=p1; p1=qr[2]; b0=b1; b1=bb);
+  my(d0=max(poldegree(p0),poldegree(b0)), d1=max(poldegree(p1),poldegree(b1)));
+  check(d0+d1==1229 && max(d0,d1)<=624);
+  my(mat=[polcoef(p0,d0),polcoef(p1,d1);polcoef(b0,d0),polcoef(b1,d1)]);
+  check(p0*b1-b0*p1==basepol && matdet(mat)!=0 && min(d0,d1)>39*15);
+  my(c=matsolve(mat,[one,one]~), s=Pol(apply(a->value(a,zz),digits(seed,64))));
+  check(poldegree(s)<624-d0);
+  my(u=c[1]*x^(624-d0)+s, v=c[2]*x^(624-d1)+value(shift,zz));
+  my(num=u*p0+v*p1, den=u*b0+v*b1);
+  check(den%basepol!=0 && (num-residue*den)%basepol==0);
+  normcheck(num,top,16); normcheck(den,bottom,16);
+};
+"""
+    for item in rows:
+        target = item["target"]
+        if target in TAPS:
+            residue = f"(binpol({record['sparse_root_hex'][target]})*one)%basepol"
+        elif isinstance(target, int) and target > 0:
+            residue = f"lift(subst(binpol({target})*one,x,periodmod))"
+        else:
+            raise ValueError(f"unknown quotient target {target}")
+        top = [int(mask, 16) for mask in item["numerator_hex"]]
+        bottom = [int(mask, 16) for mask in item["denominator_hex"]]
+        body += f"quotientcheck({residue},{int(item['shift'])},{int(item['seed'])},{top},{bottom});\n"
+    return body
 
 
 def coefficient_norm(record):
@@ -159,12 +209,20 @@ degs=factormod(parent,2,1)[,1]; check(sum(i=1,#degs,degs[i]=={n*d})>=1);
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gp", default="gp", help="path to PARI/GP")
+    parser.add_argument("--quotients-only", action="store_true",
+                        help="replay the smaller norm quotients and their degree lower bounds")
     args = parser.parse_args()
     data = json.loads(TABLE.read_text())
     periods = json.loads(PERIOD_TABLE.read_text())["sparse_in_period_hex"]
     factors = {entry["constant_degree"]: entry for entry in json.loads(FACTORS.read_text())}
+    quotients = json.loads(QUOTIENTS.read_text())
     for model in data["degree_1229"]:
-        check_model(model, periods, factors[model["constant_degree"]], args.gp)
+        d = model["constant_degree"]
+        if d == 6 or not args.quotients_only:
+            check_model(model, periods, factors[d], quotients if d == 6 else [], args.gp,
+                        args.quotients_only)
+    if args.quotients_only:
+        return
     common = data["first_gaps"]
     for model in common["models"]:
         check_gap({**common, **model}, args.gp)
