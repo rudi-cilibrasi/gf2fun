@@ -12742,4 +12742,27 @@ Corollary~\ref{cor:fourier-weight-1229}. The parameters
 give the stated counts by integer arithmetic in
 \nolinkurl{scripts/check_primitive_weight_bound.py}.
 
+\section{Primitive pentanomials in 38 degrees from 2945 through 3072}
+\label{sec:products-3072}
+In this interval 31 even degrees and seven odd degrees have verified
+primitive polynomials of the form \(X^n+(1+X^u)(1+X^v)\). The odd
+degrees are \(2949,2959,2961,2981,3037,3041,3055\). In degree 3072 a
+primitive polynomial is
+\[
+                       X^{3072}+X^{241}+X^{239}+X^2+1.
+\]
+The CSV \nolinkurl{data/product-witnesses-2945-3072.csv} records
+\((n,u,v)\). The full factors with multiplicity for all 38 orders are
+in \nolinkurl{data/mersenne-2945-3072.json}. The
+\href{https://github.com/postvakje/Reformatted-Cunningham-Project-tables/tree/dff2e282ff15399b16b4fb840a410aa2a37076b7}{Cunningham tables}
+supply 23 factorizations and
+\href{https://factordb.com/index.php?query=2\%5E3072-1}{FactorDB} supplies 15.
+PARI/GP tested irreducibility and multiplicative order in each field.
+FLINT independently proved all 984 distinct integer factors prime and
+checked their multiplicities against \(2^n-1\). In each binary quotient
+it verified the full power and each distinct prime-index power, with
+1,187 such prime-index checks across the interval. Together with
+Section~\ref{sec:products-2944}, this gives witnesses in at least 2,249
+of the first 3,072 degrees.
+
 \end{document}
