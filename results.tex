@@ -15880,4 +15880,32 @@ The exact rational enumeration and the two degree computations are in
 progression product and the two-run identity in
 \nolinkurl{GF2Sparse/FrobeniusPairs.lean}.
 
+\section{Ten further primitive pentanomials through degree 7560}
+\label{sec:products-7560}
+For each row below, \(X^n+X^{u+v}+X^v+X^u+1\) is primitive over
+\(\F\). For example, \(X^{7560}+X^{121}+X^{107}+X^{14}+1\) has root
+order \(2^{7560}-1\).
+\[
+\begin{array}{r|rr@{\qquad}r|rr}
+ n&u&v&n&u&v\\\hline
+ 4224&75&211&6384&34&127\\
+ 5280&9&59&6480&15&241\\
+ 6000&15&43&6720&111&371\\
+ 6120&33&85&7320&103&189\\
+ 6300&36&137&7560&14&107
+\end{array}
+\]
+The two degrees below 5964 are distinct from those counted in
+Section~\ref{sec:products-5964}. These rows raise the verified lower
+bound to 2,551 of the first 5,964 degrees and 2,559 of the first 7,560.
+
+The order factorizations were obtained from \href{https://factordb.com/}{FactorDB}.
+FLINT proves each of their 664 distinct factors prime, reconstructs
+all ten group orders with multiplicity, and verifies ten full powers
+and 999 prime-index powers in the binary quotient rings. PARI/GP
+found nine supports and NTL found the degree-6720 support. The
+factor table \nolinkurl{data/mersenne-4224-7560-extra.json} and witness
+table \nolinkurl{data/product-witnesses-4224-7560-extra.csv} can be
+verified offline with \nolinkurl{scripts/check_product_range.py}.
+
 \end{document}
