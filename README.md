@@ -127,7 +127,7 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
-The degree-1229 elliptic pentanomial with interior taps $(136,683,819)$ and its reciprocal share one order. Seven projected logarithms of relative degrees $2,6,13,15,15,16,17$ determine it. The smallest input is the degree-eight binary mask `0x15f`. The checker exports the targets and coefficients. Add `--logs answers.csv` with columns `mask,exponent` to verify any subset. A complete set gives the exact index, and index one proves both pentanomials primitive. [Seven inputs](data/degree-1229-elliptic-split-seven.json) · [Proof](results.pdf#page=187)
+The degree-1229 elliptic pentanomial with interior taps $(136,683,819)$ and its reciprocal share one order. Seven projected logarithms of relative degrees $2,6,13,15,15,16,17$ determine it. The smallest input is the degree-eight binary mask `0x15f`. The other six can be expanded into smaller factors. The combined task then has 4,404 logarithms, all of relative degree at most 15. The checker exports the targets and coefficients. Add `--logs answers.csv` with columns `mask,exponent` to verify any subset. A complete set gives the exact index, and index one proves both pentanomials primitive. [Seven inputs](data/degree-1229-elliptic-split-seven.json) · [Proof](results.pdf#page=187)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_power_images.py --split elliptic-seven
@@ -146,6 +146,7 @@ The ten inputs also have a decomposition into 5,064 smaller logarithms. Every re
 
 ~~~sh
 g++ -O3 -std=c++17 scripts/degree_1229_dyadic.cpp -lntl -lgmp -o /tmp/gf2-elliptic-dyadic
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --lower-seven --backend /tmp/gf2-elliptic-dyadic
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --lower-eight --backend /tmp/gf2-elliptic-dyadic
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --backend /tmp/gf2-elliptic-dyadic
 ~~~

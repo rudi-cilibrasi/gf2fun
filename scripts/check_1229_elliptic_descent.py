@@ -1,4 +1,4 @@
-"""Reduce factors in the two logarithm formulas for the degree-1229 elliptic pentanomial."""
+"""Reduce factors in the logarithm formulas for the degree-1229 elliptic pentanomial."""
 
 import argparse
 import json
@@ -117,32 +117,39 @@ def main():
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--eight", action="store_true", help="lower both cubics in the eight-input split")
     mode.add_argument("--lower-eight", action="store_true", help="lower each factor in the eight-input split")
+    mode.add_argument("--lower-seven", action="store_true", help="lower the six larger factors in the seven-input split")
     parser.add_argument("--json", action="store_true", help="export all residual logarithm masks and coefficients")
     parser.add_argument("--logs", type=Path, help="verify a mask,exponent CSV of residual logarithms")
     args = parser.parse_args()
     cert = json.loads(CERTIFICATE.read_text())
-    cubics = {int(k, 16): v for k, v in cert["eight_cubic_pencils"].items()}
-    eight_forms = {int(r["mask_hex"], 16): r for r in cert["eight_pencils"]}
-    eight_halvings = {int(k, 16): v for k, v in cert["eight_halving_indices"].items()}
-    eight_parents = cubics.keys() | eight_forms.keys() | eight_halvings.keys()
-    eight = args.eight or args.lower_eight or args.target in eight_parents
-    split = json.loads((DATA / SPLITS["elliptic-eight" if eight else "elliptic"]).read_text())
-    original = {int(r["mask_hex"], 16) for r in split["logarithms"]["remaining"]}
-    if eight:
-        forms, halvings = eight_forms, eight_halvings
-        if set(cubics) != {0xd, 0x67} or eight_parents != original or len(original) != 8:
-            raise ValueError("the certificate must cover the eight distinct original factors")
-        supported = eight_parents if args.lower_eight or args.target is not None else set(cubics)
+    prefixes = {"elliptic": "", "elliptic-eight": "eight_", "elliptic-seven": "seven_"}
+    tables = {}
+    for name, prefix in prefixes.items():
+        forms = {int(r["mask_hex"], 16): r for r in cert[prefix+"pencils"]}
+        halvings = {int(k, 16): v for k, v in cert[prefix+"halving_indices"].items()}
+        cubics = {int(k, 16): v for k, v in cert.get(prefix+"cubic_pencils", {}).items()}
+        tables[name] = (forms, halvings, cubics)
+    if args.eight or args.lower_eight:
+        name = "elliptic-eight"
+    elif args.lower_seven or args.target == 0x15f:
+        name = "elliptic-seven"
     else:
-        forms = {int(r["mask_hex"], 16): r for r in cert["pencils"]}
-        halvings = {int(k, 16): v for k, v in cert["halving_indices"].items()}
-        supported = forms.keys() | halvings.keys()
-        if forms.keys() & halvings.keys() or supported != original or len(original) != 10:
-            raise ValueError("the certificate must cover the ten distinct original factors")
-    if args.target is not None and args.target not in supported:
+        name = next((s for s, methods in tables.items() if any(args.target in m for m in methods)), "elliptic")
+    split = json.loads((DATA / SPLITS[name]).read_text())
+    original = {int(r["mask_hex"], 16) for r in split["logarithms"]["remaining"]}
+    forms, halvings, cubics = tables[name]
+    supported = forms.keys() | halvings.keys() | cubics.keys()
+    unchanged = {0x15f} if name == "elliptic-seven" else set()
+    expected_size = {"elliptic": 10, "elliptic-eight": 8, "elliptic-seven": 7}[name]
+    if (len(original) != expected_size or supported != original-unchanged
+            or len(supported) != len(forms)+len(halvings)+len(cubics)):
+        raise ValueError("the certificate has unexpected parent masks")
+    if args.target is not None and args.target not in original:
         parser.error("unrecognized elliptic descent target")
-    selected = [args.target] if args.target is not None else sorted(supported)
-    if args.lower_eight:
+    selected = sorted(cubics if args.eight else supported)
+    if args.target is not None:
+        selected = [args.target] if args.target in supported else []
+    elif args.lower_eight or args.lower_seven:
         # Later steps also reduce any original parents introduced by earlier steps.
         selected.sort(key=factor_degrees, reverse=True)
     if any(mask in halvings for mask in selected) and not args.backend:
@@ -167,7 +174,7 @@ def main():
             terms = halving_relation(mask, edges, field)
         else:
             terms = subfield_relation(mask, forms[mask], field)
-        if eight and any(factor_degrees(p) >= factor_degrees(mask) for p in terms if p not in table):
+        if any(factor_degrees(p) >= factor_degrees(mask) for p in terms if p not in table):
             raise ArithmeticError("a residual elliptic logarithm was not lowered")
         substitute(weights, mask, terms)
 

@@ -323,16 +323,16 @@ theorem close_pullback_cycle {R : Type*} [CommRing R] (m u v b : R)
     _ = u*b := by rw [mul_assoc, fixed]
 
 
-/-- The q trace-one constants determine their monic polynomial. -/
-theorem trace_one_split {K : Type*} [Field K] [CharP K 2]
-    (q : ℕ) (hq : 1 < q) (s : Finset K) (hs : s.card = q)
-    (trace : ∀ c ∈ s, c^q+c = 1) :
-    ∏ c ∈ s, (X - C c) = (X^q + (X+1) : K[X]) := by
+/-- A fibre of z ↦ z^q + z with q distinct points determines its monic polynomial. -/
+theorem trace_fibre_split {K : Type*} [Field K] [CharP K 2]
+    (q : ℕ) (hq : 1 < q) (s : Finset K) (hs : s.card = q) (b : K)
+    (trace : ∀ c ∈ s, c^q+c = b) :
+    ∏ c ∈ s, (X - C c) = (X^q + (X+C b) : K[X]) := by
   classical
-  have low : (X+1 : K[X]).degree < (q : WithBot ℕ) := by
+  have low : (X+C b : K[X]).degree < (q : WithBot ℕ) := by
     calc
-      _ ≤ max (X : K[X]).degree (1 : K[X]).degree := degree_add_le _ _
-      _ = 1 := by simp
+      _ ≤ max (X : K[X]).degree (C b : K[X]).degree := degree_add_le _ _
+      _ ≤ 1 := max_le (by simp) (degree_C_le.trans (by decide))
       _ < _ := by exact_mod_cast hq
   apply Eq.symm
   apply eq_of_monic_of_dvd_of_natDegree_le (monic_prod_X_sub_C id s) (monic_X_pow_add low)
@@ -341,25 +341,49 @@ theorem trace_one_split {K : Type*} [Field K] [CharP K 2]
       exact pairwise_coprime_X_sub_C Function.injective_id h
     · intro c hc
       apply dvd_iff_isRoot.mpr
-      simp only [IsRoot, eval_add, eval_pow, eval_X, eval_one]
+      simp only [IsRoot, eval_add, eval_pow, eval_X, eval_C]
       rw [id_eq, ← add_assoc, trace c hc, CharTwo.add_self_eq_zero]
   · rw [natDegree_add_eq_left_of_degree_lt (by simpa only [degree_X_pow] using low), natDegree_X_pow]
     simp only [natDegree_finset_prod_X_sub_C_eq_card, hs, le_refl]
 
-/-- Homogenization gives the q+1 factors used by a trace-one pencil. -/
-theorem trace_one_pencil {K : Type*} [Field K] [CharP K 2]
-    (q : ℕ) (hq : 1 < q) (s : Finset K) (hs : s.card = q)
-    (trace : ∀ c ∈ s, c^q+c = 1) (g h : K) :
-    g * (∏ c ∈ s, (h+c*g)) = g^(q+1) + g^q*h + g*h^q := by
+/-- Homogenizing the fibre gives its q+1 projective factors. -/
+theorem trace_fibre_pencil {K : Type*} [Field K] [CharP K 2]
+    (q : ℕ) (hq : 1 < q) (s : Finset K) (hs : s.card = q) (b : K)
+    (trace : ∀ c ∈ s, c^q+c = b) (g h : K) :
+    g * (∏ c ∈ s, (h+c*g)) = b*g^(q+1) + g^q*h + g*h^q := by
   classical
   by_cases hg : g = 0
   · simp [hg, Nat.ne_of_gt (by omega : 0 < q)]
-  have ratio := congrArg (eval (h/g)) (trace_one_split q hq s hs trace)
-  simp only [eval_prod, eval_X, eval_C, eval_add, eval_pow, eval_one,
+  have ratio := congrArg (eval (h/g)) (trace_fibre_split q hq s hs b trace)
+  simp only [eval_prod, eval_X, eval_C, eval_add, eval_pow,
     CharTwo.sub_eq_add] at ratio
   have split (c : K) : h+c*g = g*(h/g+c) := by field_simp
   simp_rw [split, Finset.prod_mul_distrib, Finset.prod_const, hs, ratio]
   rw [div_pow, pow_succ]
   field_simp [hg]
   ring
+
+/-- The q trace-one constants determine their monic polynomial. -/
+theorem trace_one_split {K : Type*} [Field K] [CharP K 2]
+    (q : ℕ) (hq : 1 < q) (s : Finset K) (hs : s.card = q)
+    (trace : ∀ c ∈ s, c^q+c = 1) :
+    ∏ c ∈ s, (X - C c) = (X^q + (X+1) : K[X]) := by
+  simpa using trace_fibre_split q hq s hs 1 trace
+
+/-- Homogenization gives the q+1 factors used by a trace-one pencil. -/
+theorem trace_one_pencil {K : Type*} [Field K] [CharP K 2]
+    (q : ℕ) (hq : 1 < q) (s : Finset K) (hs : s.card = q)
+    (trace : ∀ c ∈ s, c^q+c = 1) (g h : K) :
+    g * (∏ c ∈ s, (h+c*g)) = g^(q+1) + g^q*h + g*h^q := by
+  simpa using trace_fibre_pencil q hq s hs 1 trace g h
+
+/-- The projective source splits over any field containing the q fixed scalars. -/
+theorem fixed_source_pencil {K : Type*} [Field K] [CharP K 2]
+    (q : ℕ) (hq : 1 < q) (s : Finset K) (hs : s.card = q)
+    (fixed : ∀ c ∈ s, c^q = c) (g h : K) :
+    g * (∏ c ∈ s, (h+c*g)) = g^q*h + g*h^q := by
+  have trace (c : K) (hc : c ∈ s) : c^q+c = 0 := by
+    rw [fixed c hc, CharTwo.add_self_eq_zero]
+  simpa using trace_fibre_pencil q hq s hs 0 trace g h
+
 end GF2Sparse.HermitianDescent

@@ -14271,12 +14271,28 @@ at indices \(6,36,56,44\). The source of the halving in
 Section~\ref{sec:dyadic-1229} is a projective
 \(\mathbb F_{1024}\)-line. Its points lie in the half field
 \(\mathbb F_{2^m}\) whenever \(10\mid m\). This applies at
-\(m=110,190\) as well as at \(m=60,180\). A child has binary
+\(m=110,190\) as well as at \(m=60,180\). The Lean theorem
+\nolinkurl{fixed_source_pencil} in
+\nolinkurl{GF2Sparse/HermitianDescent.lean} proves the source
+factorization from the \(q\) fixed scalars. A child has binary
 degree dividing \(m\), hence relative degree dividing
 \(m/\gcd(m,20)\). At \(m=110,190\) the binary degree drops even
 when the relative degree stays the same. Direct field calculations
 verify all four identities and their combination with the other
 four reductions. The combined task has 5,391 distinct remaining
 logarithms, all of binary degree at most 190.
+
+In the seven-input formula, the factors of binary degrees
+\(260,300,300,320\) have halving indices \(191,111,116,53\)
+in the archive's mask order. A binary pencil of height nine reduces
+the factor of degree 17, and a pencil over \(\mathbb F_{16}\) of
+height three reduces the factor of degree 24. Keeping the degree-eight
+factor gives 4,404 distinct logarithms, all of relative degree at
+most 15 and binary degree at most 180. The checker verifies the
+combined projected identity. For the degree-eight factor itself,
+the four equations for a linear Hermitian pencil have zero nullity.
+Its degree-40 isogeny pullback \(\mathtt{1100c6d95f5}\) also has no
+terminal circle with completely split cofactor. Its projected
+logarithm remains open.
 
 \end{document}
