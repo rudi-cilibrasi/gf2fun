@@ -20174,4 +20174,55 @@ interval and its numerical consequence, the prime-divisor step and
 positive Frobenius residue identities in
 \nolinkurl{GF2Sparse/ScalarOrderBound.lean}.
 
+\clearpage
+\section{Forty generators in degree 2458 and the remaining sparse-root test}
+\label{sec:2458-projective-orders}
+Let \(d=1229\), \(M_0=2^d-1=KC\) as in
+Section~\ref{sec:quaternary-rank}, and \(Q=2^d+1\). The unfactored
+cofactor \(C\) has 943 bits. In the binary degree-2458 field take the
+model-21149 coordinate \(x\) and its quaternary constant \(\omega\).
+Then \(x\) and \(x+1\) both generate the full multiplicative group of
+order \(QM_0\). Of the 60 elements in the orbit of \(x\) under
+\(\operatorname{PGL}_2(\mathbb F_4)\), 40 are primitive and 20 have
+index three. The least primitive binary minimal-polynomial weight in
+this orbit is 1161, attained by \(\omega x/(x+\omega+1)\) and its inverse.
+
+To certify the orders, put \(T_s=x+s\) for \(s\in\mathbb F_4\) and
+\(T_\infty=1\). Every element of the orbit is uniquely
+\(z=\lambda T_s/T_t\), with \(s\ne t\) and
+\(\lambda\in\mathbb F_4^\times\). Equality between two different maps
+at \(x\) would give a nonzero polynomial of degree at most two.
+Let \(a=x^Q\), whose degree-1229 minimal polynomial was certified
+primitive in Section~\ref{sec:quaternary-rank}. From the four constant
+labels of the \(q=512\) logarithm table, compute
+\[
+             (T_s^Q)^K=(a^K)^{e_s},\qquad e_\infty=0.
+\]
+The ninth powers in the table can be removed since \(9\) is coprime
+to \(C\). Direct powering verifies each equality. The \(C\)-part of
+the index of \(z\) is exactly \(\gcd(e_s-e_t,C)\), since
+\(\lambda^Q=1\). All twenty ordered differences are units modulo \(C\).
+The four primes of \(K\) and the four primes of \(Q\) are distinct
+and have exponent one. Checking their prime-index powers determines
+the entire index. The verifier also computes each degree-2458
+minimal polynomial to count its binary coefficients.
+
+For the unique sparse reciprocal class from
+Corollary~\ref{cor:1229-quaternary-lift}, let \(r\) be a root of
+\[
+                   X^{2458}+X^{1229}+X^{971}+X^{910}+1.
+\]
+It passes all eight prime-index tests and \(r^{QM_0/C}\ne1\).
+In particular its projection to the group of order \(Q\) has full
+order. Its degree-1229 norm \(b=r^Q\) has a minimal polynomial of
+weight 631. Its exact index coincides with the index of \(r\), and
+equals \(\gcd(L,C)\) for the unique \(L\bmod C\) with
+\(b^K=(a^K)^L\), after identifying the degree-1229 fields.
+This logarithm remains open. The four relative primes, including the
+317-digit factor, and the orbit counts are in
+\nolinkurl{data/degree-2458-projective-orders.json}.
+\nolinkurl{scripts/check_2458_projective_orders.py} proves primality
+of the listed factors, verifies the field identities and checks the
+sparse polynomial independently of the projective enumeration.
+
 \end{document}
