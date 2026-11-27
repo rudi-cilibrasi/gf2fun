@@ -1,3 +1,4 @@
+import GF2Sparse.Certificate
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.FieldSimp
@@ -69,5 +70,54 @@ theorem fiber_counts :
     2*curveOrder 5 = 25*2 ∧
     2*(curveOrder 10-curveOrder 5) = 50*40 ∧
     2*(curveOrder 20-curveOrder 10) = 100*20992 := by decide +kernel
+
+private def maskPower (p : ℕ) : ℕ → ℕ
+  | 0 => 1
+  | n+1 => maskProduct (maskPower p n) p
+
+private theorem decodePower (p n : ℕ) : decode (maskPower p n) = (decode p)^n := by
+  induction n with
+  | zero => simp [maskPower]
+  | succ n ih => simp [maskPower, ih, pow_succ]
+
+private theorem decodeProduct (ps : List ℕ) :
+    decode (ps.foldr maskProduct 1) = (ps.map decode).prod := by
+  induction ps with
+  | nil => simp
+  | cons p ps ih => simp [ih]
+
+private theorem decodeSum (ps : List ℕ) :
+    decode (ps.foldr (· ^^^ ·) 0) = (ps.map decode).sum := by
+  induction ps with
+  | nil => simp
+  | cons p ps ih => simp [ih]
+
+/-- The five octics in the homogeneous pullback of the binary mask 0x1e7. -/
+theorem octicPullback :
+    ([0x15f, 0x19f, 0x1b1, 0x1cf, 0x1f5].map decode).prod =
+      ([0, 1, 2, 5, 6, 7, 8].map fun (i : ℕ) => (decode 37)^i * (decode 10)^(8-i)).sum := by
+  let ps : List ℕ := [0x15f, 0x19f, 0x1b1, 0x1cf, 0x1f5]
+  let exps : List ℕ := [0, 1, 2, 5, 6, 7, 8]
+  have eq : ps.foldr maskProduct 1 =
+      (exps.map fun i => maskProduct (maskPower 37 i) (maskPower 10 (8-i))).foldr (· ^^^ ·) 0 := by
+    decide +kernel
+  simpa only [decodeProduct, decodeSum, List.map_map, Function.comp_def, decode_maskProduct, decodePower]
+    using congrArg decode eq
+
+/-- Clearing the denominator when the Frobenius exponent is lowered from 1024 to 256. -/
+theorem octicCircle {A : Type*} [CommRing A] (x y u v b d : A)
+    (hy : x^256 = y) (hr : x*v^4 = u^4) :
+    (x^257 + b*(x^256+x) + d)*v^4 = (y+b)*u^4 + (b*y+d)*v^4 := by
+  rw [show x^257 = x^256*x from pow_succ x 256, hy, ← hr]
+  ring
+
+/-- Multiplying the four conjugate circle equations contributes the sixteenth denominator power. -/
+theorem octicCircleNorm {A : Type*} [CommRing A] (x y u v : A) (b d : Fin 4 → A)
+    (hy : x^256 = y) (hr : x*v^4 = u^4) :
+    (∏ i, (x^257 + b i*(x^256+x) + d i))*v^16 =
+      ∏ i, ((y+b i)*u^4 + (b i*y+d i)*v^4) := by
+  simp_rw [← octicCircle x y u v _ _ hy hr]
+  rw [Finset.prod_mul_distrib]
+  simp [← pow_mul]
 
 end GF2Sparse.QuinticIsogeny

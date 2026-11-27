@@ -110,6 +110,40 @@ def cubic_relation(mask, row):
     return {p: scale*c % COFACTOR for p, c in terms.items() if c % COFACTOR}
 
 
+def octic_relation(method, field):
+    target = 0x15f
+    if method == "isogeny":
+        parent = 0x1e7
+        numerator = polynomial(pullback(parent))
+        factors = binary_factors(numerator)
+        if factors != dict.fromkeys((target, 0x19f, 0x1b1, 0x1cf, 0x1f5), 1):
+            raise ArithmeticError("the five degree-eight isogeny factors differ")
+        if numerator.pow_mod(Q, field) != polynomial(parent)*polynomial(10).pow_mod(8*Q, field) % field:
+            raise ArithmeticError("the degree-eight isogeny identity failed")
+        del factors[target]
+        terms = Counter({parent: pow(Q, -1, COFACTOR), 2: 8, 3: 16})
+        terms.subtract(factors)
+        return terms
+
+    # For y=x^256 the same model gives x=R(y)^4. The circle is defined over F_16.
+    q = 256
+    t = K.gen()
+    b, d = element(0x40dc2), element(0xc5deb)
+    if b.frobenius(4) != b or d.frobenius(4) != d or b*b == d:
+        raise ArithmeticError("incorrect circle constants")
+    source = coefficient_norm(t**(q+1) + b*(t**q+t) + d, 4)
+    numerator = coefficient_norm((t+b)*H0**4 + (b*t+d)*H1**4, 4)
+    if source*polynomial(10).pow_mod(16*q, field) % field != numerator.pow_mod(q, field):
+        raise ArithmeticError("the degree-eight Frobenius identity failed")
+    left, right = binary_factors(source), binary_factors(numerator)
+    if right.pop(target, 0) != 1 or any(16 % (p.bit_length()-1) for p in left):
+        raise ArithmeticError("the Frobenius circle has unexpected factors")
+    terms = Counter({p: e*pow(q, -1, COFACTOR) for p, e in left.items()})
+    terms.subtract(right)
+    terms.update({2: 16, 3: 32})
+    return terms
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--backend", type=Path, help="compiled degree_1229_dyadic.cpp for the even-degree targets")
@@ -118,9 +152,16 @@ def main():
     mode.add_argument("--eight", action="store_true", help="lower both cubics in the eight-input split")
     mode.add_argument("--lower-eight", action="store_true", help="lower each factor in the eight-input split")
     mode.add_argument("--lower-seven", action="store_true", help="lower the six larger factors in the seven-input split")
+    parser.add_argument("--octic", choices=("isogeny", "frobenius"),
+                        help="expand 0x15f alone or within --lower-seven using one of two independent equations")
     parser.add_argument("--json", action="store_true", help="export all residual logarithm masks and coefficients")
     parser.add_argument("--logs", type=Path, help="verify a mask,exponent CSV of residual logarithms")
     args = parser.parse_args()
+    if args.octic:
+        if args.eight or args.lower_eight or args.target not in (None, 0x15f):
+            parser.error("--octic applies to 0x15f in the seven-input split")
+        if not args.lower_seven:
+            args.target = 0x15f
     cert = json.loads(CERTIFICATE.read_text())
     prefixes = {"elliptic": "", "elliptic-eight": "eight_", "elliptic-seven": "seven_"}
     tables = {}
@@ -177,6 +218,8 @@ def main():
         if any(factor_degrees(p) >= factor_degrees(mask) for p in terms if p not in table):
             raise ArithmeticError("a residual elliptic logarithm was not lowered")
         substitute(weights, mask, terms)
+    if args.octic:
+        substitute(weights, 0x15f, octic_relation(args.octic, field))
 
     base = polynomial(2).pow_mod(KNOWN, field)
     result = reduce_task(name, target, weights, table, base, field, args.logs)

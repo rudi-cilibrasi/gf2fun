@@ -1,4 +1,4 @@
-"""Verify the real pencils for all 3,087 degree-130 and degree-150 elliptic factors."""
+"""Verify the real pencils in the seven- and ten-input degree-1229 elliptic expansions."""
 
 import argparse
 import gzip
@@ -16,9 +16,10 @@ from check_factor_base import DATA, irreducible, polynomial
 
 
 CERTIFICATE = DATA / "degree-1229-elliptic-real-pencils.json.gz"
+TEN_CERTIFICATE = DATA / "degree-1229-elliptic-ten-real-pencils.json.gz"
 # The root w maps to z^1025 in the project's F_(2^20) polynomial basis.
 MODULUS = [1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1]
-BASE = fq_default_ctx(modulus=fmpz_mod_poly_ctx(2)(MODULUS), var="w")
+BASE = fq_default_ctx(modulus=fmpz_mod_poly_ctx(2)(MODULUS), var="w", fq_type="FQ_ZECH")
 RING = fq_default_poly_ctx(BASE)
 T = RING.gen()
 H0, H1 = T**5 + T**2 + 1, T**3 + T
@@ -66,14 +67,17 @@ def verify_row(row):
     return d, multiplicity
 
 
-def read_rows():
-    with gzip.open(CERTIFICATE, "rt") as stream:
-        rows = [(int(p, 16), g, h) for p, g, h in json.load(stream)]
+def validated_rows(entries, expected):
+    rows = [(int(p, 16), g, h) for p, g, h in entries]
     masks = [p for p, _, _ in rows]
-    if (masks != sorted(set(masks))
-            or Counter(p.bit_length()-1 for p in masks) != {130: 1029, 150: 2058}):
+    if masks != sorted(set(masks)) or Counter(p.bit_length()-1 for p in masks) != expected:
         raise ValueError("incomplete or repeated real pencil masks")
     return rows
+
+
+def read_rows():
+    with gzip.open(CERTIFICATE, "rt") as stream:
+        return validated_rows(json.load(stream), {130: 1029, 150: 2058})
 
 
 def check_frontier(path, rows):
@@ -95,7 +99,40 @@ def check_frontier(path, rows):
         raise ValueError("the real pencils do not cover the supplied expansion")
 
 
-def expand(row):
+def check_ten_frontier(path, rows, indices, backend):
+    from check_1229_dyadic import halving_relation
+    from check_1229_factor_base_orders import read_table
+    from check_1229_seventh_descent import expand_index
+
+    task = json.loads(path.read_text())
+    if task["task"] != "elliptic" or len(task["remaining"]) != 5064:
+        raise ValueError("expected the verified ten-input elliptic expansion")
+    parents = set()
+    for entry in task["remaining"]:
+        p = int(entry["mask_hex"], 16)
+        d = p.bit_length()-1
+        rel = d//gcd(d, 20)
+        if rel != entry["relative_degree"]:
+            raise ValueError("incorrect relative degree in the supplied expansion")
+        if rel > 12:
+            parents.add(p)
+    if parents != set(indices):
+        raise ValueError("the indexed halvings do not cover the ten-input expansion")
+    field_mask, _ = read_table()
+    field = polynomial(field_mask)
+    children = set()
+    for p, index in indices.items():
+        edges = expand_index(backend, field_mask, p, index)
+        terms = halving_relation(p, edges, field)
+        for child, weight in terms.items():
+            d = child.bit_length()-1
+            if weight % COFACTOR and d//gcd(d, 20) > 12:
+                children.add(child)
+    if children != {p for p, _, _ in rows}:
+        raise ValueError("the real pencils do not cover all degree-130 children")
+
+
+def expand(row, answers=None):
     from check_1229_elliptic_descent import subfield_relation
     from check_1229_hermitian_descent import F, bits
     from check_1229_log_descent import reduce_task
@@ -116,34 +153,51 @@ def expand(row):
     field = polynomial(field_mask)
     terms = subfield_relation(p, form, field)
     return reduce_task(hex(p), polynomial(p), terms, table,
-                       polynomial(2).pow_mod(KNOWN, field), field, None)
+                       polynomial(2).pow_mod(KNOWN, field), field, answers)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--frontier", type=Path, help="match the complete verified --lower-seven JSON output")
+    parser.add_argument("--ten", action="store_true", help="use the 23,667 pencils in the ten-input expansion")
+    parser.add_argument("--frontier", type=Path, help="match the verified elliptic expansion JSON")
+    parser.add_argument("--backend", type=Path, help="compiled degree_1229_dyadic.cpp to replay the 23 ten-input halvings")
     parser.add_argument("--expand", type=lambda s: int(s, 0), metavar="MASK",
                         help="export and power-check the full projected logarithm equation for one parent")
+    parser.add_argument("--logs", type=Path, help="verify a mask,exponent CSV for the selected --expand task")
     parser.add_argument("--jobs", type=int, default=1)
     args = parser.parse_args()
     if args.jobs < 1:
         parser.error("--jobs must be positive")
-    rows = read_rows()
-    if args.frontier:
-        check_frontier(args.frontier, rows)
+    if args.logs and args.expand is None:
+        parser.error("--logs requires a parent selected with --expand")
+    if args.ten:
+        with gzip.open(TEN_CERTIFICATE, "rt") as stream:
+            data = json.load(stream)
+        indices = {int(p, 16): index for p, index in data["halving_indices"].items()}
+        if len(indices) != 23 or any(p.bit_length() != 261 for p in indices):
+            raise ValueError("incorrect degree-260 parents")
+        rows = validated_rows(data["pencils"], {130: 23667})
+        if args.frontier:
+            if not args.backend:
+                parser.error("--ten --frontier requires --backend to reconstruct the 23 halvings")
+            check_ten_frontier(args.frontier, rows, indices, args.backend)
+    else:
+        rows = read_rows()
+        if args.frontier:
+            check_frontier(args.frontier, rows)
     if args.expand is not None:
         row = next((row for row in rows if row[0] == args.expand), None)
         if row is None:
-            parser.error("choose a degree-130 or degree-150 mask in the seven-input expansion")
+            parser.error("choose a mask in the selected real-pencil archive")
         verify_row(row)
-        print(json.dumps(expand(row), indent=2))
+        print(json.dumps(expand(row, args.logs), indent=2))
         return
     if args.jobs == 1:
         counts = Counter(map(verify_row, rows))
     else:
         with ProcessPoolExecutor(max_workers=args.jobs) as pool:
             counts = Counter(pool.map(verify_row, rows, chunksize=16))
-    for d in (130, 150):
+    for d in sorted({degree for degree, _ in counts}):
         n = sum(v for (degree, _), v in counts.items() if degree == d)
         print(f"{n:,} degree-{d} parents reduce to relative degree at most {d//10-1}.")
 

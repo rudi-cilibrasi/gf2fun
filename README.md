@@ -133,6 +133,13 @@ The degree-1229 elliptic pentanomial with interior taps $(136,683,819)$ and its 
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_power_images.py --split elliptic-seven
 ~~~
 
+The degree-eight input also has two equations with disjoint unknowns. One uses five other degree-eight logarithms. The other uses one degree-eight, one degree-12 and 66 degree-16 logarithms. Either command exports a donor task and accepts the same answer CSV. [Proof of both equations](results.pdf#page=190) · [Lean verification of the pullback and norm identities](GF2Sparse/QuinticIsogeny.lean)
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --octic isogeny --json
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --octic frobenius --json
+~~~
+
 An alternative quotient uses eight logarithms of relative degrees $3,3,6,7,9,11,18,19$. Its two cubic inputs reduce to 299 quadratic logarithms. Lowering all eight gives 5,391 inputs of binary degree at most 190, each with smaller relative degree or the same relative degree and smaller binary degree than its parent. [Eight inputs](data/degree-1229-elliptic-split-eight.json) · [Pencil certificates](data/degree-1229-elliptic-pencils.json)
 
 ~~~sh
@@ -157,6 +164,13 @@ All 3,087 degree-130 and degree-150 factors in the seven-input expansion have a 
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --lower-seven --backend /tmp/gf2-elliptic-dyadic --json > /tmp/gf2-elliptic-seven.json
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_real_pencils.py --frontier /tmp/gf2-elliptic-seven.json --jobs 4
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_real_pencils.py --expand 0x400412f00f4ddc3dfcdb785dea7b13943256ed
+~~~
+
+The ten-input route reaches relative degree 12 and binary degree 240. The first command reconstructs the original expansion. The second checks its 23 degree-260 halvings and all 23,667 subsequent real pencils. Use `--ten --expand MASK` to export one equation and `--logs answers.csv` to check any known exponents for it. [Complete certificate](data/degree-1229-elliptic-ten-real-pencils.json.gz)
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --backend /tmp/gf2-elliptic-dyadic --json > /tmp/gf2-elliptic-ten.json
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_real_pencils.py --ten --frontier /tmp/gf2-elliptic-ten.json --backend /tmp/gf2-elliptic-dyadic --jobs 4
 ~~~
 
 Four degree-1229 candidates share one discrete logarithm task. The JSON gives the binary field modulus, a base of order $C$, and the target as hexadecimal polynomial masks with bit $i$ as the coefficient of $X^i$. Find an integer $0\le e<C$ with $\mathrm{base}^e=\mathrm{target}$ in that field. Replace `--task` with `--log E` to check an answer. The checker computes the exact index of all four roots, and an index of one proves all four primitive. [Download the task](data/degree-1229-seventh-power-task.json)

@@ -14480,4 +14480,72 @@ class a power of \(X\), so the quotient is a field.
 \nolinkurl{scripts/check_4096_small_taps.py} verifies the proper
 factors and Seroussi polynomial's full order.
 
+\section{Two equations for the degree-eight elliptic logarithm}
+\label{sec:elliptic-octic-equations}
+The projected logarithm of \(P=\mathtt{15f}\) in the seven-input
+split has two explicit expressions with disjoint sets of unknowns.
+One needs five other binary octics. The second uses 68 binary
+irreducibles of degrees at most 16. Either set suffices to compute
+\(L(P)\) modulo \(C\).
+
+For the first equation, the homogeneous isogeny pullback of
+\(\mathtt{1e7}\) factors as the product of the five masks
+\(\mathtt{15f},\mathtt{19f},\mathtt{1b1},\mathtt{1cf},\mathtt{1f5}\).
+Consequently
+\[
+ L(P)=1024^{-1}L(\mathtt{1e7})+8L(H_1)-
+ \sum_{J\in\{\mathtt{19f},\mathtt{1b1},\mathtt{1cf},\mathtt{1f5}\}}L(J)
+ \pmod C.
+\]
+For the second equation set \(y=x^{256}\) in the same field model.
+The binary coefficients of \(R\) give \(x=R(y^4)=R(y)^4\).
+In the published polynomial basis of \(\mathbb F_{2^{20}}\) let
+\(b=\mathtt{40dc2}\), \(d=\mathtt{c5deb}\), both in
+\(\mathbb F_{16}\), and form
+\[
+ S=T^{257}+b(T^{256}+T)+d,\qquad
+ D=(T+b)H_0^4+(bT+d)H_1^4.
+\]
+Then \(S(x)H_1(y)^4=D(y)\). Write \(N\) for the product of the
+four coefficient conjugates. The resulting binary field identity is
+\[
+ NS(x)\,H_1(x)^{4096}=ND(x)^{256}.
+\]
+The norm \(NS\) has 64 distinct degree-16 factors and one distinct
+quadratic factor. The multiplicity of \(P\) in \(ND\) is one.
+Thus \(L(P)=256^{-1}L(NS)+16L(H_1)-L(ND/P)\pmod C\).
+Removing the verified logarithms leaves one octic, one factor of
+degree 12 and 66 of degree 16. The octic is \(\mathtt{17b}\),
+so none of these 68 masks occurs among the five in the first
+equation. The verifier factors both norms, checks the identity
+before projection, and checks each reduced product directly
+against \(P(x)^K\). It accepts partial exponents for either set.
+\nolinkurl{scripts/check_1229_elliptic_descent.py}.
+Lean checks the five-factor isogeny pullback as a binary polynomial
+identity and the denominator clearing in the product of the four
+conjugate equations. \nolinkurl{GF2Sparse/QuinticIsogeny.lean}.
+
+\section{Relative degree twelve for the ten-input elliptic split}
+\label{sec:elliptic-real-twelve}
+In the 5,064-factor expansion of the ten-input certificate,
+exactly 23 factors have relative degree greater than 12 over
+\(\mathbb F_{2^{20}}\). They all have binary degree 260.
+The indexed quadratic elimination at each mask gives 1,029
+children of binary degree 130. The 23 lists are disjoint.
+Each of these 23,667 children admits a real pencil of height 12.
+Consequently the full order of the elliptic pentanomial and its
+reciprocal is determined by projected logarithms of relative
+degree at most 12 and binary degree at most 240.
+
+The verifier reconstructs the 23 indexed eliminations from the
+original expansion and checks their unprojected field identities.
+It compares their combined set of large children with the complete
+real-pencil archive. For each child the factorization and norm
+argument of Section~\ref{sec:elliptic-real-front} bounds every new
+relative degree by 12. A binary irreducible of degree \(d\) has
+relative degree \(d/\gcd(d,20)\), giving \(d\le240\).
+Each pencil can be expanded separately and its logarithmic
+coefficients checked by binary field powering.
+\nolinkurl{data/degree-1229-elliptic-ten-real-pencils.json.gz}.
+
 \end{document}
