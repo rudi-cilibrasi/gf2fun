@@ -851,6 +851,12 @@ for(i=1,2,my(k=[141,191][i]); print([k,quadclassunit(4*(2^k+5)).no]))
 GP
 ~~~
 
+For the explicit gcd in the full-order criterion, every possible prime divisor at $k=141$ is one modulo $2\cdot51542639524661795300074174250365699$. At $k=191$ the multiplicative order of two modulo any such prime must exceed $10^{16}$. The calculation reduces a two-dimensional lattice and checks 52 gcds to cover 710 divisors in the second case. Lean verifies both discrete logarithms and the order restriction at $k=141$. Prime factors can still enter the root-order index through the ray class group. [Proof](results.pdf#page=251) · [Lean certificate](GF2Sparse/TwistedCyclotomic.lean)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_correction.py --jobs 4
+~~~
+
 To reproduce the optimal normal basis classification, run the finite orbit and order checks and the formal coefficient bound.
 
 ~~~sh

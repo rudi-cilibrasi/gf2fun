@@ -217,13 +217,14 @@ private def orderCheck (p : ℕ) (factors : List ProvenPrime) : Bool :=
   (factors.map Subtype.val).prod == p-1 && power (p-1) == 1 &&
     factors.all (fun q => power ((p-1)/q.val) != 1)
 
+private theorem binPow_eq_pow {p : ℕ} (j : ℕ) (x : ZMod p) : npowBinRec j x = x^j := by
+  induction j with
+  | zero => simp [npowBinRec_zero]
+  | succ i ih => rw [npowBinRec_succ, ih, pow_succ]
+
 private theorem checked_order {p : ℕ} (hp : 1 < p) (factors : List ProvenPrime)
     (hc : orderCheck p factors = true) : p.Prime ∧ orderOf (2 : ZMod p) = p-1 := by
-  have bin (j : ℕ) (x : ZMod p) : npowBinRec j x = x^j := by
-    induction j with
-    | zero => simp [npowBinRec_zero]
-    | succ i ih => rw [npowBinRec_succ, ih, pow_succ]
-  simp only [orderCheck, bin, Bool.and_eq_true, beq_iff_eq, bne_iff_ne, List.all_eq_true] at hc
+  simp only [orderCheck, binPow_eq_pow, Bool.and_eq_true, beq_iff_eq, bne_iff_ne, List.all_eq_true] at hc
   have powers (q : ℕ) (hq : q.Prime) (hd : q ∣ p-1) : (2 : ZMod p)^((p-1)/q) ≠ 1 := by
     have hm := mem_list_primes_of_dvd_prod hq.prime (L := factors.map Subtype.val)
       (by intro a ha; obtain ⟨c, _, rfl⟩ := List.mem_map.1 ha; exact c.property.prime)
@@ -296,6 +297,64 @@ theorem irreducible_191 : Irreducible (candidate (2^191)) := by
       p77158673929, p127391413339, p56202143607667]
     (by decide +kernel)
   exact irreducible_candidate (by decide) (by decide) hp ho
+
+def logThree141 : ℕ := 1189854635141435548764595604064217390090166
+def logThree191 : ℕ := 2102673075293559018416977571517569060043734472716212973710
+
+theorem log_three_141 : (2 : ZMod (2^141+5)) ^ logThree141 = 3 := by
+  rw [← binPow_eq_pow]; decide +kernel
+
+theorem log_three_191 : (2 : ZMod (2^191+5)) ^ logThree191 = 3 := by
+  rw [← binPow_eq_pow]; decide +kernel
+
+private theorem dvd_sub_iff_cast_eq {l a b : ℕ} (h : b ≤ a) :
+    l ∣ a-b ↔ (a : ZMod l) = (b : ZMod l) := by
+  rw [← ZMod.natCast_eq_zero_iff, Nat.cast_sub h, sub_eq_zero]
+
+/-- The explicit gcd in the order of the half-field projection. -/
+def normCorrection (m j : ℕ) : ℕ := Nat.gcd (2^m-1) (2^j-3)
+
+private theorem correction_powers {l m j : ℕ} (hle : 3 ≤ 2^j)
+    (hd : l ∣ normCorrection m j) :
+    (2 : ZMod l)^m = 1 ∧ (2 : ZMod l)^j = 3 := by
+  unfold normCorrection at hd
+  constructor
+  · have hd2 : l ∣ 2^m-1 := Nat.dvd_trans hd (Nat.gcd_dvd_left ..)
+    simpa only [Nat.cast_pow, Nat.cast_ofNat, Nat.cast_one] using
+      (dvd_sub_iff_cast_eq (l := l) (b := 1) (Nat.two_pow_pos m)).mp hd2
+  · have hd3 : l ∣ 2^j-3 := Nat.dvd_trans hd (Nat.gcd_dvd_right ..)
+    simpa only [Nat.cast_pow, Nat.cast_ofNat] using (dvd_sub_iff_cast_eq (l := l) hle).mp hd3
+
+/-- Every prime in the explicit norm correction at k = 141 has order of two
+    divisible by the large prime factor of (2^141 + 4)/2. -/
+theorem correction_141_order {l : ℕ} (hl : l.Prime)
+    (hd : l ∣ normCorrection ((2^141+4)/2) logThree141) :
+    51542639524661795300074174250365699 ∣ orderOf (2 : ZMod l) := by
+  have hle : 3 ≤ 2^logThree141 :=
+    le_trans (by decide : 3 ≤ 2^2) (Nat.pow_le_pow_right (by decide) (by decide : 2 ≤ logThree141))
+  obtain ⟨h2, h3⟩ := correction_powers (l := l) (m := (2^141+4)/2) (j := logThree141) hle hd
+  by_contra hn
+  have hQ : Nat.Prime 51542639524661795300074174250365699 :=
+    p51542639524661795300074174250365699.property
+  have hper : (2 : ZMod l)^27041622 = 1 :=
+    orderOf_dvd_iff_pow_eq_one.mp
+      (((hQ.coprime_iff_not_dvd.mpr hn).symm).dvd_of_dvd_mul_right
+        (show orderOf (2 : ZMod l) ∣ 27041622 * 51542639524661795300074174250365699 from
+          orderOf_dvd_of_pow_eq_one h2))
+  have hA : (2 : ZMod l)^4490 = (3 : ZMod l)^241 := by
+    rw [← h3, ← pow_mul]
+    exact pow_eq_pow_of_modEq (by decide +kernel) hper
+  have hB : (2 : ZMod l)^2322 * (3 : ZMod l)^5898 = 1 := by
+    rw [← h3, ← pow_mul, ← pow_add]
+    exact (pow_eq_pow_of_modEq (b := 0) (by decide +kernel) hper).trans (pow_zero _)
+  have hda : l ∣ 2^4490 - 3^241 :=
+    (dvd_sub_iff_cast_eq (by decide +kernel)).mpr (by
+      simpa only [Nat.cast_pow, Nat.cast_ofNat] using hA)
+  have hdb : l ∣ 2^2322 * 3^5898 - 1 :=
+    (dvd_sub_iff_cast_eq (by decide +kernel)).mpr (by
+      simpa only [Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat, Nat.cast_one] using hB)
+  have hg : Nat.gcd (2^4490 - 3^241) (2^2322 * 3^5898 - 1) = 1 := by decide +kernel
+  exact hl.not_dvd_one (hg ▸ Nat.dvd_gcd hda hdb)
 
 end
 end GF2Sparse.TwistedCyclotomic

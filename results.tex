@@ -18887,4 +18887,62 @@ three dividing the two root orders are then \(9\) and \(243\).
 The field identifications above are unconditional. The full orders
 of the two roots remain open.
 
+\clearpage
+\section{Excluding small primes from the cyclotomic norm correction}
+\label{sec:twisted-correction-lattice}
+
+For the same two pentanomials, put \(m=(p-1)/2\), choose \(j\)
+with \(2^j=3\bmod p\), and write \(D=\gcd(2^m-1,2^j-3)\) as in
+Section~\ref{sec:twisted-full-ray}. The following restrictions
+on the explicit factor \(D\) are unconditional.
+\begin{theorem}
+At \(k=141\) every prime \(\ell\mid D\) satisfies
+\(\ell\equiv1\bmod 2Q\), where the prime \(Q\) is
+\[
+                  Q=51542639524661795300074174250365699.
+\]
+At \(k=191\) every prime \(\ell\mid D\) satisfies
+\(\ord_\ell(2)>10^{16}\).
+\end{theorem}
+\begin{proof}
+For \(d\mid m\), put \(g_d=\gcd(2^d-1,2^{j\bmod d}-3)\).
+If \(\ell\mid D\) and \(d=\ord_\ell(2)\), then \(\ell\mid g_d\).
+Also \(g_d\mid g_e\) whenever \(d\mid e\mid m\).
+
+An integer lattice allows an exact evaluation of \(g_d\) using
+smaller exponents. Take a basis of
+\[
+          \Lambda_d=\{(u,v)\in\mathbb Z^2:u+jv=0\bmod d\}
+\]
+and write \(H(u,v)=|2^{u_+}3^{v_+}-2^{u_-}3^{v_-}|\),
+where \(w_+=\max(w,0)\) and \(w_-=\max(-w,0)\).
+Then \(g_d\) is the gcd of the two basis values of \(H\).
+Indeed, a common divisor of these values is coprime to six because
+some basis vector has \(u\ne0\), giving an odd value, and some
+has \(v\ne0\), giving a value prime to three. For a modulus
+coprime to six, the pairs with \(2^u3^v=1\) form a subgroup
+of \(\mathbb Z^2\). It contains both basis vectors exactly when
+it contains \((d,0),(-j,1)\). This proves the claimed gcd identity
+including prime powers. We Gauss-reduce the basis before evaluating
+the binomials. If the second vector is long, the first value of \(H\)
+is a multiple of \(g_d\), so the original two powers can instead
+be taken modulo that value.
+
+The verifier checks \(2^j=3\bmod p\) directly for both supplied
+logarithms. At \(k=141\), \(m=27041622\,Q\) and \(g_{27041622}=1\).
+Thus \(Q\mid\ord_\ell(2)\mid\ell-1\) for every \(\ell\mid D\).
+Since \(Q,\ell\) are odd, \(2Q\mid\ell-1\). At \(k=191\) there
+are 710 divisors of \(m\) at most \(10^{16}\). Only 52 are maximal
+under divisibility. Each has \(g_d=1\). The verifier checks the
+factorization of \(p-1\), the determinant and congruences of
+each lattice basis, and all the required gcds. See
+\nolinkurl{scripts/check_twisted_correction.py}.
+Lean verifies both full discrete logarithms. At \(k=141\) it also
+proves \(Q\mid\ord_\ell(2)\) for every prime \(\ell\mid D\)
+in \texttt{correction\_141\_order}. Its two short relations give
+\(\gcd(2^{4490}-3^{241},2^{2322}3^{5898}-1)=1\).
+\end{proof}
+The theorem concerns the norm correction. Index divisors can also
+come from the ray groups, as seven does for \(C_{11}\).
+
 \end{document}
