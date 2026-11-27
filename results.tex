@@ -14628,4 +14628,99 @@ The exact correlated sums and finite inequalities are checked by
 \nolinkurl{GF2Sparse/FactorFieldIndex.lean}.
 \end{proof}
 
+\section{When five terms cannot give a normal root and a normal inverse}
+\label{sec:endpoint-normal}
+A normal element of \(\mathbb F_{2^n}\) is one whose \(n\) conjugates
+form a binary basis. Their sum must be nonzero, so its trace is one.
+For a monic irreducible with constant one, the traces of a root and
+its inverse are the coefficients of \(X^{n-1}\) and \(X\), respectively.
+
+\begin{theorem}\label{thm:endpoint-parity}
+Let \(n=4m+1\), \(m\ge3\), and \(2\le b\le n-2\). The pentanomial
+\[
+ f_b=X^n+X^{n-1}+X^b+X+1
+\]
+is squarefree. Its number of irreducible factors is odd exactly when
+\(m+{\bf1}_{b\in\{2,n-2\}}\) is even.
+In every degree \(n\equiv29\bmod40\), no irreducible binary polynomial
+with at most five terms has a normal root and a normal inverse.
+\end{theorem}
+\begin{proof}
+Reciprocation replaces \(b\) by \(n-b\), so take \(b\) even.
+Put \(V=X^m-1\) and lift \(f_b\) to the monic integer polynomial
+\(F=(X+1)V^4-X^b\). In characteristic two \(f_b'=V^4\), and \(f_b\)
+is coprime to \(V\). Write \(x\) for the class of \(X\) in
+\(\mathbb Z[X]/F\), and \(N\) for the determinant of multiplication.
+Both \(x\) and \(V(x)\) are units, the latter because \(F(v)=-v^b\)
+at every \(m\)-th root of unity \(v\). Thus \(N(V(x))^4=1\).
+Differentiation at \(x\) gives
+\[
+ F'(x)=V(x)^4(A+4mR),\qquad
+ A=(1-b)-b/x,\qquad R=(x+1)x^{m-1}/V(x).
+\]
+The constant, linear and quadratic coefficients of \(F\) are
+\(1,1,-{\bf1}_{b=2}\). The first two elementary symmetric functions
+of the inverse roots are therefore \(-1,-{\bf1}_{b=2}\). Since \(b\)
+is even, terms of degree three and above in \(b\) vanish modulo eight,
+and
+\[
+ N(A)\equiv(1-b)^{n-1}
+ -{\bf1}_{b=2}\,b^2(1-b)^{n-2}\equiv 1+4{\bf1}_{b=2}\pmod8.
+\]
+Now \(A\equiv1\bmod2\). The determinant expansion to first order gives
+\(N(A+4mR)\equiv N(A)(1+4m\operatorname{Tr}(R))\bmod8\).
+For odd \(m\), \(V\) has simple roots modulo two. In characteristic
+two the partial fractions of \(R\) have constant part one and simple
+fractions at these roots \(v\). Each fraction \(1/(x-v)\) has trace
+zero, since its trace is \(f_b'(v)/f_b(v)=0\). Thus
+\(\operatorname{Tr}(R)=n=1\bmod2\). For even \(m\) the trace term
+already vanishes modulo eight. The discriminant sign is positive
+because \(n\equiv1\bmod4\). We obtain
+\(\operatorname{disc}(F)\equiv1+4m+4{\bf1}_{b=2}\bmod8\).
+The factor count follows from the
+\href{https://doi.org/10.2140/pjm.1962.12.1099}{Stickelberger--Swan theorem}.
+
+If \(n\equiv29\bmod40\), only \(b=2,n-2\) have odd factor count.
+For \(b=2\), reducing the exponents modulo five gives \(4,3,2,1,0\).
+Thus \(X^4+X^3+X^2+X+1\) divides \(f_2\) and also its reciprocal.
+A polynomial with both traces one must contain \(X^n,X^{n-1},X,1\);
+irreducibility in degree greater than one forces odd weight.
+This exhausts the supports of weight at most five.
+\end{proof}
+
+In degree \(1229\), a degree-\(1229\) element is normal exactly when
+its trace is one. Indeed \(1229\) and \(307\) are prime,
+\(1228=4\cdot307\), and \(2\) has order \(1228\) modulo \(1229\)
+by testing the powers \(614\) and \(4\). Thus \(Y^{1229}-1\)
+has just two irreducible factors, \(Y+1\) and \(\Phi_{1229}(Y)\).
+By the normal basis theorem the Frobenius module is the direct sum of
+the two simple modules. A degree-\(1229\) element has nonzero component
+on the large one, and trace detects its component on the other.
+
+Of the 639,166 irreducible pentanomials, exactly 1,203 have normal
+roots, another 1,203 have normal inverse roots, and 636,760 have
+neither. Every member of the first two classes passes all four known
+prime-index tests and the test against the known subgroup. The count
+follows by reading the two adjacent endpoint bits in the full support
+census, including the reciprocals. The Lean kernel independently
+checks proper factors for all 1,226 pentanomials with both bits set.
+The irreducible polynomial
+\[
+   X^{1229}+X^{1228}+X^{12}+X^{11}+X^8+X+1
+\]
+has both traces one and passes the same five order tests. Hence seven
+is the exact minimum weight for an irreducible with both normality
+properties in degree \(1229\). Its full order remains undetermined.
+The factor table and the independent checks are in
+\nolinkurl{data/degree-1229-endpoint-factors.csv} and
+\nolinkurl{scripts/check_endpoint_normality.py}.
+
+For comparison, more than \(2^{616}\) primitive polynomials of degree
+\(1229\) have both normality properties and at most 311 terms.
+In Section~\ref{sec:two-ended-weight} take the even-weight template
+\(X^{1229}+X^{1228}+X+1\) and any 720 consecutive interior positions
+excluding \(1,1228\). There are 507 such intervals, and the count holds
+for each of them. The two traces are fixed outside the interval and
+at most 307 changes occur inside it.
+
 \end{document}

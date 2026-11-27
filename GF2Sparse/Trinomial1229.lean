@@ -1,16 +1,22 @@
 import GF2Sparse.PackedSquare
 import GF2Sparse.ProgressionTriples
+import GF2Sparse.Table
 
-/-! Proper factors of all 1228 trinomials in degree 1229. -/
+/-! Proper factors of every degree-1229 trinomial and every pentanomial with both adjacent endpoint taps. -/
 
 namespace GF2Sparse.Degree1229
 
 open Polynomial
 
--- Expand the 614 divisors and their reciprocals into literal factors. The
--- theorem below checks their products independently of this preprocessing.
+-- Expand one divisor from each reciprocal pair. Only the checked mask
+-- products below enter the mathematical proof.
 open Lean Elab Term in
-elab "trinomialFactors1229% " csv:term : term => do
+elab "reciprocalFactors1229% " family:str csv:term : term => do
+  let endpoints ← match family.getString with
+    | "trinomial" => pure false
+    | "endpoints" => pure true
+    | _ => throwError "unknown degree-1229 family"
+  let first := if endpoints then 2 else 1
   let e ← elabTerm csv (some (mkConst ``String))
   let .lit (.strVal value) := e.consumeMData | throwError "expected a literal CSV"
   let "tap,factor_mask" :: lines := value.trimAscii.toString.splitOn "\n"
@@ -20,20 +26,20 @@ elab "trinomialFactors1229% " csv:term : term => do
     let [sa,sf] := line.splitOn "," | throwError "invalid factor row"
     let some a := sa.toNat? | throwError "invalid tap"
     let some g := sf.toNat? | throwError "invalid divisor"
-    unless a == small.size + 1 && 1 < g && g.log2 < 1229 do
+    unless a == small.size + first && 1 < g && g.log2 < 1229 do
       throwError "invalid tap sequence or factor degree"
     small := small.push g
-  unless small.size == 614 do throwError "expected 614 proper divisors"
+  unless small.size + first == 615 do throwError "incomplete factor table"
+  let base := if endpoints then (1 <<< 1228) ||| 3 else 1
   let mut rows := #[]
-  for i in [0:1228] do
-    let a := i+1
-    let source := small[min a (1229-a) - 1]!
+  for a in [first:1230-first] do
+    let source := small[min a (1229-a) - first]!
     let mut g := source
     if a > 614 then
       g := 0
       for j in [0:source.log2+1] do
         if source.testBit j then g := g ||| (1 <<< (source.log2-j))
-    let mut rem := (1 <<< 1229) ||| (1 <<< a) ||| 1
+    let mut rem := (1 <<< 1229) ||| (1 <<< a) ||| base
     let mut q := 0
     while rem > 0 && g.log2 ≤ rem.log2 do
       let j := rem.log2-g.log2
@@ -43,33 +49,30 @@ elab "trinomialFactors1229% " csv:term : term => do
     rows := rows.push (g,q)
   return toExpr rows.toList
 
-private def factors : List (ℕ × ℕ) :=
-  trinomialFactors1229% (include_str "../data/degree-1229-trinomial-factors.csv")
-
-private def checkFrom (a : ℕ) : List (ℕ × ℕ) → Bool
-  | [] => a == 1229
+private def checkFrom (mask : ℕ → ℕ) (stop a : ℕ) : List (ℕ × ℕ) → Bool
+  | [] => a == stop
   | (g,q) :: rest => 1 < g && 1 < q &&
-      maskProduct g q == xorShifts [1229,a,0] 1 && checkFrom (a+1) rest
+      maskProduct g q == mask a && checkFrom mask stop (a+1) rest
+
+private def trinomialFactors : List (ℕ × ℕ) :=
+  reciprocalFactors1229% "trinomial" (include_str "../data/degree-1229-trinomial-factors.csv")
+
+private def endpointFactors : List (ℕ × ℕ) :=
+  reciprocalFactors1229% "endpoints" (include_str "../data/degree-1229-endpoint-factors.csv")
 
 set_option maxRecDepth 16384 in
 set_option maxHeartbeats 8000000 in
-private theorem checked : checkFrom 1 factors = true := by decide +kernel
+private theorem trinomials_checked :
+    checkFrom (fun a => xorShifts [1229,a,0] 1) 1229 1 trinomialFactors = true := by decide +kernel
 
-private theorem reducible_of_product {n k g q : ℕ} (hg : 1 < g) (hq : 1 < q)
-    (he : maskProduct g q = xorShifts [n,k,0] 1) : ¬Irreducible (trinomial n k) := by
-  intro hi
-  have hp : trinomial n k = decode g * decode q := by
-    rw [← decode_maskProduct, he, PackedSquare.decode_trinomial_taps, trinomial]
-  have deg (x : ℕ) (hx : 1 < x) : 0 < (decode x).natDegree := by
-    rw [natDegree_decode]
-    exact (Nat.le_log2 (by omega)).2 (by simpa using hx)
-  rcases hi.isUnit_or_isUnit hp with hu | hu
-  · exact (not_isUnit_of_natDegree_pos _ (deg g hg)) hu
-  · exact (not_isUnit_of_natDegree_pos _ (deg q hq)) hu
+set_option maxRecDepth 16384 in
+set_option maxHeartbeats 8000000 in
+private theorem endpoints_checked :
+    checkFrom (fun a => fiveTermMask 1229 1228 a 1) 1228 2 endpointFactors = true := by decide +kernel
 
-private theorem reducible_of_checked {a k : ℕ} {xs : List (ℕ × ℕ)}
-    (hc : checkFrom a xs = true) (ha : a ≤ k) (hk : k < 1229) :
-    ¬Irreducible (trinomial 1229 k) := by
+private theorem reducible_of_checked {mask : ℕ → ℕ} {stop a k : ℕ} {xs : List (ℕ × ℕ)}
+    (hc : checkFrom mask stop a xs = true) (ha : a ≤ k) (hk : k < stop) :
+    ¬Irreducible (decode (mask k)) := by
   induction xs generalizing a with
   | nil =>
     simp only [checkFrom, beq_iff_eq] at hc
@@ -80,12 +83,27 @@ private theorem reducible_of_checked {a k : ℕ} {xs : List (ℕ × ℕ)}
     obtain ⟨⟨⟨hg,hq⟩,he⟩,ht⟩ := hc
     by_cases heq : k = a
     · subst k
-      exact reducible_of_product hg hq he
+      rw [← he, decode_maskProduct]
+      intro hi
+      have nonunit (x : ℕ) (hx : 1 < x) : ¬IsUnit (decode x) := by
+        apply not_isUnit_of_natDegree_pos
+        rw [natDegree_decode]
+        exact (Nat.le_log2 (by omega)).2 (by simpa using hx)
+      exact (hi.isUnit_or_isUnit rfl).elim (nonunit g hg) (nonunit q hq)
     · exact ih ht (by omega)
 
 /-- Every normalized degree-1229 trinomial has a factorization into two nonunits. -/
 theorem trinomial_reducible {a : ℕ} (ha : 0 < a) (han : a < 1229) :
-    ¬Irreducible (trinomial 1229 a) := reducible_of_checked checked ha han
+    ¬Irreducible (trinomial 1229 a) := by
+  simpa only [PackedSquare.decode_trinomial_taps, trinomial] using
+    reducible_of_checked trinomials_checked ha han
+
+/-- Both adjacent endpoint coefficients cannot be one in an irreducible
+degree-1229 pentanomial. -/
+theorem endpoint_pentanomial_reducible {b : ℕ} (hb : 1 < b) (hbn : b < 1228) :
+    ¬Irreducible ((X : BinaryPoly)^1229 + X^1228 + X^b + X + 1) := by
+  simpa only [decode_fiveTermMask, pow_one] using
+    reducible_of_checked endpoints_checked hb hbn
 
 /-- Every irreducible degree-1229 polynomial excludes all same-degree trinomial
 sources under power sampling. -/
