@@ -1,25 +1,27 @@
 import GF2Sparse.SubfieldProducts
 import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.FieldTheory.Finite.Extension
 
 /-! Arithmetic and Frobenius certificates for the upper bound on a scalar order. -/
 
 namespace GF2Sparse.SubfieldProducts
 
+private theorem twice_choose_two (a : ℕ) : 2 * a.choose 2 + a = a^2 := by
+  induction a with
+  | zero => simp
+  | succ a ih =>
+    rw [Nat.choose_succ_succ a 1, Nat.choose_one_right]
+    nlinarith
+
 /-- Count signed triples by their choices of positive and negative coordinates. -/
 theorem scalar_ball_count (k : ℕ) :
     12 * (1 + 6*k + 6*k.choose 2 + 6*k^2 + 2*k.choose 3 + 6*k.choose 2*k)
       = 5*(2*k+1)^3 + 7*(2*k+1) := by
-  have pair (a : ℕ) : 2 * a.choose 2 + a = a^2 := by
-    induction a with
-    | zero => simp
-    | succ a ih =>
-      rw [Nat.choose_succ_succ a 1, Nat.choose_one_right]
-      nlinarith
   induction k with
   | zero => decide
   | succ k ih =>
     rw [Nat.choose_succ_succ k 2, Nat.choose_succ_succ k 1, Nat.choose_one_right]
-    nlinarith [pair k]
+    nlinarith [twice_choose_two k]
 
 /-- With positive budget k+1 and negative budget k, differences still have
 degree at most 2k+1. This is the count for an even field degree. -/
@@ -27,14 +29,8 @@ theorem scalar_even_ball_count (k : ℕ) :
     12 * (1 + 3*(k+1) + 3*k + 3*(k+1).choose 2 + 3*k.choose 2 + 6*(k+1)*k
       + (k+1).choose 3 + k.choose 3 + 3*(k+1).choose 2*k + 3*(k+1)*k.choose 2)
       = (2*k+2)*(5*(2*k+2)^2+4) := by
-  have pair (a : ℕ) : 2 * a.choose 2 + a = a^2 := by
-    induction a with
-    | zero => simp
-    | succ a ih =>
-      rw [Nat.choose_succ_succ a 1, Nat.choose_one_right]
-      nlinarith
   rw [Nat.choose_succ_succ k 2, Nat.choose_succ_succ k 1, Nat.choose_one_right]
-  nlinarith [scalar_ball_count k, pair k]
+  nlinarith [scalar_ball_count k, twice_choose_two k]
 
 /-- The two exponent slopes differ by at most the support width after
 multiplication by the larger denominator. -/
@@ -103,5 +99,39 @@ theorem scalar_frobenius_residue {K : Type*} [Field K] [CharP K 2] (x : K)
   calc (x+1)^t = (x+1)^(2^j) := by rw [reduce _ hy t, reduce _ hy (2^j), ht]
        _ = x^(2^j)+1 := by rw [add_pow_expChar_pow, one_pow]
        _ = x^t+1 := by rw [reduce _ hx t, reduce _ hx (2^j), ht]
+
+/-- Once the Frobenius gap ratio reaches eight, the outer polynomial of
+the Laurent composition is reducible. -/
+theorem dyadic_outer_reducible (k : ℕ) (hk : 3 ≤ k) :
+    ¬Irreducible ((Polynomial.X : BinaryPoly)^(2^k) + Polynomial.X + 1) := by
+  open Polynomial in
+  let f : BinaryPoly := X^(2^k)+X+1
+  have hgt (n : ℕ) (hn : 3 ≤ n) : 2*n < 2^n := by
+    induction n, hn using Nat.le_induction with
+    | base => decide
+    | succ n hn ih => rw [pow_succ]; omega
+  have hdeg : f.natDegree = 2^k := by
+    have hsmall : 1 < 2^k := by have := hgt k hk; omega
+    dsimp [f]
+    rw [add_assoc, Polynomial.natDegree_add_eq_left_of_natDegree_lt, Polynomial.natDegree_X_pow]
+    calc _ ≤ max (Polynomial.X : BinaryPoly).natDegree (1 : BinaryPoly).natDegree :=
+           Polynomial.natDegree_add_le _ _
+         _ = 1 := by simp
+         _ < _ := by simpa only [Polynomial.natDegree_X_pow] using hsmall
+  have hid : f^(2^k)+f = (Polynomial.X : BinaryPoly)^(2^(k+k))-Polynomial.X := by
+    dsimp [f]
+    rw [add_pow_expChar_pow, add_pow_expChar_pow, one_pow, ← pow_mul, pow_add]
+    rw [CharTwo.sub_eq_add]
+    linear_combination (Polynomial.X^(2^k)+1) * (CharTwo.two_eq_zero (R := BinaryPoly))
+  intro hi
+  have hdvd : f ∣ (Polynomial.X : BinaryPoly)^(Nat.card (ZMod 2))^(k+k)-Polynomial.X := by
+    rw [Nat.card_zmod, ← hid]
+    exact dvd_add (dvd_pow_self f (by positivity)) (dvd_refl f)
+  have bound := Nat.le_of_dvd (by omega : 0 < k+k)
+    (hi.natDegree_dvd_of_dvd_X_pow_card_pow_sub_X hdvd)
+  change f.natDegree ≤ k+k at bound
+  rw [hdeg] at bound
+  have := hgt k hk
+  omega
 
 end GF2Sparse.SubfieldProducts

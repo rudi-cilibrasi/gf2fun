@@ -20298,4 +20298,114 @@ norm polynomials are in \nolinkurl{data/scalar-pair-products.json}.
 \nolinkurl{scripts/check_scalar_product_orders.py} verifies them
 with the product enumerator \nolinkurl{scripts/check_scalar_pair_products.cpp}.
 
+\clearpage
+\section{The scalar bound in every parity and an exceptional degree six}
+\label{sec:scalar-all-parities}
+Let \(n=ij\) for coprime integers \(i,j>1\). Suppose a binary
+irreducible of degree \(n\), weight at most five and support of gcd
+one has a root in the product of the two subfields. Write \(i\) for
+the degree on the side where the support powers span a plane and
+\(A\) for the order on that side. In every parity,
+\[
+        i<j,\qquad \frac{3i^2}{4}\le A<\frac{12i^2}{5}.
+\]
+Moreover \(3A\le n\) and \(9i\le4j\), except at \((i,j,A)=(2,3,3)\).
+
+The signed-triple calculation already handles all non-dyadic gap
+ratios. Consider unequal gaps \(g,Kg\) with \(K=2^k\), \(k\ge1\).
+The two pairs are \((a,a+g),(b,b+Kg)\), and the singleton is \(c\).
+As in Section~\ref{sec:scalar-independent-bound},
+\(B=\ord(\beta)\ge3j^2/4\). If \(3A\ge4i^2\), then
+\(B>K(n-g)\), giving the integer equality \(b+(K-1)c=Ka\).
+Set \(D=X^{a-c}+X^{a+g-c}\). The entire polynomial, multiplied by
+\(X^{-c}\), is now the Laurent polynomial
+\[
+                     1+D+D^{2^k}.
+\]
+The two exponents of \(D\) are distinct and nonzero. For every
+nonconstant binary polynomial \(H\) of constant term one, \(H(D)\)
+is a nonunit Laurent polynomial. When both exponents have the same
+sign, its constant and outermost terms survive. When their signs
+differ, its two extreme terms survive. Consequently any factorization
+of \(T^{2^k}+T+1\) into positive-degree factors would factor the
+given irreducible after removing monomial shifts.
+
+All roots of \(T^{2^k}+T+1\) lie in \(\mathbb F_{2^{2k}}\), since
+two applications of the \(k\)-fold Frobenius fix them. For \(k\ge3\)
+its degree \(2^k\) exceeds \(2k\), so it is reducible.
+For \(k=1,2\) the outer polynomials are irreducible of degrees
+two and four. At the split root, \(D(r)=w=\alpha^{a-c}\).
+The three normalized scalar values are \(1,w,w^K\), and their
+exponents generate \(\langle\alpha\rangle\) because the support has
+gcd one. Thus the scalar field is \(\mathbb F_2(w)\).
+For \(k=1\) one gets \(i=2,A=3\). For \(k=2\) one gets
+\(i=4,A=15\), since a root of \(T^4+T+1\) has order fifteen.
+Both satisfy the quadratic upper bound. This completes the proof for
+even \(i\) as well.
+
+Finally, if \(3A>n\), the unequal gaps must be \(A,2A\).
+The bounds on \(A,B\) give \(2A+B>2ij\), so \(B>2(n-A)\)
+and the same Laurent argument forces \(i=2,A=3\). Since \(i<j\),
+\(j\) is odd and \(2j<9\), one gets \(j=3\).
+The reciprocal pair \(X^6+X^4+X^2+X+1\) and
+\(X^6+X^5+X^4+X^2+1\) realizes the exception. Their product is
+\(\Phi_{21}(X)\) in the binary ring, and \(2\) has order six modulo 21.
+Lean proves the outer reducibility for every \(k\ge3\) in
+\nolinkurl{GF2Sparse/ScalarOrderBound.lean}.
+
+\clearpage
+\section{Eight possible scalar fields among all degrees through 1000}
+\label{sec:scalar-composite-census}
+For any coprime integers \(13\le i\le1000\) and \(j>i\), a binary
+irreducible of degree \(ij\) with at most five terms and support of
+gcd one has no root in
+\(\mathbb F_{2^i}^{\times}\mathbb F_{2^j}^{\times}\).
+This holds for every larger partner \(j\), including composites.
+Among smaller degrees from 2 to 12, the same exclusion holds at
+\(i=7,10,11\).
+
+Indeed the previous section places the plane on the smaller side.
+Its three nonzero points include 1 because the support contains 0.
+Write the others as \(x,1+x\). The support has gcd one, so its
+powers of the scalar generate its whole cyclic group.
+Thus \(x,1+x\) must together generate the group of order \(A\),
+with \(\ord_A(2)=i\) and \(3i^2/4\le A<12i^2/5\).
+For odd \(a\), let \(D(a)\) be the degree of the binary gcd of
+\(X^a+1\) and \((X+1)^a+1\). Squarefreeness makes this exactly
+the number of \(x\) with both \(x,1+x\) in the group. Each pair
+generates a unique subgroup. M\"obius inversion gives its exact count
+at order \(A\) as \(E(A)=\sum_{d\mid A}\mu(A/d)D(d)\).
+
+Calculate the order of two for every odd \(A<12\cdot1000^2/5\).
+For a prime, divide its predecessor by prime factors as long as
+modular powering still gives one. On a prime-power lift, the order
+either stays fixed or gains a factor of that prime. Combine coprime
+components by the least common multiple. There are 12,780 orders in
+the resulting quadratic intervals. The complete list with \(E(A)>0\)
+is
+\[
+\begin{array}{c|rrrrrrrr}
+ i&2&3&4&5&6&8&9&12\\
+ A&3&7&15&31&63&85&73&273\\
+ E(A)&2&6&12&30&54&24&18&24
+\end{array}
+\]
+The gcd calculation uses the signed Frobenius representatives from
+Section~\ref{sec:scalar-independent-bound}. For \(A=2^s-1\)
+one can directly use \(D(A)=A-1\).
+\nolinkurl{scripts/check_coprime_scalar_orders.py} reproduces the
+sieve and inversion with integer and binary polynomial arithmetic.
+
+For example, suppose \(n\) has three distinct prime factors
+\(7\le p<q<r\le10000\) with \(r<pq\). For support of gcd one the
+root cannot split across any partition of the three primes. Each
+partition has one prime on its smaller side, so the prime census of
+Section~\ref{sec:scalar-independent-bound} excludes all three.
+For two odd primes \(p<q\) covered by that census, the full-degree
+prime power can be taken prime whenever \(q\nmid2^p-1\).
+In fact lifting the order of two from a prime \(s\) to a power
+of \(s\) multiplies the order by a power of \(s\).
+If the lifted order is \(pq\) and the prime itself has smaller
+order, then \(s=q\) and \(\ord_q(2)=p\), since \(\ord_p(2)<q\).
+
 \end{document}
