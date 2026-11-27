@@ -14723,4 +14723,167 @@ excluding \(1,1228\). There are 507 such intervals, and the count holds
 for each of them. The two traces are fixed outside the interval and
 at most 307 changes occur inside it.
 
+\section{Sparse primitive polynomials with normal roots in a six-element orbit}
+\label{sec:normal-weight-orbit}
+For \(z\ne0,1\), consider the six fractional linear functions over \(\F\),
+\[
+ z,\quad 1+z,\quad z^{-1},\quad (1+z)^{-1},\quad
+ z/(1+z),\quad (1+z)/z .
+\]
+\begin{theorem}\label{thm:normal-weight-orbit}
+In every sufficiently large degree \(n\), at least \(2^{0.5438n}\)
+distinct binary polynomials of weight at most \(0.219245n\) have a
+root \(z\) for which all six values are primitive and
+\(z,z^{-1},(1+z)^{-1}\) are normal. In even degree all six are normal.
+
+More precisely, use \(r,p,\delta,c,s\) from
+Theorem~\ref{thm:weight-entropy-rate} and \(u=10\sqrt{n\log n}\).
+Take any template whose two adjacent endpoint coefficients are one.
+For \(d=\delta n+O_r(u)\) as below, choose any \(a,b\ge1\) with \(a+b=d\).
+Prescribe the lowest \(a\) and highest \(b\) interior coefficients
+of the template. The base-two logarithm of the count with the orbit
+properties and the two difference windows of Section~\ref{sec:two-ended-weight}
+is \(sn+O_r(u)\), uniformly in the template and the split.
+\end{theorem}
+The ordinary strong primitive normal basis theorem gives a primitive
+normal element with normal inverse outside its explicit small exceptions.
+Here the count also constrains the weight and the other fractional linear
+images. \href{https://arxiv.org/abs/math/0610400}{Cohen and Huczynska,
+\emph{The strong primitive normal basis theorem}}.
+
+\begin{proof}
+Let \(K=\mathbb F_{2^n}\), \(q=2^n\), \(N=q-1\), and let \(F\) be the
+binary Frobenius on \(K\). By the normal basis theorem \(K\) is cyclic
+as an \(\F[Y]\)-module with \(Y\) acting by \(F\), and the module is
+isomorphic to \(\F[Y]/(Y^n-1)\). An element fails to be normal exactly
+when it lies in \(D(F)K\) for some distinct monic irreducible
+\(D\mid Y^n-1\), including when factors repeat. This subspace has
+codimension \(\deg D\); under the trace pairing its annihilator is
+\(\ker D(F^{-1})\). The annihilators for distinct \(D\) are in direct
+sum by coprimality. Write \(V\) for their sum over \(D\ne Y+1\).
+It meets \(\F=\ker(F^{-1}+1)\) in zero.
+The failure subspace for \(Y+1\) is precisely the trace-zero subspace.
+
+We first bound a mixed character sum. Take \(i=2a,j=2b\),
+\(\chi\) a character of \(U_i\times U_j\),
+\(\lambda,\mu\) characters of \(K^\times\), \(B,C\in V\), and \(E\in K\).
+Write \(\psi(w)=(-1)^{\operatorname{Tr}_{K/\F}(w)}\).
+Unless all the parameters are trivial, one has
+\[
+ \left|\sum_{z\ne0,1}\chi(P_z,P_z^*)\lambda(z)\mu(1+z)
+       \psi\big(Bz+C/z+E/(1+z)\big)\right|\le(i+j+2)\sqrt q.
+\]
+Indeed on monic \(h\in K[T]\) coprime to \(T(T+1)\) use the character
+\[
+ \chi(\mathcal Nh,(\mathcal Nh)^*)\lambda(h(0))\mu(h(1))
+ \psi\!\left(B[T]h^*+C\frac{h'(0)}{h(0)}+
+                         E\frac{h'(1)}{h(1)}\right),
+\]
+where \([T]\) extracts the linear coefficient and \(\mathcal N\) takes
+the product of all coefficient conjugates. The three linear or
+logarithmic derivative terms add under multiplication. This is a
+Hayes character of modulus \(T^{i+1}(T+1)^2\) and \(j\) leading
+coefficients. Taking \(h=T-z\) gives the displayed summand.
+
+To check nontriviality, one can prescribe both finite residues and
+all leading coefficients independently on monic polynomials of
+sufficiently large degree by the Chinese remainder theorem. Fix
+\(h(0)=h(1)=1\). Varying the first derivative at one with both jets
+at zero and infinity fixed forces \(E=0\) for a trivial character.
+Compare \(h\) and its coefficientwise square conjugate.
+The two norms agree, so independently varying the first coefficients
+at infinity and zero forces \(\operatorname{Tr}(Bt)=\operatorname{Tr}(Bt^2)\)
+and \(\operatorname{Tr}(Ct)=\operatorname{Tr}(Ct^2)\) for all \(t\in K\).
+By nondegeneracy \(B,C\) are Frobenius-fixed. Membership in \(V\)
+then forces both to vanish. The successive trace lifting of
+Lemma~\ref{lem:weight-characters} realizes either binary jet while
+holding the other fixed, hence \(\chi=1\). Independent nonzero endpoint
+values then force \(\lambda=\mu=1\). For a nonprincipal character the
+degree of its \(L\)-function is at most \(i+j+2\) and all reciprocal
+zeros have modulus at most \(\sqrt q\). Its degree-one coefficient
+proves the bound.
+\href{https://arxiv.org/pdf/1810.00483\#page=7}{Gorodetsky,
+equations (3.5)--(3.7)}.
+
+Use the nonnegative two-ended weight \(W\) of
+Section~\ref{sec:two-ended-weight}. Its support fixes both traces
+\(\operatorname{Tr}(z)=\operatorname{Tr}(z^{-1})=1\). For those two
+variables only the failures indexed by \(D\ne Y+1\) remain.
+For \((1+z)^{-1}\) use all the factors. Each failure indicator has
+constant Fourier coefficient \(2^{-\deg D}\) and sum of absolute
+coefficients one, by subspace orthogonality.
+
+For each prime \(\ell\mid N\), reduce the logarithms of \(z,1+z\)
+to a fixed base modulo \(\ell\). The failure event for primitivity
+of any of the six values is the union of three lines in
+\(\mathbb F_\ell^2\), with equations \(u=0,v=0,u=v\).
+Its indicator is the sum of the three line indicators minus twice
+the point indicator at the origin. Thus it has absolute Fourier
+mass at most five and constant coefficient
+\(\beta_\ell=3/\ell-2/\ell^2\).
+For the intersection of any set of distinct local failures, the
+constant coefficient in these character parameters is the product
+of the individual constant coefficients. Indeed prime orders have
+disjoint primary parts, and on each of the three additive coordinates
+the annihilators form a direct sum. The mixed sum bound rules out
+any further principal term after evaluation at \(z\).
+
+Write \(\beta_e\) for the constant coefficient of failure \(e\) and
+\(\Delta=\prod_e(1-\beta_e)\). There are at most \(4n\) events.
+Their sum \(S=\sum_e\beta_e\le6(1+\log n)\), since the \(k\)-th prime
+is at least \(k+1\) and the number of degree-\(k\) binary irreducibles
+is at most \(2^k/k\). Every \(\beta_e\le7/9\), whence
+\(\Delta\ge\exp(-9S/2)\gg n^{-27}\).
+Truncate inclusion-exclusion at the first odd integer
+\(t\ge200\log(n+1)\). Bonferroni gives a lower bound for the good
+indicator. Its constant differs from \(\Delta\) by at most
+\(\sum_{h>t}S^h/h!=O(n^{-40})\), using \(h!\ge(h/e)^h\).
+The sum of the absolute Fourier coefficients used in this truncation
+is at most \((1+20n)^{t+1}\).
+
+Use the choice of \(d\) in Theorem~\ref{thm:weight-entropy-rate} with
+the present \(u\). With normalized Fourier coefficients the weight
+satisfies
+\[
+ \frac{\sum_\chi|\widehat W(\chi)|}{\widehat W(1)}
+ \le 2^{d(1+h(r))+u h'(r)} .
+\]
+This follows from the support bound and Parseval in
+Section~\ref{sec:fourier-weight}; translation and the two triangular
+coordinate changes preserve absolute Fourier mass. Relative to
+\((q-2)\widehat W(1)\), the total nonprincipal error is at most
+\[
+ \frac{(2d+2)\sqrt q}{q-2}(1+20n)^{t+1}
+       2^{d(1+h(r))+u h'(r)}
+ \le 2^{-\sqrt n+O(\log^2 n)}=o(n^{-40}).
+\]
+The good roots therefore carry weight \(\gg\Delta(q-2)\widehat W(1)\).
+They all have degree \(n\), their properties are Frobenius-invariant,
+and each minimal polynomial has \(n\) roots. With \(L=n-1-2d\)
+free bits, normalization as in Theorem~\ref{thm:weight-entropy-rate}
+gives probability \(\gg \Delta/n\) to the good polynomials.
+The enlarged \(u\) makes both the total variation error of the
+untruncated product measure and its binomial tails \(O(n^{-90})\)
+by the same Parseval and Hoeffding estimates. On the two windows
+each point has probability \(2^{-L-dh(p)+O_r(u)}\).
+This gives the claimed logarithmic count and distance \(cn+O_r(u)\).
+The template \(X^n+X^{n-1}+X+1\) adds four to the distance bound,
+which the strict constants at \(r=1/36\) absorb.
+
+Finally, for \(D\ne Y+1\), \(D(F)(1)=D(1)=1\), so adding one
+preserves the \(D\)-test. In even degree it also preserves trace
+because \(\operatorname{Tr}(1)=0\). Translating each of the three
+normal values by one gives the other three values in the displayed orbit.
+\end{proof}
+
+The first even degree greater than two admitting all six primitive
+and normal values at a root of weight at most five is \(44\).
+There are exactly two such polynomials there, with interior exponents
+\((1,9,43)\) and \((1,35,43)\). Both adjacent endpoint bits are necessary
+by the two traces. For each even degree from 4 to 44 this leaves the
+single free exponent \(2\le b\le n-2\). The checker factors \(2^n-1\),
+tests the orders of the six images of every irreducible candidate,
+and computes the binary rank of each conjugate orbit.
+\nolinkurl{scripts/check_endpoint_normality.py}.
+
 \end{document}

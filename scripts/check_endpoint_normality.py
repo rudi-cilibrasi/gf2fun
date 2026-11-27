@@ -4,11 +4,14 @@ import argparse
 import csv
 import gzip
 from collections import Counter
+from math import prod
 from pathlib import Path
 
 from flint import fmpz, fmpz_mod_poly_ctx, fmpz_poly
 
 from check_degree_1229 import GROUP, KNOWN, N, PRIMES
+from check_ore_norms import first_relation
+from make_witnesses import mersenne_factors
 
 
 DATA = Path(__file__).resolve().parents[1] / "data"
@@ -78,6 +81,27 @@ def check_census(shard):
                 raise ArithmeticError("regenerated endpoint supports differ from the archive")
 
 
+def check_first_even_orbit(x):
+    hits = []
+    for n in range(4, 45, 2):
+        size = (1 << n) - 1
+        factors = mersenne_factors(n)
+        if prod(factors) != size or not all(fmpz(p).is_prime() for p in set(factors)):
+            raise ArithmeticError(f"incomplete group factorization in degree {n}")
+        for b in range(2, n - 1):
+            f = x**n + x**(n-1) + x**b + x + 1
+            if not f.is_irreducible():
+                continue
+            inv = x.pow_mod(size-1, f)
+            inv_shift = (x+1).pow_mod(size-1, f)
+            orbit = [x, x+1, inv, inv+1, inv_shift, inv_shift+1]
+            if (all(z.pow_mod(size//p, f) != 1 for z in orbit for p in set(factors))
+                    and all(first_relation(z, f, n, frobenius=True) == ((1 << n) | 1) for z in orbit)):
+                hits.append((n, b))
+    if hits != [(44, 9), (44, 35)]:
+        raise ArithmeticError(f"unexpected primitive normal orbits {hits}")
+
+
 def main(through, shard):
     if not (fmpz(N).is_prime() and fmpz(307).is_prime() and N-1 == 4*307
             and pow(2, N-1, N) == 1 and all(pow(2, (N-1)//p, N) != 1 for p in (2, 307))):
@@ -85,6 +109,7 @@ def main(through, shard):
     x = fmpz_mod_poly_ctx(2).gen()
     check_factors(x)
     check_census(shard)
+    check_first_even_orbit(x)
     f = x**N + x**(N-1) + x**12 + x**11 + x**8 + x + 1
     if (not f.is_irreducible() or x.pow_mod(GROUP, f) != 1 or x.pow_mod(KNOWN, f) == 1
             or any(x.pow_mod(GROUP//p, f) == 1 for p in PRIMES)):
@@ -93,6 +118,7 @@ def main(through, shard):
     print(f"Verified {total} integral discriminants and binary factorizations through degree {through}.")
     print("Degree 1229: 1226 proper factors, 1203 normal pentanomials, zero with normal inverses.")
     print("Seven terms attain simultaneous normality and pass all five available order projections.")
+    print("Degree 44 is the first even degree above two with a five-term primitive normal orbit.")
 
 
 if __name__ == "__main__":
