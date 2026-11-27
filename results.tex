@@ -21480,4 +21480,97 @@ checks the full order and every prime-index power in each displayed
 quotient. The three exhaustive trinomial searches cover 10,295, 11,739 and
 16,275 taps respectively.
 
+\clearpage
+\section{A uniform bound from determinants of conjugate roots}
+\label{sec:relative-fourier-minors}
+Let \(p<q\) be odd primes, \(b\ge1\), \(z=q^b\), and \(n=pz\).
+Consider an irreducible binary pentanomial of degree \(n\) containing
+three of \(p\) equally spaced positions. As in
+Section~\ref{sec:relative-short-triples}, we can write the triple as
+\(t,t+id,t+jd\) with \(0<i<j<p\) and \(\gcd(i,j)=1\).
+
+\begin{theorem}\label{thm:uniform-relative-minors}
+If \(q\ge19\) and \(2z+1>(6p-5)^9\), every such root has an order
+divisible by a prime power of binary multiplicative degree \(n\).
+If \(q\nmid 2^p-1\), a prime of that degree divides the order.
+\end{theorem}
+For fixed \(p\), the bound allows every sufficiently large \(q\)
+and every \(b\ge1\). For fixed \(q\ge19\) it allows every sufficiently
+large \(b\), including exponents outside the congruence classes of
+Section~\ref{sec:periodic-relative-exclusion}.
+
+\paragraph{A relation among at most four roots of unity.}
+Put \(s=z/q\), \(K=\mathbb F_{2^s}\), \(A=\mathbb F_{2^{ps}}\)
+and \(B=\mathbb F_{2^z}\). Suppose a root belongs to
+\(A^\times B^\times\). Its exponents have gcd one by
+Section~\ref{sec:relative-progression-differences}, since
+\(q\nmid 2^s-1\). In a decomposition \(r=\alpha\beta\), the order
+\(\eta\) of \(\beta\) modulo \(K^\times\) divides either the step
+\(d\) or the distance between the remaining two exponents. Thus
+\(1<\eta\le n\). Every prime divisor of \(\eta\) has binary order
+\(z\), by Section~\ref{sec:periodic-relative-exclusion}. Each is at
+least \(2z+1\), so even a product of two, counted with multiplicity,
+exceeds \(pz\). It follows that
+\[
+             \eta=\ell=kz+1\quad\text{is prime},\qquad
+             k\in\{2,4,\ldots,p-1\}.
+\]
+Since \(\ell\nmid 2^s-1\), we may write \(r=\gamma\zeta\), with
+\(\gamma\in A^\times\) and \(\zeta\in B\) of order \(\ell\).
+Indeed the \(\ell\)-power part of \(\beta\) has order \(\ell\)
+and its complementary part lies in \(K^\times\).
+At most four distinct residues of the exponents occur modulo
+\(\ell\), since either the triple or the complementary pair
+coalesces. Grouping the polynomial at \(\gamma\zeta\) gives an
+\(A\)-linear relation among \(m\le4\) distinct powers
+\(\zeta^{e_1},\ldots,\zeta^{e_m}\). The grouped coefficients cannot
+all vanish, since their sum is the value of the original polynomial
+at \(\gamma\), an element of degree less than \(n\).
+
+The conjugates of \(\zeta\) over \(A\) are \(\zeta^u\) for
+\(u\) in the subgroup \(H=\langle 2^{ps}\rangle\) of
+\(\mathbb F_\ell^\times\), of order \(q\). For every choice of
+\(u_1,\ldots,u_m\in H\), the relation implies
+\[
+    D(\zeta)=0,\qquad
+    D(T)=\det(T^{u_i e_j})_{1\le i,j\le m}
+           \quad\text{in }\mathbb F_2[T]/(T^\ell-1).
+\]
+Each determinant has weight at most \(m!\le24\).
+
+\paragraph{Choosing a nonzero determinant.}
+For every nonidentity permutation \(\sigma\), the linear form
+\(\sum_i U_i(e_i-e_{\sigma(i)})\) is nonzero over
+\(\mathbb F_\ell\). Their product is nonzero and has degree at most
+\(m!-(m-1)!\le18\) in each variable, since only permutations moving
+an index contribute to its degree. A polynomial with individual
+degrees less than \(|H|\) that vanishes on \(H^m\) is zero, by
+successive univariate interpolation. For \(q>18\) choose a tuple
+where the product is nonzero. The term of the identity permutation
+in \(D(T)\) then occurs exactly once, so \(D(T)\ne0\).
+
+\paragraph{Compressing the exponents.}
+For the chosen tuple set \(v_{ij}=(u_i-u_m)(e_j-e_m)\bmod\ell\)
+for \(i,j<m\), and set \(v_{im}=v_{mj}=0\).
+Multiplying rows and columns by monomials changes the determinant
+only by a monomial, so we can use \(v_{ij}\) as the entry exponents.
+Put \(J=6k+1\). If \(\ell>J^{(m-1)^2}\), partition each axis
+of \([0,\ell)^{(m-1)^2}\) into \(J\) equal intervals. The \(\ell\)
+vectors \((a v_{ij}\bmod\ell)_{i,j<m}\), \(0\le a<\ell\), give
+two in the same box. Their index difference \(c\ne0\bmod\ell\) makes
+each \(c v_{ij}\) congruent to a signed integer of absolute value
+less than \(\ell/J\). Replacing \(T\) by \(T^c\) permutes residues
+and preserves the nonzero determinant. Its exponents now have
+representatives in an interval of length less than \(6\ell/J\):
+each term uses at most \(m-1\le3\) nonzero entries.
+For \(\ell>J\), this length is less than \((\ell-1)/k=z\).
+After a monomial shift we have a nonzero binary polynomial of
+degree less than \(z\) vanishing at \(\zeta^{c^{-1}}\). This
+contradicts its binary degree \(z\). The case \(m=1\) already
+contradicts the nonzero relation. Finally
+\(\ell\ge2z+1>(6p-5)^9\ge J^{(m-1)^2}\).
+This excludes the product of the two maximal subfields.
+The order conclusions follow as in
+Section~\ref{sec:periodic-relative-exclusion}.
+
 \end{document}

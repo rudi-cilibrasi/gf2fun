@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **For each odd prime $p$, every sufficiently large prime $q$ works for all exponents $b\ge1$.** In degree $n=pq^b$, every irreducible pentanomial containing three of $p$ equally spaced positions has a prime power of binary multiplicative degree $n$ in its root order whenever $p<q$, $q\ge19$ and $2q^b+1>(6p-5)^9$. The proof reduces a subfield split to a binary determinant with at most 24 terms. [Proof](results.pdf#page=298)
+
 - **In degree 17,029, the least weight of an irreducible that can miss the 5,118-digit prime in the field order is exactly 8,279.** Exactly two of the 24,598 irreducibles in the exceptional subgroup attain this weight. The minimum primitive weight is five, with witness $X^{17029}+X^{560}+X^2+X+1$. [Complete distribution and proof](results.pdf#page=296) · [Weight spectra](data/cyclotomic-weight-spectra.json) · [Order certificate](data/cyclotomic-order-witnesses.json)
 
 - **Five terms are necessary in degrees 3,837, 5,509 and 8,371. Three suffice in degrees 5,785, 7,673, 20,591, 23,479 and 32,551.** In degree 7,673 the unique primitive trinomial up to reciprocation is $X^{7673}+X^{120}+1$. The eight primitive trinomial taps in the three highest degrees are listed in the research note. Each degree also has an explicit primitive pentanomial. [Witnesses and complete order factorizations](data/cyclotomic-order-witnesses.json) · [First five degrees](results.pdf#page=292) · [Three higher degrees](results.pdf#page=297)
