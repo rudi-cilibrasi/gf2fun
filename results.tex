@@ -21453,4 +21453,31 @@ The \nolinkurl{--check-factors} option of
 for the individual divisibility checks. The combined order and
 spectrum verifier is \nolinkurl{scripts/check_cyclotomic_weights.py}.
 
+\clearpage
+\section{Primitive trinomials and pentanomials in degrees 20591, 23479 and 32551}
+\label{sec:three-high-order-degrees}
+All three degrees have minimum primitive weight three. The table gives every
+irreducible trinomial tap up to reciprocation. All eight trinomials are
+primitive. A primitive pentanomial in each row is
+\(X^n+X^t+X^2+X+1\).
+\[
+\begin{array}{r|r|r|l|l}
+ n & \text{degree factors} &t& \text{trinomial taps}&
+ \text{small factors of }\Phi_n(2) \\ \hline
+ 20591 &59\cdot349&1707&5400,6435,7652,9090&41183,\ 116503879\\
+ 23479 &53\cdot443&1062&7552,8773&3052271\\
+ 32551 &43\cdot757&8120&2986,4743&585919
+\end{array}
+\]
+For \(n=pq\) in each row the two proper subfield orders
+\(2^p-1\) and \(2^q-1\) are coprime.
+Dividing \(2^n-1\) by both yields \(\Phi_n(2)\). Removing the listed
+small factors leaves a certified prime with 6064, 6913 or 9553 digits,
+respectively. The complete factorizations and links to the original
+PRIMO certificates are in \nolinkurl{data/cyclotomic-order-witnesses.json}.
+The verifier in Section~\ref{sec:extended-cyclotomic-witnesses}
+checks the full order and every prime-index power in each displayed
+quotient. The three exhaustive trinomial searches cover 10,295, 11,739 and
+16,275 taps respectively.
+
 \end{document}
