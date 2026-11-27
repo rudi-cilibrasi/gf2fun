@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Four nearby exponents restrict root orders in every degree.** If the support has gcd one, four exponents span $T$, and $4T<3s^2$ for the smallest prime $s$ dividing the degree, a root cannot be a product from two coprime proper subfields whose degrees multiply to the full degree. In degree $pq$ this forces a full-degree prime power for arbitrarily separated primes. A separate norm-one argument in degree $2kd$ forces every support exponent to be divisible by $k$. [Proofs and hypotheses](results.pdf#page=267) · [Lean lemmas](GF2Sparse/SubfieldProducts.lean)
+
 - **The minimum primitive weight is five in degree 5,053 and three in degree 14,263.** The first has the pentanomial with interior exponents 461, 922 and 4592. The second has exactly one irreducible trinomial up to reciprocity, with tap 5985. Every sparse irreducible in these degrees has a 1,463- or 4,036-digit prime, respectively, in its root order. The other tests use norms to the two prime-degree subfields. [Proof](results.pdf#page=266) · [Certificates](data/semiprime-scalar-norms.json) · [Verifier](scripts/check_semiprime_scalar_norms.py)
 
 - **Every sparse irreducible of degree $pq$ has a full-degree prime-power factor in its root order whenever $4q\le9p$.** This holds for all odd primes $p<q$. In a hypothetical product of proper subfield elements, a class pattern of $3,1,1$ makes the polynomial vanish in a proper subfield. The remaining pattern forces the smaller component order to lie between $3p^2/4$ and $pq/3$. [Proof and norm criterion](results.pdf#page=264) · [Lean tensor argument](GF2Sparse/SubfieldProducts.lean)

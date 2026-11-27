@@ -19779,4 +19779,89 @@ the original PRIMO certificates for the large primes, archived from
 \href{https://factordb.com/cert/1100000000001997225}{FactorDB for degree 5053} and
 \href{https://factordb.com/cert/1100000000005636398}{FactorDB for degree 14263}.
 
+\clearpage
+\section{Support restrictions in products of coprime-degree subfields}
+\label{sec:scalar-support}
+Let \(n=ij\), where \(i,j>1\) are coprime, and let a degree-\(n\)
+binary irreducible \(f\) of weight at most five have a root
+\(r=\alpha\beta\) in the product of the corresponding subfields.
+Write \(E\) for its support and \(g=\gcd(E)\). Each component has its
+full subfield degree, since otherwise \(r\) would lie in a proper
+subfield. The same rank and parity arguments as in
+Theorem~\ref{thm:semiprime-parity} give five terms, three plane
+points on one side, and class sizes \(2,2,1\).
+
+\begin{theorem}\label{thm:four-cluster}
+Suppose \(g=1\). On a rank-two side of degree \(i\), the component
+order \(A\) satisfies \(4A\ge3i^2\) and divides the two positive
+gaps of two disjoint pairs of exponents. Thus if four support
+exponents lie in an interval of length \(T\), then \(4T\ge3i^2\).
+If \(n\) is odd, one also has \(9i\le4j\).
+\end{theorem}
+\begin{proof}
+The plane points are \(1,x,1+x\), since \(0\in E\).
+The powers \(\alpha^e\), \(e\in E\), generate \(\langle\alpha\rangle\)
+as \(g=1\). Hence \(\mathbb F_2(x)=\mathbb F_2(\alpha)\), of degree
+\(i\), and Lemma~\ref{lem:plane-size} applies. The two exponent pairs
+repeat the same plane point within each pair. At least one pair is
+entirely among any four of the exponents. This gives \(A\le T\).
+
+For odd \(n\), suppose \(3A>n\). Both pair gaps are \(A\) or \(2A\).
+The nonzero \(\beta\)-sum in a pair equals the singleton, so
+\(1+\beta^A\) or its square is in \(\langle\beta\rangle\).
+Squaring is an automorphism; \(\beta^A\) generates this group since
+the component orders are coprime. Its field degree is therefore
+\(j\), giving \(4B\ge3j^2\) with \(B=\ord(\beta)\). The equal- and
+unequal-gap arguments of Theorem~\ref{thm:semiprime-parity} now
+exclude both cases. It follows that \(3A\le n\), hence \(9i\le4j\).
+\end{proof}
+
+For instance, let \(s\) be the smallest prime factor of \(n\).
+If four support exponents have span \(T<3s^2/4\) and \(g=1\),
+the root cannot split across \emph{any} two coprime proper subfield
+degrees whose product is \(n\). In particular the graph on the
+primes dividing \(n\) defined after Theorem~\ref{thm:four-subfields}
+is connected. A disconnected partition would put the root in just
+such a product. For two distinct prime factors \(n=pq\) this gives a
+full-degree prime power at arbitrary ratios \(q/p\). In this last
+case the condition \(g=1\) can be dropped: the nonidentity plane
+point already has the prime degree of its side.
+
+\begin{theorem}\label{thm:circle-dilation}
+Let \(n=2kd\), \(d>1\), \(k>1\), and \(\gcd(2k,d)=1\).
+Suppose a root of a binary irreducible of degree \(n\) and weight
+at most five is \(\alpha\beta\), where \(\alpha\in\mathbb F_{2^d}^\times\)
+and \(\beta^{2^k+1}=1\). Then \(k\) is odd, \(k\mid\gcd(E)\), and
+\(f(X)=G(X^k)\). In particular such a product is excluded for every
+support of gcd one.
+\end{theorem}
+\begin{proof}
+In the norm-one group, if \(x,1+x\) both occur, conjugation over
+\(\mathbb F_{2^k}\) sends them to their inverses. Thus
+\(1+x^{-1}=(1+x)^{-1}\), giving \(x^2+x+1=0\). Every
+three elements with sum zero in the group therefore lie in a
+single coset of \(\mu_3\). In particular \(3\mid 2^k+1\),
+so \(k\) is odd.
+
+To see that such triples occur and cover the support, consider the
+rank-two side. If it is \(\beta\), its three plane points form the
+required triple. Otherwise each of the two pairs of \(\beta\)-powers
+sums to the same singleton. The resulting triples lie in the same
+coset because they share this singleton. Thus all five
+\(\beta^e\) lie in one coset, which contains 1 because \(0\in E\).
+Consequently \(\beta^g\in\mu_3\).
+Write \(f(X)=F(X^g)\); irreducibility makes \(F\) the minimal
+polynomial of \(r^g\), of degree \(2kd/g\).
+But \(r^g=\alpha^g\beta^g\in\mathbb F_{2^{2d}}\), so
+\(2kd/g\mid2d\), giving \(k\mid g\).
+
+Equality occurs at \(k=3,d=5\). For
+\(f=X^{30}+X^{15}+X^{12}+X^6+1\), reduction gives
+\(X^{279}=1\), \(X^{93}=X^{15}+X^6+1\) modulo \(f\);
+\(\gcd(f,X^{15}+X^6)=\gcd(f,X^9+1)=1\).
+Every root therefore has order \(279=9\cdot31\), of binary degree
+\(\operatorname{lcm}(6,5)=30\). This proves irreducibility and gives
+the two components of orders 9 and 31 with \(g=3\).
+\end{proof}
+
 \end{document}

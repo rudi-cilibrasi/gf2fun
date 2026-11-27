@@ -173,4 +173,29 @@ theorem triple_of_subfield_product {K : Type*} [Field K] [Algebra (ZMod 2) K]
   rw [aeval_binary_support, ← Finset.sum_coe_sort] at hr
   simpa only [mul_pow] using hr
 
+/-- The two plane-order bounds separate equal gaps and Frobenius-related gaps. -/
+theorem distances_of_plane_bounds {i j a b : ℤ} (hi : 0 < i)
+    (ha : 3*i^2 ≤ 4*a) (hb : 3*j^2 ≤ 4*b) :
+    i*j < a+b ∧ 2*i*j < 2*a+b := by
+  constructor
+  · nlinarith [sq_nonneg (i-j), sq_pos_of_pos hi, sq_nonneg j]
+  · nlinarith [sq_nonneg (3*j-4*i), sq_pos_of_pos hi]
+
+/-- A rank-two component of order at most one third of the degree forces
+an imbalance between the two subfield degrees. -/
+theorem ratio_of_small_plane_order {i j a : ℕ} (hi : 0 < i)
+    (ha : 3*i^2 ≤ 4*a) (hs : 3*a ≤ i*j) : 9*i ≤ 4*j := by
+  by_contra! h
+  have hlt := Nat.mul_lt_mul_of_pos_left h hi
+  nlinarith
+
+/-- A point of a binary norm-one circle whose translate also has norm one
+is a cube root of unity. -/
+theorem cube_of_norm_one_pair {K : Type*} [Field K] [CharP K 2] (k : ℕ) (x : K)
+    (hx : x^(2^k+1) = 1) (ht : (x+1)^(2^k+1) = 1) : x^3 = 1 := by
+  rw [pow_succ] at hx
+  rw [pow_succ, add_pow_expChar_pow, one_pow] at ht
+  have h : x^2+x+1 = 0 := by linear_combination x * ht - (x+1) * hx
+  linear_combination (x-1) * h
+
 end GF2Sparse.SubfieldProducts
