@@ -20,7 +20,8 @@
       ],
       "additional_primes": [],
       "remaining": "none",
-      "shared_component_polynomial_hex": "0x87665f3429fa0154deff11a047df349fa3ea94fa99921c8a78d542e9b9cfe685a98c7c25f0b6d1219addb20c224d0c7a6d4a62d10672dc925ce9fe2ee72ef6f7eaae28282e9b5df6d8dce65f1d7a327b1cc4ae4dd2a32ab66e18a6f9fea70b4787d77d8b0c0feac7af2e3e190735e05dde71539bebbbeb16d537e723f1ad7c7ab202a3f23dc119dcee21170795bd91b8fdc69ec05e38f5f9da9f9581d0f30d2bef83bc389c547"
+      "shared_component_polynomial_hex": "0x87665f3429fa0154deff11a047df349fa3ea94fa99921c8a78d542e9b9cfe685a98c7c25f0b6d1219addb20c224d0c7a6d4a62d10672dc925ce9fe2ee72ef6f7eaae28282e9b5df6d8dce65f1d7a327b1cc4ae4dd2a32ab66e18a6f9fea70b4787d77d8b0c0feac7af2e3e190735e05dde71539bebbbeb16d537e723f1ad7c7ab202a3f23dc119dcee21170795bd91b8fdc69ec05e38f5f9da9f9581d0f30d2bef83bc389c547",
+      "trinomials": []
     },
     {
       "degree": 3993,
@@ -39,7 +40,38 @@
         335694389427634954071771421573041823051433281
       ],
       "remaining": "prime",
-      "shared_component_polynomial_hex": "0x962367e4e2c5213cad7ff34aa3692f26e69e026442f7c92da4f9fba9248800aa229da44687936b8c14dfeed2b30fcf72239ce449ff1866944627598f4f9c43e871a79c8def5ba846fcb13c7b7860f6fa80a05071b7760574e8ee0a25796f540c2b11a7a4279760f50cc3d76dd6d66cce665ec15144fd2b3f49ade526b10132bf92f58038b56367a4f7bd763506ecb90a4cbf2100943139921419ecde6180bedea46ed990e098b"
+      "shared_component_polynomial_hex": "0x962367e4e2c5213cad7ff34aa3692f26e69e026442f7c92da4f9fba9248800aa229da44687936b8c14dfeed2b30fcf72239ce449ff1866944627598f4f9c43e871a79c8def5ba846fcb13c7b7860f6fa80a05071b7760574e8ee0a25796f540c2b11a7a4279760f50cc3d76dd6d66cce665ec15144fd2b3f49ade526b10132bf92f58038b56367a4f7bd763506ecb90a4cbf2100943139921419ecde6180bedea46ed990e098b",
+      "trinomials": [
+        {
+          "tap": 1468,
+          "images": [
+            {
+              "root_power": 3,
+              "taps": [
+                1331,
+                1468,
+                2662
+              ]
+            },
+            {
+              "root_power": -5,
+              "taps": [
+                505,
+                2020,
+                2525
+              ]
+            },
+            {
+              "root_power": 33,
+              "taps": [
+                121,
+                1468,
+                3872
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "degree": 6655,
@@ -59,7 +91,154 @@
         5448351236315742026827470749290138552538510376598571254569437566703575251869691806410089694456327608528590739813981151
       ],
       "remaining": "composite",
-      "shared_component_polynomial_hex": "0x93c979c125402a01d93b33efb90f6f5644372e2c63d07d3c5ad5af1b67ee3e64c8d03f9d2df5e5707c10f0cf3af79a0b497f310b0858bd1be818d14b3639227507068cdc5eacc443a6a24c415d20629976adbf14c3641cfc137872cf49cff0f67aaae58e340ed56cab4480fcb7d79d2c5a78eea25718b5070705a93120eaa3823151f9c1c1bddc9580d84c1c5264c7aa50845b97c3968e8f5d4f3e327ff9702d76d6c5c43c273"
+      "shared_component_polynomial_hex": "0x93c979c125402a01d93b33efb90f6f5644372e2c63d07d3c5ad5af1b67ee3e64c8d03f9d2df5e5707c10f0cf3af79a0b497f310b0858bd1be818d14b3639227507068cdc5eacc443a6a24c415d20629976adbf14c3641cfc137872cf49cff0f67aaae58e340ed56cab4480fcb7d79d2c5a78eea25718b5070705a93120eaa3823151f9c1c1bddc9580d84c1c5264c7aa50845b97c3968e8f5d4f3e327ff9702d76d6c5c43c273",
+      "trinomials": [
+        {
+          "tap": 54,
+          "images": [
+            {
+              "root_power": 3,
+              "taps": [
+                18,
+                36,
+                54
+              ]
+            },
+            {
+              "root_power": 5,
+              "taps": [
+                54,
+                1331,
+                5324
+              ]
+            },
+            {
+              "root_power": 9,
+              "taps": [
+                6,
+                48,
+                54
+              ]
+            }
+          ]
+        },
+        {
+          "tap": 112,
+          "images": [
+            {
+              "root_power": 3,
+              "taps": [
+                112,
+                2293,
+                4474
+              ]
+            },
+            {
+              "root_power": 5,
+              "taps": [
+                112,
+                1331,
+                5324
+              ]
+            },
+            {
+              "root_power": 9,
+              "taps": [
+                112,
+                839,
+                5928
+              ]
+            }
+          ]
+        },
+        {
+          "tap": 1428,
+          "images": [
+            {
+              "root_power": 3,
+              "taps": [
+                476,
+                952,
+                1428
+              ]
+            },
+            {
+              "root_power": 5,
+              "taps": [
+                1331,
+                1428,
+                5324
+              ]
+            },
+            {
+              "root_power": 17,
+              "taps": [
+                84,
+                1344,
+                1428
+              ]
+            }
+          ]
+        },
+        {
+          "tap": 1741,
+          "images": [
+            {
+              "root_power": -3,
+              "taps": [
+                1638,
+                3276,
+                4914
+              ]
+            },
+            {
+              "root_power": 5,
+              "taps": [
+                1331,
+                1741,
+                5324
+              ]
+            },
+            {
+              "root_power": -9,
+              "taps": [
+                546,
+                4368,
+                4914
+              ]
+            }
+          ]
+        },
+        {
+          "tap": 2368,
+          "images": [
+            {
+              "root_power": -3,
+              "taps": [
+                1429,
+                2858,
+                4287
+              ]
+            },
+            {
+              "root_power": 5,
+              "taps": [
+                1331,
+                2368,
+                5324
+              ]
+            },
+            {
+              "root_power": 7,
+              "taps": [
+                1289,
+                2368,
+                3867
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "divisor_progressions": {

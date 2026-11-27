@@ -22023,4 +22023,24 @@ The polynomials, prime lists and modular products are in
 The independent field, factor and order checks are in
 \nolinkurl{scripts/check_1331_order_projections.py}.
 
+\paragraph{Which trinomials are still possible?}
+Of the 665 reciprocal classes of degree-1331 trinomials, all are
+reducible. Thus a primitive polynomial of weight at most five in
+that degree would have exactly five terms, since even weight gives
+a root at one. In degree 3993 the unique irreducible trinomial up to
+reciprocal has tap 1468. In degree 6655 the complete list is
+\(54,112,1428,1741,2368\). Direct powering verifies every prime and
+composite projection above for all six trinomials. NTL and PARI/GP
+give the same lists over all \(665+1996+3327=5988\) reciprocal classes.
+
+Powers of their roots produce three more pentanomial pairs in degree
+3993 and fifteen in degree 6655. The data give each signed power
+and its five-term polynomial. Substitution verifies the polynomial
+at that power, which is coprime to the group order, so the image has
+exactly the same order as its trinomial root. For example, the degree-3993
+tap gives the interior exponent sets \(\{1331,1468,2662\}\),
+\(\{505,2020,2525\}\), and \(\{121,1468,3872\}\) up to reciprocal,
+from powers 3, 5 and 33. Counting the three original polynomials
+gives 21 distinct pentanomial pairs with the stated index bound.
+
 \end{document}

@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import subprocess
 from math import gcd, prod
 from pathlib import Path
 
@@ -31,6 +32,50 @@ def check_composite(cofactor, degree, block):
     return 1 + step * (1 << (2*k))
 
 
+def check_tap_census(rows, gp):
+    routine = r"""taps(n) = {
+        my(xm = Mod(1, 2)*x, base = xm^n + 1, mid = Mod(1, 2), hits = List());
+        for(k = 1, n\2,
+            mid *= xm;
+            if(polisirreducible(base + mid), listput(hits, k))
+        );
+        Vec(hits)
+    };"""
+    commands = [routine, *(f"print(taps({r['degree']}))" for r in rows), "quit"]
+    result = subprocess.run([gp, "-qf", "-s", "128M"], input="\n".join(commands) + "\n",
+                            text=True, capture_output=True, check=True)
+    expected = [[tri["tap"] for tri in row["trinomials"]] for row in rows]
+    if result.stderr or [json.loads(line) for line in result.stdout.splitlines()] != expected:
+        raise ValueError(f"exhaustive trinomial census failed: {result.stderr}")
+
+
+def check_trinomial_images(row, factors):
+    n = row["degree"]
+    order = (1 << n) - 1
+    x = polynomial(2)
+    images = set()
+    original = (0, *row["taps"], n)
+    for tri in row["trinomials"]:
+        field = modulus(n, (tri["tap"],))
+        powers = prime_index_powers(x, order, factors, field)
+        if not irreducible(field) or any(value == 1 for _, value in powers):
+            raise ValueError(f"missing order component at degree {n}, tap {tri['tap']}")
+        for image in tri["images"]:
+            power = image["root_power"]
+            support = (0, *image["taps"], n)
+            if len(support) != 5 or tuple(sorted(set(support))) != support or gcd(power, order) != 1:
+                raise ValueError(f"invalid five-term image at {n}")
+            reverse = tuple(n-e for e in reversed(support))
+            if support > reverse or original in (support, reverse) or support in images:
+                raise ValueError(f"noncanonical or repeated image at {n}")
+            images.add(support)
+            # At a negative root power, check the reciprocal at the positive power.
+            exponents = reverse if power < 0 else support
+            if sum((x.pow_mod(abs(power)*e, field) for e in exponents), 0*x) != 0:
+                raise ValueError(f"power-image polynomial does not vanish at {n}")
+    return len(images)
+
+
 def main(gp):
     data = json.loads((DATA / "degree-1331-order-projections.json").read_text())
     d, shared_primes = data["shared_degree"], data["shared_primes"]
@@ -44,6 +89,7 @@ def main(gp):
     expected = [(1331, "none"), (3993, "prime"), (6655, "composite")]
     if [(row["degree"], row["remaining"]) for row in data["cases"]] != expected:
         raise ValueError("unexpected degree or cofactor description")
+    check_tap_census(data["cases"], gp)
 
     x = polynomial(2)
     for row in data["cases"]:
@@ -86,11 +132,15 @@ def main(gp):
         small = (1 << (n // 11)) - 1
         if known % small or gcd(small, group_order // small) != 1:
             raise ValueError(f"the degree-{n // 11} norm is not certified at {n}")
+        image_count = check_trinomial_images(row, factors)
+        if image_count != {1331: 0, 3993: 3, 6655: 15}[n]:
+            raise ValueError(f"incomplete power-image list at {n}")
         print(f"Degree {n}: {len(str(known))}-digit divisor, root order exceeds "
-              f"2^{(known * prod(bounds)).bit_length()-1}, index one or above {min(bounds)}.")
+              f"2^{(known * prod(bounds)).bit_length()-1}, index one or above {min(bounds)}. "
+              f"{len(row['trinomials'])} trinomial taps, {image_count} five-term images.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--gp", default="gp", help="PARI/GP executable for the ECPP certificate")
+    parser.add_argument("--gp", default="gp", help="PARI/GP executable for the certificate and census")
     main(parser.parse_args().gp)
