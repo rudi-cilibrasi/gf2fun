@@ -1,0 +1,16 @@
+{
+  "indices": {
+    "1": 104964,
+    "36871": 4
+  },
+  "imprimitive_labels": {
+    "0x1dae1": "36871",
+    "0x22b1b": "36871",
+    "0x249ef": "36871",
+    "0x2a568": "36871"
+  },
+  "minimum_primitive_weight": 543,
+  "lightest_primitive_labels": [
+    "0xa7ad"
+  ]
+}

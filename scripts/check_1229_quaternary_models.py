@@ -207,8 +207,6 @@ def main():
         parser.error("the primitive norm base is certified in model 21149")
     if args.orders and not args.verify_logs:
         parser.error("--orders requires --verify-logs NTL_BACKEND")
-    if args.orders and args.q == 1024:
-        parser.error("the archived order census currently uses --q 512")
     rows = [r for r in json.loads(MODELS.read_text()) if selected is None or r["id"] == selected]
     if not rows:
         parser.error("unrecognized model")

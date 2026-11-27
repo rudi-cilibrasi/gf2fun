@@ -14150,6 +14150,21 @@ the displayed equality at every label. At \(t\in\mathbb F_4\)
 the normalized exponents also agree with the four corresponding
 entries of the \(q=512\) table, whose norms use ninth powers.
 
+Exactly 104,964 of the 104,968 unprojected norms \(V_t\) are
+primitive. The four exceptions have index 36,871 and fourth-power
+orbit labels \(\mathtt{1dae1},\mathtt{22b1b},\mathtt{249ef},
+\mathtt{2a568}\) in hexadecimal for the basis
+\(Z^{20}+Z^3+1=0\). The smallest binary minimal-polynomial weight
+among the primitive norms is 543, attained only at \(\mathtt{a7ad}\).
+To compute the indices, the verified projected order \(C\) leaves
+only the four distinct primes dividing \(K\). Directly testing
+\(V_t^{KC/p}\) for each prime \(p\mid K\) determines the whole
+index. For each norm the verifier computes a monic minimal polynomial
+of degree 1229 and checks its value at \(V_t\) before counting terms.
+A separate FLINT calculation reproduced the four exceptional indices
+and the minimum-weight polynomial. The census is in
+\nolinkurl{data/degree-1229-q1024-quaternary-orders.json}.
+
 \section{Eight logarithms for the elliptic pair and a cubic pullback}
 \label{sec:elliptic-eight}
 For the same root \(r\), the verified quotient in
