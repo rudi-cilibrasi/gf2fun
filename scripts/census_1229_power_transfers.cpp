@@ -6,6 +6,8 @@
 #include <array>
 #include <cstdint>
 #include <iostream>
+#include <limits>
+#include <numeric>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -284,19 +286,85 @@ void check_reference_lookup(const SparseFilters& sparse) {
     if (hits.size() != 2 || hits[0].dense != 0 || hits[1].dense != 1)
         throw std::logic_error("signed reference lookup missed an exact control");
 }
+
+struct PowerClass {
+    Word distant_bits;
+    std::uint32_t extra_bits, id;
+
+    bool operator<(const PowerClass& other) const {
+        return std::tie(distant_bits, extra_bits, id)
+             < std::tie(other.distant_bits, other.extra_bits, other.id);
+    }
+};
+
+void sparse_ratios(const std::vector<Taps>& supports, int maximum) {
+    const int width = (maximum + 1) / 2;
+    if (supports.size()*width > std::numeric_limits<std::uint32_t>::max())
+        throw std::length_error("power class identifiers exceed 32 bits");
+    std::vector<PowerClass> classes(supports.size() * width);
+    #pragma omp parallel for schedule(dynamic, 128)
+    for (size_t i = 0; i < supports.size(); ++i) {
+        Traces pos(reciprocal(supports[i])), neg(supports[i]);
+        pos.extend(maximum * high_last);
+        neg.extend(maximum * high_last);
+        for (int m = 1; m <= maximum; m += 2) {
+            const Word forward = distant(pos, neg, m), reverse = (forward << 32) | (forward >> 32);
+            const std::uint32_t a = pos.sample<16>(5431*m, 42*m), b = neg.sample<16>(5431*m, 42*m);
+            const std::uint32_t extra = a | (b << 16), flipped = b | (a << 16);
+            // Take the lesser of the two whole signatures, including ties in their first 64 bits.
+            const auto key = std::min(std::make_pair(forward, extra), std::make_pair(reverse, flipped));
+            const auto id = static_cast<std::uint32_t>(i*width + m/2);
+            classes[id] = {key.first, key.second, id};
+        }
+    }
+    std::sort(classes.begin(), classes.end());
+    size_t exact = 0, matches = 0;
+    for (size_t begin = 0, end; begin < classes.size(); begin = end) {
+        end = begin + 1;
+        while (end < classes.size() && classes[end].distant_bits == classes[begin].distant_bits
+               && classes[end].extra_bits == classes[begin].extra_bits) ++end;
+        for (size_t i = begin; i < end; ++i) {
+            for (size_t j = i + 1; j < end; ++j) {
+                const auto left = classes[i].id, right = classes[j].id;
+                const int u = 2*(left % width) + 1, v = 2*(right % width) + 1;
+                if (std::gcd(u, v) != 1) continue;
+                ++exact;
+                const auto a = supports[left/width], b = supports[right/width];
+                const GF2XModulus f(pentanomial(a)), g(pentanomial(b));
+                const auto p = NTL::IrredPolyMod(NTL::PowerXMod(u, f), f);
+                const auto q = NTL::IrredPolyMod(NTL::PowerXMod(v, g), g);
+                if (p != q && p != NTL::reverse(q)) continue;
+                ++matches;
+                for (int tap : a) std::cout << tap << ' ';
+                std::cout << u;
+                for (int tap : b) std::cout << ' ' << tap;
+                std::cout << ' ' << (p == q ? v : -v) << '\n';
+            }
+        }
+    }
+    std::cerr << classes.size() << " signed-power classes, " << exact << " exact comparisons, "
+              << matches << " reduced matches\n";
+}
 } // namespace
 
 int main(int argc, char** argv) {
-    if (argc != 2 && argc != 4) throw std::invalid_argument("usage: census MAX_ODD [FIRST_ROW END_ROW]");
+    const bool ratios = argc == 3 && std::string(argv[2]) == "--sparse-ratios";
+    if (argc != 2 && argc != 4 && !ratios)
+        throw std::invalid_argument("usage: census MAX_ODD [FIRST_ROW END_ROW | --sparse-ratios]");
     const int maximum = std::stoi(argv[1]);
     if (maximum < 1 || maximum % 2 == 0 || maximum >= 36871) throw std::invalid_argument("invalid odd bound");
-    NTL::ZZ field_mask;
-    int num_masks, num_sources;
-    if (!(std::cin >> field_mask >> num_masks) || num_masks < 1) return 1;
-    const GF2X modulus = polynomial(field_mask);
-    if (NTL::deg(modulus) != degree || !NTL::IterIrredTest(modulus)) return 1;
-    std::vector<NTL::ZZ> masks(num_masks);
-    for (auto& p : masks) if (!(std::cin >> p) || p <= 1 || NTL::NumBits(p) > degree) return 1;
+    GF2X modulus;
+    std::vector<NTL::ZZ> masks;
+    if (!ratios) {
+        NTL::ZZ field_mask;
+        int num_masks;
+        if (!(std::cin >> field_mask >> num_masks) || num_masks < 1) return 1;
+        modulus = polynomial(field_mask);
+        if (NTL::deg(modulus) != degree || !NTL::IterIrredTest(modulus)) return 1;
+        masks.resize(num_masks);
+        for (auto& p : masks) if (!(std::cin >> p) || p <= 1 || NTL::NumBits(p) > degree) return 1;
+    }
+    int num_sources;
     if (!(std::cin >> num_sources) || num_sources != 319583) return 1;
     std::vector<Taps> supports(num_sources);
     for (auto& t : supports)
@@ -310,6 +378,10 @@ int main(int argc, char** argv) {
     for (Taps t : {Taps{1, 2, 627}, Taps{64, 128, 193}, Taps{166, 249, 332}}) {
         check_traces(t);
         check_traces(reciprocal(t));
+    }
+    if (ratios) {
+        sparse_ratios(supports, maximum);
+        return 0;
     }
     const SparseFilters sparse(supports);
     check_reference_lookup(sparse);

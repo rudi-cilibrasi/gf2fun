@@ -15586,4 +15586,43 @@ criterion through \(h=4095\), checks every irreducible seed in odd
 degrees 3 through 11 by exact orders and counting binary words,
 and recovers both degree-2047 seed roots in their degree-4094 fields.
 
+\section{Small rational powers of degree-1229 sparse roots}\label{sec:1229-sparse-ratios}
+Let \(r,s\) range over the 639,166 irreducible degree-1229
+pentanomial roots up to conjugacy. For any nonzero \(u,v\) of
+absolute value at most 1229, the only relation between distinct
+reciprocal pairs of the form \(r^u=s^v\), up to Frobenius and
+inversion, comes from the seventh-power pair of
+Section~\ref{sec:1229-power-transfers}. There are no additional
+relations within a reciprocal pair. Here each side can be independently
+squared, and a common odd factor of the powers can be cancelled, since
+every positive integer up to 1229 is coprime to \(2^{1229}-1\).
+
+To check this, generate both signs of the traces at the 32 odd offsets
+\(1201+182i\) and the 16 odd offsets \(5431+42i\) for each positive
+odd power through 1229. Pair the positive- and negative-trace signatures
+and take the lexicographically smaller orientation. Sorting all
+\(319{,}583\cdot615=196{,}543{,}545\) signatures groups every
+potential coincidence, including reciprocal ones. After cancelling
+common factors, 18,385 comparisons require exact minimal polynomials.
+Only one agrees up to reversal, and independent field substitution
+with the rational exponent \(uv^{-1}\bmod (2^{1229}-1)\) verifies it.
+
+Each signed Frobenius orbit contains 2458 elements. Indeed the
+degree is the odd prime 1229 and inversion cannot belong to the
+odd-order squaring orbit. Among the 615 odd powers of every reciprocal
+pair, the known relation gives precisely 88 duplicate orbits, one
+for each positive odd multiplier at most \(\lfloor1229/7\rfloor\).
+The union over all irreducible pentanomials therefore contains exactly
+483,103,817,306 distinct elements. The union over the four-test
+survivors contains exactly 483,087,188,936, since both members of the
+seventh-power relation survive. A degree-1229 counterexample would
+put all powers from at least 21,305 reciprocal pairs into the same
+proper subgroup. Those powers alone give at least
+\[
+          2458(21{,}305\cdot615-88)=32{,}205{,}913{,}046
+\]
+distinct elements represented in this way. The
+\texttt{--sparse-ratios} mode of
+\nolinkurl{scripts/check_1229_power_transfers.py} replays the search.
+
 \end{document}

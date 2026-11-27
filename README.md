@@ -187,11 +187,14 @@ Four degree-1229 candidates share one discrete logarithm task. The JSON gives th
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_power_images.py --task
 ~~~
 
-Every degree-1229 pentanomial root has also been compared with 1,304,685 elements of known order. Across all signed powers with absolute exponent below 36,871, none gives a Frobenius conjugate of a reference element. Among the pentanomials themselves, the seventh-power pair above and its reciprocal are the only transfers by an odd positive power greater than one in that range. Both native and portable builds reproduce the 11,783,025,210 oriented power checks. [Proof](results.pdf#page=200) · [Trace sieve and exact checks](scripts/census_1229_power_transfers.cpp) · [Census driver](scripts/check_1229_power_transfers.py)
+Every irreducible degree-1229 pentanomial has also had its roots compared with 1,304,685 elements of known order. Across all signed powers with absolute exponent below 36,871, none gives a Frobenius conjugate of a reference element. Among the pentanomials themselves, the seventh-power pair above and its reciprocal are the only transfers by an odd positive power greater than one in that range. Both native and portable builds reproduce the 11,783,025,210 oriented power checks. [Proof](results.pdf#page=200) · [Trace sieve and exact checks](scripts/census_1229_power_transfers.cpp) · [Census driver](scripts/check_1229_power_transfers.py)
+
+Allowing powers on both sides, $r^u=s^v$ for $0<|u|,|v|\le1229$, still gives only the seventh-power pair after squaring, inversion and cancellation. The union of these powers and their conjugates across the 639,144 surviving pentanomials has exactly 483,087,188,936 elements. If 1229 is a counterexample, at least 32,205,913,046 of these elements must lie in one proper subgroup. [Rational-power census](results.pdf#page=205)
 
 ~~~sh
 g++ -O3 -std=c++17 -march=native -fopenmp scripts/census_1229_power_transfers.cpp -lntl -o /tmp/gf2-power-transfers
 uv run --no-project --with numpy --with python-flint==0.9.0 python scripts/check_1229_power_transfers.py /tmp/gf2-power-transfers
+uv run --no-project --with numpy --with python-flint==0.9.0 python scripts/check_1229_power_transfers.py /tmp/gf2-power-transfers --sparse-ratios
 ~~~
 
 A verified split uses six factor logarithms, of degrees 5, 7, 9, 11, 19, and 21 over $\mathbb F_{2^{20}}$. The task file includes the base, each binary polynomial mask and its signed coefficient, the known offset, and an irreducible relative factor for each mask. Add `--logs answers.csv` to check any subset, using a CSV with columns `mask,exponent`. A complete submission gives the common index. A second six-factor split has relative degrees 9, 11, 11, 13, 20, and 20. Select it with `--split degree-20`. The earlier nine-factor certificate is available with `--split 9`. [Six tasks including a quintic](data/degree-1229-seventh-power-split-six.json) · [Six tasks through degree 20](data/degree-1229-seventh-power-degree20.json) · [Nine-factor alternative](data/degree-1229-seventh-power-split.json) · [Field identities](results.pdf#page=158)
