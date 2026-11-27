@@ -10,7 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **The minimum weight is three in degrees $3481=59^2$ and $4913=17^3$.** Up to reciprocity the primitive trinomial taps are 546 and 1449 in degree 3481, and 693 and 1245 in degree 4913. There is also a certified pentanomial in each degree. [Witnesses and order factorizations](data/composite-order-witnesses.json) · [Primality certificates](data/composite-order-prime-certificates.json.gz) · [Verifier](scripts/check_composite_orders.py)
+- **Twelve additional composite degrees have certified primitive pentanomials.** The minimum weight is three in degrees $3481=59^2$ and $4913=17^3$, and five in the other ten degrees through 15,856. In degree 3481 a 1,031-digit prime divides the root order of every irreducible, so primitivity reduces to a norm test in degree 59. [Witnesses and order factorizations](data/composite-order-witnesses.json) · [Primality certificates](data/composite-order-prime-certificates.json.gz) · [Proof](results.pdf#page=260)
 
 - **For $k=141$ and $191$, the prime $2^k+5$ divides the root order of the degree-$2^k+4$ pentanomial exactly once. The exact powers of three in those orders are 9 and 243.** The conductor-prime test uses binary quadratic forms and agrees with direct powering at all 125 eligible primes through 2,053. The powers of three follow unconditionally from two certified imaginary quadratic class numbers. [Conductor-prime proof](results.pdf#page=253) · [Powers of three](results.pdf#page=257) · [Class-number verifier](scripts/check_twisted_three_class.py)
 
@@ -828,6 +828,12 @@ For the five witnesses in degrees 7854 through 9576, each row gives the degree $
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
+~~~
+
+To verify the composite-degree witnesses, run the following command with PARI/GP available. Passing `--ntl` with the path to a compiled copy of [the trinomial enumerator](scripts/prime_degree_trinomials.cpp) also repeats the exhaustive tap search.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_composite_orders.py
 ~~~
 
 To check the twisted cyclotomic family, the first command tests the root orders and the exclusion of every odd exponent strictly between 191 and 16,541. The second compares the cubic character with certified PARI class groups and checks the order formula for the projection to the subfield of half the degree.
