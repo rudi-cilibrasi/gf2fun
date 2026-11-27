@@ -6,13 +6,14 @@ import io
 import json
 import subprocess
 import sys
-from math import prod
+from math import lcm, prod
 from pathlib import Path
 
 from flint import fmpz, nmod_poly
 
+from check_factor_base import modulus
 from check_primo_certificate import check_primo
-from check_product_range import certified_primes, prime_index_powers, verify
+from check_product_range import certified_primes, prime_index_powers, verify, verify_primitive_modulus
 
 
 DATA = Path(__file__).resolve().parents[1] / "data"
@@ -22,6 +23,8 @@ X = nmod_poly([0, 1], 2)
 def check_trinomials(n, row, factors, ntl):
     if n % 8 == 0:
         # Swan's theorem excludes irreducible trinomials in these degrees.
+        if row["irreducible_taps"] or row["primitive_taps"]:
+            raise ValueError(f"unexpected trinomial in a degree divisible by eight: {n}")
         return []
     taps = row["irreducible_taps"]
     if taps != sorted(set(taps)) or any(not 0 < a <= n // 2 for a in taps):
@@ -63,18 +66,31 @@ def main():
         rows = {str(args.degree): rows[str(args.degree)]}
     primes = {p for row in rows.values() for p in row["order_factors"]}
     certified = certified_primes(DATA / "composite-order-prime-certificates.json.gz", primes, args.gp)
-    if "16129" in rows:
-        p = max(rows["16129"]["order_factors"])
-        check_primo(DATA / "degree-16129-primality.cert.gz", p, args.gp)
-        certified.add(p)
+    for degree, row in rows.items():
+        if "primo_certificate" in row:
+            p = max(row["order_factors"])
+            check_primo(DATA / f"degree-{degree}-primality.cert.gz", p, args.gp)
+            certified.add(p)
     if not all(fmpz(p).is_prime() for p in primes - certified):
         raise ValueError("composite factor in order data")
     for degree, row in rows.items():
         n = int(degree)
         factors = row["order_factors"]
-        if any(p < 2 for p in factors) or prod(factors) != (1 << n) - 1:
+        order = (1 << n) - 1
+        if any(p < 2 for p in factors) or prod(factors) != order:
             raise ValueError(f"incomplete factorization in degree {n}")
-        verify(n, *row["complementary_taps"], factors, symmetric=True)
+        if "primitive_part_small_factors" in row:
+            lower = lcm(*((1 << (n // int(p))) - 1 for p, _ in fmpz(n).factor()))
+            small = row["primitive_part_small_factors"]
+            if any(p not in factors for p in small) or lower * max(factors) * prod(small) != order:
+                raise ValueError(f"incorrect cyclotomic part in degree {n}")
+        if "pentanomial_taps" in row:
+            taps = row["pentanomial_taps"]
+            if len(taps) != 3 or taps != sorted(set(taps)) or not 0 < taps[0] <= taps[-1] < n:
+                raise ValueError(f"invalid pentanomial in degree {n}")
+            verify_primitive_modulus(modulus(n, taps), factors)
+        else:
+            verify(n, *row["complementary_taps"], factors, symmetric=True)
         primitive = check_trinomials(n, row, factors, args.ntl)
         print(f"Degree {n}: primitive pentanomial verified, primitive trinomial taps {primitive}.",
               flush=True)

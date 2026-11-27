@@ -55,6 +55,13 @@ def verify(n, u, v, factors, symmetric=False):
         if not 0 < u < v or u + v >= n:
             raise ValueError(f"invalid product support in degree {n}")
         f = x**n + x**(u+v) + x**v + x**u + 1
+    verify_primitive_modulus(f, factors)
+
+
+def verify_primitive_modulus(f, factors):
+    """Verify full multiplicative order with the prime factors of 2^deg(f)-1."""
+    x = nmod_poly([0, 1], 2)
+    n = f.degree()
     order = 2**n - 1
     if x.pow_mod(order, f) != 1:
         raise ValueError(f"failed full power in degree {n}")

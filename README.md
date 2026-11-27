@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Seven more degrees have certified minimum primitive weights.** Five terms are necessary in degrees 4,205, 5,325, 10,192 and 17,917. In those degrees, $X^n+X^t+X^2+X+1$ is primitive for $t=216,1169,3159,1961$, respectively. Three terms suffice in degrees 4,167, 7,135 and 13,489. Every trinomial tap up to reciprocity was checked. [Witnesses and factorizations](data/composite-order-witnesses.json) · [Proof and trinomial taps](results.pdf#page=285) · [Verifier](scripts/check_composite_orders.py)
+
 - **Three exponents in arithmetic progression rule out every coprime-degree subfield split unless the degree is 2 modulo 4.** Every exception is $H_T(X^{3^a})$, where $T$ is an irreducible trinomial of odd degree $m$, $H_T$ is its quadratic twist, and $\gcd(3^a,m)=1$. Its exact root order is $3^{a+1}$ times the source order. This excludes all progression cases in degree 2,458. The step is arbitrary. In odd degree the same holds for $t,t+d,t+2^k d$ when $k$ is coprime to the degree. Three consecutive exponents also force a full-degree order component in every degree $p^a q^b$ for distinct odd primes, even when the two maximal subfields intersect. Explicit primitive examples include $X^{3375}+X^{491}+X^2+X+1$ and $X^{1233}+X^{43}+X^2+X+1$. [Proof](results.pdf#page=281) · [Classification for arbitrary exponent gcd](results.pdf#page=284) · [Order checks](scripts/check_progression_scalar_orders.py)
 
 - **Three exponents inside any seven equally spaced positions exclude a coprime-degree subfield split in every odd degree.** The window grows to 23 positions when the degree is coprime to 6. More generally, for normalized support and three scaled positions $0,m,W$ whose differences are coprime to $2^n-1$, a split requires $5n<12W^3$. In odd semiprime degree these exclusions force a full-degree prime-power component. One primitive example is $X^{3415}+X^{36}+X^{27}+X^{18}+1$. [Proof of the three-position bound](results.pdf#page=283) · [Witness and gap tests](results.pdf#page=280)
@@ -883,7 +885,7 @@ c++ -std=c++17 -O3 scripts/cyclotomic_weight_census.cpp -lntl -lgmp -o /tmp/gf2-
 uv run --no-project --with python-flint==0.9.0 python scripts/check_cyclotomic_weights.py --census /tmp/gf2-cyclotomic-weights
 ~~~
 
-The Python command verifies all thirteen composite degrees with PARI/GP. Add `--degree 16129` to check only the largest degree, or `--ntl` with the path to the compiled trinomial enumerator to repeat the exhaustive tap search. The Lean command builds the general norm criterion. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)
+The Python command verifies all twenty composite degrees in the witness table with PARI/GP. Add `--degree 17917` to check only that degree, or `--ntl` with the path to the compiled trinomial enumerator to repeat the exhaustive tap search. The Lean command builds the general norm criterion. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_composite_orders.py

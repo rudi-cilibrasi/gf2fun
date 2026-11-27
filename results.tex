@@ -20847,4 +20847,60 @@ Direct field tests over every coprime partition in degrees 5 through
 96 recover 82 supports, including ten with every exponent divisible
 by three. The verifier is \nolinkurl{scripts/check_progression_scalar_orders.py}.
 
+\clearpage
+\section{Exact minimum primitive weight in seven further composite degrees}
+\label{sec:seven-relative-witnesses}
+For every row of the table, the polynomial
+\[
+                 X^n+X^t+X^2+X+1
+\]
+is primitive. The last column lists \emph{all} irreducible trinomial taps
+up to reciprocation, and in these degrees each of them is primitive.
+An empty column therefore gives minimum weight five. Over
+\(\mathbb F_2\) every irreducible polynomial of degree above one has
+constant term one and odd weight, since its value at one is nonzero.
+
+\[
+\begin{array}{r|r|r|r|l}
+ n & t & \text{minimum weight} & \text{digits of }P & \text{trinomial taps} \\ \hline
+ 4167 & 1702 & 3 & 835 & 698 \\
+ 4205 & 216 & 5 & 974 & \\
+ 5325 & 1169 & 5 & 843 & \\
+ 7135 & 975 & 3 & 1706 & 553,922 \\
+ 10192 & 3159 & 5 & 1214 & \\
+ 13489 & 8619 & 3 & 3324 & 240,1915,1972,4360,4615 \\
+ 17917 & 1961 & 5 & 4769 &
+\end{array}
+\]
+
+To recover the group order, put \(M_d=2^d-1\). For every \(n>1\),
+\[
+        \Phi_n(2)=M_n\big/\mathop{\rm lcm}_{p\mid n,\ p\ \mathrm{prime}} M_{n/p}.
+\]
+Indeed inclusion-exclusion for the least common multiple gives the
+cyclotomic product since \(\gcd(M_a,M_b)=M_{\gcd(a,b)}\).
+In five rows \(\Phi_n(2)\) itself is the prime \(P\). In the other two,
+\(\Phi_{4205}(2)=33641P\) and
+\(\Phi_{7135}(2)=128431\cdot684961P\), with \(P\) specific to each
+degree. Together with the proper-subfield factors, these give the full
+factorization of each \(M_n\). For instance \(17917=19\cdot23\cdot41\);
+the lower field degrees are 943, 779 and 437.
+
+For each polynomial the verifier checks \(X^{M_n}=1\) and
+\(X^{M_n/\ell}\ne1\) modulo the polynomial at every prime \(\ell\mid M_n\).
+As in Section~\ref{sec:composite-order-witnesses}, these tests also
+prove irreducibility. They can be organized as maximal-subfield norm
+tests: the norm \(r^{M_n/M_d}\) has order \(M_d\) exactly when all
+prime-index tests for \(\ell\mid M_d\) pass. Only the primes in
+\(\Phi_n(2)\) absent from the lower groups require separate tests.
+
+The witness table records every integer factor and the source of each
+PRIMO certificate from \href{https://factordb.com/}{FactorDB}.
+\nolinkurl{scripts/check_composite_orders.py} verifies the archived
+certificates with PARI/GP and proves the remaining factors prime.
+The NTL enumeration checks all trinomial taps \(1\le a\le n/2\).
+FLINT independently checks irreducibility and root order for every
+listed trinomial. Swan's theorem also excludes all trinomials at
+\(n=10192\), which is divisible by eight.
+
 \end{document}
