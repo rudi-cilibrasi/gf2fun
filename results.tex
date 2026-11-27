@@ -14430,4 +14430,54 @@ verification only requires the displayed factorizations.
 every row against the 4,404-factor expansion and can expand a
 single row into an explicit power-verified logarithm equation.
 
+\section{Primitive pentanomials through degree 4096 and the minimum tap in degree 4096}
+\label{sec:products-4096}
+The product family \(X^n+(1+X^u)(1+X^v)\) supplies a primitive
+pentanomial for each of the 80 degrees \(n=3460,3468,\ldots,4092\)
+and for \(n=4096\). Together with the preceding tables, this covers
+every \(n\equiv4\pmod8\) from 4 through 4092, where degree four
+has a primitive polynomial of weight three. The 81 additional degrees,
+degree 4095 from the Ore construction, and the 2,343 degrees in
+Section~\ref{sec:products-3456} give at least 2,425 of the first
+4,096 degrees with a verified primitive polynomial of weight at most five.
+
+In degree 4096 there are two structurally different witnesses,
+\[
+ X^{4096}+X^{27}+X^{15}+X+1,\qquad
+ X^{4096}+X^{153}+X^{135}+X^{18}+1.
+\]
+The first is Seroussi's tabulated irreducible. It is the only
+irreducible pentanomial with three interior exponents in
+\(\{1,\ldots,27\}\), and its root has exact order \(2^{4096}-1\).
+Of the \(\binom{27}{3}=2925\) triples, 286 have all exponents even
+and give squares. For each of the other 2,638 excluded triples the
+archive supplies a proper binary factor. Swan's trinomial
+obstruction in degrees divisible by eight shows that the minimum
+weight of a primitive polynomial in degree 4096 is exactly five.
+The earlier witnesses at the powers of two give the same equality
+for every \(2^k\) with \(3\le k\le12\).
+\href{https://shiftleft.com/mirrors/www.hpl.hp.com/techreports/98/HPL-98-135.pdf}
+{G.~Seroussi, \emph{Table of Low-Weight Binary Irreducible Polynomials}}.
+\href{https://doi.org/10.2140/pjm.1962.12.1099}{R.~G.~Swan, \emph{Factorization of polynomials over finite fields}}.
+
+For all 81 degrees PARI/GP searches in increasing \(u+v\), then
+in increasing \(u\), and computes orders in the irreducible quotient.
+The degree-4096 product witness attains minimum sum 153 in that
+family. The group orders in the 80 degrees congruent to four modulo
+eight come from the pinned Cunningham transcription. In degree
+4096 the order is the product of \(F_j=2^{2^j}+1\) for
+\(0\le j\le11\), with 25 distinct prime divisors. Brent's
+factorization of \(F_{11}\) gives the largest, a 564-digit prime.
+The archive gives a 72-step elliptic primality certificate for it.
+FLINT proves primality of the remaining 2,425 distinct primes in the
+81 rows. In each quotient the verifier checks the full exponent and
+every prime-index exponent. Order \(2^n-1\) makes every nonzero
+class a power of \(X\), so the quotient is a field.
+\href{https://github.com/postvakje/Reformatted-Cunningham-Project-tables/tree/dff2e282ff15399b16b4fb840a410aa2a37076b7}
+{Cunningham tables}.
+\href{https://maths-people.anu.edu.au/brent/F11.html}
+{R.~P.~Brent, \emph{Factorization of \(F_{11}\)}}.
+\nolinkurl{scripts/check_4096_small_taps.py} verifies the proper
+factors and Seroussi polynomial's full order.
+
 \end{document}
