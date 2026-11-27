@@ -18,7 +18,7 @@ def search(row, least_span=False):
     gp, n, factors = row
     script = Path(__file__).with_name("search_product_range.gp")
     command = f"iferr(print(findproduct({n},{factors},{int(least_span)})), E, print(E); quit(1));\n"
-    result = subprocess.run([gp, "-fq", str(script)], input=command, text=True,
+    result = subprocess.run([gp, "-fq", "-s", "64M", str(script)], input=command, text=True,
                             capture_output=True, check=False)
     if result.returncode or result.stderr:
         raise ValueError(f"PARI failed in degree {n}: {result.stdout}{result.stderr}")
