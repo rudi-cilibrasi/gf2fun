@@ -1,4 +1,4 @@
-"""Verify pentanomial witnesses and the minimum primitive weight in the listed composite degrees."""
+"""Verify sparse witnesses against a table of completely factored binary field orders."""
 
 import argparse
 import csv
@@ -55,11 +55,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gp", default="gp", help="PARI/GP executable for ECPP certificates")
     parser.add_argument("--ntl", help="compiled scripts/prime_degree_trinomials.cpp for an exhaustive census")
+    parser.add_argument("--table", type=Path, default=DATA / "composite-order-witnesses.json",
+                        help="JSON table of witnesses and order factorizations")
     parser.add_argument("--degree", type=int, help="verify only this degree from the table")
     args = parser.parse_args()
     if hasattr(sys, "set_int_max_str_digits"):
         sys.set_int_max_str_digits(0)
-    rows = json.loads((DATA / "composite-order-witnesses.json").read_text())
+    rows = json.loads(args.table.read_text())
     if args.degree is not None:
         if str(args.degree) not in rows:
             parser.error(f"degree {args.degree} is absent from the witness table")

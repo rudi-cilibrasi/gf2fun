@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **The minimum primitive weight is five in degrees 3,837, 5,509 and 8,371, and three in degrees 5,785 and 7,673.** In degree 7,673 the unique primitive trinomial up to reciprocation is $X^{7673}+X^{120}+1$. Each of the five degrees also has an explicit primitive pentanomial. [Witnesses and complete order factorizations](data/cyclotomic-order-witnesses.json) · [Proof and tap lists](results.pdf#page=292)
+
 - **For every pair of odd primes $p<q$ there are infinitely many degrees $p q^b$ where three of $p$ equally spaced positions force a full-degree order component.** The period $\mathrm{lcm}_{3\le r\le p,\ r\text{ prime}}(r-1)$ works for all $q>p$. If $q$ does not divide $2^p-1$, an actual prime of binary multiplicative degree $p q^b$ divides every such irreducible pentanomial root order. For $p=3,5$ it suffices that $q^b$ differs from 11 modulo 12. An explicit periodic test also works in $p^a q^b$ for every fixed $a$. [Proof](results.pdf#page=290) · [Congruence verifier](scripts/check_relative_progressions.py) · [Lean](GF2Sparse/ScalarOrderBound.lean)
 
 - **In degrees 4,167, 6,925, 9,583 and 12,231 every irreducible pentanomial containing a three-term progression has a certified large prime in its root order.** Primitivity then reduces to testing the two maximal-subfield norms. For the explicit examples at 6,925 and 12,231 the root orders have certified divisors of 1,840 and 2,936 digits. Each remaining index is one or exceeds ten billion. The data reduce the two remaining order tests to explicit fields of degrees 1,385 and 4,077. [Proof and polynomials](results.pdf#page=288) · [Cofactors](data/relative-progression-witnesses.json) · [Verifier](scripts/check_relative_progression_witnesses.py)
@@ -903,7 +905,14 @@ uv run --no-project --with sympy python scripts/check_relative_progressions.py -
 uv run --no-project --with python-flint==0.9.0 python scripts/check_relative_progression_witnesses.py
 ~~~
 
-The Python command verifies all 22 composite degrees in the witness table with PARI/GP. Add `--degree 24853` to check only that degree, or `--ntl` with the path to the compiled trinomial enumerator to repeat the exhaustive tap search. The Lean command builds the general norm criterion. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)
+The additional cyclotomic table gives the five degrees from 3,837 to 8,371. With PARI/GP and the NTL development libraries installed, these commands verify the orders and repeat the exhaustive trinomial search.
+
+~~~sh
+c++ -O3 -std=c++17 scripts/prime_degree_trinomials.cpp -lntl -lgmp -o /tmp/gf2-trinomials
+uv run --no-project --with python-flint==0.9.0 python scripts/check_composite_orders.py --table data/cyclotomic-order-witnesses.json --ntl /tmp/gf2-trinomials
+~~~
+
+The Python command verifies all 22 composite degrees in the original witness table with PARI/GP. Add `--degree 24853` to check only that degree, or `--ntl` with the path to the compiled trinomial enumerator to repeat the exhaustive tap search. The Lean command builds the general norm criterion. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_composite_orders.py

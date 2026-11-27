@@ -21225,4 +21225,50 @@ exact dilation rule of Section~\ref{sec:relative-progression-differences}.
 The verifier also accepts \nolinkurl{--family M Q B} with \(M=p^a\).
 
 
+\clearpage
+\section{Minimum primitive weights in five further degrees}
+\label{sec:extended-cyclotomic-witnesses}
+The following table gives the interior exponents of a primitive
+pentanomial and every irreducible trinomial tap up to reciprocation.
+Each listed trinomial is primitive. A dash means that all trinomials
+in that degree are reducible.
+\[
+\begin{array}{r|r|r|l}
+ n & \text{pentanomial taps} & \text{trinomial taps} &
+       \text{small factors of }\Phi_n(2) \\ \hline
+ 3837 & 1,2,1961 & - & 30697,\ 4819273 \\
+ 5509 & 1,2,2352 & - & 1322161,\ 180607057 \\
+ 5785 & 1,2,444 & 1161,\ 2617 & 41513161,\ 108110081 \\
+ 7673 & 2,4,628 & 120 & 184153,\ 13918823 \\
+ 8371 & 2,4,96 & - & 1138457,\ 202260103
+\end{array}
+\]
+\begin{proof}
+For each degree let \(M=2^n-1\). The least common multiple of the
+orders \(2^{n/p}-1\) for prime divisors \(p\mid n\) is
+\(M/\Phi_n(2)\), by inclusion--exclusion and the identity
+\(\gcd(2^a-1,2^b-1)=2^{\gcd(a,b)}-1\).
+Removing the two indicated factors from \(\Phi_n(2)\) leaves a
+prime of respectively 759, 1405, 1257, 2298 and 2274 decimal digits.
+The archived PRIMO certificates prove these five primality claims.
+The verifier checks primality of the remaining factors and multiplies
+them with multiplicity to recover \(M\).
+
+For each displayed sparse polynomial \(f\) the residue of \(X\)
+satisfies \(X^M=1\) and \(X^{M/\ell}\ne1\) for every prime
+\(\ell\mid M\). The resulting order \(M\) exhausts the nonzero
+residues of the degree-\(n\) quotient, so the quotient is a field.
+The exhaustive irreducibility test runs over \(1\le a\le\lfloor
+n/2\rfloor\) in \(X^n+X^a+1\), covering each reciprocal pair.
+An irreducible of degree greater than one with nonzero constant term
+has odd weight, since an even number of terms gives the root one.
+It follows that the minimum is five in the three rows without a
+trinomial and three in the other two rows.
+\end{proof}
+The factorizations, supports and certificate source links are in
+\nolinkurl{data/cyclotomic-order-witnesses.json}. The verifier is
+\nolinkurl{scripts/check_composite_orders.py}, with the table supplied
+by \nolinkurl{--table}. Its \nolinkurl{--ntl} option replays the
+trinomial census using \nolinkurl{scripts/prime_degree_trinomials.cpp}.
+
 \end{document}
