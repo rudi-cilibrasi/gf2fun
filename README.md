@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Nineteen additional degrees from 10,007 through 17,698 have certified primitive pentanomials.** At degree 14,209 the interior exponents are 83, 166 and 14,126. At degree 17,698 they are 783, 1,566 and 16,915. PARI/GP verified the prime certificates and FLINT checked the full root orders. [Eighteen witnesses through degree 14,971](data/mers-project-sparse-orders.json) · [Degree 17,698 and larger candidates](data/mers-project-large-orders.json) · [Proof](results.pdf#page=308)
+
 - **In 45 additional degrees from 3,537 through 9,901, the minimum primitive weight is known.** Nineteen admit primitive trinomials and the other 26 require pentanomials. At degree 4,809 the only irreducible trinomial taps up to reciprocation are 91 and 931. Both are multiples of seven. A primitive pentanomial has interior exponents 746, 1,119 and 3,690. [Witnesses and factorizations](data/mers-project-sparse-orders.json) · [Verifier](scripts/check_mers_project_orders.py) · [Proof](results.pdf#page=307)
 
 - **In degrees 1,331, 3,993 and 6,655, 21 pentanomial pairs have root index one or greater than 182,931,247,071,233.** Three examples have interior exponents $(1,2,289)$, $(1,2,83)$ and $(1,2,1719)$, respectively. The first two primitivity checks reduce to the same 250-digit composite order in degree 1,331. The third also has a 1,427-digit composite to resolve. All 665 trinomial pairs in degree 1,331 are reducible, so a witness there requires five terms. [Order bounds and remaining tests](results.pdf#page=306) · [Polynomials and factors](data/degree-1331-order-projections.json) · [Verifier](scripts/check_1331_order_projections.py)

@@ -22121,4 +22121,42 @@ Their root orders attain the bound \(7(2^{687}-1)\), as direct
 powering at each prime divisor of this bound verifies. The full-order
 pentanomial in the table settles the minimum weight in this case.
 
+\paragraph{Eighteen more degrees above 10000.}
+For each of the following degrees the complementary search gives
+a primitive pentanomial. The full table includes all interior
+exponents and the 105 prime-index tests across these 18 pentanomials.
+\[
+\begin{gathered}
+10007,10097,10169,10211,10433,10967,11018,11117,11581,\\
+11813,12451,12569,14209,14263,14561,14621,14834,14971 .
+\end{gathered}
+\]
+For example, in degrees 10007, 14209 and 14971 the interior exponents
+are respectively \((921,1842,9086)\), \((83,166,14126)\) and
+\((511,1022,14460)\). Each support contains two exponents summing to
+the degree.
+
+In degree 10169 the two prime divisors of the field order are
+\[
+   s=10402314702094700470118039921523041260063,\qquad
+   P=(2^{10169}-1)/s.
+\]
+To prove \(P\) prime, write \(P-1=hQ\) with
+\(h=1700835238719877389500688006067488\). The archived
+\href{https://factordb.com/cert/1100000000504581737}{PRIMO proof for
+\(Q\)} verifies that \(Q\) is prime. Direct integer arithmetic gives
+\(Q^2>P\), \(3^{P-1}=1\pmod P\) and \(\gcd(3^h-1,P)=1\).
+Every prime divisor of \(P\) must then be one modulo \(Q\);
+Pocklington's criterion proves primality. The pentanomial with
+interior exponents \((960,1920,9209)\) passes both order tests.
+
+The separate table \nolinkurl{data/mers-project-large-orders.json}
+also gives a fully verified witness in degree \(17698=2\cdot8849\).
+Its three taps are \(783,1566,16915\). The field order has eight
+distinct prime divisors. The largest two have 2593 and 2637 decimal
+digits. PARI/GP verified both archived chains and FLINT checked the
+full group power and all eight prime-index powers. External chains
+are identified by their FactorDB certificate numbers so each row can
+be replayed independently.
+
 \end{document}
