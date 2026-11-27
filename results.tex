@@ -20783,4 +20783,68 @@ through 2048 excludes both ranges. For descent first make
 \(\gcd(m,W)=1\) by rescaling the step. Then the support gcd divides
 both \(t\) and \(d\), so the three positions survive normalization.
 
+\clearpage
+\section{All progression exceptions, including arbitrary exponent gcd}
+\label{sec:all-progression-twists}
+Let \(T\) be any irreducible binary trinomial of odd degree \(m>1\),
+let \(\omega\) have order three, and define
+\[
+ H_T(X)=T(\omega X)T(\omega^2 X).
+\]
+The irreducible binary pentanomials containing a three-term arithmetic
+progression and having a root in a product of two coprime-degree proper
+subfields are exactly
+\[
+       H_T(X^{3^a}),\qquad a\ge0,\qquad \gcd(3^a,m)=1.
+\]
+Every root has degree \(2\cdot3^a m\) and order \(3^{a+1}\ord(T)\),
+where \(\ord(T)\) is the order of a root of \(T\). The two components
+have degrees \(2\cdot3^a,m\). If one drops the coprimality condition,
+the polynomial has exactly \(\gcd(3^a,m)\) distinct irreducible factors
+of equal degree and the same stated root order.
+
+Indeed write the support of \(T\) as \(0,b,m\). All three residues
+modulo three cannot be distinct since then \(T(\omega)=0\). They
+cannot all coincide since \(T(X)\in\mathbb F_2[X^3]\) would supply
+two roots differing by a factor \(\omega\) in the odd-degree field.
+Thus there is a unique singleton exponent \(s\). Writing \(e,f\) for
+the other two exponents minus \(s\), the product defining \(H_T\) is
+precisely the normalized \(1+D+D^2\) with \(D=X^e+X^f\), as in
+Theorem~\ref{thm:cubic-root-twist}. In particular it has five terms.
+
+Given an arbitrary irreducible split support, let \(g\) be its
+exponent gcd. Descent gives a normalized split progression support
+in degree \(n/g\) by Section~\ref{sec:odd-scalar-descent}. It equals
+\(H_G\) for an irreducible trinomial \(G\) by
+Section~\ref{sec:progression-scalar-classification}. Write
+\(g=3^a t\) with \(3\nmid t\). Then \(H_G(X^t)=H_{G(X^t)}(X)\)
+because the \(t\)-th power permutes the two nontrivial cube roots.
+If \(G(X^t)\) were reducible, twisting each factor would factor the
+original polynomial. Hence \(T=G(X^t)\) is irreducible of odd degree.
+
+Conversely, let \(\beta\) be a root of \(T\). Its unique \(3^a\)-th
+root in \(\mathbb F_{2^m}\) has the same order and degree. A root of
+\(H_T(X^{3^a})\) is the product of this element and a primitive
+\(3^{a+1}\)-th root of unity. The two orders are coprime, so their
+product has the stated order and generates both components. The binary
+degree of the latter root of unity is \(2\cdot3^a\), since
+\(3^{a+1}\mid 2^j-1\) exactly when \(2\cdot3^a\mid j\).
+Lean checks this equivalence in \nolinkurl{GF2Sparse/ScalarOrderBound.lean}.
+The compositum degree is therefore
+\(2\cdot3^a m/\gcd(3^a,m)\). Every root has this degree, and
+separability follows from the odd substitution exponent.
+
+This description has no duplicates. The 3-part of the support gcd
+recovers \(3^a\), as the exponents of \(H_T\) occupy all three
+residues. After undoing the dilation, projection to the odd-degree
+field recovers \(T\). Write \(A_m\) for the number of irreducible
+binary trinomials in odd degree \(m\), with \(A_1=0\). In degree
+\(2m\) the number of split progression pentanomials is exactly
+\(A_m+{\bf1}_{3\mid m}A_{m/3^{v_3(m)}}\). It is zero in the other
+degree classes. For instance the supports \(3^a\{0,2,4,5,10\}\)
+give exact order \(31\cdot3^{a+1}\) for every \(a\ge0\).
+Direct field tests over every coprime partition in degrees 5 through
+96 recover 82 supports, including ten with every exponent divisible
+by three. The verifier is \nolinkurl{scripts/check_progression_scalar_orders.py}.
+
 \end{document}

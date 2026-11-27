@@ -1,8 +1,8 @@
-"""Check root orders for pentanomials containing three consecutive exponents."""
+"""Check the trinomial classification of split progression pentanomials and explicit full orders."""
 
 import json
 from itertools import combinations
-from math import gcd, prod
+from math import gcd, isqrt, prod
 from pathlib import Path
 
 from flint import fmpz
@@ -30,41 +30,63 @@ def check_order(n, tap, order, primes):
 def quadratic_lifts(j):
     lifts = set()
     for tap in range(1, j):
-        if gcd(tap, j) != 1 or not irreducible(modulus(j, (tap,))):
+        if not irreducible(modulus(j, (tap,))):
             continue
         source = (0, tap, j)
-        for singleton in source:
-            e, f = (a-singleton for a in source if a != singleton)
-            if e % 3 and (e-f) % 3 == 0:
-                lifts.add(lift_support(e, f, 2))
+        singletons = [s for s in source if sum(a % 3 == s % 3 for a in source) == 1]
+        if len(singletons) != 1:
+            raise ArithmeticError(f"incorrect residue pattern for {source}")
+        e, f = (a-singletons[0] for a in source if a != singletons[0])
+        support = lift_support(e, f, 2)
+        if support in lifts:
+            raise ArithmeticError(f"two source trinomials produced {support}")
+        lifts.add(support)
     return lifts
 
 
-def direct_splits(j):
-    n = 2*j
+def split_progressions(n):
+    if n % 4 != 2:
+        return set()
+    j = n//2
+    lifts = quadratic_lifts(j)
+    d = 1
+    while j % 3 == 0:
+        j //= 3
+        d *= 3
+    if d > 1:
+        lifts.update(tuple(d*e for e in support) for support in quadratic_lifts(j))
+    return lifts
+
+
+def direct_splits(n):
     x = polynomial(2)
-    group = 3*((1 << j)-1)
+    groups = [((1 << i)-1)*((1 << (n//i))-1) for i in range(2, isqrt(n)+1)
+              if n % i == 0 and gcd(i, n//i) == 1]
     splits = set()
+    if not groups:
+        return splits
     for taps in combinations(range(1, n), 3):
-        if gcd(n, *taps) != 1:
-            continue
         support = (0, *taps, n)
         if not any(2*b == a+c for a, b, c in combinations(support, 3)):
             continue
         f = modulus(n, taps)
-        if x.pow_mod(group, f) == 1 and irreducible(f):
+        if any(x.pow_mod(group, f) == 1 for group in groups) and irreducible(f):
             splits.add(support)
     return splits
 
 
 def main():
-    total = 0
-    for j in range(3, 36, 2):
-        generated = quadratic_lifts(j)
-        if generated != direct_splits(j):
-            raise ArithmeticError(f"split support sets disagree in degree {2*j}")
-        total += len(generated)
-    print(f"Verified {total} normalized split supports containing a progression in degrees 6 through 70.")
+    total = normalized = dilated = 0
+    for n in range(5, 97):
+        generated = split_progressions(n)
+        direct = direct_splits(n)
+        if generated != direct:
+            raise ArithmeticError(f"split support sets disagree in degree {n}: {generated ^ direct}")
+        total += len(direct)
+        normalized += sum(gcd(*s) == 1 for s in direct)
+        dilated += sum(all(e % 3 == 0 for e in s) for s in direct)
+    print(f"Degrees 5 through 96: {total} split progression supports, {normalized} with exponent gcd one, "
+          f"{dilated} with every exponent divisible by three.")
     check_trinomials()
     print("Degree 2458 has no split pentanomial containing a three-term progression.")
     check_order(6, 4, 21, [3, 7])

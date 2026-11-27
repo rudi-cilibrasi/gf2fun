@@ -1,6 +1,8 @@
+import GF2Sparse.Progressions
 import GF2Sparse.SubfieldProducts
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.FieldTheory.Finite.Extension
+import Mathlib.NumberTheory.Multiplicity
 
 /-! Arithmetic and Frobenius certificates for the upper bound on a scalar order. -/
 
@@ -181,5 +183,27 @@ theorem geometric_triple_cube {F : Type*} [Field F] [CharP F 2] {z : F}
   · calc z^3 = z*(z+1) := by rw [← h]; ring
          _ = z^2+z := by ring
          _ = 1 := by rw [h]; ring_nf; simp [CharTwo.two_eq_zero (R := F)]
+
+/-- The exact binary degree of a root of unity of order 3^(a+1). -/
+theorem three_power_divides_mersenne_iff (a n : ℕ) :
+    3^(a+1) ∣ 2^n-1 ↔ 2*3^a ∣ n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  rcases Nat.even_or_odd n with ⟨m, hm⟩ | ho
+  · have he : n = 2*m := by omega
+    have hm0 : m ≠ 0 := by omega
+    have hsub : 4^m-1 ≠ 0 := by
+      have : 1 < 4^m := one_lt_pow₀ (by decide) hm0
+      omega
+    have hval := padicValNat.pow_sub_pow (p := 3) (by decide : Odd 3) (by decide : 1 < 4)
+      (by decide : 3 ∣ 4-1) (by decide : ¬3 ∣ 4) hm0
+    simp only [one_pow, show padicValNat 3 (4-1) = 1 from padicValNat.self (by decide : 1 < 3)] at hval
+    rw [he, pow_mul, show (2:ℕ)^2 = 4 by decide, Nat.mul_dvd_mul_iff_left (by decide : 0 < 2),
+      padicValNat_dvd_iff_le hsub, padicValNat_dvd_iff_le hm0, hval]
+    omega
+  · have h3 := Nat.prime_three.coprime_iff_not_dvd.mp ((mersenne_coprime_three_iff_odd n).2 ho).symm
+    have h2 : ¬2 ∣ n := fun h => Nat.not_even_iff_odd.mpr ho (even_iff_two_dvd.mpr h)
+    exact iff_of_false (fun h => h3 (dvd_trans (dvd_pow_self 3 (by omega : a+1 ≠ 0)) h))
+      (fun h => h2 (dvd_trans (dvd_mul_right 2 _) h))
 
 end GF2Sparse.SubfieldProducts
