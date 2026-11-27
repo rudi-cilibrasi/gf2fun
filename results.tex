@@ -21821,4 +21821,145 @@ rows makes it the identity sum. Both this certificate and the
 six-coefficient calculation are reproduced by
 \nolinkurl{scripts/check_relative_fourier_minors.py}.
 
+\clearpage
+\section{Eventual classification for every fixed prime power}
+\label{sec:eventual-relative-classification}
+\begin{theorem}
+Let \(p<q\) be odd primes, \(m=p^a\), \(z=q^b\), \(a,b\ge1\), and
+\(n=mz\). Suppose \(2z+1>(6m-5)^9\).
+Let an irreducible binary pentanomial of degree \(n\) contain three
+of \(p\) equally spaced positions, and let \(g\) be the gcd of its
+exponents. A root belongs to the product of the two maximal proper
+subfield groups exactly when
+\[
+                     g>1\quad\text{and}\quad q\mid 2^{m/p}-1.
+\]
+In every other case its order contains a prime power of binary
+multiplicative degree \(n\). When \(\ord_q(2)\ne m\), its order
+then contains a prime of binary multiplicative degree \(n\).
+\end{theorem}
+The threshold depends only on the fixed prime power \(m\).
+For \(g>1\) the conclusion holds without any size bound, by
+Section~\ref{sec:relative-progression-differences}: putting
+\(s=n/(pq)\), Fermat's theorem gives
+\(q\mid2^s-1\) exactly when \(q\mid2^{m/p}-1\).
+We prove that a normalized support cannot split above the threshold.
+
+\paragraph{The component in the field of relative degree \(q\).}
+Keep \(K=\mathbb F_{2^s}\), \(A=\mathbb F_{2^{ps}}\),
+\(B=\mathbb F_{2^{qs}}\). Write a putative split root as
+\(r=\alpha\beta\), with \(\alpha\in A^\times\) and
+\(\beta\in B^\times\). The order \(\eta>1\) of \(\beta\) modulo
+\(K^\times\) divides the progression step \(d\) or the distance
+between the complementary pair, so \(\eta\le n\).
+It divides \((2^{qs}-1)/(2^s-1)\). In this quotient the prime \(q\)
+has valuation at most one by lifting the exponent. Every other
+prime \(\ell\) has binary degree \(wz\) with \(w\mid m/p\), since
+that degree divides \(qs\) but does not divide \(s\). Thus
+\(\ell=kz+1\ge2z+1\) with \(k\) even. Two such primes counted
+with multiplicity would exceed \(n\).
+If \(\eta=q\), then \(r^q\in A\). The minimal polynomial \(G\)
+of \(r^q\) has degree at most \(n/q\), so \(G(X^q)\) must equal
+the degree-\(n\) minimal polynomial of \(r\). This contradicts
+\(g=1\). Hence \(\eta=\ell\) or \(q\ell\) for one prime
+\(\ell=kz+1\) with \(k\le m-1\).
+
+Decompose \(r=\gamma\omega\zeta\), with \(\gamma\in A^\times\),
+\(\zeta\) of order \(\ell\) in \(B\), and \(\omega\) of \(q\)-power
+order in \(B\) with \(\omega^q\in K\). This follows by splitting
+the primary components of \(\beta\) and absorbing factors in
+\(K^\times\). We take \(\omega=1\) if \(\eta=\ell\).
+The Frobenius \(\sigma(x)=x^{2^{ps}}\) has order \(q\) on \(B\).
+It sends \(\zeta\) to \(\zeta^u\) for \(u\) of order \(q\)
+modulo \(\ell\). It sends \(\omega\) to \(\rho\omega\), where
+\(\rho=1\) if \(\eta=\ell\) and \(\rho\in K\) has order \(q\)
+otherwise. Indeed in the latter case \(q\mid2^s-1\), and
+\(\omega\notin K\).
+
+\paragraph{Conjugate determinants with roots of unity as coefficients.}
+Let \(e_1,\ldots,e_v\) represent all exponent classes modulo \(\eta\).
+As before \(v\le4\). Grouping gives a relation over \(A\) among
+\(\omega^{e_j}\zeta^{e_j}\), since \((\omega\zeta)^\eta\in K\).
+If all grouped coefficients vanished, the original polynomial would
+also vanish at \(\gamma\omega\). This is impossible: \(\ell\)
+divides the order of \(r\), but divides neither the order of
+\(\omega\) nor \(2^{ps}-1\); conjugate roots have the same order.
+Applying powers of \(\sigma\) thus makes every determinant
+\[
+       D(T)=\det\big(\rho^{t_i e_j}T^{u^{t_i} e_j}\big)_{i,j=1}^v
+       \quad\text{vanish at }T=\zeta .
+\]
+Here we removed a common factor \(\omega^{e_j}\) from each column
+after evaluating. The coefficient field \(\mathbb F_2(\rho)\) has
+degree prime to \(q\), so the degree of \(\zeta\) over it is at
+least \(z\).
+
+We choose \(v\) distinct indices \(t_i\bmod q\) giving a nonzero
+\(D\) modulo \(T^\ell-1\). First suppose all column residues modulo
+\(\ell\) are distinct. A unique permutation sum suffices regardless
+of the coefficients. Up to three columns the individual-degree
+bound in Section~\ref{sec:relative-fourier-minors} works for every
+\(q\ge5\). For four columns and \(q\ge11\), use
+Lemma~\ref{lem:eight-row-choices}. At \(q=5,7\), the complementary
+pair must have coalesced, leaving three column residues equivalent
+to \(0,i,j\) with \(0<i<j<p\). For \(q=7\), \(p\le5\) and the
+seven-row coefficient test in Section~\ref{sec:all-three-five-relative}
+applies. For \(q=5\), \(p=3\) and the order-five calculation in
+Section~\ref{sec:four-unrestricted-columns} applies.
+
+\paragraph{When column residues repeat modulo \(\ell\).}
+Now \(\eta=q\ell\). Within a block of equal residues modulo
+\(\ell\), the residues modulo \(q\) are distinct. There are at
+least two blocks, since \(0,n\) are exponents and \(\ell\nmid n\).
+Permutations that allocate the same rows to each block have a single
+exponent sum. Their combined coefficient is the product of the
+corresponding minors of \((\rho^{t_i e_j})\), up to sign.
+For two rows and two columns of one block the minor is nonzero,
+because \(q\nmid(t_i-t_{i'})(e_j-e_{j'})\).
+If a block has size three, the sole other column is a singleton.
+Choose row indices \(0,1,2\) for the block and 3 for the singleton.
+Moving the singleton changes the exponent sum, and the three-row
+minor is an ordinary Vandermonde determinant at distinct \(q\)-th roots.
+
+It remains to separate the block allocations when every block has
+size at most two. For two distinct column residues translate and
+scale them to \(0,1\). For three distinct residues and a repeat
+there must be four classes modulo \(\eta\), so the complementary
+pair coalesces and the residues of the triple are distinct modulo
+\(\ell\): if \(\ell\mid d\) there would be at most two residues.
+We can therefore normalize the three residues to \(0,i,j\) with
+\(j<p\). Choose any \(v\) distinct rows \(r_i=u^{t_i}\).
+The box argument of Section~\ref{sec:relative-fourier-minors},
+now on just \(v-1\le3\) coordinates, gives a common nonzero
+multiplier for which the differences \(r_i-r_v\) have distinct
+signed representatives of absolute value less than \(\ell/(6p)\),
+including zero for the last row. Indeed \(\ell>(6p)^3\).
+After this transformation all permutation sums, computed with
+the normalized integer columns, lie in an interval of length
+less than \(\ell\). Sorting the rows and columns in the same order
+uniquely maximizes the sum up to permuting equal columns: swapping
+an inverted unequal pair strictly increases the sum.
+Thus one block allocation occurs alone modulo \(\ell\).
+Its coefficient is nonzero by the two-row minor test.
+
+For this nonzero determinant the final compression proof in
+Section~\ref{sec:relative-fourier-minors} works over
+\(\mathbb F_2(\rho)\): \(\ell\ge2z+1>(6m-5)^9\) yields a nonzero
+polynomial of degree less than \(z\) vanishing at a primitive
+\(\ell\)-th root. This contradicts the relative degree bound.
+Outside the maximal-subfield product a full-degree prime power is
+forced. If its underlying prime has smaller degree it must be
+\(q\) with \(\ord_q(2)=m\), by the lifting argument of
+Corollary~\ref{cor:trinomial-full-order-component}.
+
+For example, in every degree \(9\cdot7^b\) with \(b\ge18\),
+every irreducible progression pentanomial of exponent gcd one has
+a prime of that full binary degree in its root order. The exception
+for nontrivial gcd is attained in the same degrees. Put
+\(G=X^9+X^7+X^2+X+1\); it divides \(X^{511}-1\) and is coprime to
+\(X^7-1\) and \(X^{73}-1\). For every \(b\ge1\) the roots of
+\(G(X^{7^b})\) have order \(73\cdot7^{b+1}\). The primary components
+have binary degrees \(9\) and \(3\cdot7^b\), so these pentanomials
+are irreducible and their roots split.
+
 \end{document}
