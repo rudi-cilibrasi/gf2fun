@@ -17857,4 +17857,55 @@ powers in the source degrees through 128. The source data and
 calculation are \nolinkurl{data/almost-trinomial-power-windows.csv}
 and \nolinkurl{scripts/check_almost_trinomial_powers.py}.
 
+
+\clearpage
+\section{Minimum weights in seventeen further prime degrees}
+\label{sec:seventeen-prime-degrees}
+
+\begin{theorem}
+The minimum weight of a primitive binary polynomial is five in degrees
+\[
+  3467,3547,3637,3733,3917,4021,4219,4243,4349,4507.
+\]
+It is three in degrees \(3833,4111,4127,4729,4751,4871,5087\).
+Each of the seventeen degrees admits a primitive pentanomial.
+\end{theorem}
+\begin{proof}
+For each degree \(n\) the archive gives two taps \(a,b\) for
+\(F=X^n+X^{n-b}+X^a+X^b+1\) and the complete prime factorization
+of \(M=2^n-1\). The verifier multiplies the factors back to \(M\).
+PARI checks seventeen elliptic-curve primality certificates for the
+largest prime in each row. FLINT proves the other fifty primes.
+The factors were obtained from \href{https://factordb.com/}{FactorDB}.
+For each \(F\), the verifier checks \(X^M=1\pmod F\) and
+\(X^{M/p}\ne1\pmod F\) at every prime divisor \(p\) of \(M\).
+An element of order \(2^n-1\) in this \(2^n\)-element quotient
+accounts for every nonzero element, so the quotient is a field.
+For example the degree-4507 row has \((b,a)=(194,388)\).
+
+In the same degrees we tested every \(X^n+X^t+1\) with
+\(1\le t\le\lfloor n/2\rfloor\) for irreducibility in NTL. Taking
+reciprocals covers the other half. Of the 35,566 reciprocal classes
+exactly fifteen are irreducible. Each passes every prime-index order test.
+Their smaller taps are
+\[
+\begin{array}{r|l@{\qquad}r|l}
+n & t & n & t\\ \hline
+3833 & 35,144 & 4729 & 73,330,442,885,994\\
+4111 & 201,1323 & 4751 & 1946\\
+4127 & 276,962 & 4871 & 1251\\
+     &         & 5087 & 210,2190 .
+\end{array}
+\]
+Every irreducible in these degrees has odd weight because its value
+at one is nonzero. Its constant coefficient is also nonzero, hence
+a trinomial is the smallest possibility. This gives both minima.
+\end{proof}
+
+The witness file is \nolinkurl{data/complementary-prime-degrees-3467-5087.csv}.
+The trinomial census is \nolinkurl{data/prime-degree-trinomial-census.csv}.
+The README gives commands that reproduce both computations.
+Together with the earlier certificates this covers at least 2,672
+of the first 10,351 positive degrees.
+
 \end{document}
