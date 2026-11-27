@@ -133,6 +133,13 @@ The degree-1229 pentanomial with interior taps $(136,683,819)$ and its reciproca
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_power_images.py --split elliptic
 ~~~
 
+The ten inputs also have a decomposition into 5,064 smaller logarithms. Every remaining factor has relative degree at most 13. To work on one of the original factors, use `--target 0x7d397`, for example. Add `--json` to export the masks and coefficients, or `--logs answers.csv` to check partial answers. [Pencil certificates](data/degree-1229-elliptic-pencils.json) · [Descent checker](scripts/check_1229_elliptic_descent.py)
+
+~~~sh
+g++ -O3 -std=c++17 scripts/degree_1229_dyadic.cpp -lntl -lgmp -o /tmp/gf2-elliptic-dyadic
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --backend /tmp/gf2-elliptic-dyadic
+~~~
+
 Four degree-1229 candidates share one discrete logarithm task. The JSON gives the binary field modulus, a base of order $C$, and the target as hexadecimal polynomial masks with bit $i$ as the coefficient of $X^i$. Find an integer $0\le e<C$ with $\mathrm{base}^e=\mathrm{target}$ in that field. Replace `--task` with `--log E` to check an answer. The checker computes the exact index of all four roots, and an index of one proves all four primitive. [Download the task](data/degree-1229-seventh-power-task.json)
 
 ~~~sh
