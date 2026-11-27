@@ -76,3 +76,16 @@ twisted_conductor_class(p, H = 0) = {
   if(qfbred(lifted^p) != identity, error("the lifted form is outside the conductor kernel"));
   [H, lifted == identity, Vec(lifted)]
 };
+
+\\ Count the correction cases and list primes where the lifted form is
+\\ principal. Testing at p uses forms of discriminant at most 3*p^3.
+twisted_conductor_survey(limit) = {
+  my(tested = 0, forced = 0, principal = List());
+  forprime(p = 5, limit,
+    if((p%8 == 5 || p%8 == 7) && znorder(Mod(-2,p)) == p-1,
+      my(delta = if(p%8 == 5, -3*p, -p));
+      my(value = twisted_conductor_class(p, qfbclassno(delta)));
+      tested++; if(p%24 == 23, forced++);
+      if(value[2], listput(principal, p))));
+  [tested, forced, Vec(principal)]
+};

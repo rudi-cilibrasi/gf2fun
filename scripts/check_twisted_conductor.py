@@ -100,9 +100,18 @@ def check_small(gp):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--gp", default="gp", help="PARI/GP executable for the small comparison")
+    parser.add_argument("--gp", default="gp", help="PARI/GP executable for comparisons and surveys")
     parser.add_argument("--small", action="store_true", help="also compare every eligible p through 2053")
+    parser.add_argument("--survey", type=int, metavar="LIMIT",
+                        help="test the conductor prime by certified quadratic forms through LIMIT")
     args = parser.parse_args()
+    if args.survey is not None and args.survey < 5:
+        parser.error("the survey limit must be at least five")
     check_large()
     if args.small:
         check_small(args.gp)
+    if args.survey is not None:
+        survey = run_gp(args.gp, f"twisted_conductor_survey({args.survey})")
+        tested, forced, principal = ast.literal_eval(survey)
+        print(f"Through {args.survey}: {tested} eligible primes, {forced} in the residue class 23 mod 24.")
+        print(f"Principal lifted forms at {principal}.")

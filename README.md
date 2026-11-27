@@ -861,11 +861,12 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_corr
 
 The ray quotient also gives the exact prime-power multiplicities in the root-order index away from primes dividing the degree. For $k=141$ the only exceptional prime is 3. For $k=191$ they are 3, 19 and 87,211. [Index formula](results.pdf#page=252)
 
-The conductor-prime checker verifies the supplied exponent by multiplying quadratic ideal lattices with FLINT. The large certificate needs only the Python wheel. The optional small comparison checks every reduced form against PARI and tests the prediction by powering in the binary field. [Principalization exponent](data/translation-lift-orders.json)
+The conductor-prime checker verifies the supplied exponent by multiplying quadratic ideal lattices with FLINT. The large certificate needs only the Python wheel. The small comparison checks every reduced form against PARI and tests the prediction by powering in the binary field. The form survey checks all 248,761 eligible primes through ten million. Exactly the 74,706 primes congruent to 23 modulo 24 divide the corresponding root-order index. [Principalization exponent](data/translation-lift-orders.json)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_conductor.py
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_conductor.py --small
+uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_conductor.py --survey 10000000
 ~~~
 
 To reproduce the optimal normal basis classification, run the finite orbit and order checks and the formal coefficient bound.
