@@ -8,6 +8,7 @@ import subprocess
 import sys
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from functools import partial
+from itertools import accumulate
 from math import prod
 from pathlib import Path
 
@@ -36,7 +37,10 @@ def prime_index_powers(x, order, primes, modulus):
         if len(group) == 1:
             yield group[0], value
             continue
-        middle = len(group) // 2
+        # Balance exponent bit lengths so a large prime occurs in few modular powers.
+        # A contiguous split preserves the supplied prime order in the yielded results.
+        bits = list(accumulate(int(p).bit_length() for p in group))
+        middle = min(range(1, len(group)), key=lambda k: abs(2*bits[k-1] - bits[-1]))
         left, right = group[:middle], group[middle:]
         # The current exponent is order / prod(group). Remove the sibling's
         # factors from its denominator to get the exponent for each child.
