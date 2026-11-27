@@ -59,10 +59,16 @@ def verify(n, row, gp):
         raise ArithmeticError(f"irreducibility test failed at {n}")
     if any(z == 1 for _, z in prime_index_powers(x, order, sorted(set(known_primes)), f)):
         raise ArithmeticError(f"missing known factor in degree {n}")
-    if x.pow_mod(known, f) == 1:
+    component = x.pow_mod(known, f)
+    if component == 1:
         raise ArithmeticError(f"trivial cofactor component at {n}")
+    mask = int(row["cofactor_modulus_hex"], 16)
+    lower = polynomial(mask)
+    if (row["cofactor_degree"] != d or lower.degree() != d or lower.compose_mod(component, f) != 0
+            or x.pow_mod(cofactor, lower) != 1):
+        raise ArithmeticError(f"invalid cofactor field polynomial at {n}")
     print(f"Degree {n}: {len(str(known))}-digit divisor of the root order, "
-          f"remaining component exceeds {TRIAL_LIMIT}, every cofactor prime has binary degree {d}.")
+          f"remaining component exceeds {TRIAL_LIMIT}, its degree-{d} polynomial has {mask.bit_count()} terms.")
 
 
 def main():
