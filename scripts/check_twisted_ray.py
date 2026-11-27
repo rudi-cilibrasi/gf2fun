@@ -19,7 +19,7 @@ GP_FILE = Path(__file__).with_name("twisted_ray_class.gp").resolve()
 def eligible(p):
     if p < 5 or p % 8 not in (5, 7) or not fmpz(p).is_prime():
         return False
-    return all(pow(-2, (p - 1) // int(l), p) != 1 for l, _ in fmpz(p - 1).factor())
+    return all(l.is_prime() and pow(-2, (p - 1) // int(l), p) != 1 for l, _ in fmpz(p - 1).factor())
 
 
 def run_gp(gp, expression):

@@ -96,6 +96,15 @@ def check_small(gp):
             missing.append(p)
     print(f"Checked {len(tested)} conductor primes by direct powering; "
           f"{len(missing)} divide the root-order index.")
+    # Here the ambient group contains p twice. The first prime-index power
+    # already tests whether the full p² divides the root order.
+    p = 3511
+    group = (1 << (p - 1)) - 1
+    _, principal, form = ast.literal_eval(run_gp(gp, f"twisted_conductor_class({p},41)"))
+    if (principal or conductor_test(p, 41) != tuple(form) or group % p**2 or group % p**3 == 0
+            or X.pow_mod(group // p, cyclotomic_form(p)) == 1):
+        raise ValueError("conductor-square test failed at p=3511")
+    print("The 3511-adic valuation of the degree-3510 root order is two.")
 
 
 if __name__ == "__main__":
