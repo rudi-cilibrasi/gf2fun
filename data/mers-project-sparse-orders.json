@@ -1297,7 +1297,8 @@
     ],
     "primo_certificates": {
       "7": "1100000000930671953"
-    }
+    },
+    "primitive_trinomial_tap": 757
   },
   "14263": {
     "taps": [
@@ -1316,7 +1317,8 @@
     ],
     "primo_certificates": {
       "6": "1100000000005636398"
-    }
+    },
+    "primitive_trinomial_tap": 5985
   },
   "14561": {
     "taps": [
@@ -1330,7 +1332,8 @@
     ],
     "primo_certificates": {
       "1": "1100000000013054115"
-    }
+    },
+    "primitive_trinomial_tap": 713
   },
   "14621": {
     "taps": [
@@ -1368,7 +1371,8 @@
     "primo_certificates": {
       "8": "1100000000216857930",
       "7": "1100000000591996699"
-    }
+    },
+    "primitive_trinomial_tap": 1667
   },
   "14971": {
     "taps": [
