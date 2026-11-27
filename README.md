@@ -12,7 +12,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 - **The minimum weight is three in degrees $3481=59^2$ and $4913=17^3$.** Up to reciprocity the primitive trinomial taps are 546 and 1449 in degree 3481, and 693 and 1245 in degree 4913. There is also a certified pentanomial in each degree. [Witnesses and order factorizations](data/composite-order-witnesses.json) · [Primality certificates](data/composite-order-prime-certificates.json.gz) · [Verifier](scripts/check_composite_orders.py)
 
-- **For $k=141$ and $191$, the prime $2^k+5$ divides the root order of the degree-$2^k+4$ pentanomial exactly once.** Binary quadratic forms certify both results unconditionally. The test works at the conductor prime for every irreducible twisted cyclotomic polynomial and agrees with direct powering at all 125 eligible primes through 2,053. [Proof](results.pdf#page=253) · [Reproduce the certificates](scripts/check_twisted_conductor.py)
+- **For $k=141$ and $191$, the prime $2^k+5$ divides the root order of the degree-$2^k+4$ pentanomial exactly once. The exact powers of three in those orders are 9 and 243.** The conductor-prime test uses binary quadratic forms and agrees with direct powering at all 125 eligible primes through 2,053. The powers of three follow unconditionally from two certified imaginary quadratic class numbers. [Conductor-prime proof](results.pdf#page=253) · [Powers of three](results.pdf#page=257) · [Class-number verifier](scripts/check_twisted_three_class.py)
 
 - **A ray class group gives a full-order criterion for the twisted cyclotomic family.** For a prime $p\ge5$ with $-2$ primitive modulo $p$, choose $2^j\equiv\pm3\bmod p$. A root of $D_p$ is primitive exactly when $\gcd(2^{(p-1)/2}-1,2^j-3)=1$ and Frobenius minus two maps the ordinary ray class group modulo two of $\mathbb Q(\zeta_{3p})^+$ onto itself. Individual primes can be tested in smaller subfields. A cubic field detects the factor seven in the root-order index of the degree-2,052 pentanomial. Direct powering agrees in 325 root tests and 195 Gauss period tests across 253 ray groups. [Proof](results.pdf#page=247) · [Certified computations](scripts/check_twisted_ray.py)
 
@@ -845,11 +845,12 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --jobs 4
 ~~~
 
-For the five-term examples in degrees $2^{141}+4$ and $2^{191}+4$, the following commands print and certify the quadratic, cubic and quartic number fields that test index primes 3, 7 and 5. The quadratic class-number calculation gives $h(4p)=1$ in both cases under the generalized Riemann hypothesis. This puts 9 and 243, respectively, into the two root orders under that assumption. [Field equations and verification](results.pdf#page=250)
+For the five-term examples in degrees $2^{141}+4$ and $2^{191}+4$, the first two commands certify the quadratic, cubic and quartic number fields that test index primes 3, 7 and 5. The third proves the exact powers of three in the two root orders without assuming the generalized Riemann hypothesis. It bounds the imaginary quadratic class numbers by a signed sum over integers with small prime factors, then checks a quadratic form of conductor three. The final PARI calculation gives the stronger real class-number value $h(4p)=1$ under GRH. [Field equations](results.pdf#page=250) · [Unconditional proof](results.pdf#page=257)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --fields 141
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --fields 191
+uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_three_class.py
 gp -fq -s 512M <<'GP'
 for(i=1,2,my(k=[141,191][i]); print([k,quadclassunit(4*(2^k+5)).no]))
 GP
