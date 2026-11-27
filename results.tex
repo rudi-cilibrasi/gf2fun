@@ -19864,4 +19864,67 @@ Every root therefore has order \(279=9\cdot31\), of binary degree
 the two components of orders 9 and 31 with \(g=3\).
 \end{proof}
 
+\clearpage
+\section{A large prime forced in every sparse irreducible in eight more degrees}
+\label{sec:scalar-pair-census}
+
+Each row lists distinct prime degrees \(p,q\), the number of decimal
+digits of the prime \(C=(2^{pq}-1)/((2^p-1)(2^q-1))\), and every
+primitive trinomial tap up to reciprocity. In rows without a
+trinomial the minimum primitive weight is five. The archive supplies
+a primitive pentanomial in every row.
+\[
+\begin{array}{r|r|r|r|l}
+ n&p&q&\text{digits of }C&\text{trinomial taps}\\\hline
+ 1727&11&157&470&\varnothing\\
+ 1781&13&137&491&\varnothing\\
+ 2353&13&181&650&328,595,837,945\\
+ 3817&11&347&1042&252\\
+ 8033&29&277&2327&2240,2843\\
+ 10967&11&997&2998&2081,4115\\
+ 11581&37&313&3381&\varnothing\\
+ 14971&11&1361&4094&\varnothing
+\end{array}
+\]
+In every row \(C\) divides the root order of \emph{every} binary
+irreducible of weight at most five. To see this, enumerate the divisors
+\(h\) of \(2^p-1\) in \(3p^2/4\le h\le pq/3\). Delete those for which
+\(\gcd(X^h+1,(X+1)^h+1)=1\). Theorem~\ref{thm:semiprime-parity}
+excludes a split root immediately except when \(h=2047\) and
+\(q=997,1361\).
+
+For each remaining order, write a hypothetical root as
+\(\alpha\beta\), with \(\ord(\alpha)=h\). The constant and leading
+exponents give distinct residues \(0,u=n\bmod h\). A third residue
+\(v\) is possible precisely when \(\Phi_h\) has a common root with
+\(1+X^u+X^v\). The factor \(\Phi_h\) restricts \(\alpha\) to exact
+order \(h\). For every surviving triple of residue classes, place
+both endpoints and choose the remaining three exponents from
+\([0,n]\) with multiplicities \(2,2,1\). If the singleton is \(c\)
+and the pairs are \((a,b),(d,e)\), both
+\[
+ X^{a-m}+X^{b-m}+X^{c-m},\quad
+ X^{d-m'}+X^{e-m'}+X^{c-m'},\qquad
+ m=\min(a,b,c),\quad m'=\min(d,e,c)
+\]
+must vanish at \(\beta\). The exact gcd degrees give the exclusion:
+\[
+\begin{array}{r|r|r|r}
+ q&\text{residue triples}&\text{supports}&\text{largest gcd degree}\\\hline
+ 997&176&43050&11\\
+ 1361&176&120050&16
+\end{array}
+\]
+Neither gcd can contain a degree-\(q\) factor. For a positive control
+at \((p,q,h)=(2,5,3)\), the same search finds exactly four
+pentanomials, agreeing with direct factorization of \(X^{93}+1\).
+
+With split roots excluded, the two norm tests of
+Corollary~\ref{cor:semiprime-forced-norm} certify the witnesses.
+The records in \nolinkurl{data/semiprime-scalar-norms.json} give
+the supports, the norm polynomials, the subfield factorizations and
+the sources of the archived primality proofs.
+\nolinkurl{scripts/check_semiprime_scalar_norms.py} verifies the
+certificates, the pair census and the exhaustive trinomial searches.
+
 \end{document}

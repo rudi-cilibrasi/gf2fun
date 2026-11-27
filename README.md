@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In ten semiprime degrees, a certified large prime divides every sparse irreducible root order.** The minimum primitive weight is five in degrees 1,727, 1,781, 5,053, 11,581 and 14,971, and three in 2,353, 3,817, 8,033, 10,967 and 14,263. In degree 14,971 the only possible scalar order leads to 120,050 supports. The largest relevant polynomial gcd has degree 16, excluding a required degree-1,361 factor. [Proof and tap lists](results.pdf#page=268) · [Norm records and primality certificate sources](data/semiprime-scalar-norms.json) · [Pair census](scripts/check_scalar_pairs.cpp)
+
 - **Four nearby exponents restrict root orders in every degree.** If the support has gcd one, four exponents span $T$, and $4T<3s^2$ for the smallest prime $s$ dividing the degree, a root cannot be a product from two coprime proper subfields whose degrees multiply to the full degree. In degree $pq$ this forces a full-degree prime power for arbitrarily separated primes. A separate norm-one argument in degree $2kd$ forces every support exponent to be divisible by $k$. [Proofs and hypotheses](results.pdf#page=267) · [Lean lemmas](GF2Sparse/SubfieldProducts.lean)
 
 - **The minimum primitive weight is five in degree 5,053 and three in degree 14,263.** The first has the pentanomial with interior exponents 461, 922 and 4592. The second has exactly one irreducible trinomial up to reciprocity, with tap 5985. Every sparse irreducible in these degrees has a 1,463- or 4,036-digit prime, respectively, in its root order. The other tests use norms to the two prime-degree subfields. [Proof](results.pdf#page=266) · [Certificates](data/semiprime-scalar-norms.json) · [Verifier](scripts/check_semiprime_scalar_norms.py)
@@ -838,11 +840,12 @@ For the five witnesses in degrees 7854 through 9576, each row gives the degree $
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
 ~~~
 
-To verify degrees 5,053 and 14,263, compile the NTL trinomial enumerator and run the norm and primality certificates with PARI/GP available.
+To verify the ten semiprime degrees, compile both NTL enumerators and run the norm and primality certificates with PARI/GP available. Add `--degree 14971` to verify just that row.
 
 ~~~sh
 c++ -std=c++17 -O3 scripts/prime_degree_trinomials.cpp -lntl -lgmp -o /tmp/gf2-trinomials
-uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_semiprime_scalar_norms.py --trinomials /tmp/gf2-trinomials
+c++ -std=c++17 -O3 scripts/check_scalar_pairs.cpp -lntl -lgmp -o /tmp/gf2-scalar-pairs
+uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_semiprime_scalar_norms.py --trinomials /tmp/gf2-trinomials --scalar-pairs /tmp/gf2-scalar-pairs
 ~~~
 
 To reproduce the three prime-degree weight distributions, compile the enumerator with NTL and run the verifier with PARI/GP available.
