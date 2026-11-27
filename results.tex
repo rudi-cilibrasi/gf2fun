@@ -15625,4 +15625,119 @@ distinct elements represented in this way. The
 \texttt{--sparse-ratios} mode of
 \nolinkurl{scripts/check_1229_power_transfers.py} replays the search.
 
+\section{Which equations determine the degree-eight elliptic input?}
+\label{sec:octic-free-branches}
+The logarithm of \(P=\mathtt{15f}\) occurs with unit coefficient in
+the seven-input formula for the pentanomial with interior exponents
+\((136,683,819)\). Two further field identities each express \(L(P)\)
+in terms of two unknown logarithms. Their binary degrees are \(84,473\)
+in one identity and \(117,377\) in the other. The five-octic alternative
+in Section~\ref{sec:elliptic-octic-equations} has smaller degrees.
+We also determine a limitation of the linear equations in the
+original \(q=1024\) model.
+
+\begin{theorem}
+Fix the projected logarithms in the binary table used for the
+seven-input formula, both terminal catalogues of
+Section~\ref{sec:terminal-census}, and the other six inputs of that
+formula. Impose all degree-five isogeny pullback equations and all
+linear Hermitian equations over \(\mathbb F_{2^{20}}\) in this model.
+For every \(v\in\mathbb Z/C\mathbb Z\), this system of linear
+equations admits an assignment with \(L(P)=v\). Each of the two
+bivariate identities above gives a constraint independent of this
+system.
+\end{theorem}
+\begin{proof}
+Write \(R=H_0/H_1\) as in Section~\ref{sec:quintic-descent}, with
+\(H_0=T^5+T^2+1\) and \(H_1=T^3+T\). For a binary irreducible
+\(J\) of degree \(d\), call the irreducible factors of
+\(H_1^d J(R)\) its children. Each child has a unique parent, obtained
+by applying \(R\) to any of its roots and taking the minimal polynomial.
+No pole lies in a finite fiber. All finite fibers are simple by the
+degree-five isogeny calculation, so the sum of the child degrees is \(5d\).
+The parent degree divides every child degree. With \(L(H_1)\) fixed,
+the homogeneous equation for a variation \(\delta\) reads
+\[
+                   \delta(J)=q\sum_{D\ {\rm child\ of}\ J}\delta(D).
+\]
+
+Start at the two children \(P\) and \(\mathtt{1f5}\) of
+\(\mathtt{1e7}\). The following paths give binary masks in hexadecimal.
+In the last column they reach distinct irreducibles of degree 200.
+\[
+\begin{array}{c|c|c|c}
+ \text{degree 8}&\text{degree 40}&\text{degree 40}&\text{degree 200}\\ \hline
+ \mathtt{15f}&\mathtt{1100c6d95f5}&\mathtt{1077e6b3b13}&D_1\\
+ \mathtt{1f5}&\mathtt{14c7172991f}& &D_2
+\end{array}
+\]
+The checker gives the masks of \(D_1,D_2\) and verifies irreducibility,
+divisibility and multiplicity one at each step. Assign \(+1,-1\)
+at the two starting points. Moving down each displayed path divides
+the assigned value by \(q\) at every step. At their common parent the
+two variations cancel. The unique-parent property keeps the branches
+disjoint, since tracing either branch back first reaches its own octic.
+
+For every descendant \(E\) at distance \(k\) below \(D_i\), assign
+\[
+          \delta(E)=\delta(D_i)\frac{\deg E}{200}(5q)^{-k}\pmod C.
+\]
+Here \(\deg E/200\) is an integer and \(5q\) is invertible modulo \(C\).
+The distance is unique because each \(D_i\) has a parent of smaller
+degree and thus cannot be periodic. Summing child degrees proves the
+homogeneous equation at every such descendant. Give all other masks
+value zero. This constructs a variation satisfying the pullback
+equations at every depth.
+
+For a linear Hermitian form the cleared numerator is
+\[
+       (AT+b^q)H_0+(bT+d)H_1,\qquad
+       A,d\in\mathbb F_q,\quad b\in\mathbb F_{q^2}.
+\]
+The source factors lie in the original linear factor base. The
+numerator has degree at most six over \(\mathbb F_{q^2}\). At each
+displayed octic and degree-40 mask, its reduction modulo one relative
+irreducible factor gives a binary linear map of rank 40 on the 40
+parameter bits. Applying binary Frobenius gives the same rank at the
+other factors. Thus every nonzero numerator avoids these masks.
+Descendants of either degree-200 point have relative degree at least
+ten. None of the prescribed logarithms occurs on the paths or has
+degree divisible by 200, as verified directly against the archives
+(the target itself is free). Adding a multiple of \(\delta\) to the
+actual logarithms preserves all the stated equations and realizes any
+requested value of \(L(P)\). Its unit coefficient in the seven-input
+formula gives the same freedom for the formal pentanomial logarithm.
+
+For the additional identities take \(q'=32\) or \(128\), put
+\(s=1024/q'\), and write \(y=x^{q'}\). Then \(x=R(y)^s\).
+Encode a bivariate polynomial \(B(U,V)\) by setting bit \(4i+j\)
+for the term \(U^iV^j\), where \(0\le i,j\le3\). Define
+\[
+ F(T)=B(T,T^{q'}),\qquad G(T)=H_1(T)^{3s}B(R(T)^s,T).
+\]
+Clearing the denominator at \(y\) gives the unprojected identity
+\(F(x)H_1(x)^{3072}=G(x)^{q'}\).
+\[
+\begin{array}{r|c|rr|c}
+ q' & B\ \text{(hex)} & \deg F & \deg G & \text{other unknown binary degrees}\\ \hline
+ 32  & \mathtt{f267} & 99  & 483 & 84,\ 473\\
+ 128 & \mathtt{ce3d} & 387 & 123 & 117,\ 377
+\end{array}
+\]
+In each row \(P\) occurs once in \(F\) and is absent from \(G\).
+Factoring both sides and inserting the tabulated logarithms gives
+the indicated two inputs. Every mask where \(\delta\) is nonzero
+has degree divisible by eight, so both inputs in each row have
+variation zero. The left-hand target has variation one, proving
+independence from the specified system. The actual logarithms obey
+both identities and their values remain open.
+\end{proof}
+\nolinkurl{scripts/check_1229_octic_obstruction.py} verifies the
+finite branch and rank data. The \texttt{binary-32} and
+\texttt{binary-128} modes of
+\nolinkurl{scripts/check_1229_elliptic_descent.py} verify the field
+identities and export the complete equations with their coefficients.
+Lean checks denominator clearing, the tail sum and the linear
+perturbation argument in \nolinkurl{GF2Sparse/QuinticIsogeny.lean}.
+
 \end{document}

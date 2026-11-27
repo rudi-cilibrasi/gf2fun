@@ -23,6 +23,8 @@ from prepare_1229_single_log import prepare
 
 
 CERTIFICATE = DATA / "degree-1229-elliptic-pencils.json"
+# Bit 4i+j is the coefficient of U^i V^j in the two bivariate polynomials.
+OCTIC_BIVARIATES = {"binary-32": (32, 0xf267), "binary-128": (128, 0xce3d)}
 
 
 def factor_degrees(mask):
@@ -110,8 +112,30 @@ def cubic_relation(mask, row):
     return {p: scale*c % COFACTOR for p, c in terms.items() if c % COFACTOR}
 
 
+def octic_bivariate_relation(q, mask, field):
+    from check_1229_isogeny_logs import H0 as h0, H1 as h1
+
+    # y=x^q and x=R(y)^(1024/q). Clearing the denominator gives F(x) h1(x)^3072=G(x)^q.
+    s = Q//q
+    powers = [divmod(k, 4) for k in range(16) if mask >> k & 1]
+    x = polynomial(2)
+    source = sum((x**(i+q*j) for i, j in powers), polynomial(0))
+    numerator = sum((h0**(s*i)*h1**(s*(3-i))*x**j for i, j in powers), polynomial(0))
+    if source*h1.pow_mod(3*Q, field) % field != numerator.pow_mod(q, field):
+        raise ArithmeticError("the bivariate Frobenius identity failed in the model field")
+    terms = Counter(binary_factors(source))
+    right = binary_factors(numerator)
+    if terms.pop(0x15f, 0) != 1 or 0x15f in right:
+        raise ArithmeticError("the target must occur just once on the source side")
+    terms.subtract({p: q*e for p, e in right.items()})
+    terms.update({2: 3*Q, 3: 6*Q})
+    return {p: -c % COFACTOR for p, c in terms.items() if c % COFACTOR}
+
+
 def octic_relation(method, field):
     target = 0x15f
+    if method in OCTIC_BIVARIATES:
+        return octic_bivariate_relation(*OCTIC_BIVARIATES[method], field)
     if method == "isogeny":
         parent = 0x1e7
         numerator = polynomial(pullback(parent))
@@ -152,8 +176,8 @@ def main():
     mode.add_argument("--eight", action="store_true", help="lower both cubics in the eight-input split")
     mode.add_argument("--lower-eight", action="store_true", help="lower each factor in the eight-input split")
     mode.add_argument("--lower-seven", action="store_true", help="lower the six larger factors in the seven-input split")
-    parser.add_argument("--octic", choices=("isogeny", "frobenius"),
-                        help="expand 0x15f alone or within --lower-seven using one of two independent equations")
+    parser.add_argument("--octic", choices=("isogeny", "frobenius", *OCTIC_BIVARIATES),
+                        help="expand 0x15f alone or within --lower-seven using the selected equation")
     parser.add_argument("--json", action="store_true", help="export all residual logarithm masks and coefficients")
     parser.add_argument("--logs", type=Path, help="verify a mask,exponent CSV of residual logarithms")
     args = parser.parse_args()

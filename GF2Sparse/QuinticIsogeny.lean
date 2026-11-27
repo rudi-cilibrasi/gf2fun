@@ -120,4 +120,45 @@ theorem octicCircleNorm {A : Type*} [CommRing A] (x y u v : A) (b d : Fin 4 → 
   rw [Finset.prod_mul_distrib]
   simp [← pow_mul]
 
+/-- Each monomial of a bivariate Frobenius relation has the same cleared denominator. -/
+theorem bivariateTerm {A : Type*} [CommMonoid A] (x y u v : A) (s q a i j : ℕ)
+    (hi : i ≤ a) (hy : x^q = y) (hx : x*v^s = u^s) :
+    x^(i+q*j)*v^(s*a) = u^(s*i)*v^(s*(a-i))*y^j := by
+  have he : s*a = s*i+s*(a-i) := by
+    rw [← Nat.mul_add]
+    congr 1
+    omega
+  rw [pow_add, pow_mul x q j, hy, he, pow_add, pow_mul v s i, pow_mul u s i, ← hx, mul_pow]
+  ac_rfl
+
+/-- Distributing mass in proportion to child degrees preserves the homogeneous pullback equation. -/
+theorem degreeTailStep {ι A : Type*} [CommRing A] (children : Finset ι) (d : ι → A)
+    (q inverse mass parent : A) (h : 5*q*inverse = 1)
+    (hdeg : ∑ i ∈ children, d i = 5*parent) :
+    q*(∑ i ∈ children, (mass*inverse)*d i) = mass*parent := by
+  rw [← Finset.mul_sum, hdeg]
+  calc
+    _ = mass*parent*(5*q*inverse) := by ring
+    _ = mass*parent := by rw [h, mul_one]
+
+/-- A homogeneous solution with value one at a target makes every target value compatible
+with the prescribed linear equations, also over a composite residue ring. -/
+theorem freeLogValue {ι κ A : Type*} [CommRing A] (support : κ → Finset ι)
+    (coeff : κ → ι → A) (rhs : κ → A) (logs delta : ι → A) (p : ι)
+    (hl : ∀ k, ∑ i ∈ support k, coeff k i * logs i = rhs k)
+    (hd : ∀ k, ∑ i ∈ support k, coeff k i * delta i = 0)
+    (hp : delta p = 1) (value : A) :
+    ∃ f : ι → A, (∀ k, ∑ i ∈ support k, coeff k i * f i = rhs k) ∧ f p = value := by
+  refine ⟨fun i => logs i + (value-logs p)*delta i, ?_, ?_⟩
+  · intro k
+    calc
+      _ = ∑ i ∈ support k, (coeff k i * logs i + (value-logs p)*(coeff k i * delta i)) := by
+        apply Finset.sum_congr rfl
+        intro i _
+        ring
+      _ = rhs k := by rw [Finset.sum_add_distrib, ← Finset.mul_sum, hl k, hd k, mul_zero, add_zero]
+  · change logs p + (value-logs p)*delta p = value
+    rw [hp, mul_one]
+    ring
+
 end GF2Sparse.QuinticIsogeny

@@ -141,11 +141,15 @@ The degree-1229 elliptic pentanomial with interior taps $(136,683,819)$ and its 
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_power_images.py --split elliptic-seven
 ~~~
 
-The degree-eight input also has two equations with disjoint unknowns. One uses five other degree-eight logarithms. The other uses one degree-eight, one degree-12 and 66 degree-16 logarithms. Either command exports a donor task and accepts the same answer CSV. [Proof of both equations](results.pdf#page=190) · [Lean verification of the pullback and norm identities](GF2Sparse/QuinticIsogeny.lean)
+Four equations give alternatives for the degree-eight input `0x15f`. One uses five other degree-eight logarithms. A second uses one degree-eight, one degree-12 and 66 degree-16 logarithms. Two further equations each need only two logarithms, of binary degrees 84 and 473 or 117 and 377. The four lists of unknowns are disjoint. Each command exports the exact coefficients and accepts the same answer CSV. [Five- and 68-input equations](results.pdf#page=190) · [Two-input equations](results.pdf#page=205)
+
+There is a limit to the original degree-five substitution. Even given the other six inputs for the pentanomial, the reference tables, every iteration of the substitution and all linear Hermitian equations at $q=1024$ allow every possible value for this one logarithm. The two-input equations each supply an independent constraint on that system. The logarithm itself is still open. [Proof](results.pdf#page=205) · [Reproduce the branch and rank checks](scripts/check_1229_octic_obstruction.py) · [Lean algebra](GF2Sparse/QuinticIsogeny.lean)
 
 ~~~sh
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --octic isogeny --json
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --octic frobenius --json
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --octic binary-32 --json
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --octic binary-128 --json
 ~~~
 
 An alternative quotient uses eight logarithms of relative degrees $3,3,6,7,9,11,18,19$. Its two cubic inputs reduce to 299 quadratic logarithms. Lowering all eight gives 5,391 inputs of binary degree at most 190, each with smaller relative degree or the same relative degree and smaller binary degree than its parent. [Eight inputs](data/degree-1229-elliptic-split-eight.json) · [Pencil certificates](data/degree-1229-elliptic-pencils.json)
