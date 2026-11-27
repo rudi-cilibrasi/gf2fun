@@ -307,6 +307,37 @@ theorem log_three_141 : (2 : ZMod (2^141+5)) ^ logThree141 = 3 := by
 theorem log_three_191 : (2 : ZMod (2^191+5)) ^ logThree191 = 3 := by
   rw [← binPow_eq_pow]; decide +kernel
 
+/-- Common factors of the extension degree and the multiplicative group order. -/
+def sharedDegreeFactors (n : ℕ) : ℕ := n.gcd (2^n-1)
+
+private theorem shared_gcd_of_pow_eq {n s : ℕ} (h : (2 : ZMod n)^n = (2 : ZMod n)^s) :
+    sharedDegreeFactors n = n.gcd (2^s-1) := by
+  unfold sharedDegreeFactors
+  have hmod : 2^n ≡ 2^s [MOD n] := (ZMod.natCast_eq_natCast_iff ..).mp (by
+    simpa only [Nat.cast_pow, Nat.cast_ofNat] using h)
+  have hsub := hmod.sub_right (Nat.two_pow_pos n) (Nat.two_pow_pos s)
+  exact (Nat.gcd_comm n _).trans (hsub.gcd_eq.trans (Nat.gcd_comm _ n))
+
+theorem shared_degree_group_factors_141 :
+    sharedDegreeFactors (2^141+4) = 3 := by
+  refine (shared_gcd_of_pow_eq (n := 2^141+4) (s := 12) ?_).trans ?_
+  · simp only [← binPow_eq_pow]; decide +kernel
+  · decide +kernel
+
+theorem shared_degree_group_factors_191 :
+    sharedDegreeFactors (2^191+4) = 3^4*19*87211 := by
+  refine (shared_gcd_of_pow_eq (n := 2^191+4) (s := 162) ?_).trans ?_
+  · simp only [← binPow_eq_pow]; decide +kernel
+  · decide +kernel
+
+theorem conductor_prime_square_141 :
+    (2 : ZMod ((2^141+5)^2)) ^ (2^141+4 : ℕ) ≠ 1 := by
+  rw [← binPow_eq_pow]; decide +kernel
+
+theorem conductor_prime_square_191 :
+    (2 : ZMod ((2^191+5)^2)) ^ (2^191+4 : ℕ) ≠ 1 := by
+  rw [← binPow_eq_pow]; decide +kernel
+
 private theorem dvd_sub_iff_cast_eq {l a b : ℕ} (h : b ≤ a) :
     l ∣ a-b ↔ (a : ZMod l) = (b : ZMod l) := by
   rw [← ZMod.natCast_eq_zero_iff, Nat.cast_sub h, sub_eq_zero]
