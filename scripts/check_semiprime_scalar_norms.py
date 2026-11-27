@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import subprocess
+import sys
 from collections import Counter
 from io import StringIO
 from math import gcd, prod
@@ -12,8 +13,10 @@ from pathlib import Path
 from flint import fmpz, nmod_poly
 
 from check_primo_certificate import check_primo
+from check_scalar_pairs import check_pairs_2047
 from check_two_subfield_norms import verify_norm_witness
 from check_subfield_products import contains_binary_plane
+from check_trinomial_decimations import short_power_support
 
 
 DATA = Path(__file__).resolve().parents[1] / "data"
@@ -33,6 +36,26 @@ def check_control(binary):
         raise ValueError("scalar pair search disagrees with direct factorization in degree ten")
 
 
+def check_short_images(n, witnesses, records):
+    source = next(tuple(w["exponents"]) for w in witnesses if len(w["exponents"]) == 3)
+    observed = Counter()
+    for e in range(1, n+1):
+        terms = short_power_support(source, e)
+        if terms:
+            observed[terms] += 1
+    expected = {tuple(r["exponents"]): r["count"] for r in records.values()}
+    if dict(observed) != expected:
+        raise ValueError("short-power census disagrees with the table")
+    x = nmod_poly([0, 1], 2)
+    f = sum((x**e for e in source), nmod_poly([], 2))
+    for power, record in records.items():
+        m = int(power)
+        support = tuple(record["exponents"])
+        if (m % 2 != 1 or gcd(m, (1 << n)-1) != 1 or short_power_support(source, m) != support
+                or sum((x.pow_mod(m*e, f) for e in support), nmod_poly([], 2)) != 0):
+            raise ArithmeticError(f"incorrect primitive power image at exponent {m}")
+
+
 def check(n, row, gp, trinomials, scalar_pairs=None):
     p, q = row["degree_primes"]
     a, b = (1 << p) - 1, (1 << q) - 1
@@ -44,11 +67,15 @@ def check(n, row, gp, trinomials, scalar_pairs=None):
     records = {int(h): values for h, values in row.get("scalar_pair_counts", {}).items()}
     if set(records) != set(candidates):
         raise ValueError(f"missing or extraneous scalar orders in degree {n}")
-    if scalar_pairs:
-        for h in candidates:
+    for h in candidates:
+        if scalar_pairs:
             counts = scalar_counts(scalar_pairs, p, q, h)
-            if counts != records[h] or counts[-1] != 0:
-                raise ValueError(f"scalar pair census disagreement at degree {n}, order {h}")
+        elif (p, h) == (11, 2047):
+            counts = check_pairs_2047(q)
+        else:
+            raise ValueError(f"provide the NTL pair enumerator for scalar order {h}")
+        if counts != records[h] or counts[-1] != 0:
+            raise ValueError(f"scalar pair census disagreement at degree {n}, order {h}")
     order = (1 << n) - 1
     large, remainder = divmod(order, a*b)
     if remainder or gcd(large, a*b) != 1 or gcd(a, b) != 1:
@@ -64,14 +91,13 @@ def check(n, row, gp, trinomials, scalar_pairs=None):
         if (support != sorted(set(support)) or support[0] != 0 or support[-1] != n
                 or len(support) not in (3, 5)):
             raise ValueError(f"incorrect sparse support at degree {n}")
-        if not scalar_pairs and len(support) == 5 and any(sorted(Counter(e % h for e in support).values()) == [1, 2, 2]
-                                     for h in candidates):
-            raise ValueError(f"the scalar-order test is inconclusive for {support}")
         masks = {int(k): int(v, 16) for k, v in witness["norm_polynomials"].items()}
         verify_norm_witness(support, masks, factors, gp)
         weights.append(len(support))
     if not weights:
         raise ValueError(f"missing witnesses at degree {n}")
+    if "short_power_images" in row:
+        check_short_images(n, row["witnesses"], row["short_power_images"])
 
     primes = [*factors[p], *factors[q], large]
     inputs = " ".join(map(str, [n, len(primes), *primes])) + "\n"
@@ -83,12 +109,13 @@ def check(n, row, gp, trinomials, scalar_pairs=None):
     minimum = 3 if expected else 5
     if min(weights) != minimum:
         raise ArithmeticError(f"missing witness of minimum weight in degree {n}")
-    scope = "displayed supports" if candidates and not scalar_pairs else "all sparse irreducibles"
     print(f"Degree {n}: {len(str(large))}-digit prime verified, "
-          f"forced for {scope}, primitive norms in degrees {p} and {q}, minimum weight {minimum}.", flush=True)
+          f"forced for all sparse irreducibles, primitive norms in degrees {p} and {q}, minimum weight {minimum}.", flush=True)
 
 
 if __name__ == "__main__":
+    if hasattr(sys, "set_int_max_str_digits"):
+        sys.set_int_max_str_digits(0)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gp", default="gp")
     parser.add_argument("--trinomials", required=True, help="compiled scripts/prime_degree_trinomials.cpp")
@@ -96,7 +123,7 @@ if __name__ == "__main__":
     parser.add_argument("--degree", type=int, help="verify just one degree from the table")
     args = parser.parse_args()
     rows = json.loads((DATA / "semiprime-scalar-norms.json").read_text())
-    if set(map(int, rows)) != {1727, 1781, 2353, 3817, 5053, 8033, 10967, 11581, 14263, 14971}:
+    if set(map(int, rows)) != {1727, 1781, 2353, 3817, 5053, 8033, 10967, 11581, 14263, 14971, 22327}:
         parser.error("incomplete semiprime norm records")
     if args.degree is not None and str(args.degree) not in rows:
         parser.error("degree is outside the table")

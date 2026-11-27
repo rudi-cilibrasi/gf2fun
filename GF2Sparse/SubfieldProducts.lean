@@ -198,4 +198,31 @@ theorem cube_of_norm_one_pair {K : Type*} [Field K] [CharP K 2] (k : ℕ) (x : K
   have h : x^2+x+1 = 0 := by linear_combination x * ht - (x+1) * hx
   linear_combination (x-1) * h
 
+/-- In an odd-degree binary field, no Frobenius power translates a point by one. -/
+theorem no_dyadic_translate {K : Type*} [Field K] [CharP K 2] (n k : ℕ)
+    (hn : Odd n) (x : K) (hx : x^(2^n) = x) : x^(2^k) + x + 1 ≠ 0 := by
+  intro h
+  have step : iterateFrobenius K 2 k x = x+1 :=
+    CharTwo.add_eq_zero.1 (by simpa only [iterateFrobenius_def, ← add_assoc] using h)
+  have fixed (t : ℕ) : iterateFrobenius K 2 (t*n) x = x := by
+    induction t with
+    | zero => simp
+    | succ t ih =>
+      rw [Nat.succ_mul, Nat.add_comm (t*n) n, iterateFrobenius_add_apply, ih]
+      exact hx
+  have orbit (t : ℕ) : iterateFrobenius K 2 (t*k) x = x+(t:K) := by
+    induction t with
+    | zero => simp
+    | succ t ih =>
+      rw [Nat.succ_mul, Nat.add_comm (t*k) k, iterateFrobenius_add_apply, ih, map_add,
+        map_natCast, step, Nat.cast_succ]
+      abel
+  have hsum := orbit n
+  rw [Nat.mul_comm n k, fixed] at hsum
+  have hn1 : (n:K) = 1 := by
+    obtain ⟨v,rfl⟩ := hn
+    simp [CharTwo.two_eq_zero (R := K)]
+  rw [hn1] at hsum
+  exact one_ne_zero (add_right_inj x |>.mp (by simpa using hsum.symm : x+1 = x+0))
+
 end GF2Sparse.SubfieldProducts

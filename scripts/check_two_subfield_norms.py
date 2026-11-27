@@ -31,9 +31,9 @@ def verify_norm_witness(support, masks, factor_lists, gp):
     program = (f'check()={{my(f=Mod(1,2)*({terms}),r);'
                'if(!polisirreducible(f),error("reducible input"));r=ffgen(f,\'z);'
                + "".join(checks) + 'print("verified")};\niferr(check(),E,print(E);quit(1));\n')
-    result = subprocess.run([gp, "-fq", "-s", "128M"], input=program, text=True,
-                            capture_output=True, check=True)
-    if result.stderr or result.stdout.splitlines() != ["verified"]:
+    result = subprocess.run([gp, "-fq", "-s", "256M"], input=program, text=True,
+                            capture_output=True, check=False)
+    if result.returncode or result.stderr or result.stdout.splitlines() != ["verified"]:
         raise ArithmeticError(f"norm embedding check failed in degree {n}: {result.stderr}{result.stdout}")
 
     # Each remaining primitive-element test takes place in the smaller binary quotient.

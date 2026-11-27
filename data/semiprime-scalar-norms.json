@@ -431,5 +431,104 @@
         0
       ]
     }
+  },
+  "22327": {
+    "degree_primes": [
+      83,
+      269
+    ],
+    "subfield_factors": {
+      "83": [
+        167,
+        57912614113275649087721
+      ],
+      "269": [
+        13822297,
+        68625988504811774259364670661552948915363901845035416371912463477873783063
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          2445,
+          22327
+        ],
+        "norm_polynomials": {
+          "83": "0xa5f33dd1c80b3ce25ba25",
+          "269": "0x2f92c304e5bcc285e72824f0fde46fdc81de57171c92d1ca1f95dbe50a9952a24387"
+        }
+      },
+      {
+        "exponents": [
+          0,
+          815,
+          1630,
+          2445,
+          22327
+        ],
+        "norm_polynomials": {
+          "83": "0xb595103b17b95f54f5485",
+          "269": "0x36c8100a484849ae0be0cee1be0c48cc4b091a9d968c8986cc6ba4e74c7947f1b625"
+        }
+      },
+      {
+        "exponents": [
+          0,
+          2977,
+          5954,
+          19350,
+          22327
+        ],
+        "norm_polynomials": {
+          "83": "0x8b7721a1b720378a29571",
+          "269": "0x3fd0aea0158f220ee67a7595c4fdf33e701474677c5156b39fc9f8b83b34c1315fb7"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [
+      2445
+    ],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000006998360",
+    "short_power_images": {
+      "1": {
+        "exponents": [
+          0,
+          2445,
+          22327
+        ],
+        "count": 15
+      },
+      "3": {
+        "exponents": [
+          0,
+          815,
+          1630,
+          2445,
+          22327
+        ],
+        "count": 13
+      },
+      "5": {
+        "exponents": [
+          0,
+          489,
+          1956,
+          2445,
+          22327
+        ],
+        "count": 13
+      },
+      "7": {
+        "exponents": [
+          0,
+          2445,
+          4936,
+          9918,
+          22327
+        ],
+        "count": 12
+      }
+    }
   }
 }

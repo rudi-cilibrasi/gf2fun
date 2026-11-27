@@ -19926,5 +19926,93 @@ the supports, the norm polynomials, the subfield factorizations and
 the sources of the archived primality proofs.
 \nolinkurl{scripts/check_semiprime_scalar_norms.py} verifies the
 certificates, the pair census and the exhaustive trinomial searches.
+An independent verifier, \nolinkurl{scripts/check_scalar_pairs.py},
+reconstructs the planes using logarithms in \(\mathbb F_{2^{11}}\) and
+uses binary long division on the two trinomials.
+
+\clearpage
+\section{Frobenius-related gaps in a five-term support}
+\label{sec:dyadic-scalar-gaps}
+Let the two repeated classes in the proof of
+Theorem~\ref{thm:semiprime-parity} be
+\((a,a+u),(b,b+Ku)\), where \(K=2^k\), \(k\ge1\); let the singleton
+be \(c\). Put \(B=\ord(\beta)\) on the other side. Since each pair
+sums to the singleton in the \(\beta\)-coordinate, Frobenius gives
+\[
+                B\mid b+(K-1)c-Ka .
+\]
+The magnitude on the right is at most \(K(n-u)\), using
+\(a\le n-u\), \(b\le n-Ku\) and \(c\le n\). If \(B>K(n-u)\)
+the integer vanishes. At a root \(r\), division by \(r^c\) then gives
+\[
+           w^{2^k}+w+1=0,\qquad w=r^{a-c}(1+r^u).
+\]
+In an odd-degree binary field the absolute trace of the left side is
+one. This rules out \emph{every} power-of-two ratio of the two gaps
+under the stated order bound. In particular, for the odd semiprimes
+of Theorem~\ref{thm:semiprime-parity} such a pair of gaps is
+impossible whenever \(3u\ge4p^2\):
+\(B\ge3q^2/4\) while \(K(n-u)<Kn\le n^2/u\le3q^2/4\).
+Lean verifies the Frobenius obstruction in
+\nolinkurl{GF2Sparse/SubfieldProducts.lean}.
+
+The equality of exponents also restricts every nonzero root in
+arbitrary degree \(m\). The \(k\)-fold Frobenius sends \(w\) to \(w+1\),
+so an odd number of iterations cannot fix it. The Frobenius on
+\(\mathbb F_{2^m}\) raised to the \(k\)-th power has order
+\(m/\gcd(m,k)\). That quotient must therefore be even.
+
+\clearpage
+\section{A primitive trinomial and four pentanomials in degree 22327}
+\label{sec:semiprime-22327}
+
+Let \(n=22327=83\cdot269\). Every binary irreducible of degree \(n\)
+and weight at most five has the 6616-digit prime
+\[
+                  C=\frac{2^{22327}-1}{(2^{83}-1)(2^{269}-1)}
+\]
+in its root order. Indeed the degree-83 component in a hypothetical
+split root would have an order \(h\mid2^{83}-1\) with
+\(5167\le h\le7442\) by Theorem~\ref{thm:semiprime-parity}.
+The factorization
+\(2^{83}-1=167\cdot57912614113275649087721\) has no divisor in
+this interval. The two subfield orders and \(C\) are pairwise coprime.
+The \href{https://factordb.com/cert/1100000000006998360}{archived
+PRIMO certificate} proves the primality of \(C\).
+
+The only irreducible trinomial up to reciprocity is
+\[
+                  X^{22327}+X^{2445}+1.
+\]
+Its norms to degrees 83 and 269 are both primitive, giving full order.
+This also supplies a primitive pentanomial with three small taps.
+Write \(n=3u+1\), \(2445=3v\), and let \(r\) be the trinomial root.
+For \(y=r^3\) one has \(r y^u=1+y^v\); cubing gives
+\[
+                  y^{22327}+y^{2445}+y^{1630}+y^{815}+1=0.
+\]
+Since \(n\) is odd, cubing preserves full order.
+
+More generally, among the first 22327 positive powers of \(r\),
+exactly 53 have minimal polynomial of weight at most five. They give
+four distinct primitive polynomials. Section~\ref{sec:short-trinomial-powers}
+classifies the odd part \(m\) of the exponent; multiplying the exponent
+by two preserves its minimal polynomial. The table lists every result.
+\[
+\begin{array}{r|r|l}
+ m&\text{number of exponents}&\text{interior exponents of the polynomial}\\\hline
+ 1&15&2445\\
+ 3&13&815,1630,2445\\
+ 5&13&489,1956,2445\\
+ 7&12&2445,4936,9918
+\end{array}
+\]
+All four odd parts are coprime to \(2^n-1\). Binary modular powering
+also checks each displayed polynomial directly at \(r^m\).
+A separate search gives a fourth primitive pentanomial, with interior
+exponents \(2977,5954,19350\). The norm certificates in
+\nolinkurl{data/semiprime-scalar-norms.json} verify the trinomial, its
+cube and this fourth pentanomial independently. The exhaustive
+trinomial search checks all 11163 reciprocal representatives.
 
 \end{document}
