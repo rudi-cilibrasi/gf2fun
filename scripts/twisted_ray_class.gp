@@ -61,3 +61,18 @@ twisted_ray_quotient(p, d) = {
     error("invalid ray quotient presentation"));
   [b.no, r.no, quotient]
 };
+
+\\ Test the p-index character using the prime above 2 in two imaginary
+\\ quadratic orders. H only has to principalize the prime in the maximal
+\\ order and be prime to p. Both properties are checked exactly.
+twisted_conductor_class(p, H = 0) = {
+  if(p < 5 || !isprime(p) || znorder(Mod(-2,p)) != p-1, error("ineligible prime"));
+  my(delta = if(p%8 == 5, -3*p, -p), disc = delta*p^2);
+  if(H == 0, H = quadclassunit(delta).no);
+  if(H < 1 || H%p == 0, error("invalid principalization exponent"));
+  my(prime = Qfb(2,1,(1-delta)/8), principal = Qfb(1,1,(1-delta)/4));
+  if(qfbred(prime^H) != qfbred(principal), error("the prime above two was not principalized"));
+  my(lifted = qfbred(Qfb(2,1,(1-disc)/8)^H), identity = qfbred(Qfb(1,1,(1-disc)/4)));
+  if(qfbred(lifted^p) != identity, error("the lifted form is outside the conductor kernel"));
+  [H, lifted == identity, Vec(lifted)]
+};

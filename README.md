@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **The prime $2^{141}+5$ divides the root order of the degree-$2^{141}+4$ pentanomial exactly once.** Two binary quadratic forms certify this unconditionally. The test works at the conductor prime for every irreducible twisted cyclotomic polynomial and agrees with direct powering at all 125 eligible primes through 2,053. [Proof](results.pdf#page=253) · [Reproduce the certificate](scripts/check_twisted_conductor.py)
+
 - **A ray class group gives a full-order criterion for the twisted cyclotomic family.** For a prime $p\ge5$ with $-2$ primitive modulo $p$, choose $2^j\equiv\pm3\bmod p$. A root of $D_p$ is primitive exactly when $\gcd(2^{(p-1)/2}-1,2^j-3)=1$ and Frobenius minus two maps the ordinary ray class group modulo two of $\mathbb Q(\zeta_{3p})^+$ onto itself. Individual primes can be tested in smaller subfields. A cubic field detects the factor seven in the root-order index of the degree-2,052 pentanomial. Direct powering agrees in 325 root tests and 195 Gauss period tests across 253 ray groups. [Proof](results.pdf#page=247) · [Certified computations](scripts/check_twisted_ray.py)
 
 - **The minimum weight in degree 3,927 is three.** Of the 1,963 reciprocal pairs of trinomials, ten are irreducible and five are primitive. The smallest tap giving full order is 367. Cubing the five primitive trinomial roots gives five pentanomial pairs, and $X^{3927}+X^{113}+X^{101}+X^{12}+1$ is another primitive pentanomial. The order tests use all 29 prime divisors of $2^{3927}-1$. [Proof and exact orders](results.pdf#page=245) · [Reproduce the certificates](scripts/check_3927_thirds.py)
@@ -858,6 +860,13 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_corr
 ~~~
 
 The ray quotient also gives the exact prime-power multiplicities in the root-order index away from primes dividing the degree. For $k=141$ the only exceptional prime is 3. For $k=191$ they are 3, 19 and 87,211. [Index formula](results.pdf#page=252)
+
+The conductor-prime checker verifies the supplied principalization exponent by composing binary quadratic forms in the maximal order and the order of conductor $p$. For the large example, verification uses the stored exponent and needs no class-number computation. The optional small comparison tests the result against binary field arithmetic. [Principalization exponent](data/translation-lift-orders.json)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_conductor.py
+uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_conductor.py --small
+~~~
 
 To reproduce the optimal normal basis classification, run the finite orbit and order checks and the formal coefficient bound.
 
