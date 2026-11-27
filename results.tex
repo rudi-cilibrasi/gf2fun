@@ -16636,4 +16636,78 @@ by the primality result of
 Theorem~4.2}. This order divisor is shared by every irreducible
 degree-21002 binary polynomial of weight at most five.
 
+
+\section{Full orders at three Mersenne exponents and three full relative orders}
+\label{sec:large-circle-orders}
+
+The following rows give primitive pentanomials. In each row the two
+endpoints are \(0,n\), and two interior exponents sum to \(n\).
+\[
+\begin{array}{r|r r r|l}
+ n&\multicolumn{3}{c|}{\text{interior exponents}}&\operatorname{ord}(X)\\\hline
+ 19937&13&69&19924&2^{19937}-1\\
+ 21701&195&262&21506&2^{21701}-1\\
+ 23209&21&81&23188&2^{23209}-1
+\end{array}
+\]
+PARI/GP checks irreducibility in each degree. The Lucas--Lehmer
+recurrence, started at four and iterated \(n-2\) times modulo
+\(2^n-1\), gives zero in each case. The field multiplicative group
+therefore has prime order and the nonidentity root generates it.
+
+There are also three examples for which the entire component of
+order \(2^p+1\) is certified in degree \(2p\). Put \(q=2^p\) and
+let \(r\) be a root of the indicated irreducible pentanomial. Here
+\(I=(q^2-1)/\operatorname{ord}(r)\) and \(R\) is the explicitly
+specified remaining cofactor of \(q-1\), with \(I\mid R\).
+\[
+\begin{array}{r|r r r|l|r|r}
+2p&\multicolumn{3}{c|}{\text{interior exponents}}&
+\operatorname{ord}(r^{q-1})&\text{digits of }R&
+\text{min.\ digits of }\operatorname{ord}(r)\\\hline
+5234&37&1184&2617&2^{2617}+1&715&866\\
+21002&720&10501&10621&2^{10501}+1&3055&3273\\
+24782&1775&3550&12391&2^{12391}+1&3687&3778
+\end{array}
+\]
+The group of order \(q-1\) is coprime to \(q+1\). Write
+\(q+1=3W_p\), with \(W_p\) prime in each row. Direct powering gives
+\(r^{3(q-1)}\ne1\) and \(r^{(q^2-1)/3}\ne1\); these establish the
+full relative order. For the second row the first assertion also
+follows for every sparse irreducible in its degree from
+Corollary~\ref{cor:two-four-prime}. For the last row the polynomial
+is \(1+U+U^2\) for \(U=X^{1775}+X^{12391}\). The two exponents have
+opposite nonzero residues modulo three, so the support lies outside
+the cubic exceptions in the corollary. Over \(\mathbb F_4\) its
+degree-\(p\) factor \(U+\omega\) has constant term of order three,
+giving the other prime-index test from the norm to \(\mathbb F_4\).
+
+For each archived prime \(s\mid q-1\), check
+\(r^{(q^2-1)/s}\ne1\), and include in \(K\) the entire power of \(s\)
+dividing \(q-1\). Then \(R=(q-1)/K\), and every prime power in
+\((q+1)K\) divides \(\operatorname{ord}(r)\). A final check gives
+\(r^{(q+1)K}\ne1\), so the order also contains a prime of \(R\).
+Every such prime is one modulo \(2p\), giving the lower bound
+\((q+1)K(2p+1)\) used in the table. Full primitivity in these
+three rows remains open for these witnesses.
+
+For the three Wagstaff primes we independently check the factors
+and bases from \href{https://doi.org/10.5281/zenodo.19645478}{Dolotov's
+certificate data}. Here is the discriminant calculation used in
+this replay. For \(N=W_p\), let \(F\) contain the full powers of
+the supplied primes dividing \(N-1\). For each such prime \(s\)
+the base satisfies \(a^{N-1}=1\bmod N\) and
+\(\gcd(a^{(N-1)/s}-1,N)=1\). Thus every prime divisor of \(N\)
+is one modulo \(F\). Verify \(N<F^3\). If composite, \(N\)
+would be \((aF+1)(bF+1)\) for positive integers \(a,b\).
+Since \(ab\ge a+b-1\), the size bound forces \(a+b<F\).
+Write \((N-1)/F=Ft+s\), \(0\le s<F\). A factorization would
+give \(s=a+b,\ t=ab\), so \(s^2-4t\) would be a square.
+The checker excludes a square in all three rows. It proves primality
+of each factor used in \(F\) with FLINT's deterministic
+\texttt{is\_prime}, then replays the field calculations in PARI/GP.
+The input files are \nolinkurl{data/large-quadratic-circle-orders.json}
+and \nolinkurl{data/large-mersenne-complementary-taps.json}, with
+verification in \nolinkurl{scripts/check_large_circle_orders.py}.
+
 \end{document}
