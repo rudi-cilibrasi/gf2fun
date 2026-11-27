@@ -18255,7 +18255,36 @@ degree at most \(t\). This leaves the indicated parity for \(A_k\)
 and only \(j=k\) for the other triangles.
 \end{proof}
 
-\section{A five-term polynomial in degrees \(2^{141}+4\) and \(2^{191}+4\)}
+
+\begin{corollary}
+Degree 20 is the only degree \(2^k+4\) with even \(k\ge4\) admitting
+a translation-invariant irreducible binary polynomial of weight at
+most five.
+\end{corollary}
+\begin{proof}
+For even \(k\ge6\) the only candidate is \(A_k\). Its outer polynomial
+has an integral lift \(H=1+BE\), where \(B=Z^2+Z\) and
+\(E=\sum_{i=1}^{k-1}Z^{2^i}\). In the quotient by \(H\) we have
+\(BE=-1\), so \(H'=E(B'-B^2 E')\). The norm of \(E\) is one.
+Modulo eight the second factor is
+\[
+ G=1+2Z-B^2(2Z+4Z^3).
+\]
+Let \(m=2^{k-1}+2\). To compute the norm of \(G=1+2W\) modulo eight
+one needs only the first two elementary symmetric functions of the
+values \(W(\alpha)\) at the roots of \(H\). Their total degrees in
+those roots are at most \(2\deg W\le14\). Hence the leading fourteen
+coefficients below the leading term of \(H\) determine this norm,
+by the fundamental theorem of symmetric polynomials. Those
+coefficients agree with \(Z^{m-1}(Z+1)\), since the next term in
+\(H\) is \(2^{k-2}\ge16\) positions below the leading term.
+The norm is thus \(G(0)^{m-1}G(-1)=-1\bmod8\). The discriminant
+sign is negative, so the discriminant is one modulo eight and the
+outer polynomial is reducible. The degree-20 example in
+Theorem~\ref{thm:translation} gives the remaining case.
+\end{proof}
+
+\section{A five-term polynomial in degrees \texorpdfstring{\(2^{141}+4\) and \(2^{191}+4\)}{2^141+4 and 2^191+4}}
 \label{sec:twisted-torus}
 
 \begin{theorem}
@@ -18334,6 +18363,44 @@ of Theorem~\ref{thm:translation} for \(3\le k\le11\), and certifies
 these exact indices by modular powering. The input integers are in
 \nolinkurl{data/translation-lift-orders.json}. The two large degrees
 have certified irreducibility and the displayed order lower bounds.
-Their full multiplicative orders remain open here.
+Their full multiplicative orders remain open here. Lean proves the
+general irreducibility implication from the full modular order of
+two, the five-term support size, and both large instances with Lucas
+certificates in \nolinkurl{GF2Sparse/TwistedCyclotomic.lean}.
+
+\begin{corollary}
+Among all binary primitive polynomials with at most five terms and
+a nonidentity binary projective symmetry of the roots, the only
+possible candidates, up to reciprocity, in the interval
+\(20<n\le2^{191}+4\) are
+\[
+                   A_{71},\quad A_{101},\quad A_{155},
+                   \quad C_{141},\quad C_{191}.
+\]
+In particular no such polynomial exists in \(20<n<2^{71}+4\).
+In each of the two large degrees \(2^{141}+4\) and \(2^{191}+4\),
+\(C_k\) is the unique translation-invariant irreducible with at most
+five terms.
+\end{corollary}
+\begin{proof}
+For odd \(7\le k\le191\), the certificate gives twenty proper binary
+factors that together exclude every \(A_k\) except the three listed.
+Their degrees range from five to 1,359. For each factor \(g\), start
+with \(v=X\bmod g\) and square it successively. At step \(k\), test
+whether \(1+(v+X)(X^4+X)\) vanishes modulo \(g\) and
+\(\deg g<2^k+4\). In particular degrees 12 and 140 suffice to
+exclude \(A_{141}\) and \(A_{191}\), respectively.
+
+For every odd \(3\le k\le191\), put \(p=2^k+5\).
+Except for \(k=3,5,11,141,191\), direct modular powering gives
+either \((-2)^{p-1}\not\equiv1\pmod p\), or
+\((-2)^{(p-1)/\ell}\equiv1\pmod p\) for a divisor \(\ell=3\) or 11
+of \(p-1\). The five exceptions have certified full modular order.
+The exact binary orders above settle \(C_5,C_{11}\).
+The preceding corollary excludes all even \(k\ge6\).
+Corollary~\ref{cor:mobius} transfers the conclusion to projective
+symmetries. Each test is reproduced by
+\nolinkurl{scripts/check_translation_lift_orders.py}.
+\end{proof}
 
 \end{document}

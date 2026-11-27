@@ -76,6 +76,39 @@ def check_factors(factors, value):
         raise ValueError(f"incomplete prime factorization for {value.bit_length()}-bit integer")
 
 
+def check_remaining_exponents(data):
+    """Use proper divisors for A_k and integer order obstructions for C_k."""
+    odd = set(range(7, 192, 2))
+    surviving = odd.copy()
+    factors = [int(mask, 16) for mask in data["residual_factors"]]
+    if len(set(factors)) != len(factors):
+        raise ValueError("duplicate residual factor")
+    for mask in factors:
+        f = nmod_poly([(mask >> i) & 1 for i in range(mask.bit_length())], 2)
+        if f.degree() < 1 or f.factor()[1] != [(f, 1)]:
+            raise ValueError(f"invalid residual factor {mask:#x}")
+        value = X
+        b = (X**4 + X) % f
+        for k in range(1, 192):
+            value = (value * value) % f
+            if k in surviving and f.degree() < 2**k + 4 and ((value + X) * b + 1) % f == 0:
+                surviving.remove(k)
+    if surviving != {71, 101, 155}:
+        raise ValueError(f"unexpected residual exponents {sorted(surviving)}")
+
+    known = {int(k) for k in data["torus_prime_minus_one"]}
+    for k in range(3, 192, 2):
+        if k in known:
+            continue
+        n = 2**k + 4
+        if pow(-2, n, n + 1) != 1:
+            continue
+        if not any(n % l == 0 and pow(-2, n // l, n + 1) == 1 for l in (3, 11)):
+            raise ValueError(f"missing modular-order obstruction for k={k}")
+    print("Above degree 20 through 2^191+4, the only remaining projectively symmetric")
+    print("primitive candidates, up to reciprocity, are A_71, A_101, A_155, C_141, C_191.")
+
+
 def check_orders():
     data = json.loads(DATA.read_text())
     for exponent, factors in data["torus_prime_minus_one"].items():
@@ -107,6 +140,7 @@ def check_orders():
         if any(value == 1 for _, value in prime_index_powers(X, order, primes, f)):
             raise ValueError(f"incorrect exact order for {(k, j, triangle)}")
         print(f"degree {n}, {'triangle' if triangle else 'cycle'} j={j}: exact index {index}.")
+    check_remaining_exponents(data)
 
 
 if __name__ == "__main__":
