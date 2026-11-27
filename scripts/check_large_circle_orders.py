@@ -44,26 +44,55 @@ def wagstaff_prime(p, groups):
 
 
 def mersenne_prime(n):
-    if n <= 2 or not fmpz(n).is_prime():
+    if n == 2:  # The first Mersenne prime is 3.
+        return
+    if n < 2 or not fmpz(n).is_prime():
         raise ArithmeticError(f"invalid Lucas–Lehmer exponent {n}")
     m = fmpz((1 << n)-1)
     residue = fmpz(4)
     for _ in range(n-2):
-        residue = (residue*residue-2) % m
+        square = residue*residue
+        residue = (square & m) + (square >> n) - 2
+        if residue >= m:
+            residue -= m
+        elif residue < 0:
+            residue += m
     if residue != 0:
         raise ArithmeticError(f"Lucas–Lehmer test failed in degree {n}")
 
 
-def check_published_86243():
-    """Replay Table 2 of Kumada et al., Keio report KSTS/RR-98/009 (1998)."""
-    n = 86243
+def check_prime_order(n, interiors):
+    """Check the Mersenne prime and the full polynomial power at every support."""
     mersenne_prime(n)
     stages = make_stages(n)
-    for taps in ((11754, 50942, 62833), (19434, 41667, 64043)):
+    for taps in interiors:
+        if (len(taps) not in (1, 3) or list(taps) != sorted(set(taps))
+                or not 0 < taps[0] <= taps[-1] < n):
+            raise ValueError(f"invalid interior exponents for degree {n}: {taps}")
         # n iterations of v -> X*v^2 starting at 1 give X^(2^n-1).
         if advance(1, n, [n, *taps, 0], stages, n) != 1:
             raise ArithmeticError(f"full power failed for degree {n} and taps {taps}")
         print(f"Degree {n}, taps {taps}: primitive, with full order 2^{n}-1.", flush=True)
+
+
+def check_mersenne_prefix(prefix):
+    """Replay the first 31 orders directly and the next two published seed transfers."""
+    from check_large_trinomial_samples import SEEDS, samples
+
+    seeds = json.loads(SEEDS.read_text())
+    degrees = list(prefix)
+    if len(degrees) != 33 or degrees != sorted(degrees) or degrees[-3:] != [216091, 756839, 859433]:
+        raise ValueError("incomplete Mersenne exponent prefix")
+    for n, taps in prefix.items():
+        if len(taps) != (1 if n < 5 else 3):
+            raise ValueError(f"wrong term count in degree {n}")
+        if n <= 216091:
+            check_prime_order(n, [taps])
+        else:
+            images = samples(n, seeds[str(n)])
+            if not any(tuple(taps) == row[1:4] for row in images):
+                raise ArithmeticError(f"missing power image of a published primitive seed in degree {n}")
+            print(f"Degree {n}, taps {taps}: verified transfer from a published primitive trinomial.", flush=True)
 
 
 def field_check(gp, exponents, powers):
@@ -114,8 +143,15 @@ def check_quadratic(p, row, gp):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gp", default="gp", help="PARI/GP executable")
-    parser.add_argument("--degree", type=int, help="check one archived degree")
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument("--degree", type=int, help="check one archived order from the large-degree tables")
+    selection.add_argument("--mersenne-prefix", action="store_true",
+                           help="verify the five-term bound at the first 33 Mersenne prime exponents")
     args = parser.parse_args()
+    prefix = {int(n): taps for n, taps in json.loads((DATA / "mersenne-exponent-prefix.json").read_text()).items()}
+    if args.mersenne_prefix:
+        check_mersenne_prefix(prefix)
+        raise SystemExit(0)
     quadratic = json.loads((DATA / "large-quadratic-circle-orders.json").read_text())
     checked = 0
     for p, row in quadratic.items():
@@ -129,8 +165,14 @@ if __name__ == "__main__":
             field_check(args.gp, exponents, [])
             print(f"Degree {n}: primitive, with full order 2^{n}-1.", flush=True)
             checked += 1
-    if args.degree is None or args.degree == 86243:
-        check_published_86243()
-        checked += 2
+    prime_order = {
+        # Kumada et al., Keio report KSTS/RR-98/009 (1998), Table 2.
+        86243: [(11754, 50942, 62833), (19434, 41667, 64043)],
+        216091: [prefix[216091]],
+    }
+    for n, triples in prime_order.items():
+        if args.degree is None or args.degree == n:
+            check_prime_order(n, triples)
+            checked += len(triples)
     if not checked:
         parser.error("the requested degree has no entry")

@@ -17680,4 +17680,53 @@ The remaining degrees use the published seed results. The census
 and the two full replays use
 \nolinkurl{scripts/check_large_trinomial_samples.py}.
 
+\clearpage
+\section{Minimum weight five in degree 216,091}
+\label{sec:mersenne-216091}
+
+\begin{theorem}
+The polynomial
+\[
+       F(X)= X^{216091}+X^{68}+X^{26}+X^{13}+1
+\]
+is primitive over \(\F\). Five is the minimum weight in this degree.
+\end{theorem}
+\begin{proof}
+Put \(n=216091\) and \(M=2^n-1\). Lucas--Lehmer gives final residue
+zero, proving \(M\) prime. Starting from \(v=1\), apply
+\(v\gets Xv^2\bmod F\) exactly \(n\) times. Packed binary polynomial
+arithmetic gives final residue one, so \(F\mid X^M-1\).
+This computation is independent of the NTL irreducibility test
+that found the support. To see why the two residues suffice,
+\(X^M-1\) is squarefree and \(F(1)=1\). Any root of \(F\) therefore
+has order \(M\). Its degree is \(n\), since \(2^j-1<M\) for
+\(0<j<n\). Hence \(F\) is its minimal polynomial.
+
+A polynomial of even weight has root one. For trinomials take the
+reciprocal if necessary to make the interior exponent \(s\) even.
+Swan's theorem at \(n\equiv3\pmod8\) forces \(s\mid 2n\) for an
+irreducible trinomial, leaving \(s=2\) since \(n\) is prime. As
+\(n\equiv1\pmod3\), this trinomial is divisible by \(X^2+X+1\).
+This is also \href{https://maths-people.anu.edu.au/~brent/pd/rpb212.pdf}
+{Brent and Zimmermann, Theorem 6.1, case A}.
+\end{proof}
+
+\paragraph{Consecutive Mersenne prime exponents.}
+There is now a witness with at most five terms for each of the first
+33 exponents in the \href{https://www.mersenne.org/primes/}{GIMPS table},
+through 859,433. The first two degrees, 2 and 3, use trinomials.
+All 31 other degrees have explicit pentanomials. One set of interior
+exponents per degree is in \nolinkurl{data/mersenne-exponent-prefix.json}.
+For example, the cube of the known degree-44,497 trinomial root adds
+the two intermediate exponents 20,549 and 32,523 between 8,575 and
+44,497, by Section~\ref{sec:short-trinomial-powers}.
+
+The option \texttt{--mersenne-prefix} of
+\nolinkurl{scripts/check_large_circle_orders.py} checks the first
+31 entries by full polynomial powering and primality. For the last
+two it reduces the proposed pentanomial at a power of a published
+primitive trinomial root and tests coprimality of the power, as in
+Section~\ref{sec:large-trinomial-samples}. The degree-216,091 checks
+can be run separately with \texttt{--degree 216091}.
+
 \end{document}

@@ -10,6 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **The minimum weight in degree 216,091 is five.** The polynomial $X^{216091}+X^{68}+X^{26}+X^{13}+1$ is primitive. Its three interior exponents are at most 68. Lucas–Lehmer and full polynomial powering certify its order. With the earlier results, the five-term bound now holds at all of the first 33 Mersenne prime exponents, through 859,433. The last two degrees use published primitive trinomial seeds. [Witnesses](data/mersenne-exponent-prefix.json) · [Verification](scripts/check_large_circle_orders.py) · [Proof](results.pdf#page=233)
 - **There are 242 explicit primitive pentanomials in thirteen large degrees from 110,503 to 74,207,281.** They exhaust the five-term minimal polynomials obtained by raising primitive trinomial roots to powers through the degree in those thirteen cases. One example is $X^{74207281}+X^{9999621}+X^{9411408}+X^{588213}+1$. The seven positive trinomial seeds and all 121,268 other reciprocal pairs in degrees 110,503 and 132,049 were independently checked. The larger cases use published trinomial searches. [242 witnesses](data/large-mersenne-sampled-pentanomials.csv) · [Proof](results.pdf#page=232) · [Lean transfer](GF2Sparse/LargeTrinomialSamples.lean) · [Published seed certificates](https://maths-people.anu.edu.au/brent/trinom.html)
 - **A second degree-4112 family gives 4,208,864 primitive elements, and every full-degree member has at least 97 terms in its binary minimal polynomial.** These are the translates of $y^j+y^{-j}$ by the 65,536 constants. A circle or line reduces each quadratic order calculation to known logarithms. Across all 4,080 constant orbits the leading 257 binary coefficients contain at least 96 ones. [Reduction and weight proof](results.pdf#page=231) · [Census and weight checker](scripts/check_4112_trace_translates.py)
 - **In degree 4112, exact order tests certify 8,392,592 primitive elements among 16,777,216 binomials in the torsion coordinate.** Of the whole family, 16,711,168 generate the component of order equal to the remaining 539-digit cofactor. The 2,048 stored logarithms also determine this component for every product or quotient of the binomials. Their binary minimal polynomials have at least seven terms whenever they are primitive. [Logarithms](data/degree-4112-binomial-logs.csv.gz) · [Power verifier](scripts/check_4112_binomials.py) · [Reconstruction](scripts/solve_4112_binomials.py)
@@ -828,10 +829,12 @@ python3 -c 'import json; print(*json.load(open("data/mersenne-complementary-widt
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_two_subfield_norms.py
 ~~~
 
-The two published degree-86,243 pentanomials of Kumada et al. also have an independent local replay. It checks Lucas–Lehmer primality and both full polynomial powers. [Original report, Table 2](https://www.math.keio.ac.jp/wp-content/uploads/2022/03/98009.pdf)
+The prime-order checker replays Lucas–Lehmer and the full polynomial powers for the degree-216,091 witness and the two published degree-86,243 pentanomials of Kumada et al. The prefix option checks one witness at each of the first 33 Mersenne prime exponents. [Original report, Table 2](https://www.math.keio.ac.jp/wp-content/uploads/2022/03/98009.pdf)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_large_circle_orders.py --degree 86243
+uv run --no-project --with python-flint==0.9.0 python scripts/check_large_circle_orders.py --degree 216091
+uv run --no-project --with python-flint==0.9.0 python scripts/check_large_circle_orders.py --mersenne-prefix
 ~~~
 
 The two normalized-width tables use the same factor tables and verification commands as the spacing tables below. Substitute `complementary-width-5-1228.csv` and `complementary-width-1230-2292.csv` for the corresponding `symmetric-witnesses` filenames. To check sharpness, run
