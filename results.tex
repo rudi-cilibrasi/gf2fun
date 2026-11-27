@@ -20499,4 +20499,78 @@ supports, agreeing with direct factorization of \(X^{1533}+1\).
 \nolinkurl{scripts/check_odd_scalar_splits.py} enumerates the
 remaining degree pairs and reproduces the exclusion.
 
+\clearpage
+\section{Four terms in seven progression positions exclude every odd-degree split}
+\label{sec:seven-position-scalar}
+Let \(n\) be odd. If a binary irreducible pentanomial has four support
+exponents in \(t+d\{0,1,\ldots,6\}\), no root splits across any two
+coprime proper subfield degrees whose product is \(n\). If \(3\nmid n\)
+one may use \(t+d\{0,1,\ldots,22\}\). The step \(d>0\) is arbitrary,
+as is the gcd of the whole support.
+
+More generally, write the four exponents as \(t+d k_s\).
+It suffices that every nonzero difference \(k_s-k_t\) be coprime
+to \(2^n-1\). A split would give three distinct scalar points with
+multiplicities \(2,2,1\). Among the four exponents there is a full
+repeated pair. Its scalar order \(A\mid2^n-1\) divides
+\(d(k_s-k_t)\), hence \(A\mid d\). This makes all four scalar powers
+equal, contradicting the multiplicities. For odd \(n\), neither 3
+nor 5 divides \(2^n-1\), so all differences from 1 to 6 work.
+If \(3\nmid n\) as well, 7 is excluded, and the other odd primes
+below 23 have even multiplicative order for the base two.
+
+Consequently in \emph{every} odd semiprime degree \(pq\), each
+irreducible in the family
+\[
+       X^{pq}+X^{cd}+X^{bd}+X^{ad}+1,
+       \qquad 0<a<b<c\le6,\quad cd<pq ,
+\]
+has a prime-power root-order component of binary multiplicative
+degree \(pq\). When \(\Phi_{pq}(2)\) is prime, the two subfield norm
+tests determine primitivity directly. This applies to configurations
+such as \(\{0,1,3,6\}\), which need not contain a four-term arithmetic
+progression. There are only linearly many such supports per degree.
+
+For instance \(X^{3415}+X^{36}+X^{27}+X^{18}+1\) is primitive.
+Its step is 9 and its four positions are \(0,2,3,4\).
+In degree 5403 the step 133 and positions \(0,1,3,6\) give a
+pentanomial carrying the 1084-digit prime and every known subfield
+prime power. In degree 7617 the step 164 and positions \(0,3,5,6\)
+give a pentanomial carrying the 1528-digit prime and every known
+subfield prime power. Direct powering checks these examples,
+including nontrivial projection onto each unresolved cofactor.
+
+The common divisor of the two gaps gives another restriction. In the
+notation of Section~\ref{sec:scalar-independent-bound}, let \(G\) be
+the gcd of their actual sizes and write the gaps as \(uG,vG\).
+For normalized support, \(z=\beta^G\) has the full partner degree
+\(j\). Indeed the four ratios to the singleton are
+\((1+z^u)^{-1},z^u/(1+z^u),(1+z^v)^{-1},z^v/(1+z^v)\),
+and the exponents of these ratios have gcd one. For a prime
+partner degree the same degree conclusion follows from \(z\ne1\).
+In the non-dyadic case the signed count now uses exponent coefficient
+\(G\) in place of \(A\), giving \(G<12i^2/5\).
+For dyadic gaps \(G,KG\), the same bound follows from
+\(B\ge3j^2/4\) and \(K(n-G)<n^2/G\), unless the exact Laurent
+composition of Section~\ref{sec:dyadic-trinomial-lifts} occurs.
+Equal gaps are already excluded. Thus away from the two classified
+lifts, \(G/A\) is at most three. In odd degree the lifts cannot
+occur, and for scalar orders 7, 31 and 73 the possible gap gcds
+are respectively \(\{7,14,21\}\), \(\{31\}\) and \(\{73,146\}\).
+
+
+For an odd-degree normalized support this recovers the scalar order
+from the pairing. It is coprime to 6, so delete all factors of 2 and
+3 from \(G\) to obtain the only possible \(A\). Discard the pairing
+if the deleted factor exceeds three. There are fifteen pairings of
+the five exponents, counting the singleton choice, so at most fifteen
+scalar orders need testing, without factoring \(2^n-1\).
+For example, the gap bound alone reduces the support counts in degrees
+3415 and 5403 to 9,827,754 and 1,521,617,820, respectively, before
+any polynomial gcd. For a fixed support
+\nolinkurl{scripts/check_sparse_scalar_gaps.py} tests the pairings
+using integers, including the divisibility restriction for dyadic
+gaps. The list can be empty even in degrees with an unresolved
+Mersenne cofactor.
+
 \end{document}

@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Four support exponents inside any seven equally spaced positions exclude a two-subfield split in every odd degree.** In an odd semiprime degree, every irreducible in this family therefore has a full-degree prime-power component in its root order. One primitive example is $X^{3415}+X^{36}+X^{27}+X^{18}+1$. The window grows to 23 positions when the degree is coprime to 6. Only linearly many candidates per degree have the four positions anchored at zero and the fifth term at the leading degree. [Proof and gap bounds](results.pdf#page=279)
+
 - **For every prime $7\le p\le 10{,}000$ and every prime $q>p$, a sparse irreducible of degree $pq$ has a prime-power divisor of its root order with binary multiplicative degree $pq$.** The larger prime has no cutoff. An obstruction would require an additive pair in a subgroup of prime order between $3p^2/4$ and $12p^2/5$. Of the 96 candidate orders for odd $p$ through 10,000, only $7$ and $31$ allow a pair, at $p=3$ and $5$. For every larger composite partner coprime to $p$, the corresponding two-subfield product is also excluded when the support has gcd one. The theorem covers every Mersenne prime exponent $p\ge7$. [Counting proof](results.pdf#page=271) · [Exact finite test](scripts/check_scalar_order_bound.py)
 
 - **For every coprime pair $13\le i\le1000$ and $j>i$, no root of a sparse irreducible of degree $ij$ with support of gcd one belongs to the product of those two subfields.** Checking 12,780 possible scalar orders leaves eight smaller degrees through 1,000 where a split still needs investigation, namely 2, 3, 4, 5, 6, 8, 9 and 12. When the degree is coprime to 30, descent removes the support-gcd restriction. Every coprime partition is thereby excluded through degree one million for degrees coprime to 30. [Proof and exact subgroup counts](results.pdf#page=276) · [Reproduce the calculation](scripts/check_coprime_scalar_orders.py)
@@ -856,6 +858,18 @@ To verify the eleven semiprime degrees, compile both NTL enumerators and run the
 c++ -std=c++17 -O3 scripts/prime_degree_trinomials.cpp -lntl -lgmp -o /tmp/gf2-trinomials
 c++ -std=c++17 -O3 scripts/check_scalar_pairs.cpp -lntl -lgmp -o /tmp/gf2-scalar-pairs
 uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_semiprime_scalar_norms.py --trinomials /tmp/gf2-trinomials --scalar-pairs /tmp/gf2-scalar-pairs
+~~~
+
+The scalar-order sieves run with standard Python. The product census uses NTL and PARI/GP. Select a single large degree with `--degree 5403`, or omit the option to check every archived row. Use `--orders-only` for the individual witness certificates. The odd-degree sweep uses the same binary.
+
+~~~sh
+python scripts/check_scalar_order_bound.py
+python scripts/check_coprime_scalar_orders.py
+c++ -std=c++17 -O3 -fopenmp scripts/check_scalar_pair_products.cpp -lntl -lgmp -o /tmp/gf2-pair-products
+uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_scalar_product_orders.py --products /tmp/gf2-pair-products --trinomials /tmp/gf2-trinomials --degree 5403
+python scripts/check_odd_scalar_splits.py --products /tmp/gf2-pair-products --jobs 8
+lake build GF2Sparse.ScalarOrderBound
+lake env leanchecker GF2Sparse.ScalarOrderBound
 ~~~
 
 To reproduce the three prime-degree weight distributions, compile the enumerator with NTL and run the verifier with PARI/GP available.

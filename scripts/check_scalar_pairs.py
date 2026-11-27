@@ -5,12 +5,13 @@ from itertools import combinations
 from math import gcd
 
 
-def scalar_residues(n):
-    order = 2047
+def scalar_residues(n, degree=11, modulus=(1 << 11) | 5):
+    """Third residues for a scalar generating the nonzero group in the given binary field."""
+    order = (1 << degree)-1
     endpoint = n % order
     if endpoint == 0:
         raise ValueError("the two endpoint residues must be distinct")
-    # Multiply by X modulo X^11+X^2+1, recording the logarithm of each residue.
+    # Multiply by X in the chosen binary basis, recording the logarithm of each residue.
     powers, logs = [], {}
     value = 1
     for exponent in range(order):
@@ -19,8 +20,8 @@ def scalar_residues(n):
         powers.append(value)
         logs[value] = exponent
         value <<= 1
-        if value >> 11:
-            value ^= (1 << 11) | 5
+        if value >> degree:
+            value ^= modulus
     if value != 1:
         raise ArithmeticError("the generator did not return to one")
 

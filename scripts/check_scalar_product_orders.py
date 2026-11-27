@@ -6,7 +6,7 @@ import json
 import subprocess
 import sys
 from io import StringIO
-from math import gcd, prod
+from math import comb, gcd, prod
 from pathlib import Path
 
 from flint import fmpz
@@ -15,6 +15,8 @@ from check_factor_base import irreducible, polynomial
 from check_primo_certificate import check_primo
 from check_product_range import certified_primes, prime_index_powers
 from check_semiprime_scalar_norms import check_short_images, scalar_counts
+from check_scalar_pairs import scalar_residues
+from check_sparse_scalar_gaps import count_gap_survivors
 from check_two_subfield_norms import TABLES, verify_norm_embeddings
 
 
@@ -63,6 +65,18 @@ def check_sparse_witness(n, row, gp, trinomials):
     check_norm(masks[p],p,[h],1)
     check_norm(masks[q],q,primes,cofactor)
 
+    if "window_witness" in row:
+        window = row["window_witness"]
+        positions, step = window["positions"], window["step"]
+        alternate = [step*i for i in positions] + [n]
+        if (step <= 0 or len(positions) != 4 or positions != sorted(set(positions))
+                or positions[0] != 0 or positions[-1] > 6 or alternate[-2] >= n
+                or alternate != window["exponents"]):
+            raise ValueError("incorrect seven-position witness")
+        pieces = [h,*set(primes),large] + ([cofactor] if cofactor > 1 else [])
+        order = (1 << n)-1
+        verify_norm_embeddings(alternate,{},gp,nontrivial_powers=[order//d for d in pieces])
+
     if n == 3415:
         check_short_images(n,[row],row["short_power_images"])
         factors = [h,*primes,large]
@@ -75,11 +89,24 @@ def check_sparse_witness(n, row, gp, trinomials):
     return large, cofactor
 
 
+def support_count(n, p):
+    h = (1 << p)-1
+    residues = scalar_residues(n,p,{3:0b1011,5:0b100101}[p])
+    anchored = n//h
+    total = 0
+    for v in residues:
+        free = (n-v)//h+1
+        total += free*anchored**2 + 2*anchored*comb(free,2)
+    return [len(residues),total]
+
+
 def check(n, row, binary, gp, trinomials):
     p,q = row["degree_primes"]
     counts = scalar_counts(binary,p,q,(1 << p)-1)
-    if counts != row["product_counts"] or counts[-1] != 0:
+    if counts[:2] != support_count(n,p) or counts != row["product_counts"] or counts[-1] != 0:
         raise ValueError(f"split support census failed in degree {n}")
+    if count_gap_survivors(n,p) != row["gap_bound_supports"]:
+        raise ArithmeticError("integer gap bound census disagrees")
     large, cofactor = check_sparse_witness(n,row,gp,trinomials)
     status = "primitive" if cofactor == 1 else f"index divides the {len(str(cofactor))}-digit cofactor"
     print(f"Degree {n}: {counts[1]:,} possible supports, no split roots, "
@@ -91,17 +118,30 @@ if __name__ == "__main__":
         sys.set_int_max_str_digits(0)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gp",default="gp")
-    parser.add_argument("--products",required=True,help="compiled scripts/check_scalar_pair_products.cpp")
-    parser.add_argument("--trinomials",required=True,help="compiled scripts/prime_degree_trinomials.cpp")
+    parser.add_argument("--products",help="compiled scripts/check_scalar_pair_products.cpp")
+    parser.add_argument("--orders-only",action="store_true",help="verify the individual sparse witnesses without the all-support scan")
+    parser.add_argument("--trinomials",help="compiled scripts/prime_degree_trinomials.cpp for the degree-3415 minimum")
     parser.add_argument("--degree",type=int,help="verify one table entry")
     args = parser.parse_args()
     rows = json.loads((DATA / "scalar-pair-products.json").read_text())
     if args.degree is not None and str(args.degree) not in rows:
         parser.error("degree is outside the table")
-    if scalar_counts(args.products,2,9,3) != [1,180,0,0,4,4]:
-        raise ArithmeticError("failed the composite-degree control from X^1533+1")
-    if scalar_counts(args.products,2,5,3) != [1,45,5,2,2,4]:
-        raise ArithmeticError("failed the positive control from the factorization of X^93+1")
+    if (args.degree is None or args.degree == 3415) and not args.trinomials:
+        parser.error("--trinomials is needed for the degree-3415 tap census")
+    if not args.orders_only:
+        if not args.products:
+            parser.error("--products is needed for the all-support scan")
+        if scalar_counts(args.products,2,9,3) != [1,180,0,0,4,4]:
+            raise ArithmeticError("failed the composite-degree control from X^1533+1")
+        if scalar_counts(args.products,2,5,3) != [1,45,5,2,2,4]:
+            raise ArithmeticError("failed the positive control from the factorization of X^93+1")
     for key,row in rows.items():
-        if args.degree is None or args.degree == int(key):
-            check(int(key),row,args.products,args.gp,args.trinomials)
+        n = int(key)
+        if args.degree is not None and args.degree != n:
+            continue
+        if args.orders_only:
+            large,cofactor = check_sparse_witness(n,row,args.gp,args.trinomials)
+            status = "primitive" if cofactor == 1 else f"index divides the {len(str(cofactor))}-digit cofactor"
+            print(f"Degree {n}: verified the {len(str(large))}-digit prime and witness orders, {status}.",flush=True)
+        else:
+            check(n,row,args.products,args.gp,args.trinomials)
