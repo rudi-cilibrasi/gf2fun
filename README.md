@@ -702,6 +702,15 @@ To replay the Mers Project witnesses, install PARI/GP and run the command below.
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py
 ```
 
+To find more candidate field orders, download the two Mers Project files and choose specific degrees or an interval. The command below reconstructs the factors in degrees 4,952 and 5,689. The search checks probable primality. The witness verifier above checks primality proofs and polynomial orders. For a missing subfield, `--supplement` accepts an existing factor table and also uses its factorizations in extension degrees. [Archive format](https://mers.sourceforge.io/mersfmt.txt) · [Factor reconstruction](scripts/mers_project_factor_candidates.py)
+
+```bash
+curl -fsSLo /tmp/gf2fun-factoredM.txt https://mers.sourceforge.io/factoredM.txt
+curl -fsSLo /tmp/gf2fun-primeM.txt https://mers.sourceforge.io/primeM.txt
+uv run --no-project --with python-flint==0.9.0 python scripts/mers_project_factor_candidates.py \
+  /tmp/gf2fun-factoredM.txt /tmp/gf2fun-primeM.txt --degrees 4952 5689
+```
+
 To regenerate and verify every large five-term power image from the published trinomial lists, run the first command. The next commands replay the complete source classifications for degrees 110,503 and 132,049. They check a proper polynomial factor for every excluded tap, Lucas–Lehmer primality for the two group orders and the full polynomial powers for the seven positive seeds. Lean checks the degree-74,207,281 implication from the published trinomial. [Brent and collaborators’ extended factor certificates](https://maths-people.anu.edu.au/~brent/trinomlg.html)
 
 ~~~sh
