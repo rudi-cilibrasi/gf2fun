@@ -14295,4 +14295,90 @@ Its degree-40 isogeny pullback \(\mathtt{1100c6d95f5}\) also has no
 terminal circle with completely split cofactor. Its projected
 logarithm remains open.
 
+\section{Prescribing both ends of a sparse primitive polynomial}
+\label{sec:two-ended-weight}
+\begin{theorem}
+In Theorem~\ref{thm:weight-entropy-rate}, write \(d=a+b\) in any
+way with \(a,b\ge0\). One may prescribe the lowest \(a\) and highest
+\(b\) interior coefficients of the template. Count the differences
+in the next \(a\) coefficients from the low end and the next \(b\)
+from the high end together. The same two windows, count exponent
+\(s\), and distance bound \(cn+O_r(\sqrt{n\log n})\) hold uniformly
+in \(a,b\) and the template.
+
+In degree 1229 take any 720 consecutive interior positions.
+More than \(2^{616}\) primitive polynomials have weight at most 309
+with every interior term in those positions. More generally, fix a
+monic degree-1229 template with constant one. More than \(2^{616}\)
+primitive polynomials agree with it outside the chosen interval and
+differ in at most 307 positions if its weight is even, or 308 if
+its weight is odd.
+\end{theorem}
+\begin{proof}
+For a monic polynomial \(f\) let \(f^*(T)=T^{\deg f}f(1/T)\).
+Write \(U_k=(\F[T]/T^{k+1})^\times\), including the trivial
+group \(U_0\). With \(P_z\) as in Lemma~\ref{lem:weight-characters},
+any nontrivial character \(\chi\) of \(U_i\times U_j\) satisfies
+\[
+ \left|\sum_{z\in\mathbb F_{2^n}^\times}
+       \chi(P_z,P_z^*)\lambda(z)\right|\le(i+j)2^{n/2}
+\]
+for every character \(\lambda\) of \(\mathbb F_{2^n}^\times\).
+Indeed take monic polynomials \(h\) over \(\mathbb F_{2^n}\)
+coprime to \(T\), and let \(\mathcal N\) multiply all \(n\)
+coefficient conjugates. The character
+\(\chi(\mathcal N h,\mathcal N h^*)\lambda(h(0))\) is a Hayes
+character with finite modulus \(T^{i+1}\) and \(j\) leading
+coefficients. The two truncated units can be prescribed independently
+on monic polynomials of sufficiently large degree with constant one.
+In each group the norm onto binary units is surjective by the
+successive coefficient trace argument of
+Lemma~\ref{lem:weight-characters}. Thus the lifted character is
+nontrivial even when restricted to polynomials with constant one.
+Its \(L\)-function has degree at most \(j+(i+1)-1\) and reciprocal
+roots of modulus at most \(2^{n/2}\). Its linear coefficient is the
+displayed sum, by taking \(h=T-z\).
+\href{https://arxiv.org/pdf/1810.00483\#page=7}{O.~Gorodetsky,
+\emph{Mean values of arithmetic functions in short intervals and in
+arithmetic progressions in the large-degree limit}, (3.5)--(3.7)}.
+
+Use \(i=2a,\ j=2b\). The two square-zero subgroups in the product
+give one binary vector space of dimension \(a+b=d\).
+On the prescribed coset the map to the two adjacent coefficient
+blocks is block diagonal with invertible triangular blocks, as in
+Theorem~\ref{thm:weight-entropy-rate}. Apply its single radial
+Fourier weight to the concatenation of these two blocks. All
+characters of the vector space occur equally often by restriction.
+The total mass, absolute Fourier coefficient sum and character
+error are therefore exactly bounded as before, with \(i+j=2d\).
+The central \(L=n-1-2d\) coefficients are free, so the binomial
+window argument gives the asserted count.
+
+For the finite assertion choose \(d=508,\ L=212\) and let \(a,b\)
+be the numbers of interior positions before and after the chosen
+interval. Use the squarefree-divisor sieve of
+Section~\ref{sec:selberg-weight} at level 19. Every nonconstant
+additive character in its error has modulus of degree at most 38,
+coprime to \(T(T+1)\). In every 39 consecutive powers of \(T\) its
+binary linear functional takes both values, by the basis argument
+of Section~\ref{sec:paired-weight}. Hence both the number of ones
+and the number of zeros in the two weighted blocks together are at
+least \(\lfloor a/39\rfloor+\lfloor b/39\rfloor\ge12\). In the
+central block both counts are at least \(\lfloor212/39\rfloor=5\).
+Summing the character over binary words of fixed total weight in
+the two weighted blocks gives the single length-508 Krawtchouk
+coefficient, since the signs multiply over all 508 positions.
+Thus the same middle and central character maxima suffice for
+every split. For level 19 the constant coefficient is at most
+\(178710/10^6\) and the absolute Fourier mass at most \(2753023822\).
+With the same 16 frequencies the resulting integer lower bound
+exceeds \(2^{616}\). The Lean kernel verifies these rational bounds,
+all 509 splits, and the final count in
+\nolinkurl{GF2Sparse/SelbergWeight.lean}. For an even-weight template
+the interior difference has odd weight, giving the cutoff of 307.
+For an odd-weight template flip a coefficient in the central block
+and apply the even case. Taking \(T^{1229}+1\) gives the claimed
+support and weight.
+\end{proof}
+
 \end{document}

@@ -122,9 +122,12 @@ def paired_factor_bound(block, free, cutoff, squared, overweight):
     return ceil(constant*overweight + fourier_mass*error)
 
 
-def character_error(block, free, cutoff, squared, length):
+def character_error(block, free, cutoff, squared, length, two_ends=False):
     """Upper bound per unit of nonconstant Fourier mass for moduli of degree < length."""
-    middle = [krawtchouk_row(block, u, block) for u in range(block//length, block//2+1)]
+    lower = block//length
+    if two_ends:
+        lower = min(a//length + (block-a)//length for a in range(block+1))
+    middle = [krawtchouk_row(block, u, block) for u in range(lower, block//2+1)]
     middle_max = [max(map(abs, column)) for column in zip(*middle)]
     first = [min(free+1, max(0, cutoff-1-i)) for i in range(block+1)]
     first = [k+(1-i-k) % 2 for i, k in enumerate(first)]
@@ -169,13 +172,15 @@ def fourier_count(n, block, radius, base, cutoff, prime_count, paired=False):
     return frequency_count(n, block, frequency, cutoff, prime_count, paired=paired)
 
 
-def frequency_count(n, block, frequency, cutoff, prime_count, *, paired=False, selberg=None):
+def frequency_count(n, block, frequency, cutoff, prime_count, *, paired=False, selberg=None, two_ends=False):
     if not odd_prime(n) or n <= (selberg or (11 if paired else 4)):
         raise ValueError("the prime degree must exceed the degree of every sieve factor")
     if not 0 < 2*block < n or not 1 <= len(frequency) <= block+1 or min(frequency) < 0 or not any(frequency):
         raise ValueError("invalid coefficient block or Fourier frequencies")
     if selberg is not None and (selberg < 2 or paired):
         raise ValueError("choose one small-factor sieve with degree at least two")
+    if two_ends and selberg is None:
+        raise ValueError("the two-ended count uses the squarefree-divisor sieve")
     free = n - 1 - 2 * block
     radius = len(frequency)-1
     maximum = sum(comb(block, j) * g for j, g in enumerate(frequency))**2
@@ -194,7 +199,7 @@ def frequency_count(n, block, frequency, cutoff, prime_count, *, paired=False, s
 
     if selberg is not None:
         constant, absolute = selberg_constants(selberg)
-        error = character_error(block, free, cutoff, squared, 2*selberg+1)
+        error = character_error(block, free, cutoff, squared, 2*selberg+1, two_ends)
         bad = ceil(constant*overweight + absolute*error)
     elif paired:
         bad = paired_factor_bound(block, free, cutoff, squared, overweight)
@@ -254,6 +259,9 @@ def main():
     bound = frequency_count(n, 508, frequency, 309, 19, selberg=20)
     assert bound > 2**616
     print(f"degree {n}, weight <= 309, at least {bound} primitive polynomials (> 2^616)")
+    bound = frequency_count(n, 508, frequency, 309, 19, selberg=19, two_ends=True)
+    assert bound > 2**616
+    print(f"all 509 divisions of 508 prescribed end coefficients, at least {bound} (> 2^616)")
 
 
 if __name__ == "__main__":

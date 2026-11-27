@@ -15,15 +15,15 @@ theorem primeCountsDivisorIdentity : ∀ n ∈ List.range 20,
       if (i+1) ∣ (n+1) then (i+1)*primeCounts.getD (i+1) 0 else 0).sum = 2^(n+1) := by
   decide +kernel
 
-private def divisorSum (absolute : Bool) : ℚ :=
-  let initial : List ℚ := 1 :: List.replicate 20 0
-  let coeff := (List.range 19).foldl (fun old i =>
+private def divisorSum (z : ℕ) (absolute : Bool) : ℚ :=
+  let initial : List ℚ := 1 :: List.replicate z 0
+  let coeff := (List.range (z-1)).foldl (fun old i =>
     let d := i+2
     let p : ℕ := 2^d
     let weight : ℚ := (if absolute then (1+p : ℕ) else 1) / ((p-1 : ℕ) : ℚ)
-    let choices := (List.range (20/d+1)).map fun k =>
+    let choices := (List.range (z/d+1)).map fun k =>
       (Nat.fast_choose (primeCounts.getD d 0) k : ℚ) * weight^k
-    (List.range 21).map fun j =>
+    (List.range (z+1)).map fun j =>
       ((List.range (j/d+1)).map fun k => choices.getD k 0 * old.getD (j-k*d) 0).sum) initial
   coeff.sum
 
@@ -32,8 +32,19 @@ set_option maxHeartbeats 40000000
 
 /-- Outward rational bounds for the constant and absolute Fourier coefficients. -/
 theorem sieveConstants :
-    0 < divisorSum false ∧ (1 : ℚ)/divisorSum false ≤ 171067/1000000 ∧
-    (divisorSum true / divisorSum false)^2 ≤ 10090475241 := by
+    0 < divisorSum 20 false ∧ (1 : ℚ)/divisorSum 20 false ≤ 171067/1000000 ∧
+    (divisorSum 20 true / divisorSum 20 false)^2 ≤ 10090475241 := by
+  decide +kernel
+
+/-- Level 19 allows the two weighted intervals to be separated by the free interval. -/
+theorem twoEndedSieveConstants :
+    0 < divisorSum 19 false ∧ (1 : ℚ)/divisorSum 19 false ≤ 178710/1000000 ∧
+    (divisorSum 19 true / divisorSum 19 false)^2 ≤ 2753023822 := by
+  decide +kernel
+
+/-- Every division of the 508 positions supplies the same character-weight lower bounds. -/
+theorem twoEndedCharacterWeights : ∀ a ∈ List.range 509,
+    12 ≤ a/39 + (508-a)/39 ∧ 5 ≤ 212/39 := by
   decide +kernel
 
 private def frequencies : List ℕ :=
@@ -49,10 +60,10 @@ private def krawtchoukRow (n u last : ℕ) : List ℤ :=
 private def sameParityTails (row : List ℤ) : List ℤ :=
   row.foldr (fun v tail => (v+tail.getD 1 0) :: tail) [0, 0]
 
-private def characterMaxima (n : ℕ) (tails : Bool) : List ℕ :=
+private def characterMaxima (n lower : ℕ) (tails : Bool) : List ℕ :=
   let initial := List.replicate (n+1+(if tails then 2 else 0)) 0
-  (List.range (n/2+1-n/41)).foldl (fun acc offset =>
-    let row := krawtchoukRow n (n/41+offset) n
+  (List.range (n/2+1-lower)).foldl (fun acc offset =>
+    let row := krawtchoukRow n (lower+offset) n
     let values := if tails then sameParityTails row else row
     List.zipWith max acc (values.map Int.natAbs)) initial
 
@@ -60,16 +71,15 @@ private def positiveTails (n parity : ℕ) : List ℕ :=
   (List.range (n+1)).reverse.foldl (fun tails k =>
     (tails.head! + if k%2 = parity then Nat.fast_choose n k else 0) :: tails) [0]
 
-/-- The integer lower bound on the number of primitive polynomials with at most 309 terms. -/
-def count309 : ℕ :=
+private def frequencyBound309 (millionths absolute : ℕ) : ℕ :=
   let n := 1229
   let d := 508
   let free := n-1-2*d
   let terms := frequencies.zipIdx
   let maximum := (terms.map fun (g,j) => Nat.fast_choose d j * g).sum ^ 2
   let mass := 2^d * (terms.map fun (g,j) => Nat.fast_choose d j * g^2).sum
-  let middle := characterMaxima d false
-  let tail := characterMaxima free true
+  let middle := characterMaxima d 12 false
+  let tail := characterMaxima free 5 true
   let even := positiveTails free 0
   let odd := positiveTails free 1
   let sums := (List.range (d+1)).foldl (fun (tot : ℕ × ℕ) i =>
@@ -80,14 +90,21 @@ def count309 : ℕ :=
     let tails := if i%2 = 0 then odd else even
     (tot.1 + squared*Nat.fast_choose d i*tails.getD first 0,
      tot.2 + squared*middle.getD i 0*tail.getD k 0)) (0,0)
-  let bad := (171067*sums.1 + 999999)/1000000 + 10090475241*sums.2
+  let bad := (millionths*sums.1 + 999999)/1000000 + absolute*sums.2
   let order := 2^n-1
   let denominator := (2*n+1)*2^(2*d)
   let mainTerm := (2*n+1-19)*order*mass
   let cost := 20*(2*d)*(order.sqrt+1)*maximum + n*bad
   (mainTerm-denominator*cost)/(denominator*n*maximum)
 
+/-- The level-20 bound when all prescribed coefficients are at one end. -/
+def count309 : ℕ := frequencyBound309 171067 10090475241
+
 theorem primitiveCountArithmetic309 : 2^616 < count309 := by
+  decide +kernel
+
+/-- The level-19 bound for every allocation of the prescribed coefficients to the two ends. -/
+theorem twoEndedCountArithmetic309 : 2^616 < frequencyBound309 178710 2753023822 := by
   decide +kernel
 
 end GF2Sparse.SelbergWeight
