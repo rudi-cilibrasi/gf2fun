@@ -10,13 +10,13 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **For every pair of odd primes $p<q$ there are infinitely many degrees $p q^b$ where three of $p$ equally spaced positions force a full-degree order component.** The period $\mathrm{lcm}_{3\le r\le p,\ r\text{ prime}}(r-1)$ works for all $q>p$. If $q$ does not divide $2^p-1$, an actual prime of binary multiplicative degree $p q^b$ divides every such irreducible pentanomial root order. For $p=3,5$ it suffices that $q^b$ differs from 11 modulo 12. [Proof](results.pdf#page=290) · [Congruence verifier](scripts/check_relative_progressions.py) · [Lean](GF2Sparse/ScalarOrderBound.lean)
+- **For every pair of odd primes $p<q$ there are infinitely many degrees $p q^b$ where three of $p$ equally spaced positions force a full-degree order component.** The period $\mathrm{lcm}_{3\le r\le p,\ r\text{ prime}}(r-1)$ works for all $q>p$. If $q$ does not divide $2^p-1$, an actual prime of binary multiplicative degree $p q^b$ divides every such irreducible pentanomial root order. For $p=3,5$ it suffices that $q^b$ differs from 11 modulo 12. An explicit periodic test also works in $p^a q^b$ for every fixed $a$. [Proof](results.pdf#page=290) · [Congruence verifier](scripts/check_relative_progressions.py) · [Lean](GF2Sparse/ScalarOrderBound.lean)
 
 - **In degrees 4,167, 6,925, 9,583 and 12,231 every irreducible pentanomial containing a three-term progression has a certified large prime in its root order.** Primitivity then reduces to testing the two maximal-subfield norms. For the explicit examples at 6,925 and 12,231 the root orders have certified divisors of 1,840 and 2,936 digits. Each remaining index is one or exceeds ten billion. [Proof and polynomials](results.pdf#page=288) · [Cofactors](data/relative-progression-witnesses.json) · [Verifier](scripts/check_relative_progression_witnesses.py)
 
 - **For odd degrees with two distinct prime factors through 20,000, progression pentanomials that split into maximal subfields are classified.** Write $n=p^a q^b$ with $p<q$. An irreducible pentanomial containing a three-term progression has a split root exactly when its exponents share a divisor and $q$ divides $2^{n/(pq)}-1$. Testing the progression step and the difference of the other two exponents settles 3,235 of the 4,090 nonsquarefree degrees of this form through 100,000 directly. For all 562 nonsquarefree degrees through 10,000 the rule extends to any three of $p$ equally spaced positions. [Proof](results.pdf#page=286) · [Short triples and the two-power test](results.pdf#page=289) · [Degree sieve and census](scripts/check_relative_progressions.py)
 
-- **Seven more degrees have certified minimum primitive weights.** Five terms are necessary in degrees 4,205, 5,325, 10,192 and 17,917. In those degrees, $X^n+X^t+X^2+X+1$ is primitive for $t=216,1169,3159,1961$, respectively. Three terms suffice in degrees 4,167, 7,135 and 13,489. Every trinomial tap up to reciprocity was checked. [Witnesses and factorizations](data/composite-order-witnesses.json) · [Proof and trinomial taps](results.pdf#page=285) · [Verifier](scripts/check_composite_orders.py)
+- **Nine more degrees have certified minimum primitive weights.** Five terms are necessary in degrees 4,205, 5,325, 10,192, 17,917 and 24,853. In those degrees, $X^n+X^t+X^2+X+1$ is primitive for $t=216,1169,3159,1961,5045$, respectively. Three terms suffice in degrees 4,167, 7,135, 13,489 and 24,263, where 8,430 is the unique primitive trinomial tap up to reciprocity. Every trinomial tap up to reciprocity was checked. [Witnesses and factorizations](data/composite-order-witnesses.json) · [Proof and trinomial taps](results.pdf#page=285) · [Verifier](scripts/check_composite_orders.py)
 
 - **Three exponents in arithmetic progression rule out every coprime-degree subfield split unless the degree is 2 modulo 4.** Every exception is $H_T(X^{3^a})$, where $T$ is an irreducible trinomial of odd degree $m$, $H_T$ is its quadratic twist, and $\gcd(3^a,m)=1$. Its exact root order is $3^{a+1}$ times the source order. This excludes all progression cases in degree 2,458. The step is arbitrary. In odd degree the same holds for $t,t+d,t+2^k d$ when $k$ is coprime to the degree. Three consecutive exponents also force a full-degree order component in every degree $p^a q^b$ for distinct odd primes, even when the two maximal subfields intersect. Explicit primitive examples include $X^{3375}+X^{491}+X^2+X+1$ and $X^{1233}+X^{43}+X^2+X+1$. [Proof](results.pdf#page=281) · [Classification for arbitrary exponent gcd](results.pdf#page=284) · [Order checks](scripts/check_progression_scalar_orders.py)
 
@@ -903,11 +903,17 @@ uv run --no-project --with sympy python scripts/check_relative_progressions.py -
 uv run --no-project --with python-flint==0.9.0 python scripts/check_relative_progression_witnesses.py
 ~~~
 
-The Python command verifies all twenty composite degrees in the witness table with PARI/GP. Add `--degree 17917` to check only that degree, or `--ntl` with the path to the compiled trinomial enumerator to repeat the exhaustive tap search. The Lean command builds the general norm criterion. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)
+The Python command verifies all 22 composite degrees in the witness table with PARI/GP. Add `--degree 24853` to check only that degree, or `--ntl` with the path to the compiled trinomial enumerator to repeat the exhaustive tap search. The Lean command builds the general norm criterion. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_composite_orders.py
 lake build GF2Sparse.PartialOrder
+~~~
+
+Workers can search disjoint degree intervals for further candidates. The search removes small primes from $\Phi_n(2)$ and reports the maximal subfield degrees whose group orders supply the other factors. A probable-prime remainder still needs a primality certificate before it can support a full-order result. [Cyclotomic search](scripts/search_cyclotomic_parts.py)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/search_cyclotomic_parts.py --start 24260 --end 24265 --jobs 4
 ~~~
 
 In degree 16,129 the verifier checks the archived 514-step PRIMO certificate against the 4,789-digit factor of the group order. The same file can also be checked with `gzip -dc data/degree-16129-primality.cert.gz | vcert -q -`. [Original certificate](https://factordb.com/cert/1100000000252268434) · [Independent GMP verifier](https://github.com/danaj/Math-Prime-Util-GMP/blob/531591c6aa56c0f42450b8ca202dac56ab573b43/examples/vcert.c)

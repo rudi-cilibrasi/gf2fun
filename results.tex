@@ -20848,7 +20848,7 @@ Direct field tests over every coprime partition in degrees 5 through
 by three. The verifier is \nolinkurl{scripts/check_progression_scalar_orders.py}.
 
 \clearpage
-\section{Exact minimum primitive weight in seven further composite degrees}
+\section{Exact minimum primitive weight in nine further composite degrees}
 \label{sec:seven-relative-witnesses}
 For every row of the table, the polynomial
 \[
@@ -20869,7 +20869,9 @@ constant term one and odd weight, since its value at one is nonzero.
  7135 & 975 & 3 & 1706 & 553,922 \\
  10192 & 3159 & 5 & 1214 & \\
  13489 & 8619 & 3 & 3324 & 240,1915,1972,4360,4615 \\
- 17917 & 1961 & 5 & 4769 &
+ 17917 & 1961 & 5 & 4769 & \\
+ 24263 & 348 & 3 & 6910 & 8430 \\
+ 24853 & 5045 & 5 & 7210 &
 \end{array}
 \]
 
@@ -20879,10 +20881,9 @@ To recover the group order, put \(M_d=2^d-1\). For every \(n>1\),
 \]
 Indeed inclusion-exclusion for the least common multiple gives the
 cyclotomic product since \(\gcd(M_a,M_b)=M_{\gcd(a,b)}\).
-In five rows \(\Phi_n(2)\) itself is the prime \(P\). In the other two,
-\(\Phi_{4205}(2)=33641P\) and
-\(\Phi_{7135}(2)=128431\cdot684961P\), with \(P\) specific to each
-degree. Together with the proper-subfield factors, these give the full
+In five rows \(\Phi_n(2)\) itself is the prime \(P\). In degrees
+\(4205,7135,24263,24853\) its other factors are, respectively,
+\(33641\), \(128431\cdot684961\), \(48527\), and \(149119\). Together with the proper-subfield factors, these give the full
 factorization of each \(M_n\). For instance \(17917=19\cdot23\cdot41\);
 the lower field degrees are 943, 779 and 437.
 
@@ -21173,5 +21174,44 @@ to the family \(5\cdot29^b\) at \(b=2\).
 The option \nolinkurl{--family P Q B} in
 \nolinkurl{scripts/check_relative_progressions.py} evaluates these
 congruences without constructing \(2^n-1\) or even \(q^b\).
+
+The qualification about a full-degree prime is necessary. Set
+\(F=X^5+X^3+X^2+X+1\). Direct reduction gives \(X^{31}=1\bmod F\)
+and \(F(1)=1\). Each root therefore has order 31 and binary degree
+five, proving that \(F\) is irreducible. For every \(b\ge1\),
+\(F(X^{31^b})\) is an irreducible progression pentanomial of degree
+\(5\cdot31^b\). Each root \(r\) has order exactly \(31^{b+1}\),
+since \(r^{31^b}\) has order 31. Lifting the exponent gives
+\[
+        31^{b+1}\mid 2^j-1\quad\Longleftrightarrow\quad 5\cdot31^b\mid j.
+\]
+Thus the root degree equals the polynomial degree, while the only
+prime in the root order still has binary degree five. Lean checks
+both the displayed equivalence and the modulo-12 restriction above
+in \nolinkurl{GF2Sparse/ScalarOrderBound.lean}.
+
+\paragraph{Any fixed prime power on the other side.}
+Take \(m=p^a\) with \(a\ge1\) and \(n=mq^b\), still with odd primes
+\(p<q\). For every such pair there is an explicit infinite sequence
+of \(b\) on which \(q\) is the only possible prime at most \(n\)
+in \(L_q\). A nonramified prime of \(L_q\) has binary order dividing
+\((m/p)q^b\) but not \((m/p)q^{b-1}\). Thus it has the form
+\(kq^b+1\), again with \(k\) even and \(2\le k<m\).
+For \(q>m\), the earlier proof gives all positive multiples of
+\(B_m=\operatorname{lcm}_{3\le r\le m,\ r\ {\rm prime}}(r-1)\).
+For every \(q\), including \(q<m\), set instead
+\[
+          C_{m,q}=\mathop{\rm lcm}_{k=2,4,\ldots,m-1}\varphi(kq+1).
+\]
+Every \(b=1+tC_{m,q}\), \(t\ge1\), works. Indeed \(q\) is coprime
+to \(kq+1\), so \(kq^b+1\) has the proper divisor \(kq+1\).
+Finally \(q\mid L_q\) holds exactly when \(q\mid2^{m/p}-1\), by
+reducing the geometric sum modulo \(q\). When this fails, every
+irreducible pentanomial with the short triple is outside the
+maximal-subfield product. When it holds, a split normalized support
+requires \(q\mid dh\); every non-normalized irreducible obeys the
+exact dilation rule of Section~\ref{sec:relative-progression-differences}.
+The verifier also accepts \nolinkurl{--family M Q B} with \(M=p^a\).
+
 
 \end{document}

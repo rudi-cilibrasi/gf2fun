@@ -1,3 +1,4 @@
+import GF2Sparse.MersenneDivisors
 import GF2Sparse.Progressions
 import GF2Sparse.SubfieldProducts
 import Mathlib.Data.Nat.Choose.Cast
@@ -224,5 +225,53 @@ theorem progression_candidate_not_prime_of_period {k q b r : ℕ} (hr : r.Prime)
   have h := Nat.ModEq.pow_totient hc
   rw [Nat.totient_prime hr] at h
   simpa using h.pow j
+
+/-- For a degree coprime to six, the two smallest candidate multipliers leave only
+2z+1, and only in one residue class. -/
+theorem two_four_mersenne_candidates {z ell : ℕ} (hz : 1 < z) (ho : Odd z) (h3 : ¬ 3 ∣ z)
+    (hp : ell.Prime) (hd : ell ∣ 2^z-1) (hc : ell = 2*z+1 ∨ ell = 4*z+1) :
+    z % 12 = 11 ∧ ell = 2*z+1 := by
+  have h8 := odd_mersenne_prime_mod_eight ho hp hd
+  obtain ⟨t, ht⟩ := ho
+  rcases hc with rfl | rfl
+  · have hnot : ¬ 3 ∣ 2*z+1 := by
+      intro h
+      rcases (Nat.dvd_prime hp).mp h with h | h <;> omega
+    have hlt := Nat.mod_lt z (by decide : 0 < 12)
+    constructor
+    · interval_cases residue : z % 12 <;> omega
+    · rfl
+  · omega
+
+/-- Exact binary degree of a root of order 31^(b+1), realizing the ramified exception. -/
+theorem thirty_one_power_divides_mersenne_iff (b n : ℕ) :
+    31^(b+1) ∣ 2^n-1 ↔ 5*31^b ∣ n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  by_cases h5 : 5 ∣ n
+  · obtain ⟨m, rfl⟩ := h5
+    have hm : m ≠ 0 := by omega
+    have hsub : 32^m-1 ≠ 0 := by
+      have : 1 < 32^m := one_lt_pow₀ (by decide) hm
+      omega
+    letI : Fact (Nat.Prime 31) := ⟨by decide⟩
+    have hv := padicValNat.pow_sub_pow (p := 31) (by decide : Odd 31) (by decide : 1 < 32)
+      (by decide : 31 ∣ 32-1) (by decide : ¬ 31 ∣ 32) hm
+    simp only [one_pow, show padicValNat 31 (32-1) = 1 from padicValNat.self (by decide : 1 < 31)] at hv
+    rw [pow_mul, show (2:ℕ)^5 = 32 by decide, Nat.mul_dvd_mul_iff_left (by decide : 0 < 5),
+      padicValNat_dvd_iff_le hsub, padicValNat_dvd_iff_le hm, hv]
+    omega
+  · have no : ¬ 31 ∣ 2^n-1 := by
+      intro h
+      have hz := (ZMod.natCast_eq_zero_iff (2^n-1) 31).2 h
+      rw [Nat.cast_sub (Nat.two_pow_pos n), Nat.cast_pow, Nat.cast_ofNat, Nat.cast_one,
+        sub_eq_zero] at hz
+      have hd := orderOf_dvd_of_pow_eq_one (show (2 : ZMod 31)^5 = 1 by decide)
+      have ho : orderOf (2 : ZMod 31) = 5 :=
+        ((Nat.dvd_prime (by decide : Nat.Prime 5)).mp hd).resolve_left
+          (fun h => (by decide : (2 : ZMod 31) ≠ 1) (orderOf_eq_one_iff.mp h))
+      exact h5 (ho ▸ orderOf_dvd_of_pow_eq_one hz)
+    exact iff_of_false (fun h => no (dvd_trans (dvd_pow_self 31 (by omega : b+1 ≠ 0)) h))
+      (fun h => h5 (dvd_trans (dvd_mul_right 5 _) h))
 
 end GF2Sparse.SubfieldProducts

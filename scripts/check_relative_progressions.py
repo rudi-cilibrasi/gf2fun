@@ -6,7 +6,7 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from math import gcd, lcm
 
-from sympy import divisors, factorint, isprime, n_order, primerange
+from sympy import divisors, factorint, isprime, n_order, primerange, totient
 
 
 def bounded_primes(limit):
@@ -74,15 +74,21 @@ def check_batch(batch, checker):
     return count, irreducible, split
 
 
-def prime_power_family(p, q, b):
-    """Eliminate small primes of Phi_(q^b)(2) without constructing q^b."""
-    period = lcm(*(r-1 for r in primerange(3, p+1)))
+def prime_power_family(m, q, b):
+    """Eliminate unramified relative primes in degree m*q^b without constructing q^b."""
+    coefficients = range(2, m, 2)
+    if q > m:
+        period = lcm(*(r-1 for r in primerange(3, m+1)))
+    else:
+        period = lcm(*(int(totient(k*q+1)) for k in coefficients))
     unresolved = []
-    for k in range(2, p, 2):
+    for k in coefficients:
         # A prime k*q^b+1 dividing a Mersenne number of odd degree must have 2 as a square.
         if (k*pow(q, b, 8)+1) % 8 in (3, 5):
             continue
         if any(pow(q, b, r) == 1 for r in factorint(k+1)):
+            continue
+        if b > 1 and pow(q, b-1, k*q+1) == 1:
             continue
         unresolved.append(k)
     return period, unresolved
@@ -93,23 +99,30 @@ def main():
     bounds = parser.add_mutually_exclusive_group()
     bounds.add_argument("--limit", type=int, default=100000)
     bounds.add_argument("--degree", type=int, help="check one odd degree with two distinct prime factors")
-    bounds.add_argument("--family", type=int, nargs=3, metavar=("P", "Q", "B"),
-                        help="test degree P*Q^B using small congruences, without constructing the field")
+    bounds.add_argument("--family", type=int, nargs=3, metavar=("M", "Q", "B"),
+                        help="test degree M*Q^B for a prime power M using small congruences")
     parser.add_argument("--checker", help="compiled scripts/relative_progression_orders.cpp for exact testing")
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--short-triples", action="store_true",
                         help="include all triples in p consecutive equally spaced positions, p the smaller prime")
     args = parser.parse_args()
     if args.family:
-        p, q, b = args.family
-        if not (2 < p < q and isprime(p) and isprime(q) and b >= 1):
-            parser.error("expected odd primes P < Q and a positive exponent B")
+        m, q, b = args.family
+        fs = factorint(m) if m > 1 else {}
+        if len(fs) != 1 or not (2 < min(fs) < q and isprime(q) and b >= 1):
+            parser.error("expected M=P^a with odd primes P < Q and a positive exponent B")
+        p = min(fs)
         if args.checker:
             parser.error("--checker tests supports at explicit degrees")
-        period, unresolved = prime_power_family(p, q, b)
-        print(f"Degree {p}*{q}^{b}. Every multiple of {period} is a sufficient exponent.")
+        period, unresolved = prime_power_family(m, q, b)
+        exponents = f"t*{period}" if q > m else f"1+t*{period}"
+        print(f"Degree {m}*{q}^{b}. Exponents {exponents} eliminate all unramified "
+              "candidate primes for every t >= 1.")
         if unresolved:
             print(f"Coefficients k requiring a further test for k*{q}^{b}+1: {unresolved}.")
+        elif pow(2, m//p, q) == 1:
+            print(f"For a support of exponent gcd one, a split requires {q} to divide "
+                  "the triple step or the difference of the other two exponents.")
         else:
             print(f"Any irreducible pentanomial with three of {p} equally spaced positions "
                   "has a root outside the product of the maximal subfields.")
