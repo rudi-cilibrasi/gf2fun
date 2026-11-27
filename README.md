@@ -10,7 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **Lean certifies five-term irreducibles in degrees $2^{141}+4$ and $2^{191}+4$.** For odd $k\ge3$, the polynomial $X^{2^k+4}+X^{2^k+1}+X^{2^k}+X^5+1$ is irreducible exactly when $2^k+5$ is prime and $-2$ has full order modulo that prime. At $k=191$ its root order is at least $2^{2^{96}}$. Primitivity in these two degrees remains open. Across $20<n\le 2^{191}+4$, just five candidates up to reciprocity remain for a primitive polynomial of weight at most five with a nonidentity binary projective symmetry of its roots. [Proof](results.pdf#page=241) · [Lean certificates](GF2Sparse/TwistedCyclotomic.lean) · [Reproduce the order and factor checks](scripts/check_translation_lift_orders.py)
+- **Lean certifies five-term irreducibles in degrees $2^{141}+4$ and $2^{191}+4$.** For odd $k\ge3$, the polynomial $X^{2^k+4}+X^{2^k+1}+X^{2^k}+X^5+1$ is irreducible exactly when $2^k+5$ is prime and $-2$ has full order modulo that prime. At $k=191$ its root order is at least $2^{2^{96}}$. The full multiplicative orders of these two roots remain open. Across $20<n\le 2^{191}+4$, just five candidates up to reciprocity remain for a primitive polynomial of weight at most five with a nonidentity binary projective symmetry of its roots. [Proof](results.pdf#page=241) · [Lean certificates](GF2Sparse/TwistedCyclotomic.lean) · [Reproduce the order and factor checks](scripts/check_translation_lift_orders.py)
 
 - **A real quadratic class number detects cubes in the cyclotomic family.** For primes $p\equiv5\pmod8$ with two primitive modulo $p$, the root-order index is divisible by three exactly when the quadratic order of discriminant $4p$ has class number divisible by three. Direct binary powering and certified class groups agree for all 63 eligible primes through 2053. [Proof](results.pdf#page=244) · [Reproduce the comparison](scripts/check_twisted_cubic.py)
 
@@ -870,6 +870,19 @@ c++ -std=c++17 -O3 scripts/search_low_pentanomials.cpp -lntl -o /tmp/gf2-search-
 /tmp/gf2-search-low 216091 130 130 10
 uv run --no-project --with python-flint==0.9.0 python scripts/check_large_circle_orders.py --pentanomial 216091 3 10 130
 ~~~
+
+On a CUDA 12 GPU, the following checks ordered tap triples in batches of eight. For prime degree $n$ and $2c-2<n$, two folds reduce each square modulo $X^n+X^c+X^b+X^a+1$. The program decides irreducibility by testing $X^{2^n}=X$. It prints a result for every input triple. At a Mersenne prime exponent an irreducible result also certifies primitivity. The self-test compares 216 GPU residues with binary long division. [GPU checker](scripts/check_low_tap_frobenius.py) · [Squaring kernel](scripts/low_tap_frobenius.cu)
+
+~~~sh
+uv run --no-project --with cupy-cuda12x==14.2.0 --with nvidia-cuda-nvrtc-cu12==12.9.86 --with nvidia-cuda-runtime-cu12==12.9.79 python scripts/check_low_tap_frobenius.py --self-test
+uv run --no-project --with cupy-cuda12x==14.2.0 --with nvidia-cuda-nvrtc-cu12==12.9.86 --with nvidia-cuda-runtime-cu12==12.9.79 python scripts/check_low_tap_frobenius.py 216091 <<'TAPS'
+13 26 68
+3 10 130
+2 3 6
+TAPS
+~~~
+
+The first two triples give irreducibles. The third has the factor $X^2+X+1$.
 
 The two normalized-width tables use the same factor tables and verification commands as the spacing tables below. Substitute `complementary-width-5-1228.csv` and `complementary-width-1230-2292.csv` for the corresponding `symmetric-witnesses` filenames. To check sharpness, run
 
