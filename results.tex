@@ -17908,4 +17908,145 @@ The README gives commands that reproduce both computations.
 Together with the earlier certificates this covers at least 2,672
 of the first 10,351 positive degrees.
 
+\clearpage
+\section{Can an optimal normal basis give a five-term polynomial?}
+\label{sec:optimal-normal-weights}
+
+\begin{theorem}
+A primitive binary polynomial of degree \(n>1\) and weight at most
+five can have a root which is a fractional linear transformation of
+an optimal normal basis generator if and only if
+\[
+                     n\in\{2,3,4,5,6,9,11\}.
+\]
+For every \(n\ge12\), all six transformations of every such generator
+have minimal polynomial of weight greater than five.
+\end{theorem}
+
+Over \(\mathbb F_2\), the classification of
+\href{https://pub.math.leidenuniv.nl/~lenstrahw/PUBLICATIONS/1992e/art.pdf}
+{Gao and Lenstra} gives two possibilities. Type I takes a root of unity
+of prime order \(p=n+1\), with two primitive modulo \(p\). Type II
+takes \(z+z^{-1}\) for \(z\) of prime order \(p=2n+1\), with the
+powers of two exhausting the units modulo sign. Over the binary base
+the scalar multiplier in the classification is one.
+
+In type I the minimal polynomial is \((X^p+1)/(X+1)\). It is
+self-reciprocal. Its weight is \(p\), and the weight after translation
+by one is \(2^{s_2(p)}-1\), where \(s_2\) counts binary ones.
+Indeed, the translated polynomial is \(((X+1)^p+1)/X\). These two
+weights cover all six transformations, since reciprocation preserves
+weight. A weight at most five requires \(p=2^j+1\). Then
+\(p-1\mid 2j\) by the primitivity of two and
+\(2^j\equiv-1\pmod p\). This leaves only \(p=3,5\), both of which
+supply primitive examples after transformation.
+
+\paragraph{A sharp weight bound for reciprocal periods.}
+Define \(P_0=1, P_1=X+1, P_{n+2}=XP_{n+1}+P_n\). Then
+\[
+       (Z+1)Z^n P_n(Z+Z^{-1})=Z^{2n+1}+1
+\]
+by the recurrence. Thus the roots are \(z+z^{-1}\) for the \(n\)
+nontrivial inverse pairs of \((2n+1)\)-st roots of unity. Type II
+takes the cases in which these pairs form one Frobenius orbit
+and \(2n+1\) is prime.
+
+Write \(\ell=1+\lfloor\log_2 n\rfloor\) for \(n>0\). Up to
+reciprocation the six projective forms are
+\[
+ P_n(X),\qquad P_n(X+1),\qquad (X+1)^nP_n(1/(X+1)).
+\]
+All have weight at least \(2\lfloor\ell/2\rfloor+1\).
+For every binary length \(\ell\) the third form attains this bound at
+\(n=2^{\ell-1}\).
+
+To see this, take \((A,B)=(X,1),(X+1,1),(1,X+1)\), respectively.
+Initialize \((U_0,V_0)=(1,0)\) and put
+\((U_{n+1},V_{n+1})=(AU_n+B^2 V_n,U_n)\).
+The form \(T_n=U_n+BV_n\) equals \(B^nP_n(A/B)\).
+If \((U,V)=(U_n,V_n)\), the pairs at \(2n\) and \(2n+1\) are
+\[
+ ((U+BV)^2,AV^2),\qquad (AU^2,(U+BV)^2).
+\]
+Write \(w\) for the number of nonzero coefficients. The equality
+\(w(f^2+Xg^2)=w(f)+w(g)\) gives the following weight recurrences.
+
+\begin{itemize}
+\item In the first form track \((t,v,u)=(w(T),w(V),w(U))\).
+Appending a zero or one to the binary index gives respectively
+\((t+v,v,t)\) or \((t+u,t,u)\). At \(n=1\) the triple is
+\((2,1,1)\), hence \(t\ge\ell+1\).
+\item For the translated form set \((s,a,b)=(w(T),w(U),w(V))\).
+The two updates are \((a+b,s,2b)\) and \((a+b,2a,s)\).
+At \(n=1\) the triple is \((1,2,1)\). Induction gives
+\(s\ge\ell\), \(a+b\ge\ell+1\), and \(a,b>0\).
+\item In the last form track \((r,l,c,d,e)=(w(T),w(U+XV),w(V),
+w((X+1)V),w(U))\). The two updates are \((l+c,r+c,c,2c,r)\)
+and \((d+r,e+r,r,2r,e)\). At \(n=1\) the tuple is \((1,2,1,2,1)\).
+All entries stay positive and \(\min(r,l)\) increases by at least one
+at every update. On successive zero digits, \(c=1\) and the first
+two entries are interchanged and incremented.
+\end{itemize}
+The last two forms take the value one at \(X=1\), so their weights
+are odd. The bounds and the asserted equality follow.
+The polynomial recurrence, the cleared geometric-sum identity and the
+three bit-length lower bounds are formalized in
+\nolinkurl{GF2Sparse/GaussPeriodWeights.lean}.
+
+\paragraph{The finite classification.}
+Only \(1\le n<32\) can have weight at most five. Direct recurrence
+gives the following complete degree lists for the three forms.
+\[
+\begin{array}{c|l}
+1&1,2,3,4,5,6,7,8,15\\
+2&1,2,3,4,5,6,7,10,11,12,13\\
+3&1,2,3,4,5,6,7,8,9,12,13,16,24.
+\end{array}
+\]
+Requiring prime conductor and a full Frobenius orbit leaves
+\(n=2,3,5,6,9,11\) for type II with \(n>1\). Every one of these
+degrees has a primitive example. The only sparse type-II form
+of proper order in the list has degree six and order 21.
+For example the translated degree-eleven polynomial
+\(X^{11}+X^9+X^8+X^4+1\) has order 2047.
+The finite orbit and order checks are in
+\nolinkurl{scripts/check_gauss_period_weights.py}.
+This proves the theorem.
+
+If a root of a binary irreducible with at most five terms has degree
+\(n\ge12\), any of its six projective images which generates a normal
+basis has multiplication complexity at least \(2n+1\).
+Indeed, the optimal value \(2n-1\) has just been excluded. For a binary
+normal element \(a\), the sum of its conjugates is one. Summing the
+coefficient rows of \(a\,a^{2^i}\) therefore gives the coordinate
+vector of \(a\), of weight one. The total number of ones is odd.
+
+\paragraph{A lower bound on the root-of-unity order for any sparse root.}
+Suppose that \(a\) has an irreducible binary minimal polynomial of weight
+at most five and degree \(n\ge12\). Write any of its six fractional
+linear images as \(z+z^{-1}\), and let \(m\) be the multiplicative
+order of \(z\). Then \(d=m-2n\) satisfies \(d>0\) and
+\[
+                     d(d-1)\ge 2n .
+\]
+If \(n\ge13\) is prime, then \(m\ge6n+1\).
+
+In fact the least positive \(k\) for which \(2^k\equiv\pm1\pmod m\)
+is \(n\), since the trace distinguishes inverse pairs and a projective
+change preserves the field of definition. Hence \(2n\mid\varphi(m)\).
+If \(m\) is prime, the case \(m=2n+1\) would give the excluded type-II
+form, so \(m\ge4n+1\). If \(m\) is composite and \(p\) is its
+least prime factor, \(m-\varphi(m)\ge m/p\ge\sqrt m\). In either
+case \(m-2n\ge\sqrt m\), proving the first inequality.
+
+For prime \(n\ge13\), \(m\) divides one of \(2^n\pm1\).
+The only power of three greater than one dividing either is three
+itself, by expanding \((-1+3)^n\) modulo nine. Thus some prime
+\(p>3\) divides \(m\). The order of two modulo \(p\) is \(n\) or
+\(2n\), so \(p\equiv1\pmod{2n}\). If \(m<6n+1\), the odd
+integer \(m\) must equal \(p\), either \(2n+1\) or \(4n+1\).
+The first case was excluded above. In the second \(p\equiv5\pmod8\),
+so two is a quadratic nonresidue and \(2^{2n}\equiv-1\pmod p\),
+contrary to \(m\mid 2^{2n}-1\).
+
 \end{document}

@@ -24,6 +24,7 @@ import GF2Sparse.SelbergWeight
 import GF2Sparse.SubgroupCover
 import GF2Sparse.FrobeniusBoxes
 import GF2Sparse.GaussPeriod
+import GF2Sparse.GaussPeriodWeights
 import GF2Sparse.Grid
 import GF2Sparse.HermitianDescent
 import GF2Sparse.IterateOrder

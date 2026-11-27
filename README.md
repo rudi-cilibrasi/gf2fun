@@ -11,6 +11,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 ## Results
 
 - **The minimum weight is five in ten additional prime degrees and three in seven others.** One example is $X^{4507}+X^{4313}+X^{388}+X^{194}+1$. The search checked all 35,566 reciprocal classes of trinomials in the seventeen degrees from 3467 to 5087. Exactly fifteen classes are irreducible, and all fifteen are primitive. Each of the seventeen degrees also has a certified pentanomial. [Five-term witnesses](data/complementary-prime-degrees-3467-5087.csv) · [Trinomial census](data/prime-degree-trinomial-census.csv) · [Proof](results.pdf#page=236)
+- **Optimal normal bases yield primitive polynomials with at most five terms only in degrees 2, 3, 4, 5, 6, 9 and 11 among degrees above one.** This includes all six binary fractional linear changes of a basis generator. For any five-term irreducible of prime degree $n\ge13$, writing a projective image of its root as $z+z^{-1}$ requires $z$ to have order at least $6n+1$. The proof gives a sharp coefficient bound for the full sequence of reciprocal period polynomials. [Proof](results.pdf#page=237) · [Lean weight bound](GF2Sparse/GaussPeriodWeights.lean) · [Finite classification](scripts/check_gauss_period_weights.py)
 - **The minimum weight in degree 216,091 is five.** The polynomial $X^{216091}+X^{68}+X^{26}+X^{13}+1$ is primitive. A second primitive pentanomial is $X^{216091}+X^{130}+X^{10}+X^3+1$. Lucas–Lehmer and full polynomial powering certify both orders. With the earlier results, the five-term bound now holds at all of the first 33 Mersenne prime exponents, through 859,433. The last two degrees use published primitive trinomial seeds. [Witnesses](data/mersenne-exponent-prefix.json) · [Verification](scripts/check_large_circle_orders.py) · [Proof](results.pdf#page=233)
 - **Powers of the 32 almost primitive trinomials tabulated by Brent and Zimmermann give five-term images only in degrees 8 and 13.** This checks every power through the source factor degree and all six binary fractional linear transformations, including at degrees 216,091, 1,257,787 and 2,976,221. A general bound shows that for a trinomial with a cofactor of degree $\delta$, the degree-$n$ factor after taking an odd power $m$ still has at least $\lceil(n+\delta)/(m\delta)\rceil$ terms. [Proof](results.pdf#page=234) · [Source cases and counts](data/almost-trinomial-power-windows.csv) · [Verifier](scripts/check_almost_trinomial_powers.py)
 - **There are 242 explicit primitive pentanomials in thirteen large degrees from 110,503 to 74,207,281.** They exhaust the five-term minimal polynomials obtained by raising primitive trinomial roots to powers through the degree in those thirteen cases. One example is $X^{74207281}+X^{9999621}+X^{9411408}+X^{588213}+1$. The seven positive trinomial seeds and all 121,268 other reciprocal pairs in degrees 110,503 and 132,049 were independently checked. The larger cases use published trinomial searches. [242 witnesses](data/large-mersenne-sampled-pentanomials.csv) · [Proof](results.pdf#page=232) · [Lean transfer](GF2Sparse/LargeTrinomialSamples.lean) · [Published seed certificates](https://maths-people.anu.edu.au/brent/trinom.html)
@@ -814,6 +815,13 @@ For the five witnesses in degrees 7854 through 9576, each row gives the degree $
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
+~~~
+
+To reproduce the optimal normal basis classification, run the finite orbit and order checks and the formal coefficient bound.
+
+~~~sh
+uv run --no-project --with sympy python scripts/check_gauss_period_weights.py
+lake build GF2Sparse.GaussPeriodWeights
 ~~~
 
 The seventeen additional prime degrees from 3467 to 5087 each have a pentanomial certificate. The NTL calculation checks every trinomial up to reciprocation and prints both sets of surviving taps.
