@@ -10,7 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **Three exponents in arithmetic progression rule out every coprime-degree subfield split unless the degree is 2 modulo 4.** The step is arbitrary. In odd degree the same holds for $t,t+d,t+2^k d$ when $k$ is coprime to the degree. Three consecutive exponents also force a full-degree order component in every degree $p^a q^b$ for distinct odd primes, even when the two maximal subfields intersect. Explicit primitive examples include $X^{3375}+X^{491}+X^2+X+1$ and $X^{1233}+X^{43}+X^2+X+1$. [Proof](results.pdf#page=280) · [Order checks](scripts/check_progression_scalar_orders.py)
+- **Three exponents in arithmetic progression rule out every coprime-degree subfield split unless the degree is 2 modulo 4.** Every normalized exception is the quadratic lift of an irreducible trinomial of half the degree. This excludes all progression cases in degree 2,458. The step is arbitrary. In odd degree the same holds for $t,t+d,t+2^k d$ when $k$ is coprime to the degree. Three consecutive exponents also force a full-degree order component in every degree $p^a q^b$ for distinct odd primes, even when the two maximal subfields intersect. Explicit primitive examples include $X^{3375}+X^{491}+X^2+X+1$ and $X^{1233}+X^{43}+X^2+X+1$. [Proof](results.pdf#page=280) · [Classification](results.pdf#page=281) · [Order checks](scripts/check_progression_scalar_orders.py)
 
 - **Four support exponents inside any seven equally spaced positions exclude a two-subfield split in every odd degree.** In an odd semiprime degree, every irreducible in this family therefore has a full-degree prime-power component in its root order. One primitive example is $X^{3415}+X^{36}+X^{27}+X^{18}+1$. The window grows to 23 positions when the degree is coprime to 6. Only linearly many candidates per degree have the four positions anchored at zero and the fifth term at the leading degree. [Proof and gap bounds](results.pdf#page=279)
 
@@ -870,7 +870,7 @@ python scripts/check_coprime_scalar_orders.py
 c++ -std=c++17 -O3 -fopenmp scripts/check_scalar_pair_products.cpp -lntl -lgmp -o /tmp/gf2-pair-products
 uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_scalar_product_orders.py --products /tmp/gf2-pair-products --trinomials /tmp/gf2-trinomials --degree 5403
 python scripts/check_odd_scalar_splits.py --products /tmp/gf2-pair-products --jobs 8
-uv run --no-project --with python-flint==0.9.0 python scripts/check_progression_scalar_orders.py
+uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_progression_scalar_orders.py
 lake build GF2Sparse.ScalarOrderBound
 lake env leanchecker GF2Sparse.ScalarOrderBound
 ~~~

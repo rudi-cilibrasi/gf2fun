@@ -15,6 +15,12 @@ def product(a, b, modulus):
     return value
 
 
+def lift_support(e, f, k):
+    exponents = (0, e, f, k*e, k*f)
+    first = min(exponents)
+    return tuple(sorted(t-first for t in exponents))
+
+
 def check_lift(source, singleton, k, expected):
     j = source[-1]
     if k not in (2,4) or gcd(k,j) != 1:
@@ -30,8 +36,7 @@ def check_lift(source, singleton, k, expected):
     if (e-f) % m:
         raise ValueError("the two residues must agree")
     scalar_log = pow(e,-1,m)
-    exponents = [0,e,f,k*e,k*f]
-    support = tuple(sorted(t-min(exponents) for t in exponents))
+    support = lift_support(e, f, k)
     if support != expected or len(set(support)) != 5 or support[-1] != k*j:
         raise ValueError("incorrect normalized five-term support")
 

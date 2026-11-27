@@ -20642,4 +20642,67 @@ In degree \(3375=3^3 5^3\) the maximal subfields intersect in degree
 225. \nolinkurl{scripts/check_progression_scalar_orders.py} verifies
 irreducibility, the factorizations and every prime-index power.
 
+\clearpage
+\section{Every split progression pentanomial comes from a quadratic lift}
+\label{sec:progression-scalar-classification}
+For support of gcd one, the exceptions from
+Section~\ref{sec:three-progression-scalar} have an exact description.
+In degree \(2j\) they are in bijection with the irreducible trinomials
+\(X^j+X^a+1\) with \(\gcd(a,j)=1\) for which two of \(0,a,j\) are
+congruent modulo three and the third is distinct. Here \(j>1\) is odd.
+If the distinct residue occurs at \(s\), write \(e,f\) for the other
+two exponents minus \(s\). The corresponding pentanomial is the
+ordinary normalization of
+\[
+          1+D+D^2,\qquad D=X^e+X^f.
+\]
+Its root order is exactly three times the source root order. In
+particular checking at most \(j-1\) trinomials constructs the entire
+list, without factoring \(2^j-1\).
+
+To prove necessity, write the split root as \(r=\alpha\beta\) with
+\(\ord(\alpha)=3\), \(\beta\in\mathbb F_{2^j}\), and put
+\(B=\ord(\beta)\). The progression \(a,a+d,a+2d\) uses all three
+residues of the scalar plane and \(3\nmid d\). Its three positions
+therefore include the singleton. Let \(x=\beta^d\). The equal sums
+in the three residue classes determine the other two powers of
+\(\beta\) after division by \(\beta^a\). These are \(1+x,(1+x)^2\)
+when \(a\) is the singleton and \(1+x,x(1+x)\) for a middle
+singleton. Reciprocation covers the other endpoint.
+In either case \(x,1+x\in\langle\beta\rangle\), and all ratios
+\(\beta^{v-a}\) on the support belong to \(\mathbb F_2(x)\).
+Since these exponent differences have gcd one, \(x\) has degree \(j\).
+Lemma~\ref{lem:plane-size} gives \(4B\ge3j^2\), so \(B>4j\) for
+\(j\ge7\). At \(j=5\) one has \(B=31>20\).
+
+For a middle singleton let \(u,v\) be the partners of \(a,a+2d\).
+The displayed formulas give \(B\mid v-u-d\). Since the absolute
+value is at most \(2n=4j\), one gets \(v-u=d\). But the scalar
+residues require \(v-u\equiv2d\pmod3\), an impossibility.
+For an endpoint singleton \(a\), let \(u,v\) be the partners of
+\(a+d,a+2d\). Here \(B\mid v+a-2u\) and again the absolute value
+is at most \(4j\). Hence \(v-a=2(u-a)\). This is exactly the claimed
+lift with \(e=d, f=u-a\), including \(e\equiv f\not\equiv0\pmod3\).
+At \(j=3\) the two split polynomials are the reciprocal pair from
+Section~\ref{sec:scalar-all-parities}, both lifts of cubic trinomials.
+
+Conversely the two-dilate construction of
+Section~\ref{sec:dyadic-trinomial-lifts} proves irreducibility and the
+order formula. Each image has two progressions based at its singleton.
+The component \(\beta\) of any root is unique since the subfield group
+orders \(3,2^j-1\) are coprime. Its minimal polynomial recovers the
+source, so none of the images coincide. For arbitrary support gcd
+\(g\), descent gives the same necessary classification after writing
+\(F(X^g)\) with normalized \(F\).
+
+In degree \(2458=2\cdot1229\) every irreducible pentanomial has
+support of gcd one. A larger odd gcd would be 1229, leaving only a
+quadratic after descent. The proper-factor certificates for every
+degree-1229 trinomial therefore exclude all split progression
+pentanomials in degree 2458. Each irreducible with such a progression
+carries a prime of binary multiplicative degree 2458. Direct order
+tests also recover exactly the 52 normalized split supports predicted
+by the lift in degrees \(2j\) for odd \(3\le j\le35\).
+\nolinkurl{scripts/check_progression_scalar_orders.py} compares both sets.
+
 \end{document}
