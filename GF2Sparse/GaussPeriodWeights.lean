@@ -1,3 +1,4 @@
+import GF2Sparse.Certificate
 import GF2Sparse.ShiftWeight
 
 /-! Binary recurrences for Gauss period polynomials and their projective changes of variable. -/
@@ -183,6 +184,123 @@ theorem projective_weights (n : ℕ) (hn : 0 < n) :
     simp only [reciprocalInv, mul_one, add_comm (1 : BinaryPoly) (X+1), hx,
       add_comm (1 : BinaryPoly) X, hX, h1, hX1]; decide) reciprocalStep n hn
   simpa [periodForm] using And.intro hp.1 (And.intro hs.1 hr.1)
+
+/-- Packed coefficients of two consecutive forms, starting at indices zero and one. -/
+private def masks (a b : ℕ → ℕ) (seed : ℕ) : ℕ → ℕ × ℕ
+  | 0 => (1, seed)
+  | n+1 => let (f,g) := masks a b seed n; (g, a g ^^^ b f)
+
+private theorem masks_spec (A B : BinaryPoly) (a b : ℕ → ℕ) (seed : ℕ)
+    (ha : ∀ m, decode (a m) = A * decode m)
+    (hb : ∀ m, decode (b m) = B^2 * decode m)
+    (hs : decode seed = A+B) (n : ℕ) :
+    decode (masks a b seed n).1 = periodForm A B n ∧
+    decode (masks a b seed n).2 = periodForm A B (n+1) := by
+  induction n with
+  | zero => simp [masks, periodForm, continuants, hs]
+  | succ n ih =>
+    constructor
+    · exact ih.2
+    · simp only [masks, decode_xor, ha, hb, ih.1, ih.2, periodForm_recurrence]
+
+private def plainMask := masks (· <<< 1) id 3
+private def shiftedMask := masks (fun m => (m <<< 1) ^^^ m) id 2
+private def reciprocalMask := masks id (fun m => (m <<< 2) ^^^ m) 2
+
+private theorem three_mask : decode 3 = X+1 := by
+  simpa only [decode_one, mul_one] using
+    (show decode ((1 <<< 1) ^^^ 1) = X * decode 1 + decode 1 by rw [decode_xor, decode_shift])
+private theorem two_mask : decode 2 = X := by
+  simpa only [decode_one, mul_one] using decode_shift 1
+
+private theorem mask_forms (n : ℕ) :
+    decode (plainMask n).1 = periodForm X 1 n ∧
+    decode (shiftedMask n).1 = periodForm (X+1) 1 n ∧
+    decode (reciprocalMask n).1 = periodForm 1 (X+1) n := by
+  have h : (X+1+1 : BinaryPoly) = X := by rw [add_assoc, CharTwo.add_self_eq_zero, add_zero]
+  have h' : (1+(X+1) : BinaryPoly) = X := by rw [add_comm 1, h]
+  refine ⟨(masks_spec X 1 _ _ 3 decode_shift (fun m => by simp) three_mask n).1,
+    (masks_spec (X+1) 1 _ _ 2 ?_ (fun m => by simp) (by rw [h, two_mask]) n).1,
+    (masks_spec 1 (X+1) _ _ 2 (fun m => by simp) ?_ (by rw [h', two_mask]) n).1⟩
+  · intro m
+    simp only [decode_xor, decode_shift, add_mul, one_mul]
+  · intro m
+    simp only [decode_xor, decode_shift_by, CharTwo.add_sq, one_pow, add_mul, one_mul]
+
+private def plainSmall : List ℕ := [0,1,2,3,4,5,6,7,8,15]
+private def shiftedSmall : List ℕ := [0,1,2,3,4,5,6,7,10,11,12,13]
+private def reciprocalSmall : List ℕ := [0,1,2,3,4,5,6,7,8,9,12,13,16,24]
+
+private theorem finite_cases : ∀ i : Fin 32,
+    ((positions (plainMask i).1).card ≤ 5 ↔ (i : ℕ) ∈ plainSmall) ∧
+    ((positions (shiftedMask i).1).card ≤ 5 ↔ (i : ℕ) ∈ shiftedSmall) ∧
+    ((positions (reciprocalMask i).1).card ≤ 5 ↔ (i : ℕ) ∈ reciprocalSmall) := by
+  decide +kernel
+
+/-- Exact five-term cutoff in all three charts, including every reducible index. -/
+theorem projective_five_term_degrees (n : ℕ) :
+    ((periodForm X 1 n).support.card ≤ 5 ↔ n ∈ [0,1,2,3,4,5,6,7,8,15]) ∧
+    ((periodForm (X+1) 1 n).support.card ≤ 5 ↔ n ∈ [0,1,2,3,4,5,6,7,10,11,12,13]) ∧
+    ((periodForm 1 (X+1) n).support.card ≤ 5 ↔ n ∈ [0,1,2,3,4,5,6,7,8,9,12,13,16,24]) := by
+  by_cases h : n < 32
+  · obtain ⟨hp, hs, hr⟩ := mask_forms n
+    rw [← hp, ← hs, ← hr, support_decode, support_decode, support_decode]
+    exact finite_cases ⟨n,h⟩
+  · have hn : n ≠ 0 := by omega
+    have hl : 5 ≤ n.log2 := (Nat.le_log2 hn).2 (by norm_num; omega)
+    obtain ⟨hp, hs, hr⟩ := projective_weights n (Nat.pos_of_ne_zero hn)
+    have hp' : ¬ (periodForm X 1 n).support.card ≤ 5 := by omega
+    have hs' : ¬ (periodForm (X+1) 1 n).support.card ≤ 5 := by omega
+    have hr' : ¬ (periodForm 1 (X+1) n).support.card ≤ 5 := by omega
+    simp only [hp', hs', hr', false_iff, List.mem_cons, List.not_mem_nil, or_false, not_or]
+    repeat' apply And.intro
+    all_goals omega
+
+/-- The signed Frobenius orbit of a nontrivial pair has full length n
+    at prime conductor 2n+1. -/
+def typeIIIndex (n : ℕ) : Prop :=
+  (2*n+1).Prime ∧ ∀ k : Fin n, 0 < (k : ℕ) →
+    2^(k : ℕ) % (2*n+1) ≠ 1 ∧ 2^(k : ℕ) % (2*n+1) ≠ 2*n
+
+private instance (n : ℕ) : Decidable (typeIIIndex n) := by unfold typeIIIndex; infer_instance
+
+private theorem finite_typeII : ∀ i : Fin 32,
+    (1 < (i : ℕ) ∧ typeIIIndex i ∧
+      ((i : ℕ) ∈ plainSmall ∨ (i : ℕ) ∈ shiftedSmall ∨ (i : ℕ) ∈ reciprocalSmall)) ↔
+    (i : ℕ) ∈ [2,3,5,6,9,11] := by decide +kernel
+
+theorem typeII_sparse_degrees (n : ℕ) :
+    (1 < n ∧ typeIIIndex n ∧ ((periodForm X 1 n).support.card ≤ 5 ∨
+      (periodForm (X+1) 1 n).support.card ≤ 5 ∨ (periodForm 1 (X+1) n).support.card ≤ 5)) ↔
+    n ∈ [2,3,5,6,9,11] := by
+  by_cases h : n < 32
+  · obtain ⟨hp, hs, hr⟩ := projective_five_term_degrees n
+    rw [hp, hs, hr]
+    exact finite_typeII ⟨n,h⟩
+  · have hn : n ≠ 0 := by omega
+    have hl : 5 ≤ n.log2 := (Nat.le_log2 hn).2 (by norm_num; omega)
+    obtain ⟨hp, hs, hr⟩ := projective_weights n (Nat.pos_of_ne_zero hn)
+    have h₁ : ¬ (periodForm X 1 n).support.card ≤ 5 := by omega
+    have h₂ : ¬ (periodForm (X+1) 1 n).support.card ≤ 5 := by omega
+    have h₃ : ¬ (periodForm 1 (X+1) n).support.card ≤ 5 := by omega
+    simp only [h₁, h₂, h₃, or_self, and_false, false_iff, List.mem_cons,
+      List.not_mem_nil, or_false, not_or]
+    repeat' apply And.intro
+    all_goals omega
+
+/-- One of the three forms supplies a primitive at each surviving type-II degree. -/
+theorem typeII_primitive_examples :
+    Primitive (periodForm X 1 2) ∧ Primitive (periodForm X 1 3) ∧
+    Primitive (periodForm X 1 5) ∧ Primitive (periodForm X 1 6) ∧
+    Primitive (periodForm 1 (X+1) 9) ∧ Primitive (periodForm (X+1) 1 11) := by
+  rw [← (mask_forms 2).1, ← (mask_forms 3).1, ← (mask_forms 5).1,
+    ← (mask_forms 6).1, ← (mask_forms 9).2.2, ← (mask_forms 11).2.1]
+  exact ⟨(check_sound (factors := [3]) (by decide) (by decide +kernel : check 2 _ _ = true)).2.2,
+    (check_sound (factors := [7]) (by decide) (by decide +kernel : check 3 _ _ = true)).2.2,
+    (check_sound (factors := [31]) (by decide) (by decide +kernel : check 5 _ _ = true)).2.2,
+    (check_sound (factors := [3,3,7]) (by decide) (by decide +kernel : check 6 _ _ = true)).2.2,
+    (check_sound (factors := [7,73]) (by decide) (by decide +kernel : check 9 _ _ = true)).2.2,
+    (check_sound (factors := [23,89]) (by decide) (by decide +kernel : check 11 _ _ = true)).2.2⟩
 
 end
 end GF2Sparse.GaussPeriod
