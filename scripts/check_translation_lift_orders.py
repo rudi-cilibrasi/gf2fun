@@ -138,6 +138,43 @@ def check_remaining_exponents(data):
     print(f"The twenty divisors leave density {density} among all odd exponents for A_k.")
 
 
+def check_partition_products():
+    """Enumerate signed odd-part products in both projections at small conductors."""
+    checked = total = 0
+    for p in range(5, 62, 2):
+        n = p - 1
+        if orbit_degrees(p) != {n: 1}:
+            continue
+        m = n // 2
+        budget = (m - 1) // 2
+        frobenius = {pow(-2, j, p): 1 << j for j in range(n)}
+        vectors = [(0, 0)]
+        for i in range(1, budget + 1, 2):
+            extended = []
+            for weight, exponent in vectors:
+                limit = (budget - weight) // i
+                for a in range(-limit, limit + 1):
+                    extended.append((weight + i * abs(a), exponent + a * frobenius[i]))
+            vectors = extended
+        # Euler's product gives one set of distinct parts and a second set of odd distinct parts.
+        counts = [1] + [0] * budget
+        for i in [*range(1, budget + 1), *range(1, budget + 1, 2)]:
+            for j in range(budget, i - 1, -1):
+                counts[j] += counts[j - i]
+        if sum(counts) != len(vectors):
+            raise ValueError(f"signed partition count mismatch at p={p}")
+        f = cyclotomic_form(p)
+        q = 1 << m
+        for power, group in ((q + 1, q - 1), (q - 1, q + 1)):
+            projection = X.pow_mod(power, f)
+            values = {tuple(projection.pow_mod(e % group, f)) for _, e in vectors}
+            if len(values) != len(vectors):
+                raise ValueError(f"two partition products agree at p={p}, power={power}")
+            total += len(values)
+        checked += 1
+    print(f"Enumerated {total} signed partition products across both projections at {checked} conductors.")
+
+
 def check_orders():
     data = json.loads(DATA.read_text())
     for exponent, factors in data["torus_prime_minus_one"].items():
@@ -150,7 +187,11 @@ def check_orders():
         # Order p-1 forces p prime. Check it independently as well.
         if not fmpz(p).is_prime() or isqrt((n - 1) // 2) != 2**((k - 1) // 2):
             raise ValueError(f"incorrect degree or root-order bound for k={k}")
-        print(f"k={k}: prime 2^k+5, modular order 2^k+4, binary root order >= 2^(2^{(k+1)//2}).")
+        budget = (n // 2 - 1) // 2
+        r = (isqrt(1 + 24 * budget) - 1) // 6
+        if not 3*r*r + r <= 2*budget < 3*(r+1)**2 + r+1:
+            raise ValueError(f"incorrect partition cutoff at k={k}")
+        print(f"k={k}: prime 2^k+5, modular order 2^k+4, binary root order >= 2^{6*r-2}.")
 
     indices = {(3, 1, True): 3, (3, 3, True): 1, (4, 1, False): 1,
                (5, 1, True): 9, (5, 5, True): 3, (11, 11, True): 7}
@@ -170,6 +211,7 @@ def check_orders():
             raise ValueError(f"incorrect exact order for {(k, j, triangle)}")
         print(f"degree {n}, {'triangle' if triangle else 'cycle'} j={j}: exact index {index}.")
     check_remaining_exponents(data)
+    check_partition_products()
 
 
 def check_extended_cyclotomic():

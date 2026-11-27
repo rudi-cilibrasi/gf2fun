@@ -19159,4 +19159,100 @@ nonprincipal reduced form \((23675,-1387,457048)\). Since \(p\equiv7
 has exact order valuation two at \(3511\). Direct binary powering
 also verifies the prime-square factor in this example.
 
+\clearpage
+\section{Signed partitions give larger root-order bounds}
+\label{sec:twisted-partition-order}
+
+Let \(D_p\) be irreducible with \(p\ge5\), \(n=p-1\), \(m=n/2\),
+\(q=2^m\), and \(B=\lfloor(m-1)/2\rfloor\). Let \(S(B)\) count
+the integer vectors \((a_i)_{i\text{ odd},\,1\le i\le B}\) with
+\(\sum_i i|a_i|\le B\), including the zero vector.
+\begin{theorem}
+A root \(x\) of \(D_p\) satisfies
+\[
+       \ord(x^{q+1})\ge S(B),\qquad
+       \ord(x^{q-1})\ge S(B),\qquad
+       \ord(x)\ge S(B)^2.
+\]
+If \(3r^2+r\le2B\) with \(r\ge1\), then
+\(\log_2\ord(x)\ge6r-2\).
+\end{theorem}
+\begin{proof}
+Write \(z\) for the primitive \(p\)-th root parametrizing \(x\),
+\(\omega^2+\omega+1=0\), and \(t=z+z^{-1}\).
+As in Section~\ref{sec:twisted-full-ray}, \(x^q=x+1\), and
+\[
+ b(z)=x^{q+1}=1+t^{-1},\qquad
+ u(z)=x^{q-1}=\frac{\omega^2+\omega z}{\omega+\omega^2z}.
+\]
+For every index \(i\) under consideration, \(x(z^i)\) is a
+Frobenius conjugate of \(x\). Thus \(b(z^i)\in\langle b(z)\rangle\)
+and \(u(z^i)\in\langle u(z)\rangle\).
+
+For either rational function \(f=b,u\), the rational products
+\(\prod_i f(Z^i)^{a_i}\) are distinct. In the ratio of two
+products, take the largest index \(i\) with different exponents.
+At a primitive \(3i\)-th root whose \(i\)-th power is \(\omega\),
+the \(i\)-th factor has a zero. No smaller factor has a zero or
+pole there, since its index would have to be divisible by \(i\).
+The nonzero exponent difference gives a nonzero valuation.
+
+For \(u\), clearing denominators in the ratio gives numerator
+and denominator of degrees at most
+\(\sum_i i|a_i-a'_i|\le2B<m\) over \(\mathbb F_4\).
+The degree of \(z\) over \(\mathbb F_4\) is \(m\),
+since \(4=(-2)^2\) has order \(m\) modulo \(p\). The two
+polynomials thus take different values at \(z\).
+For \(b\), use \(T=Z+Z^{-1}\). The Laurent polynomial
+\(Z^i+Z^{-i}\) equals a monic polynomial \(P_i(T)\) of degree
+\(i\) for \(i\ge1\), by the recurrence
+\(P_0=0,\ P_1=T,\ P_{i+1}=TP_i+P_{i-1}\). Hence
+\(b(Z^i)=(P_i(T)+1)/P_i(T)\). The cleared polynomials in \(T\)
+again have degrees at most \(2B\). The degree of \(t\) over
+\(\mathbb F_2\) is \(m\), since \(z^a+z^{-a}=z+z^{-1}\)
+exactly when \(a=\pm1\bmod p\), and two generates the quotient
+modulo sign. This proves distinctness after evaluation in both
+projections. Their orders multiply because \(q-1\) and \(q+1\)
+are coprime.
+
+The weight generating function for these vectors is
+\[
+ \prod_{i\ {\rm odd}}\frac{1+Y^i}{1-Y^i}
+       =\prod_{j\ge1}(1+Y^j)\prod_{i\ {\rm odd}}(1+Y^i).
+\]
+Indeed the binary expansion of the multiplicity of each odd part
+gives the distinct parts in Euler's identity. On the right, take
+only \(j\le2r\) and odd \(i\le2r-1\). These \(3r\) independent
+choices have total available weight \(3r^2+r\). Complementation
+pairs choices, so at least \(2^{3r-1}\) have weight at most \(B\).
+Both projections give this bound.
+\end{proof}
+
+For \(C_k\) we have \(B=2^{k-2}\). Taking the largest admissible
+\(r\) gives the following unconditional exponents.
+\[
+\begin{array}{r|r|r}
+ k&r& \text{lower bound on }\log_2\ord(x)\\\hline
+141&681614890024213977666&4089689340145283865994\\
+191&22871200477504966267080935314&137227202865029797602485611882
+\end{array}
+\]
+The checker also enumerates 2,122 products across both projections
+at the nine eligible primes through 61. See
+\nolinkurl{scripts/check_translation_lift_orders.py}.
+
+The full partition bound gives
+\(\log\ord(x)\ge(\pi/\sqrt2-o(1))\sqrt n\) with natural logarithms
+as \(p\) grows through the eligible primes. To see this, let \(Q(s)\)
+count partitions of \(s\) into distinct parts. Choose one such
+partition of \(\lfloor2B/3\rfloor\) for the first product and one
+of \(\lfloor B/6\rfloor\) for the second, replacing each part \(j\)
+in the latter by \(2j-1\). Their combined weight is at most \(B\).
+Apply the classical estimate
+\(\log Q(s)=(\pi/\sqrt3+o(1))\sqrt s\) to both factors.
+For the partition method and this asymptotic in finite-field
+order bounds see \href{https://arxiv.org/abs/0707.4034}
+{Ahmadi, Shparlinski and Voloch, \emph{Multiplicative Order of
+Gauss Periods}, Theorem~1 and Corollary~2}.
+
 \end{document}
