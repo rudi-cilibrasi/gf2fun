@@ -892,6 +892,12 @@ TAPS
 
 The first two triples give irreducibles. The third has the factor $X^2+X+1$.
 
+At degree 1,257,787, all 1,280 triples in the first sample gave reducible polynomials. The list contains only the tested triples, with largest tap at most 90. Contributors can skip these triples in later searches or replay them with the command below. [Tested triples](data/degree-1257787-reducible-taps.txt)
+
+~~~sh
+uv run --no-project --with cupy-cuda12x==14.2.0 --with nvidia-cuda-nvrtc-cu12==12.9.86 --with nvidia-cuda-runtime-cu12==12.9.79 python scripts/check_low_tap_frobenius.py 1257787 < data/degree-1257787-reducible-taps.txt
+~~~
+
 The two normalized-width tables use the same factor tables and verification commands as the spacing tables below. Substitute `complementary-width-5-1228.csv` and `complementary-width-1230-2292.csv` for the corresponding `symmetric-witnesses` filenames. To check sharpness, run
 
 ~~~sh
