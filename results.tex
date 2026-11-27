@@ -17381,4 +17381,85 @@ using 21 archived ECPP chains. Together with
 Section~\ref{sec:further-complementary}, the repository covers at
 least 2,650 positive degrees through 10,351.
 
+\section{A subfield descent for the five-term target in degree 4112}
+\label{sec:4112-descent}
+
+Retain \(r,a,k,Q,M=2^{4112}-1\), and \(M=DC\) from
+Section~\ref{sec:projective-4112}. Write \(m=257\) and
+\(E_0=\mathbb F_{2^{2056}}\). The order \(|E_0^\times|\) divides \(D\).
+The relevant logarithm is the exponent of \(r^D\) in the cyclic
+group of order \(C\). More precisely, let \(\ell(z)\) satisfy
+\(z^D=(r^D)^{\ell(z)}\), with \(\ell(z)\) taken modulo \(C\).
+The five-term candidate is primitive precisely when
+\(\gcd(\ell(t),C)=1\).
+
+\paragraph{A common power basis.}
+Let \(\alpha,\beta\) be the two directions in the length-two orbit
+from Theorem~\ref{thm:projective-4112}. Put
+\[
+ y=s\frac{r+\alpha}{r+\beta},\qquad u=y^{257}\in k.
+\]
+In the binary power-basis encoding of \(a\), the four constants
+\((\alpha,\beta,s,u)\) are \((20362,24778,40336,40811)\).
+The element \(y\) has order \(257^2\). The order of two modulo
+\(257^2\) is 4112, and \(2^{2056}\equiv-1\pmod{257^2}\).
+Consequently the halfway Frobenius \(\tau\) sends \(y\) to \(1/y\)
+and acts on \(k\) by \(c\mapsto c^{256}\). In the sparse field take
+\(g=t^{13M/257^2}\). The archived binary polynomial \(W\) satisfies
+\(W(g)=t\) and \(S(W(y))=0\) for \(S=X^{4112}+X^{23}+X^{12}+X+1\).
+Thus \(t=W(y)\) specifies an embedding into the certified model.
+Writing \(Y^{257}=u\) converts \(W\) to a polynomial over \(k\)
+of degree at most 256.
+
+\begin{lemma}
+Let \(E=\mathbb F_{q^{2m}}\), \(k=\mathbb F_{q^2}\),
+\(E_0=\mathbb F_{q^m}\), and let \(y\) have degree \(m\) over \(k\).
+For any \(t\in E^\times\) and \(0\le h<m\), the \(k\)-polynomials
+in \(y\) of degree at most \(h\) that lie in \(tE_0\) form an
+\(\mathbb F_q\)-space of dimension at least \(2(h+1)-m\).
+For odd \(m\) there is a nonzero representative at \(h=(m-1)/2\).
+\end{lemma}
+\begin{proof}
+The two spaces have dimensions \(2(h+1)\) and \(m\) inside an
+ambient space of dimension \(2m\). Intersect them.
+\end{proof}
+
+At \(h=129\) we found a nonzero multiple \(P(y)\in tE_0\) with
+irreducible factor degrees
+\[
+        1,1,1,2,7,8,9,11,12,16,19,20,22 .
+\]
+The computation checks \(P(y)\tau(t)=t\tau(P(y))\).
+Thus \(P(y)^D=t^D\), so all subsequent factorizations preserve
+the needed logarithm. For a further split use \(z=y^{2^i}\) and
+the identity \(y^{257}=u\). Matching powers \(e=b+2^i j+257l\)
+gives \(y^e=y^b u^l z^j\). Choose coefficients on the matched
+monomials so that a specified factor \(H(Y)\) divides their
+polynomial in \(Y\). After division and inverse Frobenius on
+the coefficients of the other side this gives
+\[
+             H(y)L(y)=y^b U(y)^{2^i}.
+\]
+Factoring \(L,U\) yields signed contributions to \(\ell(H(y))\).
+All torsion monomials and leading constants have zero logarithm
+under this projection. Sixteen exact identities reduce the initial
+factorization to factors of degree at most eleven over \(k\).
+This is a Kummer-field application of classical Frobenius descent
+as in \href{https://arxiv.org/abs/2008.02717}
+{Granger et al., Section 10.2}. The remaining exponents are open.
+
+There is also a lower bound for representing \(t\) directly.
+The 256 elements \(t^{i+256j}\), \(0\le i,j\le15\), are linearly
+independent over \(k\) by elimination in the relative power basis.
+The least square bidegree of a relation between \(t,t^{256}\) is
+therefore exactly 16, since the next square has 289 columns in
+dimension 257. In particular \(t\) cannot be a quotient of two
+polynomials of degree at most 15 in any parameter with projective
+256th-power Frobenius over \(k\). Such a representation would
+parametrize both coordinates by rational functions of degree at
+most 15. Eliminating the parameter gives a nonzero relation of
+bidegree at most \((15,15)\).
+The field embedding, factorization, all descent identities, and rank
+are checked by \nolinkurl{scripts/check_4112_descent.py}.
+
 \end{document}

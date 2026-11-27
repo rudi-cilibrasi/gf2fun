@@ -10,6 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **The degree-4112 five-term candidate now has an explicit logarithm descent.** Its root is encoded in the same field as the certified primitive polynomial. Multiplication by a subfield element leaves its unresolved order component unchanged and gives a polynomial of relative degree 129. Sixteen verified factorizations reduce the remaining logarithms to relative degrees at most eleven. [Field coordinates and factorizations](data/degree-4112-subfield-descent.json) · [Direct checker](scripts/check_4112_descent.py)
 - **Degree 4112 has a certified eleven-term primitive polynomial and a five-term candidate with a 2,322-bit proven order divisor.** The eleven-term polynomial is $P(X^{257}+X)$ for $P(T)=T^{16}+T^6+T^4+T+1$. Its full order follows from 129 directly verified power identities and four small-prime tests. The pentanomial $X^{4112}+X^{23}+X^{12}+X+1$ passes all 23 known prime-index tests. One scalar modulo a 539-digit cofactor would finish its certificate. A general obstruction shows why projective Frobenius alone cannot produce the five-term witness in this degree. [Full-order proof](results.pdf#page=227) · [Pentanomial reduction and obstruction](results.pdf#page=228) · [129 exponents](data/degree-4112-projective-logs.csv.gz) · [Five-term target](data/degree-4112-pentanomial-target.json)
 - **Fifteen more degrees between 3472 and 4032 have certified primitive pentanomials.** For example, $X^{4032}+X^{2955}+X^{1077}+X^{92}+1$ has order $2^{4032}-1$ at each root. Together with the earlier certificates this covers at least 2,650 of the first 10,351 positive degrees. The fifteen certificates check 712 prime-index powers. [Witnesses](data/complementary-width-cyclotomic.csv) · [Complete order factors](data/mersenne-complementary-cyclotomic.json) · [Primality certificates](data/mersenne-cyclotomic-prime-certificates.json.gz)
 - **Sixty-nine additional composite degrees have certified primitive pentanomials, up to degree 10,351.** The largest is $X^{10351}+X^{9810}+X^{1082}+X^{541}+1$. The table includes 9583, 9757 and 9985. Together with earlier witnesses it covers at least 2,635 of the first 10,351 positive degrees. [Witnesses](data/complementary-width-extra.csv) · [Complete factorizations](data/mersenne-complementary-width-extra.json) · [Primality certificates](data/mersenne-complementary-width-prime-certificates.json.gz) · [Verification](results.pdf#page=225)
@@ -631,6 +632,7 @@ In degree 4112, the first command checks the eleven-term primitive polynomial by
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_projective_4112.py --jobs 6 --target
+uv run --no-project --with python-flint==0.9.0 python scripts/check_4112_descent.py
 uv run --no-project --with python-flint==0.9.0 --with gmpy2 python scripts/solve_projective_4112.py > /tmp/gf2fun-4112-logs.csv
 gzip -cd data/degree-4112-projective-logs.csv.gz | cmp - /tmp/gf2fun-4112-logs.csv
 ~~~
