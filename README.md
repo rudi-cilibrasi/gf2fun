@@ -785,6 +785,12 @@ python3 -c 'import json; print(*json.load(open("data/mersenne-complementary-widt
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_two_subfield_norms.py
 ~~~
 
+The two published degree-86,243 pentanomials of Kumada et al. also have an independent local replay. It checks Lucas–Lehmer primality and both full polynomial powers. [Original report, Table 2](https://www.math.keio.ac.jp/wp-content/uploads/2022/03/98009.pdf)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_large_circle_orders.py --degree 86243
+~~~
+
 The two normalized-width tables use the same factor tables and verification commands as the spacing tables below. Substitute `complementary-width-5-1228.csv` and `complementary-width-1230-2292.csv` for the corresponding `symmetric-witnesses` filenames. To check sharpness, run
 
 ~~~sh

@@ -8,6 +8,8 @@ from pathlib import Path
 
 from flint import fmpz
 
+from make_packed_mersenne import advance, make_stages
+
 
 DATA = Path(__file__).resolve().parents[1] / "data"
 
@@ -50,6 +52,18 @@ def mersenne_prime(n):
         residue = (residue*residue-2) % m
     if residue != 0:
         raise ArithmeticError(f"Lucas–Lehmer test failed in degree {n}")
+
+
+def check_published_86243():
+    """Replay Table 2 of Kumada et al., Keio report KSTS/RR-98/009 (1998)."""
+    n = 86243
+    mersenne_prime(n)
+    stages = make_stages(n)
+    for taps in ((11754, 50942, 62833), (19434, 41667, 64043)):
+        # n iterations of v -> X*v^2 starting at 1 give X^(2^n-1).
+        if advance(1, n, [n, *taps, 0], stages, n) != 1:
+            raise ArithmeticError(f"full power failed for degree {n} and taps {taps}")
+        print(f"Degree {n}, taps {taps}: primitive, with full order 2^{n}-1.", flush=True)
 
 
 def field_check(gp, exponents, powers):
@@ -115,5 +129,8 @@ if __name__ == "__main__":
             field_check(args.gp, exponents, [])
             print(f"Degree {n}: primitive, with full order 2^{n}-1.", flush=True)
             checked += 1
+    if args.degree is None or args.degree == 86243:
+        check_published_86243()
+        checked += 2
     if not checked:
         parser.error("the requested degree has no entry")

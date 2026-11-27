@@ -17144,6 +17144,16 @@ in degree 3415. To reproduce the search for minimal-width witnesses,
 orientations in order of \(K\) and tests the full order at each
 irreducible.
 
+\paragraph{Published witnesses at degree 86243.}
+Table~2 of \href{https://www.math.keio.ac.jp/wp-content/uploads/2022/03/98009.pdf}
+{Kumada et al., Keio report KSTS/RR-98/009 (1998)}, gives the two
+interior triples \((11754,50942,62833)\) and \((19434,41667,64043)\).
+The option \texttt{--degree 86243} of
+\nolinkurl{scripts/check_large_circle_orders.py} independently replays
+Lucas--Lehmer for \(M=2^{86243}-1\) and checks \(X^M=1\) modulo
+both pentanomials by packed binary squaring. Since \(M\) is prime
+and \(X\ne1\) in each quotient, both orders are exactly \(M\).
+
 \section{An obstruction to bounded tap width for every unit dilation}
 \label{sec:affine-tap-span}
 
