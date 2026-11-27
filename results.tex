@@ -20408,4 +20408,48 @@ of \(s\) multiplies the order by a power of \(s\).
 If the lifted order is \(pq\) and the prime itself has smaller
 order, then \(s=q\) and \(\ord_q(2)=p\), since \(\ord_p(2)<q\).
 
+\clearpage
+\section{An exact trinomial test for the two dyadic scalar lifts}
+\label{sec:dyadic-trinomial-lifts}
+Let \(K=2\) or \(4\), \(m=2^K-1\), and \(D=X^e+X^f\) for distinct
+nonzero integers \(e,f\) congruent to the same unit modulo \(m\).
+Write \(G,H\) for the ordinary polynomials obtained by shifting the
+least exponents of \(1+D\) and \(1+D+D^K\) to zero, respectively.
+Then \(G\) is a trinomial of degree \(j\), and \(H\) a pentanomial
+of degree \(Kj\). One has the equivalence
+\[
+ H\text{ irreducible}\quad\Longleftrightarrow\quad
+ G\text{ irreducible and }\gcd(K,j)=1.
+\]
+In that case, if \(\beta\) is a root of \(G\), every root of \(H\)
+has exact order \(m\,\ord(\beta)\). Its norm to the degree-\(j\)
+subfield is conjugate to \(\beta^K\), hence is primitive precisely
+when \(G\) is primitive.
+
+Indeed no exponent of \(D\) coincides with one of \(D^K\), since
+the shared residue is a unit and \(m\nmid K-1\).
+The extreme exponents give \(\deg H=K\deg G\).
+Choose a root \(w\) of \(T^K+T+1\), of order \(m\), and choose
+\(\alpha\in\langle w\rangle\) with \(\alpha^e=w\).
+Then \(\alpha^f=w\) and \(D(\alpha\beta)=wD(\beta)=w\).
+If \(H\) is irreducible, \(\alpha\beta\) must have degree \(Kj\).
+Its degree divides \(\operatorname{lcm}(K,\deg_{\F}\beta)\), while
+\(\deg_{\F}\beta\le j\). This forces both assertions on the right.
+Conversely, under those assertions the scalar and base multiplicative
+groups have coprime orders. Their product element generates both
+components by powering, hence has degree \(Kj\) and order
+\(m\,\ord(\beta)\). Conjugation over the degree-\(j\) subfield
+runs through all \(K\) conjugates of \(\alpha\), whose product is one.
+
+For the primitive degree-2047 trinomials in
+Section~\ref{sec:primitive2047}, this gives two degree-4094
+irreducibles with taps \((6,2047,2050)\) and \((511,1022,2047)\).
+Both have exact order \(3(2^{2047}-1)\), without factoring the
+remaining cofactor in degree 2047. The degree-22327 trinomial
+gives a degree-89308 irreducible with taps \((9780,66981,69426)\)
+and exact order \(15(2^{22327}-1)\).
+Each has a primitive norm and a proper root order.
+\nolinkurl{scripts/check_dyadic_scalar_lifts.py} independently
+multiplies the conjugate trinomials over the degree-\(K\) field.
+
 \end{document}
