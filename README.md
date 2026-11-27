@@ -4,6 +4,8 @@ Does every positive degree $n$ have a primitive polynomial over $\mathbb F_2$ wi
 
 **Degree 1229 is the first gap in this repository.** Every positive degree through 1228 has a verified witness. In degree 1229 all trinomials are reducible, and 639,144 of the 639,166 irreducible pentanomials pass the four known prime-index tests. A counterexample would require a single prime divisor of the remaining cofactor to exclude at least 21,305 surviving reciprocal pairs. One full-order pentanomial would settle the degree. [Census](data/degree-1229-pentanomial-census.csv) · [Subgroup bound](results.pdf#page=197)
 
+Every irreducible degree-1229 pentanomial passes the first ten tests involving products of conjugate roots. If any of the 639,144 survivors is nonprimitive, more than 270 billion subsets of at most 596 conjugates have product one. Its first failing subset must have size between 11 and 596. [Proof and counts](results.pdf#page=201) · [Reproduce the upper bound](scripts/check_1229_failure_ranks.py)
+
 The [research note](results.pdf) gives the proofs, examples, and references. Its [LaTeX source](results.tex) is included.
 
 ## Results
@@ -489,6 +491,14 @@ g++ -O3 -std=c++17 -fopenmp scripts/check_1229_five_products.cpp -lgmpxx -lgmp -
 OMP_NUM_THREADS=16 /tmp/gf2-five-products 36871
 OMP_NUM_THREADS=16 /tmp/gf2-five-products 46703
 ~~~
+
+The upper bound on the first failing rank comes from counting the ones in binary multiples of a possible root order. The same calculation bounds the first failing ranks in degrees 1231, 1237, 1243, 1249 and 1259 by 597, 600, 603, 606 and 611 respectively, for candidates passing the known prime-index tests. To verify all six bounds and the subset counts for degree 1229, run
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_failure_ranks.py --all
+~~~
+
+The checker verifies the frequency exclusions modulo each cofactor and evaluates the bounds in rational arithmetic. [Frequency products](data/exterior-failure-frequency-products.json) · [Lean moment and counting bounds](GF2Sparse/FailureRanks.lean)
 
 The two degree-1229 candidate fields also admit a common polynomial coordinate. Let $r$ be the root of the selected candidate and $a=z+z^{-1}$ for an element $z$ of order 2459. To obtain the exact mask of $a$ in the power basis of $r$, run the command below. It checks $a\ne0$, $D_{2459}(a)=0$, and the degree-1229 period polynomial at $a$. Here $D_j(z+z^{-1})=z^j+z^{-j}$. The residues $\pm2^k$ for $0\le k<1229$ exhaust the nonzero residues modulo 2459, so $D_j(a)$ for each such residue is a known Frobenius power of $a$. Lean proves the signed Frobenius identity, the degree of every order-2459 period, and the subgroup step for an invertible coefficient. [Coordinate construction](scripts/period_coordinate.py) · [Lean proofs](GF2Sparse/GaussPeriod.lean)
 

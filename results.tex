@@ -15319,4 +15319,144 @@ by their square, which is again a conjugate. This reduces the number
 of factors down to a nonempty distinct selection. The product
 implications are formalized in \nolinkurl{GF2Sparse/RootProducts.lean}.
 
+\section{A nonprimitive degree-1229 survivor fails by rank 596}
+\label{sec:1229-failure-ranks}
+For any of the 639,144 degree-1229 pentanomials passing the known
+prime-index tests, a root of less than full order gives more than
+270 billion distinct subsets of at most 596 conjugates with product
+one. More than 37 trillion such subsets have size at most 597.
+Together with Section~\ref{sec:1229-ten-products}, the first failure
+must be at some rank from 11 through 596. Thus passing the exterior
+tests through 596 certifies primitivity for a survivor. If 1229 were
+a counterexample, at least 21,305 surviving reciprocal pairs would
+share the same 270 billion or more subsets of indices, since all of
+those pairs would miss the same prime projection.
+
+We give the test in general form. Let \(n\) be odd, \(N=2^n-1\),
+and \(\ell\mid N\) a prime with \(\ord_\ell(2)=n\). Let
+\(H=\langle 2\rangle\subset(\mathbb Z/\ell)^\times\).
+For nonzero \(j\bmod\ell\), put \(w(j)\) equal to the number of ones in
+the \(n\)-bit word of \(jN/\ell\), using the representative
+\(1\le j<\ell\). A root whose order divides \(N/\ell\) has product
+one on the conjugates selected by any such word. Different values of
+\(j\) give different selections. Write \(\sigma(0)=0\), and put
+\(\sigma(j)=1\) on the lower half \(1\le j<\ell/2\), and \(-1\) on
+the upper half. The imbalance is
+\[
+        S(j)=\sum_{h\in H}\sigma(hj)= n-2w(j)\qquad (j\ne0).
+\]
+Indeed the purely periodic binary expansion of \(j/\ell\) repeats
+the word of \(jN/\ell\), and doubling cycles through its bits.
+We have \(S(0)=0\) and \(S(-j)=-S(j)\).
+
+Choose a finite set \(T\) of positive odd frequencies at most \(B<\ell\).
+Require the cosets \(tH\) to be pairwise disjoint up to sign.
+Also require that \(-b\notin tH\) for all odd \(1\le b\le B\) and
+all \(t\in T\). Write
+\[
+ A=\sum_{t\in T}t^{-2},\qquad V=\sum_{t\in T}t^{-1},\qquad
+ D=\frac{2}{\pi}\left(A-\frac{(n-1)V}{B}\right)
+       -\frac{\pi |T|}{4\ell^2}.
+\]
+Whenever \(D>0\), the uniform mean over all \(j\bmod\ell\) satisfies
+\[
+                        \mathbb E S^2\ \ge\ 2nD^2/A.                 \tag{*}
+\]
+
+For a proof, take
+\(U(j)=\sum_{t\in T}t^{-1}\sum_{h\in H}\sin(2\pi thj/\ell)\).
+Sine orthogonality gives \(\mathbb E U^2=nA/2\), since \(H\) has
+odd order and the frequency cosets are disjoint up to sign. Put
+\(c(k)=\mathbb E[\sigma(j)\sin(2\pi kj/\ell)]\).
+Summing the sines on the lower half gives, for \(1\le k<\ell\),
+\[
+ c(k)=\frac{\cos(\pi k/\ell)-(-1)^k}{\ell\sin(\pi k/\ell)}
+   =\begin{cases}
+       \ell^{-1}\cot(\pi k/(2\ell))& k\text{ odd},\\
+       -\ell^{-1}\cot(\pi(\ell-k)/(2\ell))& k\text{ even}.
+     \end{cases}
+\]
+For \(k=t\), the first expression is at least
+\(2/(\pi t)-\pi t/(4\ell^2)\), using
+\(\sin x\le x\) and \(\cos x\ge1-x^2/2\).
+This lower bound also holds when \(1-x^2/2<0\), since the cotangent
+is positive. For any negative contribution with \(k\in tH\),
+the odd integer \(\ell-k\) exceeds \(B\). Its absolute value is at
+most \(2/(\pi B)\) by \(\cot x\le1/x\).
+Changing the uniform variable by a multiplier in \(H\) now gives
+\[
+ \mathbb E[SU]=n\sum_{t\in T}\frac1t\sum_{h\in H}c(th)\ \ge nD .
+\]
+Cauchy--Schwarz proves (*).
+
+In degree 1229 take \(T=\{1,3,\ldots,255\}\), \(B=2^{23}\).
+For each prime divisor of the unresolved cofactor \(C\), dyadic
+order is 1229 and \(\ell\ge J=818085338814611458\).
+To exclude intersections of positive cosets compute the product of
+\(t^n-u^n\) over distinct \(u<t\) in \(T\). To exclude every small
+negative frequency compute
+\[
+           \prod_{t\in T}\ \prod_{\substack{1\le b\le B\\b\ {\rm odd}}}
+                       (t^n+b^n)\pmod C.
+\]
+Both products are coprime to \(C\). A prohibited congruence would
+make the corresponding factor zero modulo \(\ell\). GMP checks the
+536,870,912 factors of the second product directly. An independent
+FLINT calculation builds the polynomial with roots \(-t^n\) modulo
+\(C\) and evaluates it at the \(b^n\) in blocks. Both give the
+archived residue. Using \(\pi<3.1416\), the rational lower bound for
+\(D\) obtained by replacing \(2/\pi\) by \(2500/3927\) and subtracting
+\(4|T|/J^2\) gives \(2nD^2/A>1226\).
+
+There are \(M=(\ell-1)/2\) sign pairs. Let \(d\) be the absolute
+imbalance of a pair. These are odd integers at most 1229, with
+\(\sum d^2>1226M\). For \(s=33\) or \(35\), if \(h\) pairs have
+\(d>s\), then
+\[
+           1226M < s^2 M+(1229^2-s^2)h.
+\]
+The lighter member of each such pair has weight at most
+\((1229-s-2)/2\). Inserting the bound on \(\ell\) gives the two
+claimed counts. The Cauchy--Schwarz implication, the six rounded
+moment comparisons below, and both population inequalities are
+checked in \nolinkurl{GF2Sparse/FailureRanks.lean}. The digit identity
+and the trigonometric argument above apply also to the other five open
+degrees through 1280. After the known order tests, every missing
+cofactor prime has dyadic order \(n\) and exceeds
+\(1+2n\cdot2^{32}\) there. The following parameters give
+\(\mathbb E S^2>1225=35^2\), so some odd imbalance is at least 37.
+\[
+\begin{array}{c|rrrrrr}
+ n&1229&1231&1237&1243&1249&1259\\
+ \max T&255&255&127&47&47&31\\
+ \log_2 B&23&21&20&20&19&19\\
+ \text{latest first failing rank}&596&597&600&603&606&611
+\end{array}
+\]
+The exact residues and full replay are
+\nolinkurl{data/exterior-failure-frequency-products.json} and
+\nolinkurl{scripts/check_1229_failure_ranks.py}.
+
+For every odd \(n\ge5\) there is also a uniform criterion. Take all
+odd \(t\le n\), \(B=n^4\), and any prime \(\ell>B\) of dyadic order
+\(n\) passing the two frequency exclusions above. Then
+\(\mathbb E S^2>n-1\). Indeed
+\(A\ge\pi^2/8-1/(2n)\) by the odd reciprocal-square sum and an
+integral bound on its tail. Put
+\(\eta=(n-1)V/B+\pi^2|T|/(8\ell^2)\). The inequalities
+\(V,|T|\le n\), \(n\ge5\), \(3<\pi<4\) give \(\eta<A\).
+Since \((A-\eta)^2/A\ge A-2\eta\), the deficit of the lower
+bound in (*) from \(n\) is at most
+\[
+    \frac4{\pi^2}+\frac{16}{\pi^2 n}+\frac{2n^2}{\ell^2}<1 .
+\]
+Thus an omitted prime satisfying these tests forces a failure by rank
+\((n-d)/2\), where \(d\) is the least odd integer at least \(\sqrt n\).
+This follows because the next smaller odd square is at most \(n-1\).
+Primes of small dyadic order give an elementary companion bound. If
+\(e=\ord_\ell(2)\mid n\), the \(n\)-bit word repeats its \(e\)-bit
+block \(n/e\) times. Since \(e\) is odd, every sign pair contains
+a word of weight at most \((n-n/e)/2\). In particular, every omitted
+prime with \(e\le\sqrt n\) gives the same square-root saving.
+
 \end{document}
