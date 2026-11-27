@@ -17084,4 +17084,37 @@ enumerates the smaller-width supports in both extremal degrees by
 scanning all tap pairs. PARI tests each for irreducibility, and FLINT
 checks the proper-order obstructions.
 
+\section{Further composite degrees with primitive complementary pentanomials}
+\label{sec:further-complementary}
+
+The table \nolinkurl{data/complementary-width-extra.csv} supplies
+primitive witnesses in 65 additional degrees between 3510 and 8584.
+Together with Section~\ref{sec:symmetric-9576} this covers at least
+2,629 of the first 9,576 positive degrees. Some examples are
+\[
+\begin{array}{r|rr|r}
+n&b&a&\omega(2^n-1)\\\hline
+3696&1017&791&73\\
+7911&3061&1789&19\\
+8001&412&206&28\\
+8584&618&3983&43
+\end{array}
+\]
+All have \(W\le18\). In degree 3696 there are 10,212 reciprocal
+classes with \(W<18\) and coprime exponents. Exactly eleven are
+irreducible. In eight of these the order divides \((2^{3696}-1)/3\).
+The other three give the same obstruction with divisor 5, 7 or 23.
+
+The search used NTL. The independent verification multiplies the
+integer factors in \nolinkurl{data/mersenne-complementary-width-extra.json},
+checks \(X^{2^n-1}=1\) modulo each witness, and checks all 3,243
+prime-index powers. There are 2,144 distinct integer factors.
+PARI verifies archived ECPP proofs for 28 of them, including the
+1,579-digit prime in degree 7911. FLINT proves the others prime.
+The certificate archive is
+\nolinkurl{data/mersenne-complementary-width-prime-certificates.json.gz}.
+The initial integer factorizations were obtained from
+\href{https://factordb.com/}{FactorDB}, splitting by cyclotomic
+and Aurifeuillean factors where needed.
+
 \end{document}

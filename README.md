@@ -10,6 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Sixty-five additional composite degrees have certified primitive pentanomials.** These include degrees 7911, 8001 and 8584. At least 2,629 of the first 9,576 positive degrees now have witnesses. All 65 examples have normalized tap width at most 18. [Witnesses](data/complementary-width-extra.csv) · [Complete factorizations](data/mersenne-complementary-width-extra.json) · [Primality certificates](data/mersenne-complementary-width-prime-certificates.json.gz) · [Verification](results.pdf#page=225)
 - **A normalized tap bound of 18 suffices for primitive pentanomials in 1,756 degrees.** This covers every degree from 5 through 1228 and every even degree from 1230 through 2292. Exactly two degrees, 1320 and 1380, need 18. Exhausting every smaller tap pair leaves just 3 and 10 irreducibles respectively, all of proper order. [Proof](results.pdf#page=224) · [First witness table](data/complementary-width-5-1228.csv) · [Even-degree table](data/complementary-width-1230-2292.csv) · [Sharpness check](scripts/check_complementary_width.py)
 - **In degree 3415 an 821-digit prime divides the order of every irreducible sparse root satisfying the quotient bound $K<683$.** Primitivity then reduces to two norm tests in degrees 5 and 683. More generally, for $n=p^a q^b$ with primes $p<q$, a quotient bound $K<q$ forces a prime of full binary degree into the root order whenever $p^a\nmid\operatorname{ord}_q(2)$. [Proof](results.pdf#page=223) · [Degree-3415 order factors](data/mersenne-3201-3456.json)
 - **A formula in every sufficiently large degree gives five terms, an increasing factor cutoff and a nearly quadratic period.** For any $B\ge2$, put $L=\mathrm{lcm}_{1\le i\le B}(2^i-1)$. In every degree $n\ge64(L+1)$ the formula gives a squarefree pentanomial with an odd number of irreducible factors, each of degree greater than $B$, and period $H\ge1+n(n-1)/(14L+2)$. Taking $B\to\infty$ with $B=o(\sqrt{\log n})$ gives $n^{1-o(1)}$ distinct choices of period at least $n^{2-o(1)}$. Six members have certified full order, including $X^{4224}+X^8+X^3+X^2+1$. [Proof](results.pdf#page=222) · [Construct a candidate and replay the six certificates](scripts/check_uniform_period.py)
@@ -767,6 +768,12 @@ For the five witnesses in degrees 7854 through 9576, each row gives the degree $
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
+~~~
+
+The additional composite degrees have a self-contained factor table and compressed PARI ECPP certificates. FLINT checks every polynomial order and proves the remaining factors prime.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 3510 --end 8584 --available --symmetric --factor-table data/mersenne-complementary-width-extra.json --prime-certificates data/mersenne-complementary-width-prime-certificates.json.gz --verify data/complementary-width-extra.csv --jobs 6
 ~~~
 
 The two normalized-width tables use the same factor tables and verification commands as the spacing tables below. Substitute `complementary-width-5-1228.csv` and `complementary-width-1230-2292.csv` for the corresponding `symmetric-witnesses` filenames. To check sharpness, run

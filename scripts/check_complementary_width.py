@@ -2,6 +2,7 @@
 
 import argparse
 import csv
+import json
 from collections import Counter
 from math import gcd
 from pathlib import Path
@@ -62,8 +63,14 @@ def main():
     if high != [(1320, 18), (1380, 18)] or sum(counts.values()) != 1756:
         raise ArithmeticError("unexpected extremal witnesses")
     print(f"The 1,756 witnesses have normalized widths {dict(sorted(counts.items()))}.")
+    with (DATA / "mersenne-complementary-width-extra.json").open() as source:
+        extra_degrees = sorted(map(int, json.load(source)))
+    extra, extrema = check_table(DATA / "complementary-width-extra.csv", extra_degrees)
+    if extrema != [(3696, 18)]:
+        raise ArithmeticError("unexpected extremal witness in the additional degrees")
+    print(f"The {len(extra_degrees)} additional witnesses have widths {dict(sorted(extra.items()))}.")
     if args.sharpness:
-        for n, _ in high:
+        for n, _ in high + extrema:
             check_sharpness(n, args.gp)
 
 
