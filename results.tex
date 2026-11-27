@@ -14204,4 +14204,36 @@ formula, with 299 distinct quadratics and the six original factors
 of larger relative degree. The elliptic descent checker accepts
 partial answers either for a cubic or for the whole formula.
 
+\section{Primitive pentanomials in 58 degrees from 3201 through 3456}
+\label{sec:products-3456}
+The product family \(X^n+(1+X^u)(1+X^v)\) supplies primitive
+pentanomials in 45 even degrees and 13 odd degrees in this interval.
+Together with Section~\ref{sec:products-3200}, these give verified
+polynomials of weight at most five in at least 2,343 of the first
+3,456 positive degrees. Two examples are
+\[
+ X^{3450}+X^{11}+X^8+X^3+1,\qquad
+ X^{3452}+X^{38}+X^{27}+X^{11}+1 .
+\]
+For each of the 58 degrees, \nolinkurl{data/product-witnesses-3201-3456.csv}
+gives the smallest \(u+v\) among the primitive members with
+\(0<u<v\) and \(u+v<n\), choosing the least \(u\) at a tie.
+PARI/GP examined these pairs in that order, tested irreducibility
+and computed the order of the residue of \(X\). The largest of the
+58 minimum spans is 236, at \((n,u,v)=(3216,111,125)\).
+
+The pinned \href{https://github.com/postvakje/Reformatted-Cunningham-Project-tables/tree/dff2e282ff15399b16b4fb840a410aa2a37076b7}{Cunningham tables}
+supplied 32 complete factorizations of \(M=2^n-1\), and
+\href{https://factordb.com/index.php?query=2\%5E3451-1}{FactorDB}
+supplied 26. The file \nolinkurl{data/mersenne-3201-3456.json} lists
+every prime factor with multiplicity. In the binary quotient for
+each row, the independent verifier checks \(X^M=1\) and
+\(X^{M/p}\ne1\) for every distinct prime \(p\mid M\). This gives
+the full order \(M\). Its \(M\) distinct powers exhaust the nonzero
+elements of the quotient, so the quotient is a field as well.
+There are 58 full powers, 1,852 prime-index powers, and 1,477
+distinct integer primes. FLINT proves primality directly. A second
+verification uses the ten archived PARI elliptic-curve primality
+certificates for the largest factors, which have 2,086 to 3,347 bits.
+
 \end{document}

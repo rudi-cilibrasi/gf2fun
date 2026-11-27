@@ -2,6 +2,7 @@
 
 import argparse
 import csv
+import gzip
 import json
 import subprocess
 import sys
@@ -46,6 +47,37 @@ def verify_batch(rows, primes):
             raise ValueError(f"composite order factor {p}")
 
 
+def certified_primes(path, primes, gp):
+    with gzip.open(path, "rt") as stream:
+        chains = json.load(stream)
+    if not isinstance(chains, list) or not chains:
+        raise ValueError("expected a nonempty archive of PARI ECPP certificates")
+    covered = set()
+    commands = []
+    for chain in chains:
+        if not isinstance(chain, list) or not chain:
+            raise ValueError("empty or malformed ECPP certificate")
+        for step in chain:
+            if (not isinstance(step, list) or len(step) != 5
+                    or not all(type(x) is int for x in step[:4])
+                    or not isinstance(step[4], list) or len(step[4]) != 2
+                    or not all(type(x) is int for x in step[4])):
+                raise ValueError("invalid ECPP certificate step")
+        p = chain[0][0]
+        if p in primes:
+            if p in covered:
+                raise ValueError("repeated ECPP certificate")
+            covered.add(p)
+            encoded = json.dumps(chain, separators=(",", ":"))
+            commands.append(f"print(primecertisvalid({encoded}));")
+    if commands:
+        verified = subprocess.run([gp, "-qf"], input="\n".join(commands) + "\n",
+                                  text=True, capture_output=True, check=True)
+        if verified.stdout.splitlines() != ["1"] * len(commands):
+            raise ValueError("PARI rejected an ECPP primality certificate")
+    return covered
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--factor-table", required=True, action="append", type=Path,
@@ -58,11 +90,14 @@ def main():
     action = parser.add_mutually_exclusive_group(required=True)
     action.add_argument("--search", action="store_true", help="write the PARI search results as CSV")
     action.add_argument("--verify", type=Path, metavar="CSV", help="check each degree and prove its factors prime")
-    parser.add_argument("--gp", default="gp", help="PARI/GP executable for search")
+    parser.add_argument("--gp", default="gp", help="PARI/GP executable for search or ECPP verification")
+    parser.add_argument("--prime-certificates", type=Path, help="verify archived ECPP chains for matching order factors")
     parser.add_argument("--least-span", action="store_true",
                         help="search in increasing u+v, breaking ties by u")
     parser.add_argument("--jobs", type=int, default=1, help="number of search or verification workers")
     args = parser.parse_args()
+    if args.prime_certificates and not args.verify:
+        parser.error("--prime-certificates requires --verify")
     if not 5 <= args.start <= args.end or min(args.step, args.jobs) < 1:
         parser.error("expected 5 <= start <= end and positive step and job counts")
     if args.least_span and not args.search:
@@ -105,17 +140,23 @@ def main():
                 raise ValueError(f"expected a single row for degree {n} in ascending order")
             entries.append((n, int(row["u"]), int(row["v"]), factors[n]))
     primes = sorted({p for row in factors.values() for p in row}, reverse=True)
+    covered = set()
+    if args.prime_certificates:
+        covered = certified_primes(args.prime_certificates, set(primes), args.gp)
+    remaining = [p for p in primes if p not in covered]
     workers = min(args.jobs, len(entries))
     if workers == 1:
-        verify_batch(entries, primes)
+        verify_batch(entries, remaining)
     else:
         with ProcessPoolExecutor(workers) as pool:
-            checks = [pool.submit(verify_batch, entries[j::workers], primes[j::workers])
+            checks = [pool.submit(verify_batch, entries[j::workers], remaining[j::workers])
                       for j in range(workers)]
             for check in checks:
                 check.result()
     print(f"Verified {len(degrees)} primitive product pentanomials in the interval "
           f"{args.start} through {args.end} and {len(primes)} distinct prime factors.")
+    if covered:
+        print(f"PARI verified {len(covered)} ECPP chains and FLINT proved the other {len(remaining)} primes.")
     if args.available:
         missing = sorted(set(interval) - set(degrees))
         if missing:
