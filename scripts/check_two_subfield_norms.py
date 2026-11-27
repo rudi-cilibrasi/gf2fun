@@ -19,10 +19,10 @@ TABLES = {
 }
 
 
-def verify_norm_witness(support, masks, factor_lists, gp):
-    """Verify irreducibility, both norm embeddings, and their orders in the small fields."""
+def verify_norm_embeddings(support, masks, gp):
+    """Verify irreducibility and the given annihilating polynomial at each norm."""
     n = support[-1]
-    if set(masks) != set(factor_lists) or any(m.bit_length() != d+1 for d, m in masks.items()):
+    if any(m.bit_length() != d+1 for d, m in masks.items()):
         raise ValueError(f"incorrect norm polynomial degrees at degree {n}")
     # PARI proves irreducibility of the large polynomial and checks the two embeddings.
     terms = "+".join(f"x^{i}" for i in support)
@@ -36,6 +36,12 @@ def verify_norm_witness(support, masks, factor_lists, gp):
     if result.returncode or result.stderr or result.stdout.splitlines() != ["verified"]:
         raise ArithmeticError(f"norm embedding check failed in degree {n}: {result.stderr}{result.stdout}")
 
+
+def verify_norm_witness(support, masks, factor_lists, gp):
+    """Verify both norm embeddings and their full orders in the small fields."""
+    if set(masks) != set(factor_lists):
+        raise ValueError("norm polynomials and factor lists describe different subfields")
+    verify_norm_embeddings(support, masks, gp)
     # Each remaining primitive-element test takes place in the smaller binary quotient.
     x = nmod_poly([0, 1], 2)
     for d in masks:

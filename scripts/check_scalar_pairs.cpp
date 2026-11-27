@@ -1,6 +1,7 @@
 // Search the rank-two subfield for a degree-pq product root of a pentanomial.
 // Arguments are the two distinct prime degrees p < q and the proposed
 // order h of the degree-p component. Outputs counts for that one order.
+#include "scalar_pair_polynomials.h"
 #include <NTL/GF2XFactoring.h>
 #include <NTL/ZZ.h>
 #include <algorithm>
@@ -13,28 +14,8 @@
 using NTL::GF2X;
 
 namespace {
-GF2X trinomial(long a, long b, long c) {
-    long low = std::min({a, b, c});
-    GF2X f;
-    for (long e : {a, b, c}) NTL::SetCoeff(f, e-low);
-    return f;
-}
-
-GF2X cyclotomic(long h) {
-    GF2X f;
-    NTL::SetCoeff(f, h);
-    NTL::SetCoeff(f, 0);
-    long remaining = h;
-    for (long d = 2; d <= remaining; ++d) {
-        if (remaining % d) continue;
-        GF2X smaller;
-        NTL::SetCoeff(smaller, h/d);
-        NTL::SetCoeff(smaller, 0);
-        f /= NTL::GCD(f, smaller);
-        do { remaining /= d; } while (remaining % d == 0);
-    }
-    return f;
-}
+using scalar_pairs::trinomial;
+using scalar_pairs::cyclotomic;
 
 using Pair = std::array<long, 2>;
 
