@@ -20989,9 +20989,9 @@ order dividing \(sp\) but not \(s\), together with \(p\) itself
 if \(p\mid2^s-1\). The progression step is at most \(n/2\) and the
 other difference at most \(n\).
 
-Through degree 10000 all 562 such degrees admit a complete answer.
-There are 49,224 remaining candidate supports up to reciprocation;
-60 are irreducible and zero have a split root. To enumerate them,
+Through degree 20000 all 1,016 such degrees admit a complete answer.
+There are 237,415 remaining candidate supports up to reciprocation;
+83 are irreducible and zero have a split root. To enumerate them,
 if the progression contains an endpoint, reflect it to start at zero.
 The other two exponents are \(n-h,n\), where \(h\) is a multiple of
 a permitted prime for the other component. If both endpoints are
@@ -21063,5 +21063,59 @@ The archived PRIMO certificates come from FactorDB for
 each certificate, the Rabin irreducibility conditions, every known
 prime-index power, and the trial bound. The full integer inputs are
 in \nolinkurl{data/relative-progression-witnesses.json}.
+
+\clearpage
+\section{Short triples and a two-power test for a subfield product}
+\label{sec:relative-short-triples}
+With the notation of Section~\ref{sec:relative-progression-differences},
+suppose three exponents are \(t,t+i d,t+j d\) where
+\(0<i<j<\min(p,q)\) and \(\gcd(i,j)=1\). Write \(u,v\) for the other
+two and \(h=|u-v|\). The differences theorem still applies to a
+support of gcd one. Indeed if \(\alpha^d\notin K\), its degree over
+\(K\) is \(p\). The powers at indices \(0,i,j\) are independent, as
+a polynomial of degree \(j<p\) cannot vanish there. The same holds
+for the other component. After the forced collapse on one side,
+the three terms divided by \(r^t\) again sum to an element of the
+opposite subfield. The rest of the proof is unchanged because
+\(\gcd(i d,j d)=d\).
+
+In fact for a given irreducible root \(r\) with this support, write
+\(M=2^s-1\) and put
+\[
+    D_{p,q}=M\gcd(d,L_p)\gcd(h,L_q),\qquad
+    D_{q,p}=M\gcd(d,L_q)\gcd(h,L_p).
+\]
+Then
+\[
+       r\in A^\times B^\times
+       \quad\Longleftrightarrow\quad
+       r^{D_{p,q}}=1\quad\text{or}\quad r^{D_{q,p}}=1.
+\]
+For the forward implication the component orders modulo \(K^\times\)
+divide their respective gcds. Hence raising to the product of the
+gcds puts \(r\) in \(K^\times\). Conversely both exponents divide
+\(M L_p L_q=\operatorname{lcm}(2^{sp}-1,2^{sq}-1)\), since
+\(\gcd(L_p,L_q)=1\). In particular a split root has order at most
+\((2^s-1)d h\le (2^s-1)n^2/j\). These tests require no
+factorization of any of the three field orders.
+
+For the 562 nonsquarefree odd degrees \(n=p^a q^b\le10000\),
+the exact split classification extends from a progression to any
+three of \(p\) consecutive equally spaced positions, \(p<q\).
+There are 60,623 possible normalized supports up to reciprocation.
+Of these, 71 are irreducible and zero split. The enumeration uses
+every coprime pair \(i,j\) in the indicated range. A triple cannot
+contain both endpoints, since then \(j\mid n\) with \(1<j<p\).
+For a triple in the interior, reflection changes its middle index
+from \(i\) to \(j-i\). Supports of exponent gcd greater than one
+obey the same dilation rule at every weight. The verifier option
+is \nolinkurl{--short-triples} in
+\nolinkurl{scripts/check_relative_progressions.py}.
+
+In particular the 1,662-digit prime in degree 6925 is forced by any
+three of five equally spaced positions. The 2,406-digit prime in
+degree 9583 is forced by any three of seven. In both cases one
+relative quotient has no prime divisor at most \(n\), so the
+conclusion follows directly without enumerating supports.
 
 \end{document}
