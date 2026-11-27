@@ -14381,4 +14381,53 @@ and apply the even case. Taking \(T^{1229}+1\) gives the claimed
 support and weight.
 \end{proof}
 
+\section{Real pencils for the 3,087 larger factors in the seven-input split}
+\label{sec:elliptic-real-front}
+The seven-input expansion has 1,029 factors of binary degree 130
+and 2,058 of degree 150. Every one of the former reduces to
+logarithms of relative degree at most 12 over \(\mathbb F_{2^{20}}\),
+and every one of the latter to relative degree at most 14.
+All other factors of that expansion already have relative degree
+at most nine. This gives a second stage for any branch of the
+seven-input certificate. Its binary degree bound is 280.
+
+To verify a row, put \(q=1024\), \(k=\mathbb F_q\), and let \(P\)
+be its irreducible binary mask of degree \(10t\), where \(t=13\)
+or \(15\). The archive gives coprime \(g,h\in k[T]\) of height
+\(m=t-1\), using a root of \(w^{10}+w^8+w^7+w^2+1\).
+Form \(D=\widehat g(g+h)+\widehat h g\) with the homogeneous
+substitution of Section~\ref{sec:elliptic-small-pencils}.
+Each irreducible factor of \(P\) over \(k\) has degree \(t\);
+its ten coefficient conjugates multiply to \(P\). Factoring \(D\)
+over \(k\) and summing the multiplicities of the factors dividing
+\(P\) therefore gives exactly the multiplicity of \(P\) in
+\(\mathcal N_{k/\F}D\). The verifier checks that this multiplicity
+is invertible modulo \(C\). Every other irreducible factor of \(D\)
+of degree \(j\) splits into factors of degree \(j/\gcd(j,2)\) over
+\(\mathbb F_{q^2}\); the verifier checks \(j/\gcd(j,2)\le m\).
+On the source side, \(g\) and the 1,024 polynomials \(h+c g\),
+\(c+c^q=1\), all have degree at most \(m\). Their coefficient
+conjugates have the same bound. The norm identity thus isolates
+\(L(P)\) using factors of relative degree at most \(m\). The
+denominator \(H_1=T(T+1)^2\) has known logarithm.
+
+One way to find such pencils is to choose a factor \(p\mid P\) of
+degree \(t\) over \(k\), then vary \(g=g_0+u\) over \(u\in k\)
+with \(g_0\) monic of degree \(m\). For fixed \(g\), the condition
+\[
+ \widehat g h+\widehat h g=\widehat g g\pmod p
+\]
+is linear in the \(m\) coefficients of \(h\) of degree below \(m\).
+In the power basis modulo \(p\), adjoin the right-hand side as
+the last column of the resulting \(t\)-by-\(t\) matrix.
+The first \(m\) columns are affine in \(u\), and the last is
+quadratic. Its determinant has degree at most \(m+2=t+1\), so
+\(t+2\) evaluations determine it on all 1,024 parameters.
+At a root, solve the linear system and test the cofactor degrees.
+The certificate contains the polynomials \(g,h\) themselves so
+verification only requires the displayed factorizations.
+\nolinkurl{scripts/check_1229_elliptic_real_pencils.py} checks
+every row against the 4,404-factor expansion and can expand a
+single row into an explicit power-verified logarithm equation.
+
 \end{document}

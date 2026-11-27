@@ -151,6 +151,14 @@ uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --backend /tmp/gf2-elliptic-dyadic
 ~~~
 
+All 3,087 degree-130 and degree-150 factors in the seven-input expansion have a further reduction. Their new bounds over $\mathbb F_{2^{20}}$ are 12 and 14 respectively. The other factors in the expansion have relative degree at most nine. These commands check coverage and all 3,087 certificates, then export one explicit logarithm equation. [Pencil coefficients](data/degree-1229-elliptic-real-pencils.json.gz) · [Verification](scripts/check_1229_elliptic_real_pencils.py) · [Determinant search](scripts/find_1229_real_pencil.py)
+
+~~~sh
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --lower-seven --backend /tmp/gf2-elliptic-dyadic --json > /tmp/gf2-elliptic-seven.json
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_real_pencils.py --frontier /tmp/gf2-elliptic-seven.json --jobs 4
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_real_pencils.py --expand 0x400412f00f4ddc3dfcdb785dea7b13943256ed
+~~~
+
 Four degree-1229 candidates share one discrete logarithm task. The JSON gives the binary field modulus, a base of order $C$, and the target as hexadecimal polynomial masks with bit $i$ as the coefficient of $X^i$. Find an integer $0\le e<C$ with $\mathrm{base}^e=\mathrm{target}$ in that field. Replace `--task` with `--log E` to check an answer. The checker computes the exact index of all four roots, and an index of one proves all four primitive. [Download the task](data/degree-1229-seventh-power-task.json)
 
 ~~~sh
