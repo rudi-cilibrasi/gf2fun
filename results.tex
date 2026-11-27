@@ -20476,13 +20476,14 @@ Section~\ref{sec:scalar-composite-census} are divisible by 2, 3 or 5.
 This excludes every coprime partition of every \(n\le10^6\)
 coprime to 30.
 
-For odd \(n\le1200\) the same conclusion holds without the
+For odd \(n\le2048\) the same conclusion holds without the
 coprimality-to-30 restriction. The only normalized scalar degrees
 left are \(i=3,5,9\), with orders \(h=7,31,73\), respectively.
 The requirements \(3h\le ij\), \(9i\le4j\) and \(\gcd(i,j)=1\)
-leave 257 scalar cases in 230 distinct degrees. The product test
-counts 725,361,232 possible supports across those cases and finds
-no split. Descent by \(g\) includes supports of arbitrary gcd.
+leave 450 scalar cases in 404 distinct degrees. The product test
+counts 6,226,592,338 possible supports across those cases and finds
+no split. The respective totals for scalar degrees 3, 5 and 9 are
+6,041,938,028, 183,025,326 and 1,628,984. Descent by \(g\) includes supports of arbitrary gcd.
 
 For composite \(j\), first intersect the two-trinomial product gcd
 with \(X^{2^j}+X\). Remove by exact division the union of the factors
@@ -20572,5 +20573,73 @@ any polynomial gcd. For a fixed support
 using integers, including the divisibility restriction for dyadic
 gaps. The list can be empty even in degrees with an unresolved
 Mersenne cofactor.
+
+\clearpage
+\section{Three exponents in arithmetic progression determine the scalar plane}
+\label{sec:three-progression-scalar}
+Let an irreducible binary pentanomial have degree \(n\) and support \(E\)
+containing \(t,t+d,t+2d\), with \(d>0\). If a root splits across two
+coprime proper subfield degrees whose product is \(n\), then
+\[
+                            n\equiv2\pmod4.
+\]
+For support of gcd one the scalar component has exact order three,
+and its field is \(\mathbb F_4\). The step \(d\) is arbitrary. The
+example \(X^6+X^4+X^2+X+1\) has a split root of order 21. The
+degree-4094 lift of Section~\ref{sec:dyadic-trinomial-lifts} also
+contains a progression and has exact order \(3(2^{2047}-1)\). For an odd
+\(n\), the supports \(\{0,a,2a,b,n\}\) with \(4a<n\) and
+\(n/2<b<n\) alone give \(\lfloor(n-1)/4\rfloor\lfloor(n-1)/2\rfloor\)
+distinct candidates to which the exclusion applies.
+
+Indeed, write \(r=\alpha\beta\) and put the binary rank-two side
+on \(\alpha\), of degree \(i\), with partner degree \(j\). Its three
+plane points have multiplicities \(2,2,1\). Put \(z=\alpha^d\).
+If \(z=1\), three points coincide. Otherwise the plane spanned by
+\(1,z\) contains \(z^2\). Since \(z\ne0,1\), this forces
+\(z^2=z+1\) and \(z\) has order three. The progression exhausts all
+three plane points in a single coset of \(\mu_3\). The whole support
+includes zero, so this coset is \(\mu_3\) itself. For \(g=\gcd(E)\),
+\(\alpha^g\) therefore has order three. In particular \(i\) is even
+and \(j\) is odd. The degree of \(r^g\) is \(n/g\), while
+\(r^g\in\mathbb F_{2^{2j}}\), so \(i\mid2g\). Irreducibility makes
+\(g\) odd, since a binary polynomial in \(X^2\) is a square.
+This proves the congruence and gives \(i=2\) when \(g=1\).
+
+In odd degree the same exclusion holds for the three positions
+\(t,t+d,t+2^k d\) whenever \(k\ge1\) and \(\gcd(k,n)=1\).
+If \(z\ne1\), then \(z^{2^k}\) can be neither 1 nor \(z\), the latter
+because the common fixed field of the \(k\)-th and \(n\)-th binary
+Frobenius maps is \(\mathbb F_2\). The only remaining point in
+the plane is \(z+1\), excluded by the absolute trace in odd degree.
+In particular \(k\) may be any power of two, independently of \(n\).
+\nolinkurl{GF2Sparse/ScalarOrderBound.lean} verifies the geometric
+triple and the Frobenius plane exclusion.
+
+There is also a consequence for subfields with a nontrivial intersection.
+Let distinct odd primes \(p,q\) divide \(n\), put \(s=n/(pq)\), and
+suppose \(\gcd(d,2^n-1)=1\). A root cannot belong to the product
+of the two maximal subfields of degrees \(sp,sq\). Over their
+intersection \(K=\mathbb F_{2^s}\), a putative product has components
+of relative degrees \(p,q\). Taking the \(d\)-th power preserves both
+degrees. Each triple spans dimension three over \(K\), since an
+element of degree at least three has linearly independent first three
+powers starting at exponent zero. The subfields are linearly disjoint
+over \(K\). The five-term relation then bounds the sum of the two
+ranks by five as in Theorem~\ref{thm:1243-subfield-product}, a contradiction.
+
+In particular for \(n=p^a q^b\) some prime power in the root order
+has binary multiplicative degree \(n\), since every proper divisor
+of \(n\) divides one of the two maximal subfield degrees. One can take
+a prime when \(p<q\) and \(\ord_q(2)\ne p^a\), by the argument of
+Corollary~\ref{cor:trinomial-full-order-component}. This applies to
+every \(n=3^a5^b\) with \(a,b\ge1\) and three consecutive support
+exponents. Two full-order examples with consecutive exponents are
+\[
+ X^{1233}+X^{43}+X^2+X+1,\qquad X^{3375}+X^{491}+X^2+X+1.
+\]
+In degree \(3375=3^3 5^3\) the maximal subfields intersect in degree
+225. \nolinkurl{scripts/check_progression_scalar_orders.py} verifies
+irreducibility, the factorizations and every prime-index power.
 
 \end{document}

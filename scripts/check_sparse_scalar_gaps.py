@@ -1,6 +1,7 @@
 """Recover the possible scalar orders from the fifteen pairings of an odd-degree support."""
 
 import argparse
+from itertools import combinations
 from math import gcd
 
 from check_scalar_pairs import scalar_residues
@@ -15,6 +16,11 @@ def gap_candidates(support, scalar_degree=None):
     if scalar_degree is not None and (scalar_degree < 2 or n % scalar_degree
             or n//scalar_degree <= scalar_degree or gcd(n//scalar_degree,scalar_degree) != 1):
         raise ValueError("the smaller scalar degree must give a proper coprime partition")
+    for a, b, c in combinations(support, 3):
+        for step in (b - a, c - b):
+            ratio, remainder = divmod(c - a, step)
+            if not remainder and ratio & (ratio - 1) == 0 and gcd(ratio.bit_length() - 1, n) == 1:
+                return
     for c in support:
         a,*rest = [e for e in support if e != c]
         for b in rest:

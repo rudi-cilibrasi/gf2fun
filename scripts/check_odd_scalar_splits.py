@@ -40,14 +40,21 @@ def main():
         return row,counts
 
     tests = supports = splits = 0
+    degrees = set()
     with ThreadPoolExecutor(args.jobs) as pool:
         for row,counts in pool.map(check,cases(args.limit)):
+            degrees.add(row[0] * row[1])
             tests += 1
             supports += counts[1]
             splits += counts[-1]
             if counts[-1] or args.list:
                 print(*row,*counts,flush=True)
-    print(f"Odd degrees through {args.limit}: {tests} scalar cases, {supports:,} supports, {splits} splits.")
+    summary = tests, len(degrees), supports, splits
+    expected = {1200: (257, 230, 725361232, 0), 2048: (450, 404, 6226592338, 0)}
+    if args.limit in expected and summary != expected[args.limit]:
+        raise ArithmeticError(f"unexpected counts through degree {args.limit}: {summary}")
+    print(f"Odd degrees through {args.limit}: {tests} scalar cases in {len(degrees)} degrees, "
+          f"{supports:,} supports, {splits} splits.")
 
 
 if __name__ == "__main__":
