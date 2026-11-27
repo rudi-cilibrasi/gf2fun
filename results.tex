@@ -16133,7 +16133,7 @@ Cunningham factors archived in \nolinkurl{data/mersenne-central-pair-factors.jso
 for the three primitive degrees. The checker also compares all 1,173
 integer discriminants and binary factorizations in even degrees 6 through 96.
 
-\section{Four primitive pentanomials with complementary taps through degree 9576}
+\section{Five primitive pentanomials with complementary taps through degree 9576}
 \label{sec:symmetric-9576}
 For \(0<b<n/2\) and \(0<a<n\), write
 \[
@@ -16147,6 +16147,7 @@ binary polynomial. The last column counts the distinct primes dividing
 \[
 \begin{array}{r|rr|r}
  n& b&a&\omega(2^n-1)\\\hline
+ 7854& 1&3863&61\\
  8680&26&4221&84\\
  8712&10&2767&88\\
  8840& 6&2685&84\\
@@ -16155,20 +16156,52 @@ binary polynomial. The last column counts the distinct primes dividing
 \]
 In particular \(X^{9576}+X^{9566}+X^{4555}+X^{10}+1\) has root order
 \(2^{9576}-1\). Together with Section~\ref{sec:products-7560}, the
-repository supplies primitive witnesses in at least 2,563 of the first
+repository supplies primitive witnesses in at least 2,564 of the first
 9,576 positive degrees.
 
 NTL found the witnesses. For an independent check, FLINT proves all
-336 distinct integer factors prime, the largest having 904 decimal
+383 distinct integer factors prime, the largest having 904 decimal
 digits. For each row the verifier multiplies the factor list with
 multiplicities to obtain \(M=2^n-1\), then checks \(X^M=1\) and
 \(X^{M/p}\ne1\) for every prime \(p\mid M\) modulo \(S_{n,b,a}\).
-These four full powers and 363 prime-index powers certify the orders.
+These five full powers and 424 prime-index powers certify the orders.
 An element of order \(2^n-1\) in this binary quotient accounts for
 every nonzero residue class by its powers, so the quotient is a field.
 The witnesses and the order factorizations from
 \href{https://factordb.com/}{FactorDB} are in
-\nolinkurl{data/symmetric-witnesses-8680-9576.csv} and
-\nolinkurl{data/mersenne-8680-9576-extra.json}.
+\nolinkurl{data/symmetric-witnesses-above-7560.csv} and
+\nolinkurl{data/mersenne-symmetric-above-7560.json}.
+
+\section{A sharp bound on complementary tap spacing in 1,756 degrees}
+\label{sec:complementary-spacing-range}
+For every integer \(5\le n\le1228\), and for every even integer
+\(1230\le n\le2292\), there is a primitive \(S_{n,b,a}\) with
+\(1\le b\le13\). Thus one of thirteen choices for the distance of the
+complementary taps from the endpoints suffices throughout both ranges.
+In 1,113 of the 1,756 degrees there is a witness with \(b=1\).
+The uniform bound 13 is sharp: degree 2040 needs \(b\ge13\), and
+\[
+                  X^{2040}+X^{2027}+X^{13}+X^8+1
+\]
+attains it.
+
+The positive certificates are the two tables
+\nolinkurl{data/symmetric-witnesses-5-1228.csv} and
+\nolinkurl{data/symmetric-witnesses-1230-2292.csv}.
+The full-order tests of Section~\ref{sec:symmetric-9576} apply to
+each row, using 4,381 distinct primes for the first table and 6,530
+for the second.
+
+For sharpness, we can take \(a\le n/2\) by reciprocation. If all
+exponents have a common divisor \(d>1\), a root \(r\) has \(r^d\)
+of degree at most \(n/d\). Its order is at most
+\(d(2^{n/d}-1)<2^n-1\), by the geometric sum for
+\((2^n-1)/(2^{n/d}-1)\). This leaves exactly 7,851 choices in degree
+2040 with \(1\le b\le12\), distinct taps and coprime exponents.
+PARI finds exactly eleven irreducibles. With \(M=2^{2040}-1\),
+five satisfy \(X^{M/3}=1\), two further ones satisfy \(X^{M/5}=1\),
+two more satisfy \(X^{M/7}=1\), and the last two satisfy \(X^{M/13}=1\).
+FLINT checks these proper-order powers. The census is reproduced by
+\nolinkurl{scripts/check_complementary_taps.py} with \texttt{--census}.
 
 \end{document}

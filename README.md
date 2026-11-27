@@ -10,7 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **Four additional degrees have certified primitive pentanomials with complementary taps.** The degrees are 8680, 8712, 8840 and 9576. In the largest, $X^{9576}+X^{9566}+X^{4555}+X^{10}+1$ has order $2^{9576}-1$ at each root. NTL found the examples and FLINT independently checked all four full orders. The repository now covers at least 2,563 of the first 9,576 degrees. [Four witnesses](data/symmetric-witnesses-8680-9576.csv) · [Order factors](data/mersenne-8680-9576-extra.json) · [Verification](results.pdf#page=212)
+- **Thirteen tap spacings suffice in 1,756 degrees, and degree 2040 needs the thirteenth.** Every degree from 5 through 1228 and every even degree from 1230 through 2292 has a certified primitive $X^n+X^{n-b}+X^a+X^b+1$ with $b\le13$. In 1,113 of the archived witnesses $b=1$. In degree 2040, all eleven irreducibles with $b\le12$ and coprime exponents have proper order, while $X^{2040}+X^{2027}+X^{13}+X^8+1$ is primitive. [Degrees 5–1228](data/symmetric-witnesses-5-1228.csv) · [Even degrees 1230–2292](data/symmetric-witnesses-1230-2292.csv) · [Exhaustive check](scripts/check_complementary_taps.py)
+- **Five additional degrees have certified primitive pentanomials with complementary taps.** The degrees are 7854, 8680, 8712, 8840 and 9576. In the largest, $X^{9576}+X^{9566}+X^{4555}+X^{10}+1$ has order $2^{9576}-1$ at each root. NTL found the examples and FLINT independently checked all five full orders. The repository now covers at least 2,564 of the first 9,576 degrees. [Five witnesses](data/symmetric-witnesses-above-7560.csv) · [Order factors](data/mersenne-symmetric-above-7560.json) · [Verification](results.pdf#page=212)
 - **Four fixed exponents suffice to pass the factor-parity test in every even degree $n\ge6$.** For $X^n+X^{n-2}+X^a+X^2+1$ the proof specifies exactly which odd $a$ give an odd number of irreducible factors. When $8\mid n$, only $a=n/2\pm1$ pass. Among the 1,500 multiples of eight through 12,000, this family gives primitive reciprocal pairs in exactly three degrees, 8, 112 and 1968. [All-even formula](results.pdf#page=211) · [Order checks and census](scripts/check_progression_factor_parity.py)
 - **In every degree $n\ge12$ congruent to four modulo eight, all $n/2$ odd choices of $a$ make $X^n+X^{n-4}+X^a+X^4+1$ squarefree with an odd number of irreducible factors.** The general construction allows other fixed exponents and can simultaneously exclude every factor of any prescribed bounded degree on an infinite progression. Two verified primitive members have degrees 5964 and 6300. In every positive multiple of 2520, a primitive five-term binary polynomial must have at least six terms in each factor over $\mathbb F_4$. The degree-7560 example has 2,831 in each. [Parity theorem](results.pdf#page=209) · [Multiples of 2520](results.pdf#page=210) · [Verify the examples](scripts/check_progression_factor_parity.py)
 - **In even degrees above 16, exactly two families can give a primitive binary polynomial and a factor over $\mathbb F_4$ both having at most five terms.** This cuts the search in each degree to a linear number of candidates. In degree 2458 only one of the 2,558 reciprocal classes is irreducible. The norm of its root down to degree 1229 has a minimal polynomial with 631 terms, ruling out this construction for a degree-1229 pentanomial. [Classification](results.pdf#page=207) · [Degree-1229 consequence](results.pdf#page=208) · [Exact enumeration](scripts/check_quaternary_norm_shapes.py)
@@ -754,10 +755,20 @@ The ten additional degrees from 4224 through 7560 use the same verifier and an a
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 4224 --end 7560 --available --factor-table data/mersenne-4224-7560-extra.json --verify data/product-witnesses-4224-7560-extra.csv --jobs 8
 ~~~
 
-For the four witnesses in degrees 8680 through 9576, each row gives the degree $n$ and the two exponents $b,a$ in $X^n+X^{n-b}+X^a+X^b+1$.
+For the five witnesses in degrees 7854 through 9576, each row gives the degree $n$ and the two exponents $b,a$ in $X^n+X^{n-b}+X^a+X^b+1$.
 
 ~~~sh
-uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 8680 --end 9576 --available --symmetric --factor-table data/mersenne-8680-9576-extra.json --verify data/symmetric-witnesses-8680-9576.csv --jobs 4
+uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
+~~~
+
+The two consecutive ranges with $b\le13$ use the pinned Cunningham table and two small supplements. The third command using the verifier checks the alternative witnesses in multiples of eight. The census needs PARI/GP on the path or its executable supplied with the --gp option.
+
+~~~sh
+curl -fsSL https://raw.githubusercontent.com/postvakje/Reformatted-Cunningham-Project-tables/dff2e282ff15399b16b4fb840a410aa2a37076b7/pmain422_table2-.json -o /tmp/gf2-cunningham.json
+uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --end 1228 --symmetric --factor-table /tmp/gf2-cunningham.json --factor-table data/mersenne-1207-1228-factors.json --verify data/symmetric-witnesses-5-1228.csv --jobs 4
+uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 1230 --end 2292 --step 2 --symmetric --factor-table /tmp/gf2-cunningham.json --factor-table data/mersenne-even-2182-2292-extra.json --verify data/symmetric-witnesses-1230-2292.csv --jobs 4
+uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 8 --end 2288 --step 8 --symmetric --factor-table /tmp/gf2-cunningham.json --factor-table data/mersenne-even-2182-2292-extra.json --verify data/symmetric-witnesses-multiples-of-eight-through-2288.csv --jobs 4
+uv run --no-project --with python-flint==0.9.0 python scripts/check_complementary_taps.py --census
 ~~~
 
 The following commands replay the polynomial-tail theorem, list the 55 trinomial witnesses and verify the published degree-1229 factors.
