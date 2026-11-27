@@ -16977,4 +16977,68 @@ archived factorizations of \(2^n-1\), checks each prime factor, and
 verifies the full exponent and every prime-index power. These
 examples are additional supports in degrees already covered.
 
+\section{Forcing a prime into the root order from two maximal subfields}
+\label{sec:two-maximal-subfields}
+
+Let \(r\) have degree \(n\) over \(\F\), let \(R\) be its conjugates,
+and assume that every \(z\ne0,1\) occurs as \(u/v\) for at most \(K\)
+ordered pairs in \(R^2\). Theorem~\ref{thm:two-block} supplies this
+hypothesis for a sparse polynomial split into two blocks. In particular
+an irreducible complementary pentanomial with coprime exponents has
+\(K=c+\max(c,k)\) in the notation of Section~\ref{sec:complementary-order}.
+
+\begin{theorem}\label{thm:two-maximal-subfields}
+Let \(p<q\) be primes dividing \(n\), with \(q>K\). Set
+\[
+ A=2^{n/p}-1,\qquad B=2^{n/q}-1,\qquad H=\ord(r^{AB}).
+\]
+Then \(H\ge q\). Every prime \(s\mid H\), with the possible exception
+of \(s=q\), satisfies
+\[
+             p^{v_p(n)}q^{v_q(n)}\mid \ord_s(2).
+\]
+The exception requires \(p^{v_p(n)}\mid\ord_q(2)\). In particular if
+\(n=p^a q^b\) and \(p^a\nmid\ord_q(2)\), the order of \(r\) contains
+a prime of binary multiplicative degree exactly \(n\).
+\end{theorem}
+\begin{proof}
+Write \(w=r^A\) and \(Q=2^{n/q}\). Since \(r\) has degree \(n\),
+\(w\ne1\). If \(w^Q=w\), the \(q\) ordered pairs
+\((r^{2^{n/p}Q^j},r^{Q^j})\), \(0\le j<q\), have the same quotient
+and distinct denominators. This contradicts \(q>K\). Hence \(w\)
+has \(q\) distinct conjugates over \(\mathbb F_Q\). Each lies in
+\(w\langle w^{Q-1}\rangle\), since \(Q^j-1\) is a multiple of
+\(Q-1\). This coset has size \(H\).
+
+Fix a prime \(s\mid H\). It is odd and \(d=\ord_s(2)\mid n\).
+For \(t=p,q\), if \(d\mid n/t\), lifting the exponent gives
+\[
+     v_s(2^n-1)=v_s(2^{n/t}-1)+v_s(t).
+\]
+The exponent \(AB\) contains \(2^{n/t}-1\) as a factor, so survival
+of \(s\) in \(H\) requires \(s=t\). The possibility \(s=p\) is
+excluded since then \(d\mid p-1\), whence \(d\mid n/q\) and the
+same argument would give \(s=q\). Thus \(d\nmid n/p\), and also
+\(d\nmid n/q\) unless \(s=q\). These conditions give the stated
+divisibilities.
+\end{proof}
+
+For example \(3415=5\cdot683\) and \(5\nmid682\). Here
+\[
+ P=\frac{2^{3415}-1}{(2^5-1)(2^{683}-1)}
+\]
+is an 821-digit prime. Its ECPP certificate is in
+\nolinkurl{data/mersenne-3201-3456-prime-certificates.json.gz}.
+Every irreducible polynomial in this degree satisfying the quotient
+bound \(K<683\) has \(P\) in its root order. Indeed the product
+\(AB\) removes every other prime of \(2^{3415}-1\), and the theorem
+gives \(r^{AB}\ne1\). For such a root, primitivity is equivalent
+to its two norms to degrees 5 and 683 both being primitive. To see
+this, write \(r=g^e\) for a generator \(g\). The norm of \(g\) to
+each subfield generates its multiplicative group. The two norm tests
+therefore give \(\gcd(e,AB)=1\), while \(P\mid\ord(r)\) gives
+\(P\nmid e\) since \(P\) occurs only once in the group order.
+The archived example \(X^{3415}+(1+X^8)(1+X^{27})\) has \(K=35\)
+by taking its leading term as the first block.
+
 \end{document}
