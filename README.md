@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In degrees 4,167, 6,925, 9,583 and 12,231 every irreducible pentanomial containing a three-term progression has a certified large prime in its root order.** Primitivity then reduces to testing the two maximal-subfield norms. For the explicit examples at 6,925 and 12,231 the root orders have certified divisors of 1,840 and 2,936 digits. Each remaining index is one or exceeds ten billion. [Proof and polynomials](results.pdf#page=288) · [Cofactors](data/relative-progression-witnesses.json) · [Verifier](scripts/check_relative_progression_witnesses.py)
+
 - **For odd degrees with two distinct prime factors through 10,000, progression pentanomials that split into maximal subfields are classified.** Write $n=p^a q^b$ with $p<q$. An irreducible pentanomial containing a three-term progression has a split root exactly when its exponents share a divisor and $q$ divides $2^{n/(pq)}-1$. Testing the progression step and the difference of the other two exponents settles 3,235 of the 4,090 nonsquarefree degrees of this form through 100,000 directly. [Proof](results.pdf#page=286) · [Degree sieve and census](scripts/check_relative_progressions.py)
 
 - **Seven more degrees have certified minimum primitive weights.** Five terms are necessary in degrees 4,205, 5,325, 10,192 and 17,917. In those degrees, $X^n+X^t+X^2+X+1$ is primitive for $t=216,1169,3159,1961$, respectively. Three terms suffice in degrees 4,167, 7,135 and 13,489. Every trinomial tap up to reciprocity was checked. [Witnesses and factorizations](data/composite-order-witnesses.json) · [Proof and trinomial taps](results.pdf#page=285) · [Verifier](scripts/check_composite_orders.py)
@@ -893,6 +895,8 @@ To check the progression census for intersecting maximal subfields, run
 c++ -std=c++17 -O3 scripts/relative_progression_orders.cpp -lntl -lgmp -o /tmp/gf2-relative-orders
 uv run --no-project --with sympy python scripts/check_relative_progressions.py --limit 10000 --checker /tmp/gf2-relative-orders --jobs 4
 uv run --no-project --with sympy python scripts/check_relative_progressions.py --limit 100000
+uv run --no-project --with sympy python scripts/check_relative_progressions.py --degree 12231 --checker /tmp/gf2-relative-orders
+uv run --no-project --with python-flint==0.9.0 python scripts/check_relative_progression_witnesses.py
 ~~~
 
 The Python command verifies all twenty composite degrees in the witness table with PARI/GP. Add `--degree 17917` to check only that degree, or `--ntl` with the path to the compiled trinomial enumerator to repeat the exhaustive tap search. The Lean command builds the general norm criterion. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)

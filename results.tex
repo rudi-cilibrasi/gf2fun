@@ -21006,4 +21006,62 @@ the exclusion in Section~\ref{sec:all-progression-twists} already
 applies. The census and the degree sieve are reproduced by
 \nolinkurl{scripts/check_relative_progressions.py}.
 
+\clearpage
+\section{Large prime divisors of every progression root order}
+\label{sec:overlap-forced-primes}
+For each row below the prime \(P=\Phi_n(2)\) divides the root order
+of \emph{every} irreducible binary pentanomial of degree \(n\)
+containing a three-term arithmetic progression. The step can be any
+positive integer. The columns below \(p,q\) give every prime at
+most \(n\) of the respective relative quotients \(L_p,L_q\).
+\[
+\begin{array}{r|r|r|r|l|l|r}
+ n & p & q & s & L_p & L_q & \text{digits of }P \\ \hline
+ 4167 &3&463&3&73&\text{none}&835\\
+ 6925 &5&277&5&601,1801&\text{none}&1662\\
+ 9583 &7&37&37&127&\text{none}&2406\\
+ 12231&3&151&27&2593&2719&2439
+\end{array}
+\]
+For \(n=9583\), the same two-difference test gives no normalized
+candidate. For \(n=12231\) it leaves precisely 16 normalized supports
+up to reciprocal, and all are reducible. In all four rows
+\(q\nmid 2^s-1\), so the exact dilation rule excludes the other supports.
+Thus the order fails to divide
+\(L=\operatorname{lcm}(2^{sp}-1,2^{sq}-1)\). Since
+\(2^n-1=LP\), it must contain \(P\). Moreover \(P>n\), so lifting the
+exponent shows that \(P\) divides neither maximal subfield order:
+a prime greater than \(n\) could not gain valuation on extending
+either subfield by \(p\) or \(q\). Hence primitivity for any such
+root is equivalent to primitivity of its two maximal-subfield norms.
+The full-order results for \(4167\) and \(9583\) are in
+Sections~\ref{sec:seven-relative-witnesses} and~\ref{sec:further-complementary}, respectively.
+
+For \(n=6925,12231\), take \(r\) respectively a root of
+\[
+   X^{6925}+X^{2153}+X^2+X+1,\qquad
+   X^{12231}+X^{958}+X^2+X+1 .
+\]
+Write \(2^n-1=KC\) with \(K\) the fully certified part and \(\gcd(K,C)=1\).
+The first \(K\) has 1,840 digits and the second has 2,936. The remaining
+cofactors have 246 and 747 digits, respectively. Direct powering
+proves \(K\mid\ord(r)\) and \(r^K\ne1\). In particular
+\[
+        \ord(r)=K h,\qquad h\mid C,\qquad h>10^{10}.
+\]
+Indeed all primes of \(C\) have binary multiplicative degree \(d=1385\)
+or \(4077\), respectively: \(C\mid 2^d-1\) and \(C\) is coprime to
+each maximal proper subfield order in degree \(d\). Such primes have
+the form \(2kd+1\) since \(d\) is odd. Trial division through
+\(10^{10}\) excludes them all. Consequently the remaining index
+\(C/h\) is either one or exceeds \(10^{10}\).
+
+The archived PRIMO certificates come from FactorDB for
+\href{https://factordb.com/cert/1100000000777158417}{degree 6925} and
+\href{https://factordb.com/cert/1100000000851643065}{degree 12231}.
+\nolinkurl{scripts/check_relative_progression_witnesses.py} checks
+each certificate, the Rabin irreducibility conditions, every known
+prime-index power, and the trial bound. The full integer inputs are
+in \nolinkurl{data/relative-progression-witnesses.json}.
+
 \end{document}
