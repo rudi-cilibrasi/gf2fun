@@ -21118,4 +21118,60 @@ degree 9583 is forced by any three of seven. In both cases one
 relative quotient has no prime divisor at most \(n\), so the
 conclusion follows directly without enumerating supports.
 
+\clearpage
+\section{Infinite degree families for every pair of odd primes}
+\label{sec:periodic-relative-exclusion}
+Fix any odd primes \(p<q\). Define
+\[
+       B_p=\mathop{\rm lcm}_{r\le p,\ r\ {\rm odd\ prime}}(r-1).
+\]
+For every positive multiple \(b\) of \(B_p\), put \(n=pq^b\).
+If an irreducible binary pentanomial of degree \(n\) contains three
+of \(p\) equally spaced positions, its root lies outside the product
+of the two maximal proper subfields. Its order therefore contains a
+prime power whose binary multiplicative degree is exactly \(n\).
+If \(q\nmid 2^p-1\), its order contains a \emph{prime} of binary
+multiplicative degree \(n\). These conclusions hold for every exponent
+gcd. For each fixed \(p\), the same period works for every \(q>p\).
+
+Here \(s=q^{b-1}\), so \(q\nmid2^s-1\). Indeed the order of 2 modulo
+\(q\) divides \(q-1\) and exceeds one. This rules out every split
+support of gcd greater than one by the dilation theorem. For a split
+support of gcd one, the short-triple theorem requires a prime
+\(\ell\le n\) of \(L_q=\Phi_{q^b}(2)\). This prime differs from \(q\),
+and 2 has order exactly \(q^b\) modulo \(\ell\). Otherwise
+\(2^s=1\bmod\ell\), and the geometric sum defining \(L_q\) reduces to
+\(q\bmod\ell\). Since \(q^b\) is odd, the only candidates are
+\[
+                \ell=kq^b+1,\qquad k=2,4,\ldots,p-1.
+\]
+Choose any prime \(r\mid k+1\). Then \(3\le r\le p<q\), and
+Fermat's theorem gives \(q^b\equiv1\bmod r\). Thus \(r\mid\ell\)
+and \(r<\ell\), contradicting primality. Lean verifies this
+congruence argument in \nolinkurl{GF2Sparse/ScalarOrderBound.lean}.
+
+A root outside the subfield product has a prime-power order divisor
+absent from both maximal subfield orders. Its binary degree must be
+\(n\), since every proper divisor of \(n\) divides at least one of
+\(n/p,n/q\). For a prime \(\ell\ne p,q\), extension by \(p\) or \(q\)
+cannot increase its valuation if it is already present. Also
+\(p\nmid 2^n-1\), since \(\gcd(p-1,n)=1\). The only remaining
+exception could be \(q\), and \(q\mid 2^n-1\) requires
+\(q\mid2^p-1\). This proves the claim about primes.
+
+For \(p=3\) or \(5\) the conclusion holds whenever \(q^b\not\equiv
+11\pmod{12}\). This includes every even \(b\) and every \(b\) when
+\(q\not\equiv11\pmod{12}\). To see this, put \(z=q^b\). Any odd prime
+of \(2^z-1\) has 2 as a quadratic residue, since its order is odd.
+The supplement to quadratic reciprocity excludes \(4z+1\equiv5
+\bmod8\). It also excludes \(2z+1\equiv3\bmod8\) when
+\(z\equiv1\bmod4\). When \(z\equiv1\bmod3\), the latter candidate
+is divisible by 3. These exhaust the candidates unless
+\(z\equiv11\bmod12\). For instance the primitive degree-4205
+pentanomial from Section~\ref{sec:seven-relative-witnesses} belongs
+to the family \(5\cdot29^b\) at \(b=2\).
+The option \nolinkurl{--family P Q B} in
+\nolinkurl{scripts/check_relative_progressions.py} evaluates these
+congruences without constructing \(2^n-1\) or even \(q^b\).
+
 \end{document}

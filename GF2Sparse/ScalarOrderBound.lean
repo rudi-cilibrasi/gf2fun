@@ -206,4 +206,23 @@ theorem three_power_divides_mersenne_iff (a n : ℕ) :
     exact iff_of_false (fun h => h3 (dvd_trans (dvd_pow_self 3 (by omega : a+1 ≠ 0)) h))
       (fun h => h2 (dvd_trans (dvd_mul_right 2 _) h))
 
+/-- An odd-prime divisor of k+1 eliminates k*t+1 whenever t is one modulo that divisor. -/
+theorem progression_candidate_not_prime {k t r : ℕ} (hr : 1 < r) (hd : r ∣ k+1)
+    (hlt : r < k*t+1) (ht : t ≡ 1 [MOD r]) : ¬ (k*t+1).Prime := by
+  have hmod : k*t+1 ≡ k+1 [MOD r] := by simpa using (ht.mul_left k).add_right 1
+  have hdiv := Nat.modEq_zero_iff_dvd.mp (hmod.trans (Nat.modEq_zero_iff_dvd.mpr hd))
+  intro hp
+  rcases (Nat.dvd_prime hp).mp hdiv with h | h <;> omega
+
+/-- Fermat's congruence eliminates a candidate for every multiple of r-1. -/
+theorem progression_candidate_not_prime_of_period {k q b r : ℕ} (hr : r.Prime)
+    (hc : q.Coprime r) (hd : r ∣ k+1) (hb : r-1 ∣ b) (hlt : r < k*q^b+1) :
+    ¬ (k*q^b+1).Prime := by
+  apply progression_candidate_not_prime hr.one_lt hd hlt
+  obtain ⟨j, rfl⟩ := hb
+  rw [pow_mul]
+  have h := Nat.ModEq.pow_totient hc
+  rw [Nat.totient_prime hr] at h
+  simpa using h.pow j
+
 end GF2Sparse.SubfieldProducts

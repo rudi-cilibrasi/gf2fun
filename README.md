@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **For every pair of odd primes $p<q$ there are infinitely many degrees $p q^b$ where three of $p$ equally spaced positions force a full-degree order component.** The period $\mathrm{lcm}_{3\le r\le p,\ r\text{ prime}}(r-1)$ works for all $q>p$. If $q$ does not divide $2^p-1$, an actual prime of binary multiplicative degree $p q^b$ divides every such irreducible pentanomial root order. For $p=3,5$ it suffices that $q^b$ differs from 11 modulo 12. [Proof](results.pdf#page=290) · [Congruence verifier](scripts/check_relative_progressions.py) · [Lean](GF2Sparse/ScalarOrderBound.lean)
+
 - **In degrees 4,167, 6,925, 9,583 and 12,231 every irreducible pentanomial containing a three-term progression has a certified large prime in its root order.** Primitivity then reduces to testing the two maximal-subfield norms. For the explicit examples at 6,925 and 12,231 the root orders have certified divisors of 1,840 and 2,936 digits. Each remaining index is one or exceeds ten billion. [Proof and polynomials](results.pdf#page=288) · [Cofactors](data/relative-progression-witnesses.json) · [Verifier](scripts/check_relative_progression_witnesses.py)
 
 - **For odd degrees with two distinct prime factors through 20,000, progression pentanomials that split into maximal subfields are classified.** Write $n=p^a q^b$ with $p<q$. An irreducible pentanomial containing a three-term progression has a split root exactly when its exponents share a divisor and $q$ divides $2^{n/(pq)}-1$. Testing the progression step and the difference of the other two exponents settles 3,235 of the 4,090 nonsquarefree degrees of this form through 100,000 directly. For all 562 nonsquarefree degrees through 10,000 the rule extends to any three of $p$ equally spaced positions. [Proof](results.pdf#page=286) · [Short triples and the two-power test](results.pdf#page=289) · [Degree sieve and census](scripts/check_relative_progressions.py)
@@ -896,6 +898,7 @@ c++ -std=c++17 -O3 scripts/relative_progression_orders.cpp -lntl -lgmp -o /tmp/g
 uv run --no-project --with sympy python scripts/check_relative_progressions.py --limit 20000 --checker /tmp/gf2-relative-orders --jobs 4
 uv run --no-project --with sympy python scripts/check_relative_progressions.py --limit 10000 --short-triples --checker /tmp/gf2-relative-orders --jobs 4
 uv run --no-project --with sympy python scripts/check_relative_progressions.py --limit 100000
+uv run --no-project --with sympy python scripts/check_relative_progressions.py --family 23 101 7920
 uv run --no-project --with sympy python scripts/check_relative_progressions.py --degree 12231 --checker /tmp/gf2-relative-orders
 uv run --no-project --with python-flint==0.9.0 python scripts/check_relative_progression_witnesses.py
 ~~~

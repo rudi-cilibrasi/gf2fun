@@ -4,9 +4,9 @@ import argparse
 import subprocess
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
-from math import gcd
+from math import gcd, lcm
 
-from sympy import divisors, factorint, n_order, primerange
+from sympy import divisors, factorint, isprime, n_order, primerange
 
 
 def bounded_primes(limit):
@@ -74,16 +74,46 @@ def check_batch(batch, checker):
     return count, irreducible, split
 
 
+def prime_power_family(p, q, b):
+    """Eliminate small primes of Phi_(q^b)(2) without constructing q^b."""
+    period = lcm(*(r-1 for r in primerange(3, p+1)))
+    unresolved = []
+    for k in range(2, p, 2):
+        # A prime k*q^b+1 dividing a Mersenne number of odd degree must have 2 as a square.
+        if (k*pow(q, b, 8)+1) % 8 in (3, 5):
+            continue
+        if any(pow(q, b, r) == 1 for r in factorint(k+1)):
+            continue
+        unresolved.append(k)
+    return period, unresolved
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     bounds = parser.add_mutually_exclusive_group()
     bounds.add_argument("--limit", type=int, default=100000)
     bounds.add_argument("--degree", type=int, help="check one odd degree with two distinct prime factors")
+    bounds.add_argument("--family", type=int, nargs=3, metavar=("P", "Q", "B"),
+                        help="test degree P*Q^B using small congruences, without constructing the field")
     parser.add_argument("--checker", help="compiled scripts/relative_progression_orders.cpp for exact testing")
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--short-triples", action="store_true",
                         help="include all triples in p consecutive equally spaced positions, p the smaller prime")
     args = parser.parse_args()
+    if args.family:
+        p, q, b = args.family
+        if not (2 < p < q and isprime(p) and isprime(q) and b >= 1):
+            parser.error("expected odd primes P < Q and a positive exponent B")
+        if args.checker:
+            parser.error("--checker tests supports at explicit degrees")
+        period, unresolved = prime_power_family(p, q, b)
+        print(f"Degree {p}*{q}^{b}. Every multiple of {period} is a sufficient exponent.")
+        if unresolved:
+            print(f"Coefficients k requiring a further test for k*{q}^{b}+1: {unresolved}.")
+        else:
+            print(f"Any irreducible pentanomial with three of {p} equally spaced positions "
+                  "has a root outside the product of the maximal subfields.")
+        return
     limit = args.degree if args.degree is not None else args.limit
     if limit < 3 or args.jobs < 1:
         parser.error("expected a positive worker count and a degree bound of at least three")
