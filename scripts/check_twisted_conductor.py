@@ -66,14 +66,19 @@ def conductor_test(p, h):
     return lifted
 
 
-def check_large():
+def check_large(gp=None):
     rows = json.loads(DATA.read_text())["imaginary_quadratic_principalization"]
     for k, h in rows.items():
         p = (1 << int(k)) + 5
         if not eligible(p) or p % 24 != 13:
             raise ValueError(f"ineligible conductor at k={k}")
-        if conductor_test(p, h)[0] == 1 or pow(2, p - 1, p * p) == 1:
+        lifted = conductor_test(p, h)
+        if lifted[0] == 1 or pow(2, p - 1, p * p) == 1:
             raise ValueError(f"conductor prime valuation mismatch at k={k}")
+        if gp:
+            _, principal, form = ast.literal_eval(run_gp(gp, f"twisted_conductor_class({p},{h})"))
+            if principal or tuple(form) != lifted:
+                raise ValueError(f"PARI and ideal-lattice composition disagree at k={k}")
         print(f"C_{k}: the prime {p} divides the root order exactly once.")
 
 
@@ -116,7 +121,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.survey is not None and args.survey < 5:
         parser.error("the survey limit must be at least five")
-    check_large()
+    check_large(args.gp if args.small else None)
     if args.small:
         check_small(args.gp)
     if args.survey is not None:

@@ -19134,17 +19134,22 @@ form of discriminant \(\delta\) to \(H\) verifies the initial
 principalization independently of how \(H\) was found.
 \end{proof}
 
-At \(k=141\), \(p=2^{141}+5\), one certificate is
+For the two five-term examples, put \(p=2^k+5\). The following
+exponents certify that \(p\) divides the root order exactly once.
 \[
-                       H=2652699919124560266592.
+\begin{array}{r|r}
+k&H\\\hline
+141&2652699919124560266592\\
+191&149423868273514553541217882040
+\end{array}
 \]
-The form of discriminant \(-3p\) becomes principal, and its lift
-of discriminant \(-3p^3\) has exact order \(p\) after raising to
-\(H\). Thus \(p\nmid J\). The additional check
-\(2^{p-1}\ne1\bmod p^2\), also verified in Lean, proves that \(p\) divides the root
-order exactly once. All checks of this certificate use exact
-integer arithmetic. A second computation multiplies the ideal
-lattices by Hermite normal form and reduces the resulting forms.
+In each case the form of discriminant \(-3p\) becomes principal
+after raising to \(H\), and the lifted form of discriminant \(-3p^3\)
+raised to \(H\) has exact order \(p\). Since \(p\equiv13\bmod24\),
+the theorem gives \(p\nmid J\). Lean also verifies
+\(2^{p-1}\ne1\bmod p^2\) in both cases. PARI form composition and
+an independent calculation with Hermite normal forms of ideal lattices
+verify both certificates using exact integer arithmetic.
 Across the 125 eligible primes through 2053, both implementations
 give the same reduced forms. The criterion agrees with direct
 binary powering in every case, and 35 give \(p\mid J\). See

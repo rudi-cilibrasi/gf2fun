@@ -10,7 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **The prime $2^{141}+5$ divides the root order of the degree-$2^{141}+4$ pentanomial exactly once.** Two binary quadratic forms certify this unconditionally. The test works at the conductor prime for every irreducible twisted cyclotomic polynomial and agrees with direct powering at all 125 eligible primes through 2,053. [Proof](results.pdf#page=253) · [Reproduce the certificate](scripts/check_twisted_conductor.py)
+- **For $k=141$ and $191$, the prime $2^k+5$ divides the root order of the degree-$2^k+4$ pentanomial exactly once.** Binary quadratic forms certify both results unconditionally. The test works at the conductor prime for every irreducible twisted cyclotomic polynomial and agrees with direct powering at all 125 eligible primes through 2,053. [Proof](results.pdf#page=253) · [Reproduce the certificates](scripts/check_twisted_conductor.py)
 
 - **A ray class group gives a full-order criterion for the twisted cyclotomic family.** For a prime $p\ge5$ with $-2$ primitive modulo $p$, choose $2^j\equiv\pm3\bmod p$. A root of $D_p$ is primitive exactly when $\gcd(2^{(p-1)/2}-1,2^j-3)=1$ and Frobenius minus two maps the ordinary ray class group modulo two of $\mathbb Q(\zeta_{3p})^+$ onto itself. Individual primes can be tested in smaller subfields. A cubic field detects the factor seven in the root-order index of the degree-2,052 pentanomial. Direct powering agrees in 325 root tests and 195 Gauss period tests across 253 ray groups. [Proof](results.pdf#page=247) · [Certified computations](scripts/check_twisted_ray.py)
 
@@ -861,7 +861,7 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_corr
 
 The ray quotient also gives the exact prime-power multiplicities in the root-order index away from primes dividing the degree. For $k=141$ the only exceptional prime is 3. For $k=191$ they are 3, 19 and 87,211. Lean certifies both lists. [Index formula](results.pdf#page=252) · [Lean certificates](GF2Sparse/TwistedCyclotomic.lean)
 
-The conductor-prime checker verifies the supplied exponent by multiplying quadratic ideal lattices with FLINT. The large certificate needs only the Python wheel. The small comparison checks every reduced form against PARI and tests the prediction by powering in the binary field. The form survey checks all 248,761 eligible primes through ten million. Exactly the 74,706 primes congruent to 23 modulo 24 divide the corresponding root-order index. [Principalization exponent](data/translation-lift-orders.json)
+The first command verifies both large certificates by multiplying quadratic ideal lattices with FLINT. It needs only the Python wheel. The second also checks both large cases against PARI and compares the prediction with direct binary powering for every eligible prime through 2,053. The form survey covers all 248,761 eligible primes through ten million. Exactly the 74,706 primes congruent to 23 modulo 24 divide the corresponding root-order index. [Certificate exponents](data/translation-lift-orders.json)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_conductor.py
