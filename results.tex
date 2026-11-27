@@ -16845,4 +16845,136 @@ without an irreducibility assumption. Proving that a member generates
 a field of order \(2^n\) and has full period \(2^n-1\) remains the
 existence problem.
 
+
+\section{A growing factor cutoff and nearly quadratic period in every degree}
+\label{sec:uniform-growing-period}
+
+\begin{theorem}\label{thm:uniform-growing-period}
+Let \(B\ge2,\ L=\mathrm{lcm}_{1\le i\le B}(2^i-1)\). In every
+degree \(n\ge64(L+1)\) there is an explicit binary pentanomial
+with coprime exponents, squarefree with an odd number of irreducible
+factors, all of degrees greater than \(B\), whose quotient-ring
+period \(H\) satisfies
+\[
+                   (14L+2)(H-1)\ \ge\ n(n-1).
+\]
+Each \(1\le w\le n/(64(L+1))\) with \(w\equiv1\pmod8\) and
+\(\gcd(w,n)=1\) gives a different such support. In particular the
+choice \(w=1\) requires no search.
+\end{theorem}
+\begin{proof}
+The four constructions below each have the two-block form of
+Theorem~\ref{thm:two-block}. Denote the sum of the degrees of
+their two block polynomials by \(K\). That theorem gives
+\(K(H-1)\ge n(n-1)\) once squarefreeness and exponent coprimality
+are established.
+
+\emph{Degrees zero modulo eight.} Choose \(j\in\{1,3\}\) so that
+\(1+jL\equiv0\pmod4\), and put \(c=2+2jL\). Use
+\[
+             F=1+X^{2w}+X^{Lw}+X^{cw}+X^n .
+\]
+Here \(c\) is divisible by eight and exceeds \(2L\).
+For nonzero \(z\) of degree at most \(B\), the terms in positions
+\((0,Lw)\) and \((2w,cw)\) cancel. The exponents have gcd one
+since \(L\) is odd and \(\gcd(w,n)=1\). The binary derivative
+is a monomial. To check parity, use the integer lift and let
+\(P_k=\sum_i\alpha_i^{-k}\) for its complex roots. Put
+\(b=Lw,\ h=(L-2)w\). The series \(-XF'/F\) gives
+\(P_h=0\) since \(h<b\) is odd. At \(2h<2b\) a single use of
+the odd exponent \(b\) cannot contribute, and the terms of degrees
+\(cw,n\) exceed \(2h\). Consequently
+\[
+   P_{2h}=[X^{2h}]\frac{-2wX^{2w}}{1+X^{2w}}=-2w .
+\]
+Modulo eight the derivative at \(\alpha_i\) is
+\(b\alpha_i^{b-1}(1+(2/L)\alpha_i^{-h})\). The prefactors have
+product one modulo eight. The linear term in the remaining product
+vanishes, and the quadratic term is
+\((2/L)^2(P_h^2-P_{2h})/2\equiv4\pmod8\). Higher terms vanish
+modulo eight. The discriminant is five since its sign factor is
+positive. This gives odd factor count by Stickelberger--Swan.
+Use \(X^n\) as one block and the tail as a polynomial in \(X^w\);
+then \(K=c\le6L+2\).
+
+\emph{Degrees one or seven modulo eight.} Use
+\[
+               F=X^n+(1+X^{8w})(1+X^{8Lw}).
+\]
+The factor \(1+X^{8Lw}\) vanishes on the nonzero elements in the
+small fields. The exponent gcd is one. Modulo eight the derivative
+of the integer lift is \(nX^{n-1}\). Thus the discriminant is
+\((-1)^{(n-1)/2}n^n\equiv1\pmod8\), giving squarefreeness and
+odd factor count. The tail in \(X^{8w}\) has degree \(K=L+1\).
+
+\emph{Degrees three or five modulo eight.} Let \(s\) be the member
+of \(\{L,3L,5L,7L\}\) congruent to \(n-2\bmod8\). Put
+\(u=sw,\ v=n-(s+2)w\) and take
+\[
+                  F=X^n+(1+X^u)(1+X^v).
+\]
+The factor \(1+X^u\) guarantees the cutoff. The positive exponents
+have gcd one by \(\gcd(s,s+2)=1\) and \(\gcd(n,w)=1\).
+Here \(8\mid v\), \(n-u\equiv2\pmod4\), and \(n-u>2u\).
+These are exactly the conditions used in the odd-degree discriminant
+calculation in Theorem~\ref{thm:joint-sieve}: through degree \(2u\)
+only the exponents \(0,2w,(s+2)w\) of the reciprocal can occur.
+The calculation gives discriminant one modulo eight. The two blocks
+are \(X^v(1+Y^s+Y^{s+2})\) and \(1+Y^s\), with \(Y=X^w\).
+They have coprime coefficient polynomials and \(K=2s+2\le14L+2\).
+
+\emph{Degrees two, four or six modulo eight.} Take \(c=4L\),
+choose \(k=6L+1\) in residue class two and \(k=4L+1\) otherwise,
+and put
+\[
+                F=(1+X^{cw})(1+X^{n-cw})+X^{kw}.
+\]
+The small fields annihilate \(1+X^{cw}\), and \(\gcd(c,k)=1\)
+gives exponent coprimality. The derivative is a monomial.
+Both corrections of Theorem~\ref{thm:complementary-discriminant}
+vanish because \(4\mid cw\) and
+\(0<(k-c)w<kw<(n-cw)/2\). The specified odd tap residues
+give base discriminant five in all three cases.
+The blocks of Theorem~\ref{thm:local-quadratic-order} have
+\(K=c+k\le10L+1\).
+
+The bound on \(w\) ensures five distinct terms throughout.
+In the four cases its value is recovered from the smallest
+positive exponent, respectively \(2w,8w,sw,cw\).
+\end{proof}
+
+For fixed \(B\) this gives \(\gg_B\varphi(n)\) examples
+in every sufficiently large degree. More generally, fix
+\(0<\delta<1\) and choose any \(B\ge2\) with
+\(B(B+1)\le2\delta\log_2 n\). Then \(L\le 2^{B(B+1)/2}\le n^\delta\).
+Inclusion--exclusion in the progression \(w\equiv1\pmod8\) up
+to \(T=n/(64(L+1))\) gives
+\[
+       \frac{T}{8}\prod_{p\mid n,\ p\ne2}(1-1/p)+O(2^{\omega(n)}).
+\]
+The product is at least \(2^{-\omega(n)}\), and
+\(2^{\omega(n)}=n^{o(1)}\). Thus there are at least
+\(n^{1-\delta-o(1)}\) such pentanomials of period
+\(\gg n^{2-\delta}\). If \(B=o(\sqrt{\log n})\), the same argument
+gives \(n^{1-o(1)}\) examples of period at least \(n^{2-o(1)}\).
+In particular the minimum permitted factor degree can tend to infinity
+in the nearly quadratic estimate. These are orders in the quotient
+ring; the construction still permits a product of three or more
+irreducible factors.
+
+The formula and a direct factorization audit in all eight degree
+classes are in \nolinkurl{scripts/check_uniform_period.py}. For
+example at \(n=10^6,\ B=6,\ w=1\) the support is
+\(0,2,9765,58592,10^6\) and the period is at least \(17{,}067{,}161\).
+The construction also gives full-order witnesses in degrees
+\(2549,2560,2590,2620,2972,4224\). In particular both
+\[
+             X^{2560}+X^{128}+X^{21}+X^2+1,\qquad
+             X^{4224}+X^8+X^3+X^2+1
+\]
+are primitive. The option \texttt{--primitive-examples} reuses the
+archived factorizations of \(2^n-1\), checks each prime factor, and
+verifies the full exponent and every prime-index power. These
+examples are additional supports in degrees already covered.
+
 \end{document}
