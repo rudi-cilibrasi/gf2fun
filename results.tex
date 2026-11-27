@@ -22094,4 +22094,31 @@ The original PRIMO chains are archived under
 with PARI/GP, proves the remaining primes with FLINT, and checks
 the powers over \(\mathbb F_2\).
 
+\paragraph{Minimum weight through degree 9901 in this table.}
+There are 45 degrees in this part of the table. Nineteen have a
+primitive trinomial. In each of the other 26 the displayed pentanomial
+has minimum possible primitive weight. For example,
+\(X^{5689}+X^{1384}+1\) and \(X^{9901}+X^{10}+X^4+X^3+1\)
+are primitive. We tested 522 prime-index powers across the 45 witnesses.
+Forty-two witnesses are Seroussi's polynomials. The complementary search
+supplied the witnesses in degrees 4809, 6824 and 6944.
+
+Four of the minimum-five degrees are multiples of eight, where
+\href{https://maths-people.anu.edu.au/~brent/pd/rpb211.pdf}
+{Swan's theorem} excludes irreducible trinomials. In another 21 cases,
+\(n\equiv3,5\pmod8\). Orient any trinomial by reciprocation so its
+interior exponent \(k\) is even. Swan excludes it unless \(k\mid2n\).
+If \(d=\gcd(k,n)>1\), a root of a degree-\(n\) irreducible trinomial
+has its \(d\)-th power in the field of degree \(n/d\); its order
+is at most \(d(2^{n/d}-1)<2^n-1\). This leaves only \(k=2\).
+For each of these 21 degrees the data give a proper binary divisor
+of \(X^n+X^2+1\), encoded with the constant coefficient at bit zero.
+
+The remaining degree is \(4809=7\cdot687\). NTL and PARI/GP independently
+tested all 2404 reciprocal representatives. Only the taps 91 and 931
+give irreducibles. Both trinomials are polynomials in \(X^7\).
+Their root orders attain the bound \(7(2^{687}-1)\), as direct
+powering at each prime divisor of this bound verifies. The full-order
+pentanomial in the table settles the minimum weight in this case.
+
 \end{document}

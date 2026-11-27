@@ -10,7 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **Ten more degrees from 3,537 through 4,809 have certified primitive trinomials or pentanomials.** Examples are $X^{3537}+X^{218}+1$ and $X^{3987}+X^{11}+X^4+X^2+1$. The verifier proves the prime factors of each field order and checks every prime-index power. [Witnesses and factorizations](data/mers-project-sparse-orders.json) · [Verifier](scripts/check_mers_project_orders.py) · [Proof](results.pdf#page=307)
+- **In 45 additional degrees from 3,537 through 9,901, the minimum primitive weight is known.** Nineteen admit primitive trinomials and the other 26 require pentanomials. At degree 4,809 the only irreducible trinomial taps up to reciprocation are 91 and 931. Both are multiples of seven. A primitive pentanomial has interior exponents 746, 1,119 and 3,690. [Witnesses and factorizations](data/mers-project-sparse-orders.json) · [Verifier](scripts/check_mers_project_orders.py) · [Proof](results.pdf#page=307)
 
 - **In degrees 1,331, 3,993 and 6,655, 21 pentanomial pairs have root index one or greater than 182,931,247,071,233.** Three examples have interior exponents $(1,2,289)$, $(1,2,83)$ and $(1,2,1719)$, respectively. The first two primitivity checks reduce to the same 250-digit composite order in degree 1,331. The third also has a 1,427-digit composite to resolve. All 665 trinomial pairs in degree 1,331 are reducible, so a witness there requires five terms. [Order bounds and remaining tests](results.pdf#page=306) · [Polynomials and factors](data/degree-1331-order-projections.json) · [Verifier](scripts/check_1331_order_projections.py)
 
