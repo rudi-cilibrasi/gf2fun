@@ -74,6 +74,13 @@ theorem scalar_bound_of_count {A p q S : ℕ} (hA : 0 < A) (hq : 0 < q)
   by_contra! bad
   nlinarith [Nat.mul_le_mul_right (q^2) bad]
 
+/-- A three-position window bounds the partner degree when the signed
+triples fit in exponent intervals of total length at most j*n*W. -/
+theorem scalar_triple_width_bound {i j W S : ℕ} (hj : 0 < j)
+    (hc : 12*S = 5*j^3+7*j) (hpack : S ≤ j*(i*j)*W) : 5*j < 12*i*W := by
+  by_contra! bad
+  nlinarith [Nat.mul_le_mul_right (j^2) bad]
+
 /-- A composite order cannot fit below the scalar bound if all of its
 prime factors are at least 2p+1. -/
 theorem prime_scalar_of_bound {A p : ℕ} (ha : 2 ≤ A) (h : 5*A < 12*p^2)

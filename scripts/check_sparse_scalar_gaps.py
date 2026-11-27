@@ -7,6 +7,30 @@ from math import gcd
 from check_scalar_pairs import scalar_residues
 
 
+def excluded_triple(a, b, c, n, scalar_degree=None):
+    step = gcd(b-a, c-a)
+    m, width = (b-a)//step, (c-a)//step
+    if width <= 6 or (width <= 22 and n % 3 != 0):
+        return True
+
+    for distance in (m, width-m):
+        ratio, remainder = divmod(width, distance)
+        if not remainder and ratio & (ratio-1) == 0 and gcd(ratio.bit_length()-1, n) == 1:
+            return True
+
+    # Unit differences give scalar degree i <= width and 5*n < 12*i*i*width.
+    if any(gcd(delta, pow(2, n, delta)-1) != 1 for delta in (m, width-m, width)):
+        return False
+    if scalar_degree is not None:
+        return scalar_degree > width or 5*n >= 12*scalar_degree**2*width
+    if width <= 1000:
+        # The exact subgroup census leaves only these odd scalar degrees.
+        largest = max((i for i in (3, 5, 9) if i <= width and n % i == 0), default=0)
+    else:
+        largest = width
+    return 5*n >= 12*largest**2*width
+
+
 def gap_candidates(support, scalar_degree=None):
     n = support[-1]
     if len(support) != 5 or support != sorted(set(support)) or support[0] != 0 or n % 2 != 1:
@@ -16,11 +40,8 @@ def gap_candidates(support, scalar_degree=None):
     if scalar_degree is not None and (scalar_degree < 2 or n % scalar_degree
             or n//scalar_degree <= scalar_degree or gcd(n//scalar_degree,scalar_degree) != 1):
         raise ValueError("the smaller scalar degree must give a proper coprime partition")
-    for a, b, c in combinations(support, 3):
-        for step in (b - a, c - b):
-            ratio, remainder = divmod(c - a, step)
-            if not remainder and ratio & (ratio - 1) == 0 and gcd(ratio.bit_length() - 1, n) == 1:
-                return
+    if any(excluded_triple(a, b, c, n, scalar_degree) for a, b, c in combinations(support, 3)):
+        return
     for c in support:
         a,*rest = [e for e in support if e != c]
         for b in rest:

@@ -20705,4 +20705,67 @@ tests also recover exactly the 52 normalized split supports predicted
 by the lift in degrees \(2j\) for odd \(3\le j\le35\).
 \nolinkurl{scripts/check_progression_scalar_orders.py} compares both sets.
 
+\clearpage
+\section{Three of seven positions suffice in every odd degree}
+\label{sec:three-position-bound}
+In every odd degree, three support exponents anywhere in
+\(t+d\{0,1,\ldots,6\}\) exclude a split across any two coprime
+proper subfield degrees. When \(3\nmid n\) the window is
+\(t+d\{0,1,\ldots,22\}\). Both claims allow an arbitrary positive
+step and an arbitrary support gcd.
+
+More generally take three exponents \(t,t+md,t+Wd\), with
+\(0<m<W\), such that \(m,W,W-m\) are units modulo \(2^n-1\).
+For normalized support in odd degree, a split across the scalar degree
+\(i\) and its partner \(j\) requires
+\[
+              i\le W,\qquad 5j<12iW,\qquad 5n<12i^2W\le12W^3.
+\]
+Indeed put \(z=\alpha^d\) on the scalar side. Three coincident points
+are impossible. The unit differences then make all three points
+distinct. Dividing by \(\alpha^t\) gives \(1+z^m+z^W=0\), and
+the three points exhaust the plane. All ratios \(\alpha^{e-t}\)
+therefore lie in \(\mathbb F_2(z)\). Their exponents have gcd one,
+so \(z\) has the full scalar degree \(i\le W\).
+
+The three positions include the singleton \(c\). Call the other two
+\(a_1,a_2\), with partners \(e_1,e_2\), and write
+\(u_b=|a_b-c|/d\), \(L_b=e_b-\min(c,a_b)\), \(x=\beta^d\).
+The pair equations give \(1+x^{u_b}=\beta^{L_b}\). Every ratio
+\(\beta^{e-c}\) on the support lies in \(\mathbb F_2(x)\), so \(x\)
+has degree \(j\). If \(u_1,u_2\) have different odd parts, use the
+signed triples from Section~\ref{sec:scalar-independent-bound} with
+\(x,1+x^{u_1},1+x^{u_2}\). The number \(S=(5j^3+7j)/12\) satisfies
+\(S\le u_1u_2((j-1)D+1)\), where \(D\) is the diameter of
+\(0,d,L_1/u_1,L_2/u_2\).
+
+One has \(u_1u_2D\le nW\). Comparisons with zero or \(d\) use
+\(|L_b|,|L_b-u_bd|\le n\) and \(d\max u_b\le n\).
+For the two remaining slopes, an interior singleton gives the bound
+\(n(u_1+u_2)=nW\). For an endpoint singleton, take it on the left
+by reciprocity and assume \(u_1\le u_2\). Then
+\(L_1-(u_1/u_2)L_2\) is the difference between \(e_1\) and a convex
+combination of \(c,e_2\). This gives the bound \(n u_2\).
+Since \(u_1u_2\le nW\), one has \(S\le jnW\), proving \(5j<12iW\).
+
+Otherwise reorder so \(u_2=Ku_1\) for a power of two \(K\ge1\).
+If the singleton is an endpoint, the three scalar points normalize to
+\(1,y,y^K\); their sum cannot vanish in odd degree. For an interior
+singleton, \(B=\ord(\beta)\) divides \(L_2-KL_1\) by Frobenius.
+This integer is nonzero: on the scalar side \(\alpha^{L_b}\) is 1
+for the left-hand point and \(z^{u_b}\) for the right-hand point.
+Equality would give \(z^{u_2}=1\), contradicting distinctness. The
+ratios \(\beta^{e-c}\) all lie in \(\mathbb F_2(x^{u_1})\) in this
+case, so \(x^{u_1}\) has degree \(j\). It and its translate belong
+to the partner subgroup. Thus \(3j^2/4\le B\le(K+1)n\le Wn\),
+which also gives the claimed strict bound.
+
+For \(W\le6\) the index differences are units and odd \(i\le5\),
+so any normalized exception would have \(n<360\). For \(W\le22\)
+and \(\gcd(n,6)=1\) the differences are again units; the scalar
+census leaves only \(i=5\), giving \(n<1320\). The odd-degree census
+through 2048 excludes both ranges. For descent first make
+\(\gcd(m,W)=1\) by rescaling the step. Then the support gcd divides
+both \(t\) and \(d\), so the three positions survive normalization.
+
 \end{document}
