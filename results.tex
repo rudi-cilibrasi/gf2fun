@@ -16133,4 +16133,42 @@ Cunningham factors archived in \nolinkurl{data/mersenne-central-pair-factors.jso
 for the three primitive degrees. The checker also compares all 1,173
 integer discriminants and binary factorizations in even degrees 6 through 96.
 
+\section{Four primitive pentanomials with complementary taps through degree 9576}
+\label{sec:symmetric-9576}
+For \(0<b<n/2\) and \(0<a<n\), write
+\[
+ S_{n,b,a}=(1+X^b)(1+X^{n-b})+X^a
+          =X^n+X^{n-b}+X^a+X^b+1 .
+\]
+When \(a\notin\{b,n-b\}\), the five terms are distinct. The reciprocal
+of \(S_{n,b,a}\) is \(S_{n,b,n-a}\). Each row below gives a primitive
+binary polynomial. The last column counts the distinct primes dividing
+\(2^n-1\).
+\[
+\begin{array}{r|rr|r}
+ n& b&a&\omega(2^n-1)\\\hline
+ 8680&26&4221&84\\
+ 8712&10&2767&88\\
+ 8840& 6&2685&84\\
+ 9576&10&4555&107
+\end{array}
+\]
+In particular \(X^{9576}+X^{9566}+X^{4555}+X^{10}+1\) has root order
+\(2^{9576}-1\). Together with Section~\ref{sec:products-7560}, the
+repository supplies primitive witnesses in at least 2,563 of the first
+9,576 positive degrees.
+
+NTL found the witnesses. For an independent check, FLINT proves all
+336 distinct integer factors prime, the largest having 904 decimal
+digits. For each row the verifier multiplies the factor list with
+multiplicities to obtain \(M=2^n-1\), then checks \(X^M=1\) and
+\(X^{M/p}\ne1\) for every prime \(p\mid M\) modulo \(S_{n,b,a}\).
+These four full powers and 363 prime-index powers certify the orders.
+An element of order \(2^n-1\) in this binary quotient accounts for
+every nonzero residue class by its powers, so the quotient is a field.
+The witnesses and the order factorizations from
+\href{https://factordb.com/}{FactorDB} are in
+\nolinkurl{data/symmetric-witnesses-8680-9576.csv} and
+\nolinkurl{data/mersenne-8680-9576-extra.json}.
+
 \end{document}

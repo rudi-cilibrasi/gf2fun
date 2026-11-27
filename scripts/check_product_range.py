@@ -44,11 +44,17 @@ def prime_index_powers(x, order, primes, modulus):
         pending.append((left, value.pow_mod(prod(right), modulus)))
 
 
-def verify(n, u, v, factors):
-    if not 0 < u < v or u + v >= n:
-        raise ValueError(f"invalid support in degree {n}")
+def verify(n, u, v, factors, symmetric=False):
     x = nmod_poly([0, 1], 2)
-    f = x**n + x**(u+v) + x**v + x**u + 1
+    if symmetric:
+        b, a = u, v
+        if not 0 < 2*b < n or not 0 < a < n or a in (b, n-b):
+            raise ValueError(f"invalid symmetric support in degree {n}")
+        f = x**n + x**(n-b) + x**a + x**b + 1
+    else:
+        if not 0 < u < v or u + v >= n:
+            raise ValueError(f"invalid product support in degree {n}")
+        f = x**n + x**(u+v) + x**v + x**u + 1
     order = 2**n - 1
     if x.pow_mod(order, f) != 1:
         raise ValueError(f"failed full power in degree {n}")
@@ -57,9 +63,9 @@ def verify(n, u, v, factors):
             raise ValueError(f"index divisible by {p} in degree {n}")
 
 
-def verify_batch(rows, primes):
+def verify_batch(rows, primes, symmetric=False):
     for row in rows:
-        verify(*row)
+        verify(*row, symmetric=symmetric)
     for p in primes:
         if not fmpz(p).is_prime():
             raise ValueError(f"composite order factor {p}")
@@ -112,6 +118,8 @@ def main():
     parser.add_argument("--prime-certificates", type=Path, help="verify archived ECPP chains for matching order factors")
     parser.add_argument("--least-span", action="store_true",
                         help="search in increasing u+v, breaking ties by u")
+    parser.add_argument("--symmetric", action="store_true",
+                        help="verify degree,b,a rows for X^n + X^(n-b) + X^a + X^b + 1")
     parser.add_argument("--jobs", type=int, default=1, help="number of search or verification workers")
     args = parser.parse_args()
     if args.prime_certificates and not args.verify:
@@ -120,6 +128,8 @@ def main():
         parser.error("expected 5 <= start <= end and positive step and job counts")
     if args.least_span and not args.search:
         parser.error("--least-span applies to the search")
+    if args.symmetric and not args.verify:
+        parser.error("--symmetric requires --verify")
     table = {}
     for path in args.factor_table:
         with path.open() as source:
@@ -151,12 +161,13 @@ def main():
     entries = []
     with args.verify.open(newline="") as source:
         reader = csv.DictReader(source)
-        if reader.fieldnames != ["degree", "u", "v"]:
-            raise ValueError("expected CSV header degree,u,v")
+        first, second = ("b", "a") if args.symmetric else ("u", "v")
+        if reader.fieldnames != ["degree", first, second]:
+            raise ValueError(f"expected CSV header degree,{first},{second}")
         for n, row in zip(degrees, reader, strict=True):
             if int(row["degree"]) != n or None in row:
                 raise ValueError(f"expected a single row for degree {n} in ascending order")
-            entries.append((n, int(row["u"]), int(row["v"]), factors[n]))
+            entries.append((n, int(row[first]), int(row[second]), factors[n]))
     primes = sorted({p for row in factors.values() for p in row}, reverse=True)
     covered = set()
     if args.prime_certificates:
@@ -164,14 +175,15 @@ def main():
     remaining = [p for p in primes if p not in covered]
     workers = min(args.jobs, len(entries))
     if workers == 1:
-        verify_batch(entries, remaining)
+        verify_batch(entries, remaining, args.symmetric)
     else:
         with ProcessPoolExecutor(workers) as pool:
-            checks = [pool.submit(verify_batch, entries[j::workers], remaining[j::workers])
+            checks = [pool.submit(verify_batch, entries[j::workers], remaining[j::workers], args.symmetric)
                       for j in range(workers)]
             for check in checks:
                 check.result()
-    print(f"Verified {len(degrees)} primitive product pentanomials in the interval "
+    family = "symmetric-tap" if args.symmetric else "product"
+    print(f"Verified {len(degrees)} primitive {family} pentanomials in the interval "
           f"{args.start} through {args.end} and {len(primes)} distinct prime factors.")
     if covered:
         print(f"PARI verified {len(covered)} ECPP chains and FLINT proved the other {len(remaining)} primes.")
