@@ -16179,7 +16179,7 @@ For every integer \(5\le n\le1228\), and for every even integer
 \(1\le b\le13\). Thus one of thirteen choices for the distance of the
 complementary taps from the endpoints suffices throughout both ranges.
 In 1,113 of the 1,756 degrees there is a witness with \(b=1\).
-The uniform bound 13 is sharp: degree 2040 needs \(b\ge13\), and
+Degree 2040 attains the uniform bound. It needs \(b\ge13\), and
 \[
                   X^{2040}+X^{2027}+X^{13}+X^8+1
 \]
@@ -16237,12 +16237,12 @@ The prefactors have product \(a^n\equiv1\). Expanding modulo eight,
  \prod_r\bigl(1-(b/a)U_b-(c/a)U_c\bigr)
  \equiv P_bP_c\left(1-\frac{bc}{a^2}\sum_r U_bU_c\right).
 \]
-The coefficient \(bc\) is a multiple of four; all its products with
-another even coefficient vanish modulo eight.
+The coefficient \(bc\) is a multiple of four, so multiplying it by
+another even coefficient gives zero modulo eight.
 
 To compute \(P_d\), put \(e=n-d,\ \lambda=1-d/a,\ \xi=-1/\lambda\)
 and \(\delta=1+\xi\). The denominator resultant
-\(\operatorname{Res}(F,1+X^d)\) is one: at \(z^d=-1\) the value is
+\(\operatorname{Res}(F,1+X^d)\) equals one because at \(z^d=-1\) the value is
 \(z^a\), and the product of the \(z\)'s is one. The numerator is
 \(\lambda^n\prod_{z^d=\xi}\bigl(z^a+\delta(1+z^e)\bigr)\).
 Removing \(z^a\) throughout contributes \(\lambda^{-a}\), and
@@ -16282,9 +16282,9 @@ The factor-count conclusion is the
 Suppose \(8\mid n,\ n\ge24\), and put \(m=n/2\).
 Among \(S_{n,b,a}\) with even \(0<b<m\), the following list gives
 exactly one representative per reciprocal pair with coprime exponents
-and an odd number of irreducible factors:
+and an odd number of irreducible factors.
 \begin{itemize}
-\item \(b=2,\ a=m-1\);
+\item For \(b=2\), take \(a=m-1\).
 \item for each odd \(3\le t<m/2\) with \(\gcd(t,m)=1\), put
 \(s=m-t,\ b=2t\), and take every positive odd multiple of \(t\)
 or \(s\) strictly below \(n\) as \(a\).
@@ -16326,10 +16326,11 @@ equals
 \]
 The prime sum is \(o(\log m)\), by splitting at \(\sqrt{\log m}\)
 and using \(\sum_{p\mid m}\log p\le\log m\) for the larger primes.
-Also \(m/\varphi(m)=O(\sqrt{\log m})\): for primes through
-\(\log m\), bound the Euler product by the factor for 2 and the
-product over all odd integers from 3 to \(\log m\); the logarithm
-of the remaining product is bounded by \(O(\log m/\log m)\).
+To bound \(m/\varphi(m)\), the primes through \(\log m\) contribute at
+most the factor for 2 times the product over all odd integers from 3
+to \(\log m\), which is \(O(\sqrt{\log m})\).
+There are \(O(\log m)\) prime factors above \(\log m\), each contributing
+\(O(1/\log m)\) to the logarithm of the remaining product.
 These estimates prove the asymptotic.
 \end{proof}
 
@@ -16356,5 +16357,137 @@ including an odd spacing in all 18 exceptions, appear in
 The census checker also compares the discriminant formula to the
 integer discriminant and binary factorization of all 5,320 supports
 in even degrees through 64.
+
+\section{Logarithmic spacing for the small-factor and parity tests}
+\label{sec:complementary-local}
+For an integer \(B\ge1\), let \(L=L_B=\mathrm{lcm}_{1\le d\le B}(2^d-1)\).
+In this section the three tests on a pentanomial are coprimality of
+its positive exponents, an odd number of irreducible factors, and
+absence of irreducible factors of degree at most \(B\).
+
+\begin{theorem}\label{thm:complementary-local}
+In every sufficiently large even degree \(n\), some \(S_{n,b,a}\)
+with even \(b=O(\log n)\) passes all three tests at \(B=16\).
+In multiples of eight a positive proportion of the list in
+Corollary~\ref{cor:complementary-list} passes them.
+For infinitely many \(n\), every passing even \(b\) is
+\(\gg\log n\), already at \(B=4\).
+
+For any fixed \(B\), the single spacing \(b=4L_B\) suffices in all
+sufficiently large even degrees outside the multiples of eight.
+In every sufficiently large multiple of \(8L_B\) a positive proportion
+of the list passes the three tests and some passing \(b\) is \(O_B(\log n)\).
+\end{theorem}
+\begin{proof}
+First let \(n\equiv2,4,6\bmod8\). Take \(b=4L,\ c=n-b\), and
+\(b<a<c/2\), imposing \(a\equiv1\bmod L\). In residue class
+\(n\equiv2\bmod8\) take \(a\equiv3\bmod4\), and in the other two
+classes take \(a\equiv1\bmod4\). These simultaneous congruences
+leave \(\gg n/L\) choices as \(L\) is fixed and odd. The exponents
+are coprime. In Theorem~\ref{thm:complementary-discriminant} both
+corrections vanish, since \(0<a-b<a<c/2\). The base residue is
+five in each of the three cases. At every nonzero element \(z\) of
+a binary field of degree at most \(B\), we have \(z^b=1\), so the
+value is \(z^a\ne0\).
+
+Now write \(n=2m,\ 4\mid m\). For a divisor \(g\mid L\) seek
+a nonnegative integer \(j_g\) such that
+\[
+ Q_{g,j_g}(Y)=(1+Y^2)(1+Y^{2g-2})+Y^{j_g}
+\]
+has no nonzero root in any binary field of degree at most \(B\).
+For \(g=L\) one can always take \(j_g=2\), since at these field elements
+\(Y^L=1\) and the value is \(Y^{-2}\). The finite calculation at
+\(B=16\) covers every divisor \(g\).
+\[
+ \begin{array}{r|r|r|r}
+ B&L_B&\#\{g:g\mid L_B\}&\max_g\min j_g\\\hline
+ 16&6157679524189792156462905&49152&109
+ \end{array}
+\]
+For reproducibility, enumerate the positive divisors of \(L_B\).
+For each one try \(j=0,1,\ldots\) until
+\(\gcd(Q_{g,j},Y^{2^d-1}+1)=1\) over \(\F\) for every
+\(B/2<d\le B\). Each smaller degree divides one in this interval.
+Coincident terms cancel after reducing the five exponents modulo
+\(2^d-1\). Binary Euclidean division and NTL independently give the
+displayed maximum. The public checker also enumerates the roots directly.
+Writing \(Y=\alpha^u\) for a field generator, any root with nonzero
+product satisfies the linear congruence
+\[
+ uj\equiv \log_\alpha(1+\alpha^{2u})+
+          \log_\alpha(1+\alpha^{(2g-2)u})\pmod{2^d-1}.
+\]
+One representative per orbit under \(u\mapsto2u\) suffices. A zero
+product cannot cancel \(Y^j\). This checks all tap residues from
+0 through 109 simultaneously in each field.
+
+To use the certificate put \(g=\gcd(m,L)\), and choose a unit class
+\(v\bmod 2L\) with \(gv\equiv m\bmod L\). Such a class exists since
+\(m/g\) is coprime to \(L/g\). At primes of \(L\) absent from \(L/g\)
+one can prescribe a nonzero residue, and one can prescribe odd parity.
+Choose any \(3\le t<m/2\) in this class with \((t,m)=1\).
+Put \(b=2t,\ a=kt<n\), where \(k>0\) is odd and \(k\equiv j_g\bmod L\).
+Corollary~\ref{cor:complementary-list} puts each such pair on the list.
+For any nonzero \(z\) in the small fields, put \(y=z^t\).
+Then \(z^m=y^g\), so \(S_{n,b,a}(z)=Q_{g,j_g}(y)\ne0\).
+
+For the logarithmic bound we use the prime number theorem in arithmetic
+progressions in the form
+\[
+ \sum_{\substack{p\le x\\p\equiv v\bmod 2L}}\log p\sim x/\varphi(2L).
+\]
+For \(x=2\varphi(2L)\log m\), the sum exceeds \(\log m\)
+when \(m\) is sufficiently large, uniformly over the finitely many
+unit classes for fixed \(L\). Some odd prime \(t\le x\) in the
+required class therefore does not divide \(m\). The least positive
+odd \(k\equiv j_g\bmod L\) satisfies \(k\le2L\), so \(kt<n\)
+for large \(m\).
+\href{https://kskedlaya.org/ant/chap-primes-in-ap.html}{Kedlaya,
+\emph{Notes on analytic number theory}, primes in arithmetic progressions}.
+
+For the proportion assertion count \(t\in(X,2X]\) in that class
+and coprime to \(m\). Inclusion-exclusion gives
+\[
+ \frac{X}{2L}\prod_{\substack{p\mid m\\p\nmid 2L}}(1-1/p)
+          +O(2^{\omega(m)}).
+\]
+The product is at least \(\varphi(m)/m\).
+For each \(\epsilon>0\), \(2^{\omega(m)}=O_\epsilon(m^\epsilon)\)
+by bounding \(2\le p^\epsilon\) at all but finitely many primes.
+The estimate for \(m/\varphi(m)\) in
+Corollary~\ref{cor:complementary-list} shows that the main term
+dominates uniformly for \(m^{1/4}\le X\le\sqrt m/2\). Thus each of
+\(\gg\log m\) disjoint dyadic intervals contributes
+\(\gg_L\varphi(m)/m\) to the sum of \(1/t\). Each \(t\) gives
+\(\gg m/(Lt)\) choices of \(k\), since they occupy one class modulo
+\(2L\). The uniqueness in the corollary makes these distinct reciprocal
+pairs. This proves the lower bound \(\gg_L\varphi(m)\log m\) and hence
+the positive proportion.
+
+Finally, take \(n=120\prod_{3\le p\le y}p\), where the product is
+over primes. For \(b=2\) the only permitted taps are \(m\pm1\).
+At a root \(z\) of \(1+Y+Y^4\), we have \(z^{15}=1\), so
+\[
+ z^2 S_{n,2,m-1}(z)=1+z+z^4=0.
+\]
+The reciprocal also has a quartic factor. For any \(2<b\le2y\)
+with \(b=2t,\ t\) odd, a prime dividing \(t\) divides \(m\),
+so the coprimality and parity conditions exclude it. Multiples of
+four for \(b\) fail factor parity. As
+\(\log n=\log120+\sum_{3\le p\le y}\log p=O(y)\), every passing
+even spacing here is \(\gg\log n\). The same construction excludes
+any prescribed finite set of even spacings from yielding a primitive
+polynomial in infinitely many degrees.
+\end{proof}
+
+The transfer to the residue polynomial, the small-field root identity
+on multiples of \(L_B\), and the quartic divisibility are also proved in
+\nolinkurl{GF2Sparse/ReciprocalSieve.lean}.
+The finite calculation can be replayed with
+\nolinkurl{scripts/check_complementary_taps.py} and
+\texttt{--local-cutoff 16}. The tests permit a product of three
+large irreducibles, and an irreducible member still needs a
+multiplicative-order certificate.
 
 \end{document}

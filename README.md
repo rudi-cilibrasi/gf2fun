@@ -10,6 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Logarithmic spacing suffices to pass the parity and small-factor tests in every sufficiently large even degree.** Some $X^n+X^{n-b}+X^a+X^b+1$ with even $b=O(\log n)$ has coprime exponents, an odd number of factors and no factor of degree at most 16. Along an infinite sequence of degrees, even spacing of order $\log n$ is already necessary to pass these tests through degree four. For degrees divisible by eight, a positive fraction of the candidate pairs pass through degree 16. The proof leaves irreducibility and full order open. [Proof and finite calculation](results.pdf#page=215) · [Reproduce the 49,152 cases](scripts/check_complementary_taps.py) · [Lean divisibility lemmas](GF2Sparse/ReciprocalSieve.lean)
 - **The factor-parity test has an exact solution for all even complementary taps.** In degree $n$ divisible by eight, the number of reciprocal pairs with coprime exponents that pass the test is asymptotic to $\varphi(n/2)\log(n/2)$. A formula lists them directly. Of the first 286 multiples of eight, exactly 268 have a primitive member with even spacing. The other 18 all have a certified example with odd spacing. [Discriminant proof](results.pdf#page=213) · [Candidate list and count](results.pdf#page=214) · [Witnesses](data/symmetric-witnesses-multiples-of-eight-through-2288.csv) · [Census checker](scripts/check_complementary_taps.py)
 - **Thirteen tap spacings suffice in 1,756 degrees, and degree 2040 needs the thirteenth.** Every degree from 5 through 1228 and every even degree from 1230 through 2292 has a certified primitive $X^n+X^{n-b}+X^a+X^b+1$ with $b\le13$. In 1,113 of the archived witnesses $b=1$. In degree 2040, all eleven irreducibles with $b\le12$ and coprime exponents have proper order, while $X^{2040}+X^{2027}+X^{13}+X^8+1$ is primitive. [Degrees 5–1228](data/symmetric-witnesses-5-1228.csv) · [Even degrees 1230–2292](data/symmetric-witnesses-1230-2292.csv) · [Exhaustive check](scripts/check_complementary_taps.py)
 - **Five additional degrees have certified primitive pentanomials with complementary taps.** The degrees are 7854, 8680, 8712, 8840 and 9576. In the largest, $X^{9576}+X^{9566}+X^{4555}+X^{10}+1$ has order $2^{9576}-1$ at each root. NTL found the examples and FLINT independently checked all five full orders. The repository now covers at least 2,564 of the first 9,576 degrees. [Five witnesses](data/symmetric-witnesses-above-7560.csv) · [Order factors](data/mersenne-symmetric-above-7560.json) · [Verification](results.pdf#page=212)
@@ -762,7 +763,7 @@ For the five witnesses in degrees 7854 through 9576, each row gives the degree $
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
 ~~~
 
-The two consecutive ranges with $b\le13$ use the pinned Cunningham table and two small supplements. The third command using the verifier checks the alternative witnesses in multiples of eight. The census needs PARI/GP on the path or its executable supplied with the --gp option.
+The ranges with $b\le13$ use the pinned Cunningham table and two small supplements. The third order check verifies the alternative witnesses in multiples of eight. The census uses PARI/GP and accepts its executable path with the --gp option.
 
 ~~~sh
 curl -fsSL https://raw.githubusercontent.com/postvakje/Reformatted-Cunningham-Project-tables/dff2e282ff15399b16b4fb840a410aa2a37076b7/pmain422_table2-.json -o /tmp/gf2-cunningham.json
@@ -770,6 +771,13 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_product_rang
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 1230 --end 2292 --step 2 --symmetric --factor-table /tmp/gf2-cunningham.json --factor-table data/mersenne-even-2182-2292-extra.json --verify data/symmetric-witnesses-1230-2292.csv --jobs 4
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 8 --end 2288 --step 8 --symmetric --factor-table /tmp/gf2-cunningham.json --factor-table data/mersenne-even-2182-2292-extra.json --verify data/symmetric-witnesses-multiples-of-eight-through-2288.csv --jobs 4
 uv run --no-project --with python-flint==0.9.0 python scripts/check_complementary_taps.py --census
+uv run --no-project --with python-flint==0.9.0 python scripts/check_complementary_taps.py --local-cutoff 16
+~~~
+
+To search another multiple of eight, export one representative per even-spacing reciprocal pair that passes factor parity and exponent coprimality. For example, the file below includes the certified degree-9576 witness.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_complementary_taps.py --candidates 9576 > /tmp/gf2-9576-candidates.csv
 ~~~
 
 The following commands replay the polynomial-tail theorem, list the 55 trinomial witnesses and verify the published degree-1229 factors.

@@ -417,4 +417,76 @@ theorem product_slice_primitive_152 :
       first | exact h | norm_num1
   · decide +kernel
 
+/-- The two complementary exponents are b,c, and their sum is the degree. -/
+noncomputable def complementaryTaps (b c a : ℕ) : BinaryPoly :=
+  (1 + X ^ b) * (1 + X ^ c) + X ^ a
+
+/-- Transfer a complementary pair to its residue polynomial in a small field.
+Here g = v+1, and the half-degree t+s is congruent to t*g. -/
+theorem complementary_residue_transfer {K : Type*} [Field K] [Algebra (ZMod 2) K]
+    {z : K} {L t s v k j : ℕ} (hz : z ^ L = 1) (hm : t+s ≡ t*(v+1) [MOD L])
+    (hk : k ≡ j [MOD L]) :
+    aeval z (complementaryTaps (2*t) (2*s) (k*t)) =
+      aeval (z^t) (complementaryTaps 2 (2*v) j) := by
+  have res {a b : ℕ} (h : a ≡ b [MOD L]) : z^a = z^b := by
+    have hh := Nat.ModEq.of_dvd (orderOf_dvd_of_pow_eq_one hz) h
+    exact (pow_mod_orderOf z a).symm.trans ((congrArg (z ^ ·) hh).trans (pow_mod_orderOf z b))
+  have hs : s ≡ t*v [MOD L] := Nat.ModEq.add_left_cancel' t (by
+    simpa only [Nat.mul_add, Nat.mul_one, Nat.add_comm (t*v) t] using hm)
+  have hsecond : z^(2*s) = (z^t)^(2*v) := by
+    simpa only [Nat.mul_comm 2 s, Nat.mul_comm 2 v, pow_mul] using
+      congrArg (fun x : K => x^2) (res hs)
+  have ht : z^(k*t) = (z^t)^j := by
+    simpa only [Nat.mul_comm j t, pow_mul] using res (hk.mul_right t)
+  simp only [complementaryTaps, map_add, map_mul, map_pow, map_one, aeval_X]
+  rw [hsecond, ht, Nat.mul_comm 2 t, pow_mul z t 2]
+
+/-- If the degree is zero modulo the small-field period and the free tap
+equals b modulo that period, the value at each small nonzero root is X^c. -/
+theorem complementary_no_small_factor {B b c a : ℕ} (hb : 0 < b) (hc : 0 < c)
+    (ha : 0 < a) (hn : period B ∣ b+c) (hab : a ≡ b [MOD period B])
+    {p : BinaryPoly} (hp : Irreducible p) (hdeg : p.natDegree ≤ B) :
+    ¬ p ∣ complementaryTaps b c a := by
+  letI : Fact (Irreducible p) := ⟨hp⟩
+  intro hd
+  have hconst : (complementaryTaps b c a).coeff 0 = 1 := by
+    simp [complementaryTaps, coeff_X_pow, hb.ne, hc.ne, ha.ne]
+  let z := AdjoinRoot.root p
+  have hz : z ≠ 0 := root_ne_zero_of_factor hp hd hconst
+  have hL := root_pow_period hp hdeg hz
+  have hsum : z ^ (b+c) = 1 := by
+    obtain ⟨k, hk⟩ := hn
+    rw [hk, pow_mul, hL, one_pow]
+  have hres := Nat.ModEq.of_dvd (orderOf_dvd_of_pow_eq_one hL) hab
+  have htaps : z ^ a = z ^ b := by
+    exact (pow_mod_orderOf z a).symm.trans ((congrArg (z ^ ·) hres).trans (pow_mod_orderOf z b))
+  have htwo : (1 : AdjoinRoot p) + 1 = 0 := by
+    simpa using congrArg (AdjoinRoot.of p) (show (1 : ZMod 2) + 1 = 0 by decide)
+  have hzero := AdjoinRoot.mk_eq_zero.2 hd
+  change (1 + z ^ b) * (1 + z ^ c) + z ^ a = 0 at hzero
+  apply pow_ne_zero c hz
+  calc
+    z ^ c = (1 + z ^ (b+c)) + (1+1) * z ^ b + z ^ c := by rw [hsum, htwo]; simp
+    _ = (1 + z ^ b) * (1 + z ^ c) + z ^ a := by rw [htaps, pow_add]; ring
+    _ = 0 := hzero
+
+/-- The quartic divides every complementary-tap polynomial with these two
+exponent residues. This includes the central tap in degrees divisible by 120. -/
+theorem complementary_quartic_divisor (k j : ℕ) :
+    (X^4 + X + 1 : BinaryPoly) ∣ complementaryTaps 2 (15*k+13) (15*j+14) := by
+  let q : BinaryPoly := X^4 + X + 1
+  change q ∣ complementaryTaps 2 (15*k+13) (15*j+14)
+  have hperiod : q ∣ X^15 - 1 := by
+    use X^11 + X^8 + X^7 + X^5 + X^3 + X^2 + X + 1
+    dsimp [q]; ring_nf; simp [CharTwo.two_eq_zero, CharTwo.neg_eq]
+  have hbase : q ∣ complementaryTaps 2 13 14 := by
+    use X^11 + X^10 + X^9 + X^8 + X^4 + X + 1
+    dsimp [q, complementaryTaps]; ring_nf; simp [CharTwo.two_eq_zero]
+  have hz : AdjoinRoot.root q ^ 15 = 1 := by
+    simpa only [map_sub, map_pow, AdjoinRoot.mk_X, map_one, sub_eq_zero] using
+      (AdjoinRoot.mk_eq_zero.2 hperiod)
+  apply AdjoinRoot.mk_eq_zero.1
+  simpa only [complementaryTaps, map_add, map_mul, map_one, map_pow, AdjoinRoot.mk_X,
+    pow_add, pow_mul, hz, one_pow, one_mul] using (AdjoinRoot.mk_eq_zero.2 hbase)
+
 end GF2Sparse
