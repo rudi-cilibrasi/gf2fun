@@ -15211,4 +15211,57 @@ The supports and full factor lists are
 \nolinkurl{data/product-witnesses-4097-5964.csv} and
 \nolinkurl{data/mersenne-4097-5964.json}.
 
+\section{Checking small powers of all degree-1229 pentanomial roots}
+\label{sec:1229-power-transfers}
+Let \(r\) range over the roots of all 639,166 irreducible binary
+pentanomials of degree 1229. For \(1\le |m|<36{,}871\), the only
+power relations from one such polynomial to another, apart from
+squaring and reciprocation, are the seventh-power pair of
+Section~\ref{sec:seventh-pair} and its reciprocal.
+In particular, an odd positive exponent greater than one in this range
+gives a pentanomial only for \(m=7\), with the source taps
+\((166,249,332)\) or their reciprocal. The corresponding target taps
+are \((332,726,1089)\) or their reciprocal.
+
+Consider also the union of the 90,839 extended factor-base elements and
+the 1,214,007 terminal quadratic values in the certified binary field.
+There are 1,304,685 distinct elements in the union. No \(r^m\) in the
+stated range is a Frobenius conjugate of any element in this union.
+This checks a possible transfer of a full-order certificate to a
+pentanomial. An exponent outside the range, or another reference
+element, could still give that certificate.
+
+Here are the details of the finite calculation. Squaring preserves the
+minimal polynomial, and inversion takes a pentanomial root to a root of
+the reciprocal. Consequently the reference search uses each orientation
+and each of the 18,435 positive odd exponents through 36,869, a total of
+11,783,025,210 oriented powers. All these exponents are coprime to
+\(2^{1229}-1\). For the sparse targets it suffices to search one
+orientation of each source and both orientations of the targets.
+
+Write \(f\) for a source and \(Q(T)=T^{1229}f(T^{-1})\). If
+\(s_j=\operatorname{Tr}(r^j)\), its positive traces satisfy
+\[
+  S(T)=\sum_{j\ge1}s_jT^j=\frac{TQ'(T)}{Q(T)} .
+\]
+Indeed \(Q(T)=\prod_i(1-r^{2^i}T)\), so the logarithmic derivative
+sums the power traces in characteristic two. Multiplication by
+\(Q(T^{64})\) leaves the polynomial \(TQ'(T)Q(T)^{63}\) of degree
+at most \(64\cdot1229\). Beyond this numerator the recurrence on
+64-bit coefficient blocks has just the four nonconstant offsets
+in \(Q\). The reciprocal gives the negative-power traces.
+
+For a reference element \(z\), compute \(\operatorname{Tr}(z^j)\) for
+the odd \(j\) through 127 by modular power projection. A match requires
+equality with \(s_{mj}\) at every one of these indices. For sparse
+targets one can also use both signs of \(j\). The last filter uses
+\(j=1201+182i\), \(0\le i<32\), with both signs. Equality of traces
+at selected positions is only a necessary condition. The implementation
+resolves each surviving comparison by an exact minimal polynomial or
+substitution in the source field. The positive seventh-power substitution
+is also checked by FLINT. The native and portable builds agree.
+The program, its signed reference controls and the checked input loader
+are \nolinkurl{scripts/census_1229_power_transfers.cpp} and
+\nolinkurl{scripts/check_1229_power_transfers.py}.
+
 \end{document}
