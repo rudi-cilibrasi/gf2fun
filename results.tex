@@ -21271,4 +21271,86 @@ The factorizations, supports and certificate source links are in
 by \nolinkurl{--table}. Its \nolinkurl{--ntl} option replays the
 trinomial census using \nolinkurl{scripts/prime_degree_trinomials.cpp}.
 
+\clearpage
+\section{Eight trinomial orders and a rational Frobenius model in degree 3073}
+\label{sec:trinomials3073}
+Up to reciprocation, exactly eight binary trinomials of degree
+\(n=3073=7\cdot439\) are irreducible. Each of their root orders is
+divisible by \(K=(2^7-1)(2^{439}-1)\), and also by a prime of
+multiplicative degree 3073 exceeding \(10^{10}\). The remaining index
+divides the 791-digit composite \(C=(2^{3073}-1)/K\). The same statements
+hold for 23 reciprocal pairs of pentanomials.
+\[
+\begin{array}{r|l@{\qquad}r|l}
+ \text{trinomial tap}&\text{powers giving pentanomials}
+ &\text{trinomial tap}&\text{powers giving pentanomials}\\ \hline
+ 184 &3,5,9 &999 &3,5,9,17\\
+ 330 &3,5,33 &1023 &3,5,33,1025\\
+ 492 &3,5 &1269 &3,5,9\\
+ 915 &3,5 &1425 &3,5
+\end{array}
+\]
+The factorization of \(K\) has five distinct prime factors.
+The verifier proves their primality, checks \(\gcd(C,K)=1\), and
+checks \(3^{C-1}\ne1\bmod C\). A prime \(\ell\mid C\) has binary
+order dividing 3073. Every proper divisor of 3073 divides either 7
+or 439, so coprimality with \(K\) forces full binary order. Trial
+division at \(1+2j\cdot3073\) excludes all such primes through \(10^{10}\).
+For each tap the Rabin test proves irreducibility, and direct
+field powers check \(t^{(2^n-1)/p}\ne1\) for every prime \(p\mid K\)
+and \(t^K\ne1\). The exhaustive Rabin search covers all 1,536
+reciprocal classes. For every displayed power \(m\), the verifier
+substitutes \(t^m\) into its five-term polynomial, verifies
+\(\gcd(m,2^n-1)=1\), and checks distinctness up to reciprocation.
+The order of each image therefore equals the order of its source.
+Full primitivity in this degree remains open here.
+
+\paragraph{A coordinate change for the tap \(q-1\).}
+For every power of two \(q\ge2\), let \(t^{3q+1}+t^{q-1}+1=0\)
+in characteristic two. Set \(w^2=t^{q+1}\) and \(s=t^q\).
+Multiplying the trinomial equation by \(t\) gives
+\(t=s(w+1)^4\). Substitution in \(w^2=ts\) gives
+\[
+        w=s(w+1)^2,\qquad t=w(w+1)^2,\qquad
+        t^q=\frac{w}{(w+1)^2}.
+\]
+Here \(w\ne0,1\). Conversely any root of
+\(W^{q-1}(W+1)^{2q+2}+1\) gives a trinomial root by the middle
+formula, with \(t^{q+1}=w^2\). The two maps preserve the field of
+definition. In odd degree every prime dividing \(q+1\) has even
+binary order, so \(q+1\) is coprime to the multiplicative group
+order. Thus \(t,w\) generate the same subgroup, which also contains
+\(w+1\) by \((w+1)^2=t/w\).
+At \(q=1024\) the pentanomial for \(w\) has interior taps
+\(1023,1025,3071\). Its reciprocal has taps \(2,2048,2050\).
+The two rational expressions above have degrees three and two.
+
+\paragraph{Split norm circles.}
+Write \(A(Z)=Z(Z+1)^2,\ B(Z)=Z/(Z+1)^2\). For auxiliary field
+size \(h=512,1024,2048\), represent \((t,t^h)\) respectively by
+\((A^2,B),(A,B),(A,B^2)\), using \(Z=\sqrt w\) in the first case
+and \(Z=w\) in the other two. For \(b\in\mathbb F_{h^2}^{\times}\)
+and \(c\in\mathbb F_h^\times\), substitute this pair \((U,V)\)
+into \((U+b)(V+b^h)+c\). Clearing denominators gives a polynomial
+of degree 8, 5 or 7 respectively. A fully split residual supplies a
+relation between linear factors at \(Z\) and the \(h+1\) linear
+factors of \((t+b)^{h+1}+c\).
+
+To count all distinct parameter pairs, put \(d=c+b^{h+1}\).
+For each finite \(z\ne1\) let \(x=U(z), y=V(z)\). The required
+value \(d=xy+by+b^h x\) lies in \(\mathbb F_h\) exactly when
+\(xy+b(y+x^h)\) does. At \(z=0\) this gives \(d=0\).
+For every other allowed \(z\), the verifier checks \(y+x^h\ne0\);
+the possible centres are \((xy+u)/(y+x^h)\) as \(u\) runs over
+\(\mathbb F_h\). It counts distinct roots, restores all conjugate
+centres and checks two centres directly at every field element.
+At \(h=512,1024,2048\) respectively, exactly 9,732, 9,145,564
+and 1,896,070 pairs split completely. These counts describe
+relations available for a discrete-log computation. The subgroup
+indices above follow independently from the verified field powers.
+
+\nolinkurl{scripts/check_3073_trinomials.py} reproduces the order
+checks, the full tap census and the image supports.
+\nolinkurl{scripts/count_3073_circles.cpp} reproduces the circle counts.
+
 \end{document}

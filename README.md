@@ -12,6 +12,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 - **The minimum primitive weight is five in degrees 3,837, 5,509 and 8,371, and three in degrees 5,785 and 7,673.** In degree 7,673 the unique primitive trinomial up to reciprocation is $X^{7673}+X^{120}+1$. Each of the five degrees also has an explicit primitive pentanomial. [Witnesses and complete order factorizations](data/cyclotomic-order-witnesses.json) · [Proof and tap lists](results.pdf#page=292)
 
+- **All eight irreducible trinomial pairs in degree 3,073 pass the five known prime-index tests.** Their powers give 23 distinct pentanomial pairs with the same respective orders. Each root index is one or exceeds ten billion. For tap 1,023 a rational parametrization yields 9,145,564 split norm circles at $q=1024$. The 791-digit cofactor is composite, and full primitivity remains open. [Proof and tap list](results.pdf#page=293) · [Order verifier](scripts/check_3073_trinomials.py) · [Circle census](scripts/count_3073_circles.cpp)
+
 - **For every pair of odd primes $p<q$ there are infinitely many degrees $p q^b$ where three of $p$ equally spaced positions force a full-degree order component.** The period $\mathrm{lcm}_{3\le r\le p,\ r\text{ prime}}(r-1)$ works for all $q>p$. If $q$ does not divide $2^p-1$, an actual prime of binary multiplicative degree $p q^b$ divides every such irreducible pentanomial root order. For $p=3,5$ it suffices that $q^b$ differs from 11 modulo 12. An explicit periodic test also works in $p^a q^b$ for every fixed $a$. [Proof](results.pdf#page=290) · [Congruence verifier](scripts/check_relative_progressions.py) · [Lean](GF2Sparse/ScalarOrderBound.lean)
 
 - **In degrees 4,167, 6,925, 9,583 and 12,231 every irreducible pentanomial containing a three-term progression has a certified large prime in its root order.** Primitivity then reduces to testing the two maximal-subfield norms. For the explicit examples at 6,925 and 12,231 the root orders have certified divisors of 1,840 and 2,936 digits. Each remaining index is one or exceeds ten billion. The data reduce the two remaining order tests to explicit fields of degrees 1,385 and 4,077. [Proof and polynomials](results.pdf#page=288) · [Cofactors](data/relative-progression-witnesses.json) · [Verifier](scripts/check_relative_progression_witnesses.py)
@@ -903,6 +905,14 @@ uv run --no-project --with sympy python scripts/check_relative_progressions.py -
 uv run --no-project --with sympy python scripts/check_relative_progressions.py --family 23 101 7920
 uv run --no-project --with sympy python scripts/check_relative_progressions.py --degree 12231 --checker /tmp/gf2-relative-orders
 uv run --no-project --with python-flint==0.9.0 python scripts/check_relative_progression_witnesses.py
+~~~
+
+To repeat the degree-3,073 tap census and list the 23 reciprocal pairs of pentanomials, run the Python verifier. The C++ program counts the split circles of the selected auxiliary field.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_3073_trinomials.py --census --images
+c++ -O3 -std=c++17 scripts/count_3073_circles.cpp -o /tmp/gf2-3073-circles
+/tmp/gf2-3073-circles 1024
 ~~~
 
 The additional cyclotomic table gives the five degrees from 3,837 to 8,371. With PARI/GP and the NTL development libraries installed, these commands verify the orders and repeat the exhaustive trinomial search.
