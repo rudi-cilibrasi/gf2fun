@@ -2,6 +2,7 @@
 
 import argparse
 import csv
+import gzip
 import json
 import subprocess
 from fractions import Fraction
@@ -11,11 +12,13 @@ from pathlib import Path
 from check_1229_wheel import EXTENDED_BOUND, verify_extension
 from check_degree_1229 import COFACTOR, KNOWN, check_known_order
 from check_factor_base import DATA, irreducible, modulus, polynomial
+from elliptic_ray_bound import quadratic_bound
 from period_coordinate import CANDIDATES, coordinate, mask_of, period_polynomial
 
 
 POINTS = DATA / "elliptic-ray-points.json"
 TARGETS = DATA / "degree-1229-elliptic-targets.csv"
+UNCONDITIONAL_TARGETS = DATA / "degree-1229-elliptic-unconditional-targets.csv.gz"
 EXAMPLE = DATA / "degree-53-elliptic-logs.csv"
 GP_SOURCE = Path(__file__).with_name("elliptic_ray_targets.gp")
 TAPS53 = (2, 21, 23)
@@ -46,7 +49,8 @@ def reconstruct(model, field_mask, rows, gp):
         raise ValueError("invalid coordinates or noninvertible curve and constant orders")
     params = {"n": n, "d": d, "rows": rows, "card": model["curve_order"],
               "cmask": int(model["constant_modulus_hex"], 16), "emask": field_mask,
-              "curveb": model["curve_b"], "generator": points[0], "translation": points[1],
+              "curvea": model.get("curve_a2", 1), "curveb": model["curve_b"],
+              "generator": points[0], "translation": points[1],
               "xs": xs, "ys": ys}
     program = "".join(f"{key}={value};\n" for key, value in params.items()) + GP_SOURCE.read_text()
     proc = subprocess.run([gp, "-fq", "-s", "768M"], input=program, text=True,
@@ -98,20 +102,24 @@ def main():
     candidate.add_argument("--taps", nargs=3, type=int, metavar=("A", "B", "C"))
     parser.add_argument("--projected", action="store_true",
                         help="verify powers in the degree-1229 cofactor subgroup")
+    parser.add_argument("--no-order-tests", action="store_true",
+                        help="use the 733 full-group targets in degree 1229, with no preliminary order tests")
     args = parser.parse_args()
     n = args.degree
     chosen = args.candidate or args.taps
-    if n == 53 and (chosen or args.projected):
+    if n == 53 and (chosen or args.projected or args.no_order_tests):
         parser.error("degree 53 uses the published sparse root")
     if n == 1229 and (bool(args.logs) != bool(chosen) or (args.projected and not args.logs)):
         parser.error("a degree-1229 submission requires --logs and a candidate")
     if args.taps and not 0 < args.taps[0] < args.taps[1] < args.taps[2] < n:
         parser.error("expected three increasing interior exponents")
-    model, = (m for m in json.loads(POINTS.read_text()) if m["degree"] == n)
+    if args.projected and args.no_order_tests:
+        parser.error("the 733-target certificate uses full-group logarithms")
+    d = 11 if n == 53 else (20 if args.no_order_tests else 19)
+    model, = (m for m in json.loads(POINTS.read_text()) if (m["degree"], m["constant_degree"]) == (n, d))
     field = modulus(n, TAPS53) if n == 53 else period_polynomial(n)
-    rows = 38 if n == 53 else 387
+    rows = 38 if n == 53 else (733 if args.no_order_tests else 387)
     values = reconstruct(model, mask_of(field), rows, args.gp)
-    d = model["constant_degree"]
     if n == 53:
         order = (1 << n)-1
         if any(order % k == 0 for k in range(2, 6361)):
@@ -138,31 +146,41 @@ def main():
                 raise ArithmeticError("the published degree-53 certificates fall short")
             print("The first 30 suffice after trial division through 6360. All 38 suffice with index floor 107.")
         return
-    with TARGETS.open(newline="") as stream:
+    stream = gzip.open(UNCONDITIONAL_TARGETS, "rt", newline="") if args.no_order_tests else TARGETS.open(newline="")
+    with stream:
         records = list(csv.reader(stream))
     if records != [["target", "period_mask_hex"]] + [[str(i), hex(v)] for i, v in enumerate(values)]:
         raise ArithmeticError("published period masks disagree with the elliptic norms")
-    score = point_score(n, d, rows, EXTENDED_BOUND+1, WEIGHTS1229)
-    if score <= n:
-        raise ArithmeticError("insufficient number of split rational places")
-    print(f"Verified {rows} elliptic targets in degree 1229. Conditional point bound {score} > {n}.")
+    if args.no_order_tests:
+        floor = 30*n+1
+        if (any(gcd((1 << n)-1, 2*j*n+1) != 1 for j in range(1, 15))
+                or not quadratic_bound(n, 1 << d, rows, floor)):
+            raise ArithmeticError("the degree-1229 two-moment certificate failed")
+        print(f"Verified {rows} degree-1229 targets with index floor {floor} and no root-order tests.")
+    else:
+        score = point_score(n, d, rows, EXTENDED_BOUND+1, WEIGHTS1229)
+        if score <= n:
+            raise ArithmeticError("insufficient number of split rational places")
+        print(f"Verified {rows} elliptic targets in degree 1229. Conditional point bound {score} > {n}.")
     if args.logs:
         taps = CANDIDATES[args.candidate] if args.candidate else args.taps
         f = modulus(n, taps)
         if not irreducible(f):
             raise ValueError("the proposed candidate is reducible")
-        check_known_order(f)
+        if not args.no_order_tests:
+            check_known_order(f)
         logs = read_logs(args.logs)
         verify_logs(values, logs, f, coordinate(f), KNOWN if args.projected else 1,
                     COFACTOR if args.projected else (1 << n)-1)
         print(f"Verified {len(logs)} candidate logarithms.")
-        if len(logs) == rows:
+        if len(logs) == rows and not args.no_order_tests:
             from batch_degree_1229 import verify_published
             from check_degree_1229 import check as check_order
             check_order(10**10, taps)
             verify_published()
             if verify_extension() != EXTENDED_BOUND:
                 raise ArithmeticError("degree-1229 index floor failed")
+        if len(logs) == rows:
             print("Full order proved for the submitted degree-1229 candidate.")
 
 

@@ -14886,4 +14886,132 @@ tests the orders of the six images of every irreducible candidate,
 and computes the binary rank of each conjugate orbit.
 \nolinkurl{scripts/check_endpoint_normality.py}.
 
+\section{Shorter elliptic order certificates in every degree}
+\label{sec:quadratic-ray}
+\begin{theorem}\label{thm:quadratic-ray}
+Let \(n\ge64\) and let \(L\ge2\) be an integer. There is a computable
+list of fewer than
+\[
+       \frac{\sqrt{L(2L+1)}}{2L-1}\,n+7
+\]
+elements of \(\mathbb F_{2^n}^\times\), independent of a candidate
+\(r\). If all these elements are powers of \(r\), then \(r\) is
+primitive provided it passes the order tests for the primes
+\(\ell\mid 2^n-1\) with \(\ell\le Ln\) or \(\ell\mid Q-1\).
+Here \(Q\) is the least power of two at least \(Ln^2/(2L-1)+4n\).
+
+In prime degree the bound with \(L=2\) needs no order tests.
+Taking \(L=8\) gives fewer than \((\sqrt{136}/15)n+7\) targets
+and at most one order test. For prime \(n\equiv1\bmod4\),
+\(L=6\) needs no tests and uses fewer than \((\sqrt{78}/11)n+7\) targets.
+\end{theorem}
+\begin{proof}
+Set \(q_0=Ln^2/(2L-1)\), \(J=Ln\), and let \(M\) be the nearest
+multiple of \(\operatorname{lcm}(2,n)\) to \(Q+1\), taking the larger
+in a tie. Then \(|M-Q-1|\le n<2\sqrt Q\). The trace is odd, so the
+ordinary isogeny class contains an elliptic curve with cyclic group
+of order \(M\), as in Corollary~\ref{cor:elliptic-ray-uniform}.
+The number \(h=M/n\) of cosets satisfies
+\(h\le Q/n+1+1/n<4n/3+10\le Ln\).
+After the stated tests any possible index prime is greater than \(Ln\)
+and prime to \(M(Q-1)\). Use the targets of Theorem~\ref{thm:elliptic-ray}
+on this curve.
+
+Write \(D=nJ\), and in the point bound take the weights \((1,t,1)\) with
+\[
+ t^2=2+2(Q+Q^{-1})/D,\qquad
+ A=\sqrt{Q(1+(Q+Q^{-1})/D)/2},\qquad B=(Q+1)/D.
+\]
+After multiplication by \(JQ(2+t^2)\), the sufficient inequality is
+\[
+ DQ(2+t^2)<4t\sqrt Q\,(Dk-Q-1)+2(Dk-Q^2-1).
+\]
+Since \(DQt^2=2DQ+2(Q^2+1)\), it suffices that
+\(k>\sqrt Q\,t/2+B=A+B\). Equivalently,
+\(y=Dk-Q-1>0\) and \(2y^2>D(QD+Q^2+1)\).
+Take \(k=\lfloor A+B\rfloor+1\).
+
+We check that the curve has enough cosets. Put
+\(A_0=\sqrt{Q(1+Q/D)/2}\) and \(v=(Q-q_0)/n\ge4\).
+Then \(A_0\le Q/n\) and, by subtracting squares,
+\[
+ Q/n-A_0\ge\frac{2L-1}{4L}v,\qquad
+ B=\frac1{2L-1}+\frac v{Ln}+\frac1{Ln^2}.
+\]
+Also \(0<A-A_0<1/n^2\), since \(A^2-A_0^2=1/(2D)\).
+As \(h>Q/n-1\), the difference \(h-A-B\) is greater than
+\((3/8-1/128)v-1-1/3-2/64^2>0\). Thus \(k\le h\).
+
+For the length bound, \(Q/n^2<2L/(2L-1)+8/n\le35/24\), hence
+\(B+1/n^2<1\) and \(k<A_0+2\). The function
+\(f(x)=\sqrt{x(1+x/L)/2}\) is increasing and concave for \(x>0\).
+For \(x\ge1\) its derivative is at most \(f'(1)\le1/\sqrt3\).
+At \(x_0=2L/(2L-1)\) its value is \(\sqrt{L(2L+1)}/(2L-1)\).
+It follows that \(A_0=n f(Q/n^2)\le n f(x_0)+8/\sqrt3\), proving
+the bound. The parameters and the least integer above \(A+B\)
+can be computed using \nolinkurl{scripts/elliptic_ray_bound.py}.
+
+If \(n\) is prime, then \(0<\log_2Q<n\) and \(Q-1\) is coprime to
+\(2^n-1\). Every prime divisor \(\ell\) of \(2^n-1\) has order \(n\)
+for 2, so \(\ell\equiv1\bmod 2n\). Moreover 2 is a square modulo
+\(\ell\), since its order is odd. Thus \(\ell\equiv1,7\bmod8\) by
+the supplement to quadratic reciprocity. This always eliminates
+\(4n+1\). It eliminates \(2n+1\) when \(n\equiv1\bmod4\) and
+\(6n+1\) when \(n\equiv3\bmod4\). The prime-degree assertions follow.
+\end{proof}
+
+For each \(\varepsilon>0\), a set of relative density one among prime
+degrees has a certificate with at most \((1/\sqrt2+\varepsilon)n\)
+targets and no individual order tests. Indeed, fix \(L\) large enough
+that the slope of Theorem~\ref{thm:quadratic-ray} is below this bound.
+For fixed \(j\ge1\), the primes \(n\) for which \(2jn+1\) is also prime
+have relative density zero. For each prime \(p\nmid2j\) up to a fixed
+\(y\), excluding finitely many \(n\), they avoid the reduced class
+\(-(2j)^{-1}\bmod p\). The prime number theorem in arithmetic
+progressions and the Chinese remainder theorem bound their upper
+relative density by \(\prod_{p\le y,\,p\nmid2j}(1-1/(p-1))\).
+This tends to zero by divergence of the sum of reciprocals of primes.
+Take the finite union over \(1\le j<L/2\), and absorb the additive
+seven for large \(n\).
+
+In degree \(1229\), take \(Q=2^{20}\) and \(M=1{,}049{,}566=854n\).
+The fourteen integers \(2jn+1\), \(1\le j<15\), are coprime to
+\(2^{1229}-1\), so \(J=36{,}871\) applies to every candidate before
+any root-order test. The two-moment inequality now holds at \(k=733\).
+For instance, weights \((7,10,7)\) give point score
+\(784895837171005/637923753984>1229\).
+Over \(\F[z]/(z^{20}+z^3+1)\) use the curve
+\[
+ y^2+xy=x^3+z^{17}x^2+b,\qquad b=\mathtt{20273}
+\]
+where \(b\) is a hexadecimal coefficient mask. In decimal masks
+\((1,242102)\) generates its rational group and
+\((185228,1004950)\) has order \(1229\).
+The archive gives \(B\) in the common period basis and the ordinary
+norms \(u_T,u_G,\ldots,u_{732G}\). Since \(854>732\) and the group
+is cyclic, these points supply the required distinct cosets together
+with the identity coset. PARI/GP verifies the rational and geometric
+points, the Frobenius translation, and all 733 Miller-function norms.
+Lean checks the two-moment inequality and the integer index floor.
+\nolinkurl{scripts/check_elliptic_ray.py} accepts full-group logarithms
+for this list with \texttt{--no-order-tests}. A complete set for any
+one degree-\(1229\) pentanomial would certify that polynomial primitive.
+
+There is also a quantitative benchmark for the 319,572 surviving
+reciprocal pairs. For a uniformly random nonzero field element
+conditioned on passing the four known prime tests, the probability
+of failing a remaining test is exactly \(1-\varphi(C)/C\).
+Indeed \(2^{1229}-1=KC\) with \(\gcd(K,C)=1\), so the projection to
+the cyclic group of order \(C\) stays uniform under this conditioning.
+Theorem~\ref{thm:1229-cofactor-bound} gives
+\[
+  1-\frac{\varphi(C)}{C}
+    \le \sum_{\ell\mid C,\ \ell\ {\rm prime}}\frac1\ell
+    \le \frac{15}{818085338814611458}<1.84\cdot10^{-17}.
+\]
+Applying the random-element benchmark to the sparse roots is a
+heuristic. Reciprocation and some power maps give exact dependencies
+among their orders. A counterexample in degree 1229 would require
+every surviving pair to fail a prime-index test for some prime dividing \(C\).
+
 \end{document}

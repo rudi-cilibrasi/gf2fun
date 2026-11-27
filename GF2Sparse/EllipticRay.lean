@@ -36,6 +36,30 @@ theorem point_bounds_53 :
     pointBound 53 11 38 107 [12,28,12] = true := by
   decide +kernel
 
+/-- The strict two-moment inequality for weights (1,t,1), after clearing
+denominators. Here D is the degree times the lower bound on a possible index prime. -/
+theorem two_moment_sufficient {D Q k s t : ℝ} (hD : 0 < D) (hk : 0 ≤ k)
+    (hs : 0 < s) (ht : 0 < t) (hsq : s^2 = Q)
+    (hopt : D * Q * t^2 = 2 * D * Q + 2 * (Q^2 + 1))
+    (hgap : D * s * t < 2 * (D * k - Q - 1)) :
+    D * Q * (2 + t^2) < 4*t*s*(D*k-Q-1) + 2*(D*k-Q^2-1) := by
+  have h := mul_lt_mul_of_pos_left hgap (by positivity : 0 < 2 * t * s)
+  rw [show 2*t*s*(D*s*t) = 2*D*s^2*t^2 by ring, hsq] at h
+  nlinarith only [h, hopt, mul_nonneg hD.le hk]
+
+def quadraticBound (n Q k J : ℕ) : Bool :=
+  let D := n * J
+  decide (Q + 1 < k*D ∧ D*(Q*D + Q^2 + 1) < 2*(k*D - (Q+1))^2)
+
+/-- No possible index prime is smaller than 36871. The integer two-moment
+test covers all larger indices in the model over the field of size 2^20. -/
+theorem unconditional_points_1229 :
+    ((List.range 14).map (fun k => 2458*(k+1)+1)).all
+      (fun v => Nat.gcd v (2^1229-1) == 1) = true ∧
+    quadraticBound 1229 (2^20) 733 36871 = true ∧
+    733 ≤ 1049566/1229 ∧ Nat.gcd (1049566*(2^20-1)) (2^1229-1) = 1 := by
+  decide +kernel
+
 theorem index_tests_53 :
     ((List.range 59).map (fun k => 106*(k+1)+1)).all
       (fun v => Nat.gcd v (2^53-1) == 1) = true := by

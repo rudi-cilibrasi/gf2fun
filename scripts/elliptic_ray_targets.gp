@@ -9,16 +9,16 @@ check(poldegree(binpol(emask))==n && polisirreducible(binpol(emask)) && gcd(n,d)
 z=ffgen(binpol(cmask),'zc); a=ffgen(binpol(emask),'ap); unit=a^0;
 modulus=unit*binpol(cmask); Z=Mod(unit*x,modulus); one=Z^0;
 embed(c) = Mod(unit*binpol(pack(c*z^0)),modulus);
-curve=ellinit([1,1,0,0,value(curveb,z)],z);
+curve=ellinit([1,value(curvea,z),0,0,value(curveb,z)],z);
 G=apply(i->value(i,z),generator); T=apply(i->value(i,z),translation);
 Xb=Mod(Polrev(apply(i->value(i,a),xs)),modulus);
 Yb=Mod(Polrev(apply(i->value(i,a),ys)),modulus);
 
 check(ellcard(curve)==card && ellisoncurve(curve,G) && ellorder(curve,G,card)==card);
 check(ellisoncurve(curve,T) && ellorder(curve,T,card)==n && rows<=card/n);
-check(Yb^2+Xb*Yb==Xb^3+Xb^2+embed(value(curveb,z)));
+check(Yb^2+Xb*Yb==Xb^3+embed(value(curvea,z))*Xb^2+embed(value(curveb,z)));
 slope=(Yb+embed(T[2]))/(Xb+embed(T[1]));
-nextx=slope^2+slope+Xb+embed(T[1])+1;
+nextx=slope^2+slope+Xb+embed(T[1])+embed(value(curvea,z));
 check(nextx==Xb^(2^d) && slope*(Xb+nextx)+nextx+Yb==Yb^(2^d));
 
 \\ Each step returns the sum and the line numerator and denominator evaluated at B.
