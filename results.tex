@@ -17117,4 +17117,73 @@ The initial integer factorizations were obtained from
 \href{https://factordb.com/}{FactorDB}, splitting by cyclotomic
 and Aurifeuillean factors where needed.
 
+\section{An obstruction to bounded tap width for every unit dilation}
+\label{sec:affine-tap-span}
+
+For three distinct interior exponents modulo \(n\), define their
+affine span to be the least \(d\) for which, in some order, they
+are congruent to \(t,t+uj,t+ud\bmod n\), with \(0<j<d\) and
+\(\gcd(u,n)=1\). The translation and the unit may both depend on
+the polynomial.
+
+\begin{theorem}\label{thm:affine-tap-span}
+Let \(L_D=\operatorname{lcm}_{1\le i\le D}(2^i-1)\) and let
+\(n>D\) be a multiple of \(L_D\). Every degree-\(n\) binary
+pentanomial with constant one and interior affine span at most \(D\)
+has an irreducible factor of degree at most \(D\). In infinitely
+many degrees, any primitive polynomial of weight at most five
+must have three interior exponents of affine span
+\(\gg\sqrt{\log n}\).
+\end{theorem}
+\begin{proof}
+On the \(n\)-th roots of unity the endpoint terms cancel. Write the
+interior triple as above and put \(T=1+Y^j+Y^d\). A root \(z\) of
+any irreducible factor of \(T\) has degree at most \(d\) and
+satisfies \(z^n=1\). Raising to \(u\) permutes the \(n\)-th roots
+of unity, with inverse given by an integer power. Its preimage \(y\)
+therefore lies in \(\F(z)\). At \(y\) the three interior terms sum
+to \(y^t T(y^u)=0\). The minimal polynomial of \(y\) gives the
+claimed factor. The power transfer and factor-degree bound are
+formalized in \nolinkurl{GF2Sparse/AffineTapSpan.lean}.
+
+Now take \(n=8L_D\). Swan's theorem excludes irreducible trinomials
+in a degree divisible by eight. These degrees tend to infinity and
+\(\log_2 n\le3+D(D+1)/2\). The first assertion excludes every
+remaining five-term support of affine span at most \(D\).
+\end{proof}
+
+The smallest degree moduli for this root-of-unity test can be
+computed without adjoining a root of the large pentanomial.
+For each \(T\), record the orders of roots of its irreducible factors.
+It has a root on the \(n\)-th roots of unity precisely when one of
+the recorded orders divides \(n\). To satisfy all the shapes of
+span at most \(D\), choose one order in each list and take their
+least common multiple. Deleting multiples of other answers leaves
+exactly the divisibility-minimal moduli for this test. Reversal of
+\(T\) preserves the orders.
+
+For every \(2\le D\le28\) there is a single minimal modulus \(M_D\).
+For example
+\[
+\begin{array}{r|r}
+ D & M_D\\\hline
+ 4 & 105\\
+ 8 & 1{,}240{,}155\\
+ 13 & 26{,}500{,}417{,}058{,}115\\
+ 18 & 21{,}853{,}877{,}362{,}864{,}135{,}364{,}080{,}305
+\end{array}
+\]
+At \(D=29\) there are two incomparable moduli, with ratios 257
+and 8191 to their gcd. For complementary taps write \(b=cw,a=kw\)
+in the orientation giving \(W\). Primitive support requires
+\(\gcd(n,w)=1\). Multiplying the three interior terms by \(X^b\)
+on the \(n\)-th roots gives \(1+Y^{2c}+Y^{c+k}\), \(Y=X^w\),
+of degree \(W\). In particular every multiple of the displayed
+\(M_{18}\) rules out every complementary primitive candidate with
+\(W\le18\). Restricting the calculation to the complementary shapes
+gives the same least modulus at \(D=18\).
+The program \nolinkurl{scripts/check_affine_tap_span.py} factors the
+small trinomials, verifies their root orders, and computes all the
+minimal moduli by successive least common multiples.
+
 \end{document}
