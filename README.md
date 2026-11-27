@@ -14,7 +14,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 - **Lean certifies five-term irreducibles in degrees $2^{141}+4$ and $2^{191}+4$.** For odd $k\ge3$, the polynomial $X^{2^k+4}+X^{2^k+1}+X^{2^k}+X^5+1$ is irreducible exactly when $2^k+5$ is prime and $-2$ has full order modulo that prime. At $k=191$ its root order is at least $2^{2^{96}}$. The full multiplicative orders of these two roots remain open. Across $20<n\le 2^{191}+4$, just five candidates up to reciprocity remain for a primitive polynomial of weight at most five with a nonidentity binary projective symmetry of its roots. [Proof](results.pdf#page=241) · [Lean certificates](GF2Sparse/TwistedCyclotomic.lean) · [Reproduce the order and factor checks](scripts/check_translation_lift_orders.py)
 
-- **A real quadratic class number detects cubes in the cyclotomic family.** For primes $p\equiv5\pmod8$ with two primitive modulo $p$, the root-order index is divisible by three exactly when the quadratic order of discriminant $4p$ has class number divisible by three. Direct binary powering and certified class groups agree for all 63 eligible primes through 2053. [Proof](results.pdf#page=244) · [Reproduce the comparison](scripts/check_twisted_cubic.py)
+- **A real quadratic class number detects cubes in the cyclotomic family.** For primes $p\equiv5\pmod8$ with two primitive modulo $p$, the root-order index is divisible by three exactly when the quadratic order of discriminant $4p$ has class number divisible by three. A separate modular test forces index divisors 47, 11 and 11 at $p=461,1621,1741$. Direct binary powering checks both results at every eligible prime through 2053. In the five-term family, every odd exponent strictly between 191 and 16,541 gives a reducible polynomial. [Cubic character](results.pdf#page=244) · [Half-degree criterion and excluded exponents](results.pdf#page=246) · [Verifier](scripts/check_twisted_cubic.py)
 
 - **The minimum weight is five in ten additional prime degrees and three in seven others.** One example is $X^{4507}+X^{4313}+X^{388}+X^{194}+1$. The search checked all 35,566 reciprocal classes of trinomials in the seventeen degrees from 3467 to 5087. Exactly fifteen classes are irreducible, and all fifteen are primitive. Each of the seventeen degrees also has a certified pentanomial. [Five-term witnesses](data/complementary-prime-degrees-3467-5087.csv) · [Trinomial census](data/prime-degree-trinomial-census.csv) · [Proof](results.pdf#page=236)
 - **Quadratic rational maps of optimal normal basis generators give two further degrees, 23 and 30.** The same map $(T+1)/T^2$ produces primitive pentanomials in both. Across all 24 quadratic maps, the only target degrees above one admitting a primitive polynomial with at most five terms are 2, 3, 4, 5, 6, 9, 11, 23 and 30. For any fixed rational map the paper gives a finite procedure to decide which period indices meet a prescribed term bound. [Proof](results.pdf#page=239) · [Exhaustive verifier](scripts/check_quadratic_period_images.py) · [Lean witnesses](GF2Sparse/GaussPeriodWeights.lean)
@@ -822,6 +822,14 @@ For the five witnesses in degrees 7854 through 9576, each row gives the degree $
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
+~~~
+
+To check the twisted cyclotomic family, the first command tests the root orders and the exclusion of every odd exponent strictly between 191 and 16,541. The second compares the cubic character with certified PARI class groups and checks the order formula for the projection to the subfield of half the degree.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_translation_lift_orders.py --extended-cyclotomic
+uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_cubic.py --gp gp
+lake build GF2Sparse.TwistedCyclotomic
 ~~~
 
 To reproduce the optimal normal basis classification, run the finite orbit and order checks and the formal coefficient bound.

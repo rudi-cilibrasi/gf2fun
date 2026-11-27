@@ -18558,4 +18558,63 @@ degree-7854 entry in the repository's factor table.
 Including this degree, the certificates cover at least 2,673 of the
 first 10,351 positive degrees.
 
+\clearpage
+\section{A primitivity test in half the cyclotomic degree}
+\label{sec:twisted-half-order}
+
+Let \(p\equiv5\pmod8\) be prime with two primitive modulo \(p\).
+Write \(m=(p-1)/2\), \(q=2^m\), take \(z\) of order \(p\), and set
+\(x=x(z)\), \(t=z+z^{-1}\), as in Section~\ref{sec:twisted-torus}.
+Choose \(0\le j<p-1\) with \(2^j\equiv3\bmod p\).
+
+\begin{theorem}
+For \(T=\ord(t)\), the order of \(x\) is exactly
+\[
+          \ord(x)=\ord(x^{q-1})\,
+                   \frac{T}{\gcd(T,2^j-3)} .
+\]
+Thus \(x\) is primitive precisely when \(t\) is primitive in
+\(\mathbb F_q\), \(\gcd(q-1,2^j-3)=1\), and
+\(\ord(x^{q-1})=q+1\). In particular \(\gcd(q-1,2^j-3)\) divides
+the index of \(x\) whatever the order of \(t\).
+\end{theorem}
+\begin{proof}
+The identity \((x^{q+1})^2=t^{2^j-3}\) was proved in
+Section~\ref{sec:torus-cubic-class}. Squaring preserves orders in
+the odd-order group \(\mathbb F_q^\times\), which gives the second
+factor in the formula. The orders of the projections \(x^{q+1}\)
+and \(x^{q-1}\) multiply to \(\ord(x)\), since \(q-1\) and \(q+1\)
+are coprime. The subgroup of \((2^j-3)\)-th powers in
+\(\mathbb F_q^\times\) has index \(\gcd(q-1,2^j-3)\).
+Lean verifies the order formula for \(x^{q+1}\) from the two
+Frobenius powers of \(z\) in \texttt{half\_projection\_order}.
+\end{proof}
+
+An odd prime \(\ell\) can give this obstruction without computing \(j\)
+or building the binary extension. Put \(d=\ord_\ell(2)\). If
+\(d\mid m\) and \(3\equiv2^e\bmod\ell\), then \(\ell\) divides
+the displayed gcd exactly when
+\[
+          3^{(p-1)/d}\equiv2^{\,e(p-1)/d}\pmod p.
+\]
+Indeed both tests say \(j\equiv e\bmod d\).
+Of the 63 eligible primes through 2053, the gcd is nontrivial for
+exactly three. It equals 47 for \(p=461\), and 11 for \(p=1621,1741\).
+Direct binary powering verifies the identity at all 63 primes and
+each forced index divisor. For the sparse cases \(p=13,37,2053\)
+the gcd is one, and the respective indices of \(t\) in
+\(\mathbb F_q^\times\) are \(1,3,7\). These follow from the exact
+indices of \(x\) since the reported primes \(3,7\) divide \(q-1\)
+in the respective cases.
+
+The same cyclotomic family \(C_k\) has no further irreducibles for
+odd \(191<k<16541\). Among these 8,174 exponents, 7,126 integers
+\(P=2^k+5\) have a prime divisor at most 8192. Another 1,046 fail
+\(2^{P-1}\equiv1\bmod P\). The two remaining exponents are \(273\)
+and \(341\), and each gives \(2^{(P-1)/3}\equiv1\bmod P\).
+In all cases two fails to have order \(P-1\). The test uses the
+criterion of Section~\ref{sec:twisted-torus} and integer arithmetic
+alone. The exponents with \(2^k+5\) prime are tabulated in
+\href{https://oeis.org/A059242}{OEIS A059242}.
+
 \end{document}

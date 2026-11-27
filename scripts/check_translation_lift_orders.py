@@ -1,5 +1,6 @@
 """Check twisted cyclotomic pentanomials and the remaining quadratic-lift supports."""
 
+import argparse
 import json
 from collections import Counter
 from fractions import Fraction
@@ -171,5 +172,35 @@ def check_orders():
     check_remaining_exponents(data)
 
 
+def check_extended_cyclotomic():
+    """Exclude all odd k strictly between 191 and 16541 by integer arithmetic."""
+    small_primes = fmpz.primorial_ui(8192)
+    two = fmpz(2)
+    small_factor_count = 0
+    fermat_failures = 0
+    cubic_obstructions = []
+    for k in range(193, 16541, 2):
+        p = two**k + 5
+        n = p - 1
+        if p.gcd(small_primes) > 1:
+            small_factor_count += 1
+            continue
+        if pow(two, n, p) != 1:
+            fermat_failures += 1
+            continue
+        if pow(two, n // 3, p) != 1:
+            raise ValueError(f"no exclusion at k={k}")
+        cubic_obstructions.append(k)
+    if (small_factor_count, fermat_failures, cubic_obstructions) != (7126, 1046, [273, 341]):
+        raise ValueError("unexpected counts for the cyclotomic exponents")
+    print("Every C_k for odd 191 < k < 16541 is reducible.")
+
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--extended-cyclotomic", action="store_true",
+                        help="also check all odd exponents below 16541")
+    args = parser.parse_args()
     check_orders()
+    if args.extended_cyclotomic:
+        check_extended_cyclotomic()

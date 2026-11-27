@@ -97,6 +97,60 @@ private theorem modulus_order_dvd {x w : K} (hw : w^2 = w+1) {p e : ℕ}
     sub_eq_zero] at hc
   exact hc
 
+private theorem period_triple {z : K} (hz : z ≠ 0) {j : ℕ} (h : z^(2^j) = z^3) :
+    (z+z⁻¹)^(2^j) = (z+z⁻¹)^3 + (z+z⁻¹) := by
+  rw [add_pow_expChar_pow, inv_pow, h, ← inv_pow]
+  field_simp
+  ring_nf
+  simp [show (4 : K) = 0 by rw [show (4 : K) = 2*2 by norm_num, CharTwo.two_eq_zero, zero_mul]]
+
+private theorem period_ratio {z : K} (hz : z ≠ 0) : z+z⁻¹ = (1+z)^2 / z := by
+  rw [CharTwo.add_sq]
+  field_simp
+  ring
+
+/-- The order of the half-field projection of a twisted cyclotomic root. -/
+theorem half_projection_order {z w : K} (hz : z ≠ 0) (hz1 : z ≠ 1) (hw : w^2 = w+1)
+    {m j : ℕ} (hm : Even m) (hzq : z^(2^m) = z⁻¹)
+    (hj : 3 < 2^j) (hthree : z^(2^j) = z^3) :
+    let x := (w+(w+1)*z)/(1+z)
+    let t := z+z⁻¹
+    orderOf (x^(2^m+1)) = orderOf t / (orderOf t).gcd (2^j-3) := by
+  let x := (w+(w+1)*z)/(1+z)
+  let t := z+z⁻¹
+  change orderOf (x^(2^m+1)) = orderOf t / (orderOf t).gcd (2^j-3)
+  have hd : 1 + z ≠ 0 := fun h => hz1 (CharTwo.add_eq_zero.mp h).symm
+  have hdi : 1 + z⁻¹ ≠ 0 := by
+    intro h
+    exact hz1 (inv_eq_one.mp (CharTwo.add_eq_zero.mp h).symm)
+  have hwq : w^(2^m) = w := by
+    obtain ⟨v, hv⟩ := hm
+    rw [show m = 2*v by omega]
+    exact even_fixed hw v
+  have hx : x^(2^m) = x+1 := by
+    dsimp [x]
+    rw [div_pow, add_pow_expChar_pow, mul_pow, add_pow_expChar_pow, add_pow_expChar_pow,
+        hwq, hzq, one_pow]
+    field_simp
+    grind
+  have hn : x*(x+1) = 1+t⁻¹ := by
+    dsimp [x, t]
+    rw [period_ratio hz, inv_div]
+    field_simp
+    grind
+  have ht : t ≠ 0 := by
+    dsimp [t]
+    rw [period_ratio hz]
+    exact div_ne_zero (pow_ne_zero _ hd) hz
+  have hpow : t^(2^j) = t^3+t := period_triple hz hthree
+  have heq : (1+t⁻¹)^2 = t^(2^j-3) := by
+    apply mul_right_cancel₀ (pow_ne_zero 3 ht)
+    rw [← pow_add, Nat.sub_add_cancel hj.le, hpow, CharTwo.add_sq]
+    field_simp [ht]
+  have hs := orderOf_injective (frobenius K 2).toMonoidHom (frobenius K 2).injective (1+t⁻¹)
+  change orderOf ((1+t⁻¹)^2) = orderOf (1+t⁻¹) at hs
+  rw [pow_succ, hx, mul_comm (x+1), hn, ← hs, heq, orderOf_pow' _ (by omega)]
+
 end Field
 
 /-- Full order of two modulo Q+5 proves irreducibility without constructing a
