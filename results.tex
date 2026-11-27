@@ -19652,4 +19652,94 @@ polynomial product checks are in
 \nolinkurl{data/cyclotomic-weight-spectra.json} and
 \nolinkurl{scripts/cyclotomic_weight_census.cpp}.
 
+\clearpage
+\section{A full-degree order component with no cutoff on the two primes}
+\label{sec:semiprime-parity}
+
+\begin{theorem}\label{thm:semiprime-parity}
+Let \(p<q\) be odd primes and \(n=pq\). Suppose a root of a binary
+irreducible of degree \(n\) and weight at most five is a product of
+elements of the two proper subfields. The polynomial has five terms.
+The five powers on its support span a binary plane on the degree-\(p\)
+side, whose component order \(A\) satisfies
+\[
+             3p^2/4\le A\le pq/3.
+\]
+Both component subgroups contain a pair \(x,1+x\).
+In particular \(4q>9p\).
+\end{theorem}
+\begin{proof}
+Write the product as \(r=\alpha\beta\). The rank argument of
+Theorem~\ref{thm:1243-subfield-product} excludes three terms and puts
+all three nonzero points of a plane among the powers on one side.
+Take this side to be \(\alpha\); denote the two degrees by \(i,j\) and
+the two orders by \(A,B\). Write the plane points as \(u,v,u+v\).
+If their multiplicities are \(3,1,1\) in any order, all are odd.
+Summing gives \(f(\alpha)=u+v+(u+v)=0\). An irreducible of degree
+\(ij\) cannot have a root in the degree-\(i\) subfield.
+Thus the multiplicities are \(2,2,1\).
+
+The \(\beta\)-sums in these three classes agree: their equality is
+exactly the coefficient comparison on the independent vectors \(u,v\).
+The singleton sum is nonzero. Dividing one such pair sum by its
+singleton gives two powers with sum one, as does dividing the plane
+points by any one of them. Each nontrivial point in these subfields
+has the corresponding prime degree. Lemma~\ref{lem:plane-size} now gives
+\(4A\ge3i^2\) and \(4B\ge3j^2\).
+
+Suppose \(3A>n\). Each pair has gap \(A\) or \(2A\). If the gaps
+agree, equality of the two nonzero pair sums makes their distinct
+starting exponents agree modulo \(B\). Their distance is at most
+\(n-A<B\), since \(A+B\ge3(i^2+j^2)/4>ij\).
+Otherwise let the pairs be \((a,a+A),(b,b+2A)\) and the singleton
+\(c\). Then \(\beta^{c-a}=1+\beta^A\) and
+\(\beta^{c-b}=(1+\beta^A)^2\), whence \(B\mid b+c-2a\).
+The interval bounds give \(|b+c-2a|\le2(n-A)<B\); the strict
+inequality follows from \(2A+B\ge3(2i^2+j^2)/4>2ij\).
+Thus \(b+c=2a\). Dividing \(f(r)=0\) by \(r^c\) now gives
+\(1+w+w^2=0\) with \(w=r^{a-c}(1+r^A)\), impossible in an odd-degree
+binary field. Hence \(3A\le n\), so \(9i\le4j\). This forces
+\(i=p\); equality is impossible since \(p\) is odd.
+\end{proof}
+
+\begin{corollary}\label{cor:semiprime-parity}
+If \(4q\le9p\), the order of every such sparse irreducible root has
+a prime-power divisor \(L\) with \(\ord_L(2)=pq\), without a bound on
+\(q\). One may take \(L\) prime unless \(q=2p+1\equiv7\pmod8\).
+\end{corollary}
+\begin{proof}
+Otherwise each maximal prime-power divisor of the order divides
+\(2^p-1\) or \(2^q-1\). These numbers are coprime; their product
+is the order of the subgroup of products from the two subfields.
+The theorem excludes this subgroup. The order-lifting argument of
+Theorem~\ref{thm:10000-semiprimes} gives the asserted prime exception.
+\end{proof}
+
+\begin{corollary}\label{cor:semiprime-forced-norm}
+Suppose every subgroup of \(\mathbb F_{2^p}^{\times}\) containing an
+additive pair \(x,1+x\) has order divisible by \(P\), and \(pq<3P\).
+Then the same full-degree prime-power conclusion holds. If
+\(C=(2^{pq}-1)/((2^p-1)(2^q-1))\) is prime, every sparse irreducible
+in this degree has \(C\) in its root order. It is then primitive exactly
+when its two subfield norms are primitive.
+\end{corollary}
+\begin{proof}
+The hypothetical degree-\(p\) component would satisfy
+\(P\le A\le pq/3\). When \(C\) is prime, it exceeds \(2^q-1\):
+\((2^{pq}-1)/(2^q-1)>2^{(p-1)q}>(2^p-1)(2^q-1)\) for
+\(p\ge3,\ q>p\). Hence \(2^p-1,2^q-1,C\) are pairwise coprime,
+and any full-degree order component uses \(C\). The norm to degree
+\(d\) raises a root to \((2^{pq}-1)/(2^d-1)\), preserving the entire
+\((2^d-1)\)-part of the order.
+\end{proof}
+
+For a Mersenne prime \(2^p-1\) take \(P=2^p-1\).
+For \(p=1637,3359,4243\) take the primes of 485, 1008 and 1273 digits
+in Section~\ref{sec:cyclotomic-weight-spectra}, respectively: the only
+subgroup missing that prime is contained in the certified sum-free
+subgroup of order \(s\). Thus the exclusion also applies to widely
+separated primes. Lean verifies the odd multiplicity obstruction and the
+three-term additive relation in either proper subfield in
+\nolinkurl{GF2Sparse/SubfieldProducts.lean}.
+
 \end{document}

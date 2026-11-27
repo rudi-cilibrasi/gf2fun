@@ -11,6 +11,15 @@ theorem binary_monic {f : BinaryPoly} (hf : f ≠ 0) : f.Monic := by
   have choices : ∀ a : ZMod 2, a = 0 ∨ a = 1 := by decide
   exact (choices f.leadingCoeff).resolve_left (leadingCoeff_ne_zero.mpr hf)
 
+/-- Evaluate a binary polynomial by summing the powers on its support. -/
+theorem aeval_binary_support {A : Type*} [Semiring A] [Algebra (ZMod 2) A]
+    (p : BinaryPoly) (x : A) : aeval x p = ∑ i ∈ p.support, x^i := by
+  rw [aeval_def, eval₂_eq_sum, sum_def]
+  apply Finset.sum_congr rfl
+  intro i hi
+  have h : ∀ a : ZMod 2, a ≠ 0 → a = 1 := by decide
+  rw [h _ (mem_support_iff.1 hi), map_one, one_mul]
+
 /-- Binary polynomial evaluation commutes with every power of Frobenius. -/
 theorem aeval_dyadic {R : Type*} [CommRing R] [Algebra (ZMod 2) R] [CharP R 2]
     (p : BinaryPoly) (r : R) (t : ℕ) : aeval (r ^ (2 ^ t)) p = (aeval r p) ^ (2 ^ t) := by
