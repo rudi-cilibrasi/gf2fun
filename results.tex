@@ -14115,6 +14115,9 @@ Use \(d=508\), the bound of 19 on the number of order primes, and
 the 16 nonnegative integer frequencies in
 \nolinkurl{scripts/check_primitive_weight_bound.py}.
 The exact integer lower bound for a cutoff of 309 exceeds \(2^{616}\).
+The Lean kernel independently checks the divisor counts, outward
+rational estimates for both sieve constants, and the final inequality
+in \nolinkurl{GF2Sparse/SelbergWeight.lean}.
 For an even-weight template use the translated Fourier weights of
 Theorem~\ref{thm:weight-entropy-rate}. Every primitive polynomial
 has odd distance from this template. In difference coordinates a

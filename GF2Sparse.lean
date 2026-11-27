@@ -18,6 +18,7 @@ import GF2Sparse.FactorFieldIndex
 import GF2Sparse.FibreBound
 import GF2Sparse.FifthImage
 import GF2Sparse.FourierWeightBounds
+import GF2Sparse.SelbergWeight
 import GF2Sparse.FrobeniusBoxes
 import GF2Sparse.GaussPeriod
 import GF2Sparse.Grid
