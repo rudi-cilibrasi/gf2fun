@@ -14548,4 +14548,84 @@ Each pencil can be expanded separately and its logarithmic
 coefficients checked by binary field powering.
 \nolinkurl{data/degree-1229-elliptic-ten-real-pencils.json.gz}.
 
+\section{Six auxiliary degrees suffice in every degree}
+\label{sec:signed-six-fields}
+\begin{theorem}
+Let \(n\ge24\), let \(d\) be least with \(n\le2^{d+1}+2\),
+and put \(m=2d\). Choose any degree-\(n\) element \(a\) over \(\F\).
+Suppose that for each \(m-5\le j\le m\), at least
+\(1999/2000\) of the elements of \(\mathbb F_{2^j}\) have their binary
+minimal polynomial in a list \(\mathcal P\) of irreducibles of degrees below \(n\).
+Then the values \(P(a)\), \(P\in\mathcal P\), generate
+\(\mathbb F_{2^n}^\times\). The fractions count field elements, including zero.
+\end{theorem}
+In particular, for a proposed sparse root it suffices to show that
+its powers include all the retained evaluations. The hypotheses allow
+the omitted polynomials to have arbitrary degrees.
+
+\begin{proof}
+If the generated subgroup is proper, it admits containment in the
+kernel of a character of prime order \(p\ge3\).
+Apply the proof of Theorem~\ref{thm:factor-moments} to this quotient.
+At lag \(k<n\), write \(u_k\) for the fraction of its \(2^k\) prime-power
+contributions in the kernel, counting each irreducible of degree
+\(e\mid k\) with weight \(e\) at the power \(k/e\).
+Averaging over the nontrivial characters gives
+\(\rho_k=(pu_k-1)/(p-1)\). For real weights \(c_i\) with
+\(W_k=\sum_i c_ic_{i+k}\) and \(W_0>0\), positivity of the same squared
+trigonometric polynomial gives
+\[
+ \frac{2}{W_0}\sum_{k\ge1}W_k2^{k/2}(2^{-k}+\rho_k)\le n-2 .
+\]
+The weights may have either sign. Since \(\rho_k\le1\), a lower bound
+\(b\le\rho_k\) gives \(w\rho_k\ge\min(w,bw)\) for any signed \(w\).
+Here \(b=-1/2\) works at every lag and \(b=3997/4000\) works in the
+six covered degrees.
+
+Set \(q=2^{d-1}\). For \(d\ge13\), place the two lists
+\[
+ \begin{split}
+ (58,120,59,56,24,17,1,-5,-1,2),\\
+ (1,-2,-4,1,12,34,39,83,85,82)
+ \end{split}
+\]
+starting at positions zero and \(m-8\). Divide each odd-position entry
+by \(\sqrt2\). The length is below \(n\).
+For the two lists separately let \(a_i,b_i\) be their normalized entries
+and set \(C_h=2^{h/2}\sum_i a_i b_{i+h}\). The cross lags are \(m-8+h\),
+so \(3\le h\le8\) is the covered range. Grouping by lag before applying
+the signed bound gives the following contributions to the left side
+from the \(\rho_k\) terms:
+\[
+ \text{cross lists}\ \ge \frac{2089970613}{522304000}q,\qquad
+ \text{within lists}\ \ge -\frac{37473}{8161}.
+\]
+For instance the cross coefficient of \(q\) is
+\(\sum_h\min(C_h,bC_h)/(4W_0)\), where \(b\) is the applicable lower bound.
+The two within-list correlations are added before taking their lower bound.
+Overlapping lags allow separate lower bounds for their two contributions.
+The remaining terms contribute at least \(-1\), since for \(t=1/\sqrt2\),
+\[
+ W_0+2\sum_{k\ge1}W_k t^k
+  =(1-t^2)\sum_{j\ge0}\left(\sum_{i\le j}c_i t^{j-i}\right)^2\ge0 .
+\]
+The resulting lower bound exceeds \(4q\) already at \(q=4096\) and
+its coefficient of \(q\) is greater than four.
+
+For \(4\le d\le12\), combine the entries at shared positions and use
+the three alternate lists at \(d=9,10,11\) in the checker. At lag \(k\)
+each covered field of degree \(j\) divisible by \(k\) gives
+\(2^ku_k\ge2^k-\lfloor2^j/2000\rfloor\) by subfield containment.
+If \(p=3\) and \(3\mid k\), the \(2^{k/3}\) elements of
+\(\mathbb F_{2^{k/3}}\) all contribute cubes. For larger primes,
+\((pu-1)/(p-1)\ge(5u-1)/4\) for \(0\le u\le1\).
+Substituting the maximum of the applicable lower counts and zero,
+using the upper bound one at negative correlations, gives a score
+strictly greater than \(2^{d+1}\) in all eighteen cases. In both
+ranges this contradicts \(n-2\le 2^{d+1}\).
+The exact correlated sums and finite inequalities are checked by
+\nolinkurl{scripts/check_factor_field_index.py} and by the Lean kernel in
+\nolinkurl{GF2Sparse/FactorFieldIndex.lean}.
+\end{proof}
+
 \end{document}

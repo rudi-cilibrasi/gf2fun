@@ -84,4 +84,65 @@ theorem seven_fields_first :
       if j ≤ i then 0 else if j-i ≤ 5 then 1 else if j-i ≤ 8 then 197/200 else -1/2) :=
   by decide +kernel
 
+private def sixLeft : List ℤ := [58,120,59,56,24,17,1,-5,-1,2]
+private def sixRight : List ℤ := [1,-2,-4,1,12,34,39,83,85,82]
+
+private def signedNorm (xs : List ℤ) : ℚ :=
+  (xs.zipIdx.map fun (u,i) => (u:ℚ)^2 / 2^(i%2)).sum
+
+/-- The correlation at h multiplied by 2^(h/2), using integer entries
+with the same odd-position normalization as in the nonnegative test. -/
+private def signedLag (xs ys : List ℤ) (h : ℤ) : ℚ :=
+  (xs.zipIdx.map fun (u,i) =>
+    let j := (i:ℤ)+h
+    if j < 0 then (0:ℚ) else
+      (u:ℚ) * (ys[j.toNat]?.getD 0 : ℤ) *
+        (2:ℚ)^((h-(i%2:ℕ)-(j.toNat%2:ℕ))/2)).sum
+
+private def signedLower (v lower : ℚ) : ℚ := min v (v*lower)
+
+private def sixSlope : ℚ :=
+  ((List.range 19).map fun j =>
+    let h := (j:ℤ)-9
+    signedLower (signedLag sixLeft sixRight h) (if 3 ≤ h ∧ h ≤ 8 then 3997/4000 else -1/2)
+    ).sum / (4*(signedNorm sixLeft + signedNorm sixRight))
+
+private def sixInside : ℚ :=
+  2*((List.range 9).map fun j =>
+    signedLower (signedLag sixLeft sixLeft (j+1:ℕ) + signedLag sixRight sixRight (j+1:ℕ))
+      (-1/2)).sum / (signedNorm sixLeft + signedNorm sixRight)
+
+/-- Signed autocorrelations give a positive margin for all d ≥ 13. -/
+theorem six_fields_tail :
+    sixSlope = 2089970613/522304000 ∧ sixInside = -37473/8161 ∧
+    4 < sixSlope ∧ 1 < (sixSlope-4)*4096+sixInside := by decide +kernel
+
+private def sixFiniteWeights (d : ℕ) : List ℤ :=
+  match d with
+  | 9 => [29,60,29,28,12,8,0,-2,0,3,2,0,-2,1,6,17,20,42,42,41]
+  | 10 => [31,63,31,29,13,9,0,-3,-1,1,1,1,0,-1,-2,1,6,18,21,44,45,43]
+  | 11 => [28,58,28,27,12,8,1,-3,-1,1,1,0,0,1,0,-1,-2,1,6,16,19,40,41,40]
+  | _ => (List.range (2*d+2)).map fun i =>
+    sixLeft[i]?.getD 0 + (if i+8 < 2*d then 0 else sixRight[i+8-2*d]?.getD 0)
+
+private def sixCovered (m k p : ℕ) : ℕ :=
+  let automatic := if p = 3 ∧ 3 ∣ k then 2^(k/3) else 0
+  ((List.range 6).map fun j =>
+    if k ∣ m-j then 2^k-2^(m-j)/2000 else 0).foldl max automatic
+
+private def sixFiniteOK (d p : ℕ) : Bool := Id.run do
+  let xs := sixFiniteWeights d
+  let score := ((List.range (xs.length-1)).map fun i =>
+    let k : ℕ := i+1
+    let v := signedLag xs xs k
+    let size : ℚ := 2^k
+    let lower : ℚ := ((p:ℚ)*(sixCovered (2*d) k p)-size)/(((p:ℚ)-1)*size)
+    v/size + signedLower v lower).sum
+  return decide (2^(d+1)*signedNorm xs < 2*score)
+
+/-- All nine remaining dyadic ranges, for a cubic quotient or any larger prime quotient. -/
+theorem six_fields_small :
+    ((List.range 9).all fun j => sixFiniteOK (j+4) 3 && sixFiniteOK (j+4) 5) = true := by
+  decide +kernel
+
 end GF2Sparse.FactorFieldIndex

@@ -1,6 +1,7 @@
 """Verify the uniform generation and index bounds for low-degree polynomial values."""
 
 import argparse
+from collections import defaultdict
 from fractions import Fraction
 from math import gcd
 
@@ -101,6 +102,65 @@ def interval_bounds():
             print(f"The overlapping d=4 case gives {score} > 32.")
 
 
+SIX_LEFT = (58, 120, 59, 56, 24, 17, 1, -5, -1, 2)
+SIX_RIGHT = (1, -2, -4, 1, 12, 34, 39, 83, 85, 82)
+SIX_FINITE = {
+    9: (29, 60, 29, 28, 12, 8, 0, -2, 0, 3, 2, 0, -2, 1, 6, 17, 20, 42, 42, 41),
+    10: (31, 63, 31, 29, 13, 9, 0, -3, -1, 1, 1, 1, 0, -1, -2, 1, 6, 18, 21, 44, 45, 43),
+    11: (28, 58, 28, 27, 12, 8, 1, -3, -1, 1, 1, 0, 0, 1, 0, -1, -2, 1, 6, 16, 19, 40, 41, 40),
+}
+
+
+def weighted_lags(left, right):
+    """Return 2^(h/2) times the correlation at h, with signed entries."""
+    lags = defaultdict(Fraction)
+    for i, u in enumerate(left):
+        for j, v in enumerate(right):
+            lags[j-i] += weighted_pair(i, u, j, v)
+    return lags
+
+
+def signed_lower(value, lower):
+    """Lower bound for value times a number in [lower, 1]."""
+    return min(value, value*lower)
+
+
+def six_field_bounds():
+    good, bad = Fraction(3997, 4000), Fraction(-1, 2)
+    energy = norm(SIX_LEFT) + norm(SIX_RIGHT)
+    cross = weighted_lags(SIX_LEFT, SIX_RIGHT)
+    slope = sum(signed_lower(v, good if 3 <= h <= 8 else bad)
+                for h, v in cross.items()) / (4*energy)
+    a, b = (weighted_lags(s, s) for s in (SIX_LEFT, SIX_RIGHT))
+    inside = 2*sum(signed_lower(a[k]+b[k], bad) for k in range(1, 10)) / energy
+    if (slope, inside) != (Fraction(2089970613, 522304000), Fraction(-37473, 8161)):
+        raise ArithmeticError("incorrect six-field correlations")
+    if slope <= 4 or (slope-4)*4096 + inside <= 1:
+        raise ArithmeticError("the six-field tail does not reach n-2")
+
+    for d in range(4, 13):
+        m = 2*d
+        weights = [0]*(m+2)
+        for start, packet in ((0, SIX_LEFT), (m-8, SIX_RIGHT)):
+            for i, value in enumerate(packet):
+                weights[start+i] += value
+        weights = SIX_FINITE.get(d, weights)
+        lags = weighted_lags(weights, weights)
+        for p in (3, 5):
+            total = 0
+            for k in range(1, len(weights)):
+                size = 2**k
+                # Every omitted element of a subfield is omitted in its containing field.
+                covered = max([0] + [size-2**j//2000 for j in range(m-5, m+1) if j % k == 0])
+                if p == 3 and k % 3 == 0:
+                    covered = max(covered, 2**(k//3))
+                lower = Fraction(p*covered-size, (p-1)*size)
+                total += lags[k]/size + signed_lower(lags[k], lower)
+            if 2*total <= 2**(d+1)*norm(weights):
+                raise ArithmeticError(f"insufficient signed moment at d={d}, prime class {p}")
+    print("Six fields with at least 1999/2000 coverage each generate the full group in every degree n >= 24.")
+
+
 def multipliers(n):
     return [k for k in range(1, 21) if (2*k*n+1) % 8 in (1, 7) and gcd(2*k*n+1, 15) == 1]
 
@@ -111,6 +171,7 @@ def main():
     args = parser.parse_args()
     uniform_bound()
     interval_bounds()
+    six_field_bounds()
     residues = [a for a in range(60) if gcd(a, 60) == 1]
     maximum = max(len(multipliers(a)) for a in residues)
     if maximum != 6:
