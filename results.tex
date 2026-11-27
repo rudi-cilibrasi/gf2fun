@@ -19487,21 +19487,22 @@ are respectively \(153\) and \(1689,2277\), all of proper order.
 Even weight would give a factor \(X+1\). See
 \nolinkurl{scripts/check_composite_orders.py}.
 
-Degree \(3481\) also has a short test valid for every irreducible
-binary polynomial of that degree. The ECPP chain proves primality
-of the 1,031-digit quotient \(Q\) in the factorization
+More generally, suppose \(0<d<n\) and \(2^n-1=Q(2^d-1)\) with \(Q\)
+prime. Every root \(z\) of an irreducible of degree \(n\) satisfies
+\(\ord(z)=Q\,\ord(z^Q)\). Indeed its order divides \(Q(2^d-1)\).
+If \(Q\) did not divide its order, then \(z^{2^d-1}=1\), contradicting
+its degree. Raising to \(Q\) therefore divides its order by \(Q\).
+Primitivity is equivalent to the norm \(z^Q\) having order \(2^d-1\).
+Lean proves both statements in \nolinkurl{GF2Sparse/PartialOrder.lean}.
+In degree 3481 the ECPP chain proves primality of the 1,031-digit quotient
 \[
       Q=\frac{2^{3481}-1}{2^{59}-1},\qquad
       2^{59}-1=179951\cdot3203431780337.
 \]
-An element whose order misses \(Q\) lies in the only maximal proper
-subfield, \(\mathbb F_{2^{59}}\). Every element of degree 3481
-therefore has order divisible by \(Q\), and is primitive precisely
-when its norm to degree 59 is primitive. Indeed the coprime factors
-\(Q,2^{59}-1\) split the cyclic multiplicative group, and the norm
-raises to \(Q\), an automorphism of the subfield factor. Each
-nonzero norm occurs equally often among the elements of full degree.
-The exact primitive fraction among degree-3481 irreducibles is
+Each nonzero norm has \(Q\) preimages, exactly one in the only maximal
+proper subfield \(\mathbb F_{2^{59}}\), since \(\gcd(Q,2^{59}-1)=1\).
+Every norm therefore occurs equally often in full degree. The exact
+primitive fraction among degree-3481 irreducibles is
 \((1-1/179951)(1-1/3203431780337)\).
 
 \clearpage

@@ -10,7 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **Thirteen additional composite degrees have certified primitive pentanomials.** In degree $16{,}129=127^2$, the only primitive trinomial taps up to reciprocity are 79 and 7,575. The minimum weight is also three in degrees 3,481 and 4,913, and five in the other ten, including 15,856. In degree 3,481 a 1,031-digit prime divides the root order of every irreducible, so primitivity reduces to a norm test in degree 59. [Witnesses and order factorizations](data/composite-order-witnesses.json) · [ECPP archive](data/composite-order-prime-certificates.json.gz) · [Degree-16,129 certificate](data/degree-16129-primality.cert.gz) · [Proof](results.pdf#page=260)
+- **Thirteen additional composite degrees have certified primitive pentanomials.** In degree $16{,}129=127^2$, the only primitive trinomial taps up to reciprocity are 79 and 7,575. The minimum weight is also three in degrees 3,481 and 4,913, and five in the other ten, including 15,856. In degree 3,481 a 1,031-digit prime divides the root order of every irreducible, so primitivity reduces to a norm test in degree 59. [Lean proof of the norm criterion](GF2Sparse/PartialOrder.lean) · [Witnesses and order factorizations](data/composite-order-witnesses.json) · [ECPP archive](data/composite-order-prime-certificates.json.gz) · [Degree-16,129 certificate](data/degree-16129-primality.cert.gz) · [Proof](results.pdf#page=260)
 
 - **For $k=141$ and $191$, the prime $2^k+5$ divides the root order of the degree-$2^k+4$ pentanomial exactly once. The exact powers of three in those orders are 9 and 243.** The conductor-prime test uses binary quadratic forms and agrees with direct powering at all 125 eligible primes through 2,053. The powers of three follow unconditionally from two certified imaginary quadratic class numbers. [Conductor-prime proof](results.pdf#page=253) · [Powers of three](results.pdf#page=257) · [Class-number verifier](scripts/check_twisted_three_class.py)
 
@@ -830,10 +830,11 @@ For the five witnesses in degrees 7854 through 9576, each row gives the degree $
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
 ~~~
 
-To verify all thirteen composite degrees, run the following command with PARI/GP available. Add `--degree 16129` to check only the largest degree. Passing `--ntl` with the path to the compiled trinomial enumerator also repeats the exhaustive tap search. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)
+The Python command verifies all thirteen composite degrees with PARI/GP. Add `--degree 16129` to check only the largest degree, or `--ntl` with the path to the compiled trinomial enumerator to repeat the exhaustive tap search. The Lean command builds the general norm criterion. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_composite_orders.py
+lake build GF2Sparse.PartialOrder
 ~~~
 
 In degree 16,129 the verifier checks the archived 514-step PRIMO certificate against the 4,789-digit factor of the group order. The same file can also be checked with `gzip -dc data/degree-16129-primality.cert.gz | vcert -q -`. [Original certificate](https://factordb.com/cert/1100000000252268434) · [Independent GMP verifier](https://github.com/danaj/Math-Prime-Util-GMP/blob/531591c6aa56c0f42450b8ca202dac56ab573b43/examples/vcert.c)
