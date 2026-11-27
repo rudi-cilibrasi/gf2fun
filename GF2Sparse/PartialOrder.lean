@@ -98,4 +98,20 @@ theorem primitive_iff_norm_order_of_prime_quotient {F E : Type*} [Field F] [Fiel
     refine ⟨binary_monic hf.ne_zero, hf, hzord.symm.trans ?_⟩
     exact he.trans ((congrArg (q * ·) hn).trans hsize.symm)
 
+/-- An order dividing qM but not M forces the whole extra prime step in any multiple of M. -/
+theorem prime_step_dvd_iff {u M L q : ℕ} (hM : 0 < M) (hq : q.Prime)
+    (hu : u ∣ q*M) (hnot : ¬ u ∣ M) (hL : M ∣ L) : u ∣ L ↔ q*M ∣ L := by
+  obtain ⟨k, hk⟩ := Nat.dvd_lcm_right u M
+  have hkq : k ∣ q := by
+    have hd : Nat.lcm u M ∣ M*q :=
+      Nat.lcm_dvd (by simpa only [Nat.mul_comm] using hu) (dvd_mul_right M q)
+    rw [hk] at hd
+    exact Nat.dvd_of_mul_dvd_mul_left hM hd
+  rcases (Nat.dvd_prime hq).mp hkq with h | h
+  · exact (hnot (by simpa [hk, h] using Nat.dvd_lcm_left u M)).elim
+  · constructor
+    · intro hdiv
+      simpa [hk, h, Nat.mul_comm] using Nat.lcm_dvd hdiv hL
+    · exact fun hdiv => hu.trans hdiv
+
 end GF2Sparse

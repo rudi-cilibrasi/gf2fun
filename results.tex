@@ -20903,4 +20903,107 @@ FLINT independently checks irreducibility and root order for every
 listed trinomial. Swan's theorem also excludes all trinomials at
 \(n=10192\), which is divisible by eight.
 
+\clearpage
+\section{Two exponent differences for intersecting maximal subfields}
+\label{sec:relative-progression-differences}
+Let \(p<q\) be distinct odd primes dividing \(n\), and write \(s=n/(pq)\).
+The maximal subfields \(A=\mathbb F_{2^{sp}}\) and \(B=\mathbb F_{2^{sq}}\)
+are linearly disjoint over \(K=\mathbb F_{2^s}\). Set
+\[
+ L_p=(2^{sp}-1)/(2^s-1),\qquad L_q=(2^{sq}-1)/(2^s-1).
+\]
+Let an irreducible pentanomial of degree \(n\) have support
+\(E=\{t,t+d,t+2d,u,v\}\), with \(d>0\), and write \(g=\gcd(E)\).
+Its two endpoints are \(0,n\).
+
+\begin{theorem}\label{thm:relative-two-differences}
+Suppose \(g=1\) and a root belongs to \(A^\times B^\times\).
+Then, possibly after interchanging \(p,q\),
+\[
+                 \gcd(d,L_p)>1,\qquad \gcd(|u-v|,L_q)>1.
+\]
+More precisely the two gcds are multiples of the orders of the two
+components modulo \(K^\times\).
+\end{theorem}
+\begin{proof}
+Write \(r=\alpha\beta\), with components in \(A,B\). Each component has
+full relative degree \(p,q\), respectively, since \(r\) has degree
+\(n\). Over \(K\), the ranks of the five powers of \(\alpha\) and of
+the corresponding five powers of \(\beta\) sum to at most five.
+Indeed expansion in bases and linear disjointness make the two
+coefficient row spaces orthogonal. If both \(\alpha^d,\beta^d\)
+were outside \(K\), each progression triple would have rank three:
+the first three powers of an element of prime degree at least three
+are independent. Thus we may take \(\alpha^d\in K\), and its
+nontrivial order modulo \(K^\times\) divides \(d\) and \(L_p\).
+
+Put \(C=1+r^d+r^{2d}\in B\). Dividing by \(r^t\) gives
+\[
+       \alpha^{u-t}\beta^{u-t}+\alpha^{v-t}\beta^{v-t}=C.
+\]
+If both powers of \(\alpha\) on the left were in \(K\), its order
+modulo \(K^\times\) would divide \(d,u-t,v-t\). Their gcd is \(g\),
+since \(0\in E\). If one of the powers lies in \(K\), the equation
+puts the other in \(A\cap B=K\) too. Therefore
+\(1,\alpha^{u-t}\) are independent over \(K\). Extend them to a
+\(K\)-basis of \(A\), which remains a basis after extension to \(B\).
+The coefficient of \(\alpha^{u-t}\) in \(\alpha^{v-t}\) is
+\(\beta^{u-v}\) and belongs to \(K\). The nontrivial order of
+\(\beta\) modulo \(K^\times\) thus divides both \(L_q\) and \(|u-v|\).
+\end{proof}
+
+\paragraph{An exact rule for supports with a common divisor.}
+Now let \(n=p^a q^b\), \(a,b\ge1\), and take any irreducible binary
+polynomial of degree \(n\) with nonzero constant term and \(g>1\).
+Its root belongs to \(A^\times B^\times\) if and only if
+\[
+                              q\mid 2^s-1 .
+\]
+This rule works at every weight. For a prime \(\ell\mid g\) the
+polynomial is \(G(X^\ell)\) with \(G\) irreducible, so \(r^\ell\)
+has degree \(n/\ell\). Consequently \(\ell\mid\ord(r)\), as powering by
+\(\ell\) would otherwise preserve the field. Fermat's congruence
+gives \(\ell\mid 2^{n/\ell}-1\). Since \(\ell\mid n\), the smaller
+prime \(p\) is impossible: \(\ord_p(2)>1\) divides \(p-1\), which
+is coprime to \(n/p\). Hence \(g\) is a power of \(q\).
+Set \(M=2^{n/q}-1\). The order of \(r\) divides \(qM\) and fails to
+divide \(M\). Any multiple of \(M\) divisible by \(\ord(r)\) must
+therefore be divisible by \(qM\), since
+\(\operatorname{lcm}(M,\ord(r))/M\) divides the prime \(q\)
+and exceeds one. Lean verifies this step in
+\nolinkurl{GF2Sparse/PartialOrder.lean}.
+If \(q\mid 2^s-1\), the \(q\)-adic valuation of \(2^{sq}-1\) exceeds
+that of \(M=2^{sp}-1\) by one. If \(q\nmid 2^s-1\), then
+\(q\nmid 2^{sq}-1\). Testing divisibility by
+\(\operatorname{lcm}(2^{sp}-1,2^{sq}-1)\) proves the assertion.
+For instance \(X^{63}+X^{49}+X^{14}+X^7+1\) has order 3577 and
+splits, while \(X^{147}+X^{35}+X^{14}+X^7+1\) has order 14680057
+and does not split.
+
+\paragraph{Degree census.}
+Among the 4,090 odd degrees \(n=p^a q^b\le100000\) with
+\(a+b\ge3\), the two differences alone exclude every support with
+\(g=1\) in 3,235 degrees. We need only primes \(\ell\le n\)
+in the two quotients. For \(L_p\) these have binary multiplicative
+order dividing \(sp\) but not \(s\), together with \(p\) itself
+if \(p\mid2^s-1\). The progression step is at most \(n/2\) and the
+other difference at most \(n\).
+
+Through degree 10000 all 562 such degrees admit a complete answer.
+There are 49,224 remaining candidate supports up to reciprocation;
+60 are irreducible and zero have a split root. To enumerate them,
+if the progression contains an endpoint, reflect it to start at zero.
+The other two exponents are \(n-h,n\), where \(h\) is a multiple of
+a permitted prime for the other component. If both endpoints are
+outside the progression, the other difference is \(n\); enumerate
+the interior progression up to reflection. Both endpoints cannot
+belong to a three-term progression in odd degree. NTL tests every
+remaining normalized support for irreducibility and raises each
+irreducible root to \(\operatorname{lcm}(2^{sp}-1,2^{sq}-1)\).
+Thus throughout the range the split progression supports are exactly
+those with \(g>1\) and \(q\mid2^s-1\). For squarefree odd \(pq\)
+the exclusion in Section~\ref{sec:all-progression-twists} already
+applies. The census and the degree sieve are reproduced by
+\nolinkurl{scripts/check_relative_progressions.py}.
+
 \end{document}
