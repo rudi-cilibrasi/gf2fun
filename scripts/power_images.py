@@ -1,4 +1,4 @@
-"""Root-of-unity norm patterns for binary polynomials under fifth and seventh powering."""
+"""Root-of-unity norm patterns for binary polynomials under third, fifth and seventh powering."""
 
 from collections import Counter
 from functools import cache
@@ -11,7 +11,7 @@ from check_cubed_supports import restrict
 @cache
 def root_multipliers(m):
     """Multiplication by powers of a primitive m-th root in a small binary field."""
-    field = {5: 0b11111, 7: 0b1011}[m]
+    field = {3: 0b111, 5: 0b11111, 7: 0b1011}[m]
     size = 1 << (field.bit_length()-1)
     rows = [list(range(size))]
     for _ in range(m):

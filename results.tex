@@ -16490,4 +16490,150 @@ The finite calculation can be replayed with
 large irreducibles, and an irreducible member still needs a
 multiplicative-order certificate.
 
+
+\section{Which sparse roots enter the half field on cubing or fifth powering?}
+\label{sec:half-field-powers}
+
+Let \(f\) be irreducible of degree \(n=2m\), with root \(r\), and
+write \(q=2^m\). The order \(D\) of \(r^{q-1}\) divides \(q+1\).
+It exceeds one because \(r\) has degree \(2m\). For a prime \(l\),
+\(D=l\) precisely when \(r^l\in\mathbb F_q\). This is a particular
+way for an irreducible polynomial to miss a large part of the order
+required for primitivity.
+
+\begin{theorem}\label{thm:half-field-powers}
+Suppose \(f\) has five terms and the gcd of its exponents is one.
+For \(l=3,5\), the condition \(D=l\) holds precisely for the
+irreducible members of the following list. The first family consists
+of integer translates of the five distinct exponents
+\[
+       0,\quad u,\quad v,\quad (l-1)u,\quad (l-1)v,
+       \qquad u\equiv v\not\equiv0\pmod l .
+\]
+The least exponent is translated to zero. The remaining supports,
+up to reciprocal, are listed with the exact order of \(r\).
+\[
+\begin{array}{c|l|r}
+l&\text{support}&\operatorname{ord}(r)\\\hline
+3&0,1,3,8,10&93\\
+5&0,1,2,3,4&5\\
+5&0,1,2,4,12&315\\
+5&0,2,6,9,12&315\\
+5&0,3,15,24,28&81915
+\end{array}
+\]
+\end{theorem}
+\begin{proof}
+Let \(C_l(f)\) have as roots the \(l\)-th powers of the conjugates
+of \(r\), with multiplicity. It is the minimal polynomial of
+\(r^l\) to the power \([\mathbb F_2(r):\mathbb F_2(r^l)]\).
+It is a square precisely when this index is even, or equivalently
+when \(r^l\in\mathbb F_q\). For an \(l\)-th root of unity \(\zeta\)
+of order \(l\),
+\[
+             C_l(f)(X^l)=\prod_{j=0}^{l-1} f(\zeta^j X).
+\]
+For the displayed family put \(U=X^u+X^v\). At \(\zeta^jX\),
+\(U\) changes by the common factor \(\zeta^{ju}\).
+The product for \(1+U+U^{l-1}\) equals \((1+U^3)^2\) for \(l=3\)
+and \((1+U^5+U^{10})^2\) for \(l=5\). The latter identity follows
+by taking fifth powers of the four conjugate roots of \(T^4+T+1\),
+of order fifteen. Normalization multiplies the product by an even
+power of \(X\), since its unshifted least support exponent is even.
+
+For completeness the classification reduces to a finite enumeration
+of rational linear subspaces, independently of \(n\). Anchor one
+label at zero and give the other four indeterminate integer
+exponents. Fix their residues modulo \(l\), up to relabelling, a
+common shift and multiplication by a nonzero residue. The last
+operation permutes the factors of the product. All five residues
+cannot agree by the gcd hypothesis. For \(l=3\), a solution has
+\(m\) odd and \(r=\zeta\beta\) for some choice of \(\zeta\) and
+\(\beta\in\mathbb F_q\), by the coprime orders \(q-1,q+1\).
+Grouping \(f(r)=0\) by residues, the three sums at \(\beta\)
+are equal since \(1+\zeta+\zeta^2=0\) and \(\zeta\notin\mathbb F_q\).
+An empty class would make a nonempty proper subsum of \(f\) vanish
+at \(r\), contradicting minimality (use the subsum omitting the
+leading term). Three odd class sizes would give \(f(\zeta)=0\).
+Thus the only cubic profile needed is \(2+2+1\).
+
+For each residue profile expand the product in the five labels.
+Fix the parities of the four free exponents, with at least one
+odd difference. A common translation allows either target parity
+for the exponents of the product. Retain terms of the opposite
+parity and cancel equal linear forms in pairs. Any surviving form
+must coincide with another survivor in a solution. For a fixed
+survivor branch over all such equalities. Each restricts the
+parameters by one rational hyperplane, reducing dimension by one.
+Discard a branch when two support labels coincide. If all forbidden
+terms cancel on a space of dimension at least two, direct comparison
+of its five label vectors gives the displayed family with the
+stated residues. On a line, divide by the gcd and translate to
+obtain its unique support up to reciprocal. Discard the family
+members and test the rest directly for irreducibility and square
+power image. This gives exactly the table. The recursion can
+overcount lines since it need not solve a congruence on a
+specialized parameter space. The final tests use the actual integer
+exponents. The calculation and a separate field-power check on
+all 2,660 irreducible reciprocal classes with gcd one in even
+degrees through 40 are in
+\nolinkurl{scripts/check_circle_power_degrees.py} (\texttt{--through 40}).
+\end{proof}
+
+\begin{corollary}\label{cor:two-four-prime}
+Let \(p>7\) be prime, and take either \((n,l)=(2p,3)\) or
+\((4p,5)\). Every irreducible pentanomial of degree \(n\) has
+a root-order prime \(s\) with \(\operatorname{ord}_s(2)=n\), except
+precisely the irreducible supports
+\[
+       \{0,u,(l-1)u,p,(l-1)p\},\qquad
+       0<u<p,\quad u\equiv p\pmod l ,
+\]
+and their reciprocals. There are at most
+\(2\lfloor(p-1)/l\rfloor\) exceptions. In particular every
+irreducible pentanomial with two distinct interior exponents
+summing to \(n\) has such a prime. So does every irreducible
+trinomial of degree \(n\).
+\end{corollary}
+\begin{proof}
+A prime dividing \(2^{n/2}+1\) has binary multiplicative degree
+either \(l-1\) or \(n\). In the former case it is \(l\), which
+occurs to the first power since \(p\ne l\) and
+\(2^{(l-1)/2}+1=l\). Thus failure to contain a prime of
+degree \(n\) is equivalent to \(D=l\). An exponent gcd larger
+than one would be even (giving a square) or divisible by \(p\).
+In the latter case the compression to degree \(l-1\) would have
+to be irreducible. Its root in \(\mathbb F_{2^{l-1}}\) already
+has a \(p\)-th root there, since \(p\) is coprime to \(2^{l-1}-1\).
+This excludes the dilation. For trinomials, the quotient
+\(r^{2^{n/2}}/r\) of distinct conjugates has degree \(n\) by
+Theorem~\ref{thm:trinomial-root-quotients} and Frobenius, excluding
+order \(l\).
+
+The isolated supports of the theorem have none of the relevant
+degrees for their respective \(l\). If \(u,v\) have opposite signs,
+the width of the family would give \(|u-v|=p\), incompatible with
+equal residues. Up to reciprocal both are positive and their maximum
+must be \(p\). None of the three possible sums of distinct interior
+exponents is \((l-1)p\), since \(0<u<p\) and \(p\) is coprime to
+\(l(l-1)\).
+\end{proof}
+
+For \(n=2p\), an exceptional member is
+\(g(\zeta X)g(\zeta^2X)\) for \(g=1+X^u+X^p\). A factorization of
+\(g\) would factor this binary product. This recovers the trinomial
+construction of Theorem~\ref{thm:cubic-root-twist} in the reverse
+direction. If \(p\equiv13,19\pmod{24}\), Swan's trinomial criterion
+in degree \(p\) leaves only the even tap two, up to reciprocal.
+Then \(1+X^2+X^p\) is divisible by \(1+X+X^2\) since
+\(p\equiv1\pmod3\). Hence every irreducible trinomial or pentanomial
+in degree \(2p\) has a prime of binary degree \(2p\) in its order.
+
+In particular \(p=10501\) gives a single forced prime in degree
+\(21002\). It is \((2^{10501}+1)/3\), of 3,161 decimal digits,
+by the primality result of
+\href{https://arxiv.org/html/2605.18555v1\#S4.SS3}{Dolotov,
+Theorem~4.2}. This order divisor is shared by every irreducible
+degree-21002 binary polynomial of weight at most five.
+
 \end{document}
