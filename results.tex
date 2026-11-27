@@ -19141,9 +19141,11 @@ of discriminant \(-3p^3\) has exact order \(p\) after raising to
 \(H\). Thus \(p\nmid J\). The additional check
 \(2^{p-1}\ne1\bmod p^2\) proves that \(p\) divides the root
 order exactly once. All checks of this certificate use exact
-integer arithmetic. Across the 125 eligible primes through 2053,
-the criterion agrees with direct binary powering in every case,
-and 35 give \(p\mid J\). See
+integer arithmetic. A second computation multiplies the ideal
+lattices by Hermite normal form and reduces the resulting forms.
+Across the 125 eligible primes through 2053, both implementations
+give the same reduced forms. The criterion agrees with direct
+binary powering in every case, and 35 give \(p\mid J\). See
 \nolinkurl{scripts/check_twisted_conductor.py}.
 
 \end{document}
