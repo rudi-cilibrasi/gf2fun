@@ -21965,4 +21965,62 @@ for nontrivial gcd is attained in the same degrees. Put
 have binary degrees \(9\) and \(3\cdot7^b\), so these pentanomials
 are irreducible and their roots split.
 
+\clearpage
+\section{A common 250-digit order test in three degrees}
+\label{sec:shared-1331-cofactor}
+For \(F=X^n+X^t+X^2+X+1\) and \(r=X\bmod F\), all three rows
+below are irreducible. In each row the root index
+\((2^n-1)/\ord(r)\) is one or exceeds \(182931247071233\).
+Write \(K\) for the certified part of the order.
+\[
+\begin{array}{r|r|r|r|l|r}
+ n&t&\text{primes in }K&\text{digits of }K&
+       \text{remaining composite blocks}&\text{lower bound for }\ord(r)\\ \hline
+ 1331&289 &8 &151&C&2^{548}\\
+ 3993&83  &16&953&C&2^{3210}\\
+ 6655&1719&16&328&C,D&2^{1182}
+\end{array}
+\]
+Here \(C\) has 250 decimal digits and \(D\) has 1,427. Both fail
+Fermat's test to base three. All prime divisors of \(C\) have binary
+degree 1331; those of \(D\) have binary degree 6655. Indeed each
+block divides its indicated field order and is coprime to every
+maximal proper subfield order in that field. We used the factor
+lists from \href{https://factordb.com/index.php?id=1000000000000001331}{FactorDB,
+degree 1331}, \href{https://factordb.com/index.php?id=1000000000000003993}{degree
+3993} and \href{https://factordb.com/index.php?id=1000000000000006655}{degree
+6655}. The 697-digit prime in the second row has a 91-step PARI
+ECPP certificate in \nolinkurl{data/degree-3993-prime-certificate.json.gz}.
+
+For each \(N=2^n-1\), the primes of \(K\) and the remaining blocks
+are pairwise coprime and multiply to \(N\). Direct powering gives
+\(r^{N/v}\ne1\) for every prime or composite block \(v\). Consequently
+\(K\mid\ord(r)\), and each displayed composite block contributes a
+nontrivial divisor to \(\ord(r)\). The norms to the fields of degrees
+121, 363 and 605 respectively are primitive: in each case the whole
+subfield group order divides the squarefree part \(K\) and is coprime
+to every other factor of \(N\).
+
+Every prime of odd binary degree \(d\) is congruent to one modulo
+\(2d\). The two computed products satisfy
+\[
+   \gcd\!\left(v,\ \prod_{j=1}^{2^{2L}}(1+2dj)\right)=1,
+   \qquad (d,v,L)\in\{(1331,C,18),(6655,D,17)\}.
+\]
+The least prime divisors of \(C,D\) therefore exceed
+\(182\,931\,247\,071\,233\) and \(228\,664\,058\,839\,041\),
+respectively. This gives the order bounds in the table.
+
+For each row \(y=r^{N/C}\) has order equal to the \(C\)-part of
+\(\ord(r)\) and degree exactly 1331. The data give its binary
+minimal polynomial, with constant coefficient at bit zero. In
+degrees 1331 and 3993 the remaining primitivity question is exactly
+whether \(y\) has order \(C\). Both tests can be run in degree
+1331. In degree 6655 one must also decide whether
+\(r^{N/D}\) has order \(D\).
+The polynomials, prime lists and modular products are in
+\nolinkurl{data/degree-1331-order-projections.json}.
+The independent field, factor and order checks are in
+\nolinkurl{scripts/check_1331_order_projections.py}.
+
 \end{document}

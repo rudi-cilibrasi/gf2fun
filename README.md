@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Three explicit pentanomials in degrees 1,331, 3,993 and 6,655 have root index one or greater than 182,931,247,071,233.** Their interior exponents are $(1,2,289)$, $(1,2,83)$ and $(1,2,1719)$, respectively. The first two primitivity checks reduce to the same 250-digit composite order in degree 1,331. The third also has a 1,427-digit composite to resolve. [Order bounds and remaining tests](results.pdf#page=306) · [Projection polynomials and factors](data/degree-1331-order-projections.json) · [Verifier](scripts/check_1331_order_projections.py)
+
 - **For an irreducible trinomial $X^n+X^k+1$, the degree and tap determine exactly which pairs of subfields can supply its root.** For distinct primes $p,q\mid n$, a root is a product from the subfields of degrees $n/p,n/q$ exactly when $\gcd(k,pq,2^{n/(pq)}-1)>1$. The criterion for arbitrary pairs uses only divisors of $n$. Direct powering agrees on all 2,327 pairs tested through degree 384. [Proof](results.pdf#page=301) · [Lean](GF2Sparse/SubfieldProducts.lean) · [Verifier](scripts/check_trinomial_subfield_pairs.py)
 
 - **In every degree $n=3q^b$ with prime $q>3$, a three-term arithmetic progression in an irreducible pentanomial forces a prime-power divisor of its root order with binary multiplicative degree $n$.** The conclusion also holds in every degree $n=5q^b$ with prime $q>5$ for any three of five equally spaced positions. Outside $(p,q)=(3,7),(5,31)$ the divisor can be taken prime. The quadratic-residue code bound rules out the remaining class $q^b\equiv11\pmod{12}$. [Proof](results.pdf#page=300) · [Exact coefficient verifier](scripts/check_relative_fourier_minors.py)
@@ -901,6 +903,15 @@ To reproduce the four prime-degree weight distributions, compile the enumerator 
 ~~~sh
 c++ -std=c++17 -O3 -fopenmp scripts/cyclotomic_weight_census.cpp -lntl -lgmp -o /tmp/gf2-cyclotomic-weights
 uv run --no-project --with python-flint==0.9.0 python scripts/check_cyclotomic_weights.py --census /tmp/gf2-cyclotomic-weights
+~~~
+
+To reproduce the order projections and subfield certificates, run
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1331_order_projections.py --gp gp
+uv run --no-project --with python-flint==0.9.0 python scripts/check_relative_fourier_minors.py
+uv run --no-project --with python-flint==0.9.0 python scripts/check_trinomial_subfield_pairs.py
+lake build GF2Sparse
 ~~~
 
 To check the progression census for intersecting maximal subfields, run
