@@ -1,5 +1,6 @@
 import GF2Sparse.AdditiveOrbit
 import GF2Sparse.OrderBound
+import GF2Sparse.PolynomialSupport
 
 /-! Ore's binary linearized associate divided by X. Replacing every support
 index i by 2^i-1 preserves weight and turns primitivity into irreducibility. -/

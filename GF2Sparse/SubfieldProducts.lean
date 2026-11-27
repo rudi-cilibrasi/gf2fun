@@ -1,4 +1,5 @@
 import GF2Sparse.Certificate
+import GF2Sparse.PolynomialSupport
 import GF2Sparse.Roots
 import Mathlib.FieldTheory.LinearDisjoint
 import Mathlib.LinearAlgebra.Dual.Lemmas
