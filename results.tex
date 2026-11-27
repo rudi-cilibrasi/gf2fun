@@ -22043,4 +22043,55 @@ tap gives the interior exponent sets \(\{1331,1468,2662\}\),
 from powers 3, 5 and 33. Counting the three original polynomials
 gives 21 distinct pentanomial pairs with the stated index bound.
 
+\clearpage
+\section{Sparse primitive polynomials from the Mers Project tables}
+\label{sec:mers-project-orders}
+The following table gives additional polynomials of order exactly
+\(2^n-1\). A tuple lists the interior exponents of the monic binary
+polynomial with constant term one. The last column gives the number
+of distinct prime divisors of the field order.
+\[
+\begin{array}{r|l|r@{\qquad}r|l|r}
+ n&\text{interior exponents}&\omega&n&\text{interior exponents}&\omega\\\hline
+ 3537&218&15&3681&115&9\\
+ 3689&759&18&3987&2,4,11&14\\
+ 4221&3,10,13&30&4633&1035&10\\
+ 4641&149&33&4709&11,12,21&6\\
+ 4741&8,10,21&14&4809&746,1119,3690&18
+\end{array}
+\]
+The \href{https://mers.sourceforge.io/factoredM.txt}{Mers Project factor
+table} lists primitive integer factors and often leaves the largest
+factor implicit. For degree \(n\), we collect the factors from the
+proper divisors of \(n\), remove them and the listed new factors with
+their full multiplicities from \(2^n-1\), and test the remaining
+integer for primality. A row enters our table only after the prime
+proofs and the full polynomial order have been verified.
+
+The initial polynomials through degree 10000 come from
+\href{https://shiftleft.com/mirrors/www.hpl.hp.com/techreports/98/HPL-98-135.pdf}
+{G. Seroussi, HPL-98-135}. When a prime-index power gives one, we
+search the complementary supports of Section~\ref{sec:complementary-width-witnesses}
+for another candidate. For example, the degree-4809 witness in the table
+uses that search.
+
+Write \(M=2^n-1\) and \(r=X\bmod f\). The verifier checks the
+factorization of \(M\), proves each integer factor prime, and computes
+\(r^M=1\) and \(r^{M/p}\ne1\) for every distinct prime \(p\mid M\).
+Hence \(r\) has order \(M\). Also \(f\mid X^M-1\), which is
+squarefree. If \(f\) had at least two irreducible factors of degrees
+\(d_i\), its root residue order would divide
+\(\prod_i(2^{d_i}-1)<2^{\sum_i d_i}-1=M\).
+Thus the same computation proves irreducibility.
+
+\nolinkurl{data/mers-project-sparse-orders.json} gives the complete
+factor lists in increasing order, with multiplicities. The certificate
+map gives zero-based positions in each list and the corresponding
+\href{https://factordb.com/}{FactorDB} certificate identifiers.
+The original PRIMO chains are archived under
+\nolinkurl{data/mers-project-primality/}.
+\nolinkurl{scripts/check_mers_project_orders.py} verifies the chains
+with PARI/GP, proves the remaining primes with FLINT, and checks
+the powers over \(\mathbb F_2\).
+
 \end{document}

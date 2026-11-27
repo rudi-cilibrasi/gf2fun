@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Ten more degrees from 3,537 through 4,809 have certified primitive trinomials or pentanomials.** Examples are $X^{3537}+X^{218}+1$ and $X^{3987}+X^{11}+X^4+X^2+1$. The verifier proves the prime factors of each field order and checks every prime-index power. [Witnesses and factorizations](data/mers-project-sparse-orders.json) · [Verifier](scripts/check_mers_project_orders.py) · [Proof](results.pdf#page=307)
+
 - **In degrees 1,331, 3,993 and 6,655, 21 pentanomial pairs have root index one or greater than 182,931,247,071,233.** Three examples have interior exponents $(1,2,289)$, $(1,2,83)$ and $(1,2,1719)$, respectively. The first two primitivity checks reduce to the same 250-digit composite order in degree 1,331. The third also has a 1,427-digit composite to resolve. All 665 trinomial pairs in degree 1,331 are reducible, so a witness there requires five terms. [Order bounds and remaining tests](results.pdf#page=306) · [Polynomials and factors](data/degree-1331-order-projections.json) · [Verifier](scripts/check_1331_order_projections.py)
 
 - **For an irreducible trinomial $X^n+X^k+1$, the degree and tap determine exactly which pairs of subfields can supply its root.** For distinct primes $p,q\mid n$, a root is a product from the subfields of degrees $n/p,n/q$ exactly when $\gcd(k,pq,2^{n/(pq)}-1)>1$. The criterion for arbitrary pairs uses only divisors of $n$. Direct powering agrees on all 2,327 pairs tested through degree 384. [Proof](results.pdf#page=301) · [Lean](GF2Sparse/SubfieldProducts.lean) · [Verifier](scripts/check_trinomial_subfield_pairs.py)
@@ -693,6 +695,12 @@ curl -fsSL https://raw.githubusercontent.com/postvakje/Reformatted-Cunningham-Pr
 A pull request can include the generated table and the corresponding interval theorem. Existing tables can be checked independently, so contributors can work on disjoint ranges. [Combining verified intervals](GF2Sparse/Coverage.lean)
 
 ## Verification
+
+To replay the Mers Project witnesses, install PARI/GP and run the command below. Add `--degree 3987` to check one row. Each witness lists the interior exponents in increasing order. The constant and leading coefficients are one. [Mers Project factor table](https://mers.sourceforge.io/factoredM.txt) · [Seroussi's irreducible polynomial table](https://shiftleft.com/mirrors/www.hpl.hp.com/techreports/98/HPL-98-135.pdf)
+
+```bash
+uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py
+```
 
 To regenerate and verify every large five-term power image from the published trinomial lists, run the first command. The next commands replay the complete source classifications for degrees 110,503 and 132,049. They check a proper polynomial factor for every excluded tap, Lucas–Lehmer primality for the two group orders and the full polynomial powers for the seven positive seeds. Lean checks the degree-74,207,281 implication from the published trinomial. [Brent and collaborators’ extended factor certificates](https://maths-people.anu.edu.au/~brent/trinomlg.html)
 
