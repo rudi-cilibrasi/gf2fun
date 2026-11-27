@@ -10,6 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **There are 242 explicit primitive pentanomials in thirteen large degrees from 110,503 to 74,207,281.** They exhaust the five-term minimal polynomials obtained by raising primitive trinomial roots to powers through the degree in those thirteen cases. One example is $X^{74207281}+X^{9999621}+X^{9411408}+X^{588213}+1$. The seven positive trinomial seeds and all 121,268 other reciprocal pairs in degrees 110,503 and 132,049 were independently checked. The larger cases use published trinomial searches. [242 witnesses](data/large-mersenne-sampled-pentanomials.csv) · [Proof](results.pdf#page=232) · [Lean transfer](GF2Sparse/LargeTrinomialSamples.lean) · [Published seed certificates](https://maths-people.anu.edu.au/brent/trinom.html)
 - **A second degree-4112 family gives 4,208,864 primitive elements, and every full-degree member has at least 97 terms in its binary minimal polynomial.** These are the translates of $y^j+y^{-j}$ by the 65,536 constants. A circle or line reduces each quadratic order calculation to known logarithms. Across all 4,080 constant orbits the leading 257 binary coefficients contain at least 96 ones. [Reduction and weight proof](results.pdf#page=231) · [Census and weight checker](scripts/check_4112_trace_translates.py)
 - **In degree 4112, exact order tests certify 8,392,592 primitive elements among 16,777,216 binomials in the torsion coordinate.** Of the whole family, 16,711,168 generate the component of order equal to the remaining 539-digit cofactor. The 2,048 stored logarithms also determine this component for every product or quotient of the binomials. Their binary minimal polynomials have at least seven terms whenever they are primitive. [Logarithms](data/degree-4112-binomial-logs.csv.gz) · [Power verifier](scripts/check_4112_binomials.py) · [Reconstruction](scripts/solve_4112_binomials.py)
 - **The degree-4112 five-term candidate now has an explicit logarithm descent.** Its root is encoded in the same field as the certified primitive polynomial. Multiplication by a subfield element leaves its unresolved order component unchanged and gives a polynomial of relative degree 129. Fifty-one verified identities reduce the remaining logarithms to 568 factors of relative degrees two through nine. The checker exports individual factors and verifies contributed logarithms by direct powering. [Field coordinates and factorizations](data/degree-4112-subfield-descent.json) · [Direct checker](scripts/check_4112_descent.py)
@@ -629,6 +630,18 @@ curl -fsSL https://raw.githubusercontent.com/postvakje/Reformatted-Cunningham-Pr
 A pull request can include the generated table and the corresponding interval theorem. Existing tables can be checked independently, so contributors can work on disjoint ranges. [Combining verified intervals](GF2Sparse/Coverage.lean)
 
 ## Verification
+
+To regenerate and verify every large five-term power image from the published trinomial lists, run the first command. The next commands replay the complete source classifications for degrees 110,503 and 132,049. They check a proper polynomial factor for every excluded tap, Lucas–Lehmer primality for the two group orders and the full polynomial powers for the seven positive seeds. Lean checks the degree-74,207,281 implication from the published trinomial. [Brent and collaborators’ extended factor certificates](https://maths-people.anu.edu.au/~brent/trinomlg.html)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_large_trinomial_samples.py
+for n in 110503 132049; do
+  curl -fsSL "https://maths-people.anu.edu.au/~brent/ftp/trinom/i${n}.log-ext.gz" -o "/tmp/gf2fun-${n}.log-ext.gz" &&
+    uv run --no-project --with python-flint==0.9.0 python scripts/check_large_trinomial_samples.py --replay "$n" --factor-log "/tmp/gf2fun-${n}.log-ext.gz" || exit 1
+done
+lake build GF2Sparse.LargeTrinomialSamples
+lake env leanchecker -v GF2Sparse.LargeTrinomialSamples
+~~~
 
 In degree 4112, the first command checks the eleven-term primitive polynomial by direct powering and verifies the known order divisor of the five-term candidate. The descent checker verifies the subfield multiple and its factorizations. The projective solver reconstructs the original 129 exponents from the circle equations. A contributor with a candidate scalar can pass it to the first command using `--target-exponent E`.
 

@@ -17613,4 +17613,68 @@ When the sum is complete the checker verifies it against the
 embedded five-term root. Its greatest common divisor with \(C\)
 gives the exact index of the root order.
 
+\clearpage
+\section{Five-term power images through degree 74,207,281}
+\label{sec:large-trinomial-samples}
+
+Taking suitable powers of published primitive trinomial roots gives
+242 distinct primitive pentanomials in thirteen degrees. All of
+their interior exponents are in
+\nolinkurl{data/large-mersenne-sampled-pentanomials.csv}.
+For example, Brent and Zimmermann give a primitive degree-74,207,281
+trinomial with tap 9,999,621. Put \(n=74207281\), \(u=588213\),
+so \(17u=9999621\). A root \(r\) satisfies \(r^n=1+r^{17u}\).
+For \(z=r^{17}\),
+\[
+   z^n=(1+z^u)^{17}=1+z^{588213}+z^{9411408}+z^{9999621}.
+\]
+As \(n\) is odd, the order of \(r\) is coprime to 17. Thus \(z\)
+is primitive and this five-term polynomial is its minimal polynomial.
+The implication from the primitive trinomial is checked in Lean in
+\nolinkurl{GF2Sparse/LargeTrinomialSamples.lean}.
+
+In fact the table exhausts the five-term images in these degrees
+from all powers \(1\le e\le n\) of primitive trinomial roots.
+The factor of two in \(e\) only changes the Frobenius conjugate.
+By Section~\ref{sec:short-trinomial-powers}, its odd part must be
+\(2^h+1\) with two equal source residues, or 5 or 7 with a midpoint
+among three distinct residues. These conditions require only small
+integer operations on the three known exponents. The verifier
+independently reduces each proposed \(F(X^m)\) modulo the source
+trinomial and checks coprimality for the order, including the
+reciprocal images. Here are the counts with reciprocals counted
+separately.
+\[
+\begin{array}{r|r@{\qquad}r|r}
+ n & \# & n & \# \\ \hline
+ 110503&10 &25964951&28\\
+ 132049&24 &30402457&8\\
+ 756839&22 &32582657&22\\
+ 859433&14 &42643801&42\\
+ 3021377&12 &43112609&26\\
+ 6972593&4 &57885161&0\\
+ 24036583&12 &74207281&18
+\end{array}
+\]
+
+The input catalogue consists of 37 trinomial reciprocal pairs from
+\href{https://maths-people.anu.edu.au/~brent/pd/rpb199.pdf}
+{Brent, Larvala and Zimmermann, Table 3}, the
+\href{https://maths-people.anu.edu.au/brent/trinom-old.html}
+{completed degree-6,972,593 search}, and the
+\href{https://maths-people.anu.edu.au/brent/trinom.html}
+{Brent--Zimmermann large-degree searches}. The zero in degree
+57,885,161 follows from their exhaustive trinomial search. It
+excludes the specified power construction in that degree.
+
+For 110,503 and 132,049 we also independently replayed the full
+trinomial classification. The verifier checks Lucas--Lehmer and
+the full polynomial power for all seven positive representatives.
+The two \href{https://maths-people.anu.edu.au/~brent/trinomlg.html}
+{extended factor certificates} provide a proper divisor for each
+of the other 55,249 and 66,019 reciprocal pairs, respectively.
+The remaining degrees use the published seed results. The census
+and the two full replays use
+\nolinkurl{scripts/check_large_trinomial_samples.py}.
+
 \end{document}

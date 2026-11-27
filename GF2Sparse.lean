@@ -78,6 +78,7 @@ import GF2Sparse.TranslatedInterval
 import GF2Sparse.TripleObstruction
 import GF2Sparse.TrinomialOrder
 import GF2Sparse.TrinomialPowers
+import GF2Sparse.LargeTrinomialSamples
 import GF2Sparse.Trinomial1229
 import GF2Sparse.TrinomialMultiples
 import GF2Sparse.TwoBlockOrder
