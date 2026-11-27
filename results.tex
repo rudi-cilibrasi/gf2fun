@@ -18404,6 +18404,23 @@ symmetries. Each test is reproduced by
 \end{proof}
 
 
+The same twenty divisors exclude a proportion greater than \(90\%\)
+of \emph{all} odd exponents \(k\) for \(A_k\).
+For a degree-\(d\) divisor with root \(u\), the condition
+\(u^{2^k}=u+1/(u^4+u)\) selects one residue of \(k\) modulo \(d\),
+since its \(d\) conjugates are distinct. Exceptions where the factor
+equals the entire polynomial affect only finitely many exponents.
+For instance the degree-six divisor excludes \(k\equiv1\pmod6\),
+and the two degree-twelve divisors exclude \(k\equiv3,9\pmod{12}\)
+once \(k>3\). Thus an irreducible \(A_k\) for odd \(k>3\) requires
+\(k\equiv5\pmod6\). Inclusion-exclusion on the twenty congruences
+using the Chinese remainder theorem leaves the exact relative density
+\[
+       \frac{168082781184}{1726082838425}=0.097378\ldots
+\]
+among odd \(k\). The factor checker recomputes the congruences and
+this fraction from the binary factors.
+
 \clearpage
 \section{A cubic residue test from a real quadratic class number}
 \label{sec:torus-cubic-class}

@@ -2,7 +2,8 @@
 
 import json
 from collections import Counter
-from math import isqrt, prod
+from fractions import Fraction
+from math import gcd, isqrt, lcm, prod
 from pathlib import Path
 
 from flint import fmpz, nmod_poly
@@ -76,11 +77,28 @@ def check_factors(factors, value):
         raise ValueError(f"incomplete prime factorization for {value.bit_length()}-bit integer")
 
 
+def odd_survival_density(classes):
+    """Inclusion-exclusion on odd integers, merging congruences by CRT."""
+    def remaining(i, a, m):
+        if i == len(classes):
+            return Fraction(1, m)
+        d, b = classes[i]
+        common = gcd(m, d)
+        result = remaining(i + 1, a, m)
+        if (b - a) % common:
+            return result
+        step = ((b - a) // common * pow(m // common, -1, d // common)) % (d // common)
+        return result - remaining(i + 1, a + m * step, lcm(m, d))
+
+    return 2 * remaining(0, 1, 2)
+
+
 def check_remaining_exponents(data):
     """Use proper divisors for A_k and integer order obstructions for C_k."""
     odd = set(range(7, 192, 2))
     surviving = odd.copy()
     factors = [int(mask, 16) for mask in data["residual_factors"]]
+    classes = []
     if len(set(factors)) != len(factors):
         raise ValueError("duplicate residual factor")
     for mask in factors:
@@ -89,12 +107,21 @@ def check_remaining_exponents(data):
             raise ValueError(f"invalid residual factor {mask:#x}")
         value = X
         b = (X**4 + X) % f
+        residues = set()
         for k in range(1, 192):
             value = (value * value) % f
-            if k in surviving and f.degree() < 2**k + 4 and ((value + X) * b + 1) % f == 0:
-                surviving.remove(k)
+            if ((value + X) * b + 1) % f == 0:
+                residues.add(k % f.degree())
+                if f.degree() < 2**k + 4:
+                    surviving.discard(k)
+        if len(residues) != 1:
+            raise ValueError(f"missing or inconsistent periodic factor {mask:#x}")
+        classes.append((f.degree(), residues.pop()))
     if surviving != {71, 101, 155}:
         raise ValueError(f"unexpected residual exponents {sorted(surviving)}")
+    density = odd_survival_density(sorted(classes))
+    if density != Fraction(168082781184, 1726082838425):
+        raise ValueError(f"unexpected odd-exponent density {density}")
 
     known = {int(k) for k in data["torus_prime_minus_one"]}
     for k in range(3, 192, 2):
@@ -107,6 +134,7 @@ def check_remaining_exponents(data):
             raise ValueError(f"missing modular-order obstruction for k={k}")
     print("Above degree 20 through 2^191+4, the only remaining projectively symmetric")
     print("primitive candidates, up to reciprocity, are A_71, A_101, A_155, C_141, C_191.")
+    print(f"The twenty divisors leave density {density} among all odd exponents for A_k.")
 
 
 def check_orders():
