@@ -18170,4 +18170,170 @@ Lean also verifies both degree-23 and degree-30 pullback divisibilities
 and both full multiplicative orders in
 \nolinkurl{GF2Sparse/GaussPeriodWeights.lean}.
 
+
+\clearpage
+\section{Two possible sparse quadratic lifts per degree}
+\label{sec:two-translation-lifts}
+
+\begin{theorem}
+Above degree eight, a translation-invariant irreducible binary
+polynomial with at most five terms has degree \(n=Q+4\), \(Q=2^k\)
+with \(k\ge3\). For even \(k\) only the first polynomial below can
+occur. For odd \(k\) there are at most two.
+\[
+\begin{aligned}
+ A_k(X)&=1+(X^Q+X^{2^s})(X^4+X),\qquad
+          s=\begin{cases}0&k\text{ odd},\\1&k\text{ even},\end{cases}\\
+ C_k(X)&=X^{Q+4}+X^{Q+1}+X^Q+X^5+1\qquad(k\text{ odd}).
+\end{aligned}
+\]
+By Corollary~\ref{cor:mobius}, these supports and their reciprocals
+also exhaust the primitive candidates with a nonidentity binary
+projective symmetry of the roots.
+\end{theorem}
+
+\begin{proof}
+Begin with the triangle and four-cycle families of
+Theorem~\ref{thm:translation}. Put \(Z=X^2+X\), \(B=Z^2+Z=X^4+X\)
+and \(L_i(Z)=\sum_{a=0}^{i-1}Z^{2^a}=X^{2^i}+X\).
+A reducible outer polynomial in \(Z\) gives a reducible lift.
+
+For a four-cycle with \(j\ge3\), the outer polynomial is
+\(H=1+B(L_k+L_j)\). Lift the sum \(L_k+L_j\) to the integral
+polynomial \(E=\sum_{a=j}^{k-1}Z^{2^a}\), whose derivative is
+zero modulo eight. In the integral algebra defined by \(1+BE\),
+the norm of \(E\) is one, by the resultant with \(E\).
+The degree \(m=Q/2+2\) is two modulo four. The leading three
+coefficients of \(1+BE\) are \(1,1,0\).
+Thus the norm of \(1+2Z\) is
+\((-2)^m(1+BE)(-1/2)\equiv1-2=-1\pmod8\).
+The derivative is \(E(1+2Z)\) modulo eight. Including the
+discriminant sign gives discriminant \(1\bmod8\), so the even-degree
+outer polynomial has an even number of irreducible factors by
+\href{https://msp.org/pjm/1962/12-3/pjm-v12-n3-p27-p.pdf}
+{Stickelberger--Swan}.
+
+For a triangle with \(3\le j<k\) odd, the outer polynomial is
+\(1+B L_k+Z+L_j\). Combining its low powers in characteristic two
+gives an integral lift
+\[
+ H=1+B U^4+V^8,\quad
+ U=\sum_{a=2}^{k-1} Z^{2^{a-2}},\qquad
+ V=\sum_{a=3}^{j-1} Z^{2^{a-3}} .
+\]
+Here \(d=\deg U=2^{k-3}\) is even and at least two, and
+\(\deg V^8<4d=m-2\) when \(V\ne0\). If the reduction of \(H\)
+has a repeated root, it is already reducible. Otherwise its
+derivative modulo two is \(U^4\), so \(U\) is a unit in the quotient
+over \(\mathbb Z/8\mathbb Z\).
+Modulo eight the derivative is
+\((1+2Z)U^4+4BU^3U'\). The norm of \(U^4\) is one modulo eight.
+The remaining correction to the norm of \((1+2Z)U^4\) is
+\(1+4\operatorname{Tr}(BU'/U)\) modulo eight, by expanding
+\(\det(I+4M)\). This trace over the binary quotient vanishes.
+Indeed, the trace is the sum of
+\((BU'U^3)(\alpha)/H'(\alpha)\) over those roots. Lagrange
+interpolation identifies this sum with the coefficient of degree
+\(m-1\) in \(BU'U^3\). That coefficient vanishes since
+\(\deg U'\le d-2\) in characteristic two. The integral coefficient
+of \(Z^{m-1}\) in \(H\) is one modulo four, and that of \(Z^{m-2}\)
+is even, by expansion of \(U^4\). As above, the signed norm of the
+derivative is one modulo eight. This excludes these triangles.
+
+The triangle with \(j=1\) and the cycle with \(j=1\) have the form
+\(1+(X^Q+X^{2^s})(X^4+X)\) with \(s=0\) and \(s=1\), respectively.
+If \(k\equiv s\pmod2\), put \(Y=X^4+X\). The polynomial becomes
+\[
+ D(Y)=1+Y\sum_{i=0}^{(k-s)/2-1}Y^{2^{s+2i}} .
+\]
+Its degree \(t=2^{k-2}+1\) is odd, and its coefficient of
+\(Y^{t-1}\) is zero. If \(D\) is irreducible, a root in
+\(\mathbb F_{2^t}\) has trace zero. The image of \(X^4+X\) in that
+field is the trace-zero hyperplane, since its kernel has size two
+and the trace vanishes on the image. The lift then has a root in
+degree at most \(t\). This leaves the indicated parity for \(A_k\)
+and only \(j=k\) for the other triangles.
+\end{proof}
+
+\section{A five-term polynomial in degrees \(2^{141}+4\) and \(2^{191}+4\)}
+\label{sec:twisted-torus}
+
+\begin{theorem}
+For odd \(k\ge3\), the pentanomial \(C_k\) above is irreducible
+exactly when \(p=2^k+5\) is prime and \(-2\) has order \(p-1\)
+modulo \(p\). In this case every root has multiplicative order at
+least \(2^{\,2^{(k+1)/2}}\). Both conclusions apply at
+\(k=3,5,11,141,191\).
+\end{theorem}
+
+\begin{proof}
+Take \(\omega^2+\omega+1=0\). For any odd \(M>1\) form
+\[
+ D_M(X)=(X+\omega)^M+(X+\omega^2)^M\in\F[X].
+\]
+The coefficient of \(X^{M-j}\) is one precisely when the one-bits
+of \(j\) are among those of \(M\) and \(3\nmid j\).
+For \(M=2^k+5\) and odd \(k\ge3\) this gives \(C_k\).
+The transformation \(z=(x+\omega)/(x+\omega^2)\) identifies the
+roots with the nonidentity \(M\)-th roots of unity. Its inverse is
+\(x(z)=(\omega+\omega^2z)/(1+z)\). The excluded point \(z=1\)
+corresponds to infinity. Binary Frobenius sends \(x(z)\) to
+\(x(z^{-2})\). Hence the irreducible factors have the orbit lengths
+of multiplication by \(-2\) on the nonzero residues modulo \(M\).
+A single orbit requires \(M\) prime and is then equivalent to the
+stated order test.
+
+For the root-order bound, write \(n=p-1\), \(q=2^{n/2}\), and let
+\(z\) have order \(p\). Since \(4\mid n\) and \(-2\) has order
+\(n\), two also has order \(n\). Indeed, \(-1=(-2)^{n/2}\)
+and \(1+n/2\) is coprime to \(n\). In particular \(z^q=z^{-1}\),
+and \(\omega^q=\omega\), so \(x^q=x+1\). Its norm and its
+projection onto the group of order \(q+1\) are
+\[
+ b(z)=x^{q+1}=\frac{z^2+z+1}{(z+1)^2},\qquad
+ u(z)=x^{q-1}=\frac{\omega^2+\omega z}{\omega+\omega^2 z}.
+\]
+Their orders are coprime and multiply to the order of \(x\).
+
+Let \(K=\lfloor\sqrt{(n-1)/2}\rfloor\). For each odd \(i\) from
+one through \(2K-1\), \(x(z^i)\) is a conjugate of \(x(z)\).
+Consequently \(b(z^i)\) lies in the cyclic group generated by \(b(z)\)
+and \(u(z^i)\) lies in the one generated by \(u(z)\).
+For either function the \(2^K\) subset products are distinct.
+To see this first work with the indeterminate \(Z\). For the
+largest differing \(i\), a primitive \(3i\)-th root is a zero of
+\(b(Z^i)\). For \(u(Z^i)\) choose one whose \(i\)-th power is
+\(\omega\). No factor at a smaller index has a zero or pole there.
+After cancelling common indices, cross multiplication between two
+products has degree at most \(2K^2<n\) for \(b\) over \(\F\),
+and at most \(K^2<n/2\) for \(u\) over \(\mathbb F_4\).
+Here the sum of the first \(K\) odd integers is \(K^2\).
+The degrees of \(z\) over the respective fields are \(n\) and \(n/2\),
+so the products remain distinct on evaluation. Multiplying the
+two bounds gives \(2^{2K}\). For \(n=2^k+4\) one has
+\(K=2^{(k-1)/2}\). The argument uses the conjugate-product counting
+method also used for \href{https://arxiv.org/abs/0707.4034}
+{orders of Gauss periods by Ahmadi, Shparlinski and Voloch}.
+
+The integer certificates factor \(p-1\), verify each prime factor,
+and check the full power and every prime-index power of \(-2\)
+modulo \(p\). Order \(p-1\) also proves \(p\) prime.
+\end{proof}
+
+Through \(k=11\) the only irreducible lifts from the two families
+and their exact root-order indices \((2^n-1)/\ord(x)\) are
+\[
+\begin{array}{c|rrrrrr}
+ (n,\text{family}) &(12,A)&(12,C)&(20,A)&(36,A)&(36,C)&(2052,C)\\\hline
+ \text{index}&3&1&1&9&3&7
+\end{array}
+\]
+The checker compares the orbit description with direct polynomial
+factorizations for every odd \(3\le M\le151\), checks all supports
+of Theorem~\ref{thm:translation} for \(3\le k\le11\), and certifies
+these exact indices by modular powering. The input integers are in
+\nolinkurl{data/translation-lift-orders.json}. The two large degrees
+have certified irreducibility and the displayed order lower bounds.
+Their full multiplicative orders remain open here.
+
 \end{document}
