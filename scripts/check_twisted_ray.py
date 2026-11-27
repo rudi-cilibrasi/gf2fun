@@ -22,13 +22,16 @@ def eligible(p):
     return all(pow(-2, (p - 1) // int(l), p) != 1 for l, _ in fmpz(p - 1).factor())
 
 
-def ray_quotient(gp, p, d):
-    command = f"print(twisted_ray_quotient({p},{d}))\n"
-    run = subprocess.run([gp, "-fq", "-s", "128M", str(GP_FILE)], input=command,
+def run_gp(gp, expression):
+    run = subprocess.run([gp, "-fq", "-s", "128M", str(GP_FILE)], input=f"print({expression})\n",
                          text=True, capture_output=True, check=True)
     if run.stderr or not run.stdout.strip():
-        raise ValueError(f"ray computation failed at p={p}, d={d}: {run.stderr}")
-    ordinary, ray, quotient = ast.literal_eval(run.stdout.strip())
+        raise ValueError(f"PARI failed on {expression}: {run.stderr}")
+    return run.stdout.strip()
+
+
+def ray_quotient(gp, p, d):
+    ordinary, ray, quotient = ast.literal_eval(run_gp(gp, f"twisted_ray_quotient({p},{d})"))
     if min(ordinary, ray, quotient) < 1 or ray % ordinary or ray % quotient:
         raise ValueError(f"inconsistent class orders at p={p}, d={d}")
     return ordinary, ray, quotient
@@ -75,10 +78,21 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gp", default="gp", help="PARI/GP executable")
     parser.add_argument("--jobs", type=int, default=1)
-    parser.add_argument("--case", type=int, nargs=2, metavar=("P", "DEGREE"))
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--case", type=int, nargs=2, metavar=("P", "DEGREE"))
+    modes.add_argument("--fields", type=int, metavar="K",
+                       help="certify and print the degree 2, 3 and 4 fields for C_K")
     args = parser.parse_args()
     if args.jobs < 1:
         parser.error("jobs must be positive")
+    if args.fields is not None:
+        if args.fields < 3 or args.fields % 2 == 0:
+            parser.error("C_K requires an odd K of at least three")
+        p = (1 << args.fields) + 5
+        for d in (2, 3, 4):
+            polynomial = run_gp(args.gp, f"twisted_ray_field({p},{d})")
+            print(f"C_{args.fields} E_{d}: {polynomial}")
+        return
     if args.case:
         p, d = args.case
         if not eligible(p) or d < 2 or (p - 1) % d:

@@ -841,6 +841,16 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --jobs 4
 ~~~
 
+For the five-term examples in degrees $2^{141}+4$ and $2^{191}+4$, the following commands print and certify the quadratic, cubic and quartic number fields that test index primes 3, 7 and 5. The quadratic class-number calculation gives $h(4p)=1$ in both cases under the generalized Riemann hypothesis. This puts 9 and 243, respectively, into the two root orders under that assumption. [Field equations and verification](results.pdf#page=250)
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --fields 141
+uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --fields 191
+gp -fq -s 512M <<'GP'
+for(i=1,2,my(k=[141,191][i]); print([k,quadclassunit(4*(2^k+5)).no]))
+GP
+~~~
+
 To reproduce the optimal normal basis classification, run the finite orbit and order checks and the formal coefficient bound.
 
 ~~~sh
