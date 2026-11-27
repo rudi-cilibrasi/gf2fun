@@ -15973,6 +15973,7 @@ For the binary construction take \(D=1+T^e\), \(e\ge1\). Then
              (1+X^b)(1+X^{n-b})+X^a .
 \]
 Taking \(b=4\) gives the assertion at the beginning of the section.
+The binary parity statement also follows from Theorem~\ref{thm:two-residue-parity}.
 More generally, fix a cutoff \(B\ge1\), set
 \(L=\mathrm{lcm}_{1\le j\le B}(2^j-1)\), and take \(b=4L\).
 In every degree \(n=(2e+1)b\), all \(n/2\) odd taps also avoid every
@@ -16026,5 +16027,110 @@ one factor, compute \(G=X^{(2^{7560}-1)/3}\bmod F\) and take
 coefficient conjugate recovers \(F\). These computations and 72
 checks of the parity formula over four fields are in
 \nolinkurl{scripts/check_progression_factor_parity.py}.
+
+\section{Four fixed exponents for the parity test in every even degree}
+\label{sec:symmetric-even-parity}
+\begin{theorem}\label{thm:symmetric-even-parity}
+For every even \(n\ge6\), put \(v=n-2\), and take any odd \(a\)
+with \(0<a<n\). Write \(F=(1+X^2)(1+X^v)+X^a\) for the integer
+polynomial. Its binary reduction is a squarefree pentanomial, and
+\[
+ \operatorname{disc}(F)\equiv(-1)^{n/2}(1-n/a)
+       (1+4\,\mathbf1_{\,4\mid n,\ |a-n/2|=1})\pmod8 .
+\]
+Division by an odd integer uses its inverse modulo eight. The odd taps
+for which the binary polynomial has an odd number of irreducible
+factors are exactly those in the last column.
+\[
+\begin{array}{c|l}
+ n\bmod8 & \text{permitted odd }a \\ \hline
+ 0 & n/2-1,\ n/2+1 \\
+ 2 & a\equiv3\pmod4 \\
+ 4 & \text{all except }n/2-1,\ n/2+1 \\
+ 6 & a\equiv1\pmod4
+\end{array}
+\]
+Thus in every even degree from six onward, at least one reciprocal pair
+with four prescribed exponents passes the factor-parity test.
+\end{theorem}
+\begin{proof}
+The binary derivative is \(X^{a-1}\), and the constant is one. Work
+at the roots \(r\) of the monic integer lift, writing
+\(U_d(r)=r^d/(1+r^d)\) for \(d=2,v\). Both denominators are units at
+two, since a common residue root would satisfy \(r^a=0\).
+The root equation gives
+\[
+ F'(r)= ar^{a-1}\bigl(1-(2/a)U_2(r)-(v/a)U_v(r)\bigr).
+\]
+Write \(P_d=\prod_r(1-(d/a)U_d(r))\), and let \(h=v/2\).
+The product of the prefactors is \(a^n\equiv1\pmod8\).
+Expanding the determinant product modulo eight leaves
+\[
+ \prod_r\bigl(1-(2/a)U_2-(v/a)U_v\bigr)
+ \equiv P_2P_v\left(1-\frac{2v}{a^2}\sum_rU_2(r)U_v(r)\right).
+\]
+Indeed \(2v\) is a multiple of four and multiplying its correction by
+any other even term gives zero modulo eight.
+
+Put \(\lambda=1-d/a\), \(\xi=-1/\lambda\). For both \(d\),
+\(\operatorname{Res}(F,1+X^d)=1\), since at \(z^d=-1\) one has
+\(F(z)=z^a\) and the product of these \(z\) is one. The numerator of
+\(P_d\) is \(\operatorname{Res}(F,1+\lambda X^d)=\lambda^n
+\prod_{z^d=\xi}F(z)\). For \(d=2\), the product is
+\( ((1+\xi)(1+\xi^h))^2-\xi^a\). Both parenthesized factors
+are even, so \(P_2\equiv\lambda^{n-a}\equiv1-2/a\).
+
+For \(d=v\) put \(\delta=1+\xi\), of the same 2-adic valuation as
+\(v\). At \(z^v=\xi\), \(F(z)=z^a+\delta(1+z^2)\).
+Pairing \(z\) with \(-z\) after removing \(z^a\) gives the factor
+\(1-\delta^2 z^{-2a}(1+z^2)^2\). The removed factors together with
+\(\lambda^n\) give \(\lambda^{n-a}\equiv1-v/a\).
+When \(h\) is even all the paired factors are one modulo eight.
+When \(h\) is odd, \(\delta^2\equiv4\), and \(t=z^2\) ranges over
+the \(h\)-th roots of one after reduction modulo two. Then
+\[
+ \sum_{t^h=1}t^{-a}(1+t^2)=\mathbf1_{h\mid a}+\mathbf1_{h\mid a-2}
+       \quad\text{in characteristic two}.
+\]
+Here \(h\ge3\) is odd and \(1\le a\le2h+1\) is odd. Divisibility
+occurs exactly at \(a=h,h+2\). Thus \(P_v\) has the extra factor
+\(1+4\mathbf1_{4\mid n,\ |a-n/2|=1}\) in the theorem.
+
+Only odd \(h\) needs the mixed sum, and it suffices to compute it in
+characteristic two. Write \(L_\eta(r)=r/(r-\eta)\). For \(\eta^h=1\),
+we have \(\sum_r L_\eta(r)=n+\eta F'(\eta)/F(\eta)=1\). If
+\(\eta\ne1\), partial fractions express \(L_1L_\eta\) as
+\((L_1-\eta L_\eta)/(1-\eta)\), hence its sum is also one. At
+\(\eta=1\), squaring the first sum gives the same answer. The logarithmic
+derivative of \(X^h-1\) gives \(r^h/(1+r^h)=\sum_{\eta^h=1}L_\eta(r)\).
+Consequently \(\sum_r U_2(r)U_v(r)\) is the square of a sum of \(h\)
+ones, hence one. The mixed correction cancels the cross term in
+\((1-2/a)(1-v/a)\), leaving \(1-n/a\). Including the discriminant
+sign gives the congruence. Since \(n\) is even, the odd-factor case
+is exactly discriminant five modulo eight by Swan's criterion.
+\end{proof}
+
+Two primitive members have \((n,a)=(3150,1097),(5964,533)\).
+When \(8\mid n\), reciprocation exchanges the two permitted taps, so
+a single irreducibility check exhausts the family at that degree.
+Among the 1,500 positive multiples of eight through 12,000, precisely
+nine of these pairs are irreducible. Their orders divide \(2^n-1\)
+and the following tests characterize all three primitive pairs.
+\[
+\begin{array}{l|l}
+ n&\text{order test}\\\hline
+ 8,112,1968 & \text{full order}\\
+ 16,32 & X^{(2^n-1)/17}=1\\
+ 80,1456 & X^{(2^n-1)/5}=1\\
+ 136,1416 & X^{(2^n-1)/3}=1
+\end{array}
+\]
+The degree-7560 witness in Section~\ref{sec:products-7560} uses a different
+support. PARI/GP and NTL independently enumerate the irreducibles in
+the displayed family. The \texttt{--central} mode of \nolinkurl{scripts/check_progression_factor_parity.py}
+repeats the enumeration and verifies each order claim with the pinned
+Cunningham factors archived in \nolinkurl{data/mersenne-central-pair-factors.json}
+for the three primitive degrees. The checker also compares all 1,173
+integer discriminants and binary factorizations in even degrees 6 through 96.
 
 \end{document}
