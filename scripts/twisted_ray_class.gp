@@ -89,3 +89,25 @@ twisted_conductor_survey(limit) = {
       if(value[2], listput(principal, p))));
   [tested, forced, Vec(principal)]
 };
+
+\\ Test 3 in the ray class number at two of Q(sqrt(p)) in the imaginary field.
+twisted_cubic_reflection(p) = {
+  if(p%8 != 5 || !isprime(p), error("expected a prime congruent to five modulo eight"));
+  my(disc = -3*p, prime = Qfb(2,1,(1-disc)/8), lifted = 9*disc);
+  \\ PARI guarantees the default Shanks calculation in this discriminant range.
+  my(h = qfbclassno(disc, if(-disc < 2*10^10, 0, 1)), t = h);
+  foreach(factor(h)[,1]~, l,
+    while(t%l == 0 && Vec(qfbred(prime^(t/l)))[1] == 1, t /= l));
+  if(Vec(qfbred(prime^t))[1] != 1, error("the proposed form order does not principalize"));
+  my(form = Vec(qfbred(Qfb(2,1,(1-lifted)/8)^t)));
+  [h,t,form]
+};
+
+twisted_cubic_reflection_survey(limit) = {
+  my(totals = vector(4));
+  forprime(p = 5, limit, if(p%8 == 5,
+    my(v = twisted_cubic_reflection(p), extra = (v[1]/v[2])%3 == 0, principal = v[3][1] == 1);
+    if((extra || principal) != (qfbclassno(4*p)%3 == 0), error("real and imaginary tests disagree at ",p));
+    totals[1 + extra + 2*principal]++));
+  totals
+};
