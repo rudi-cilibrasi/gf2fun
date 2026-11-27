@@ -14150,4 +14150,40 @@ the displayed equality at every label. At \(t\in\mathbb F_4\)
 the normalized exponents also agree with the four corresponding
 entries of the \(q=512\) table, whose norms use ninth powers.
 
+\section{Eight logarithms for the elliptic pair and a cubic pullback}
+\label{sec:elliptic-eight}
+For the same root \(r\), the verified quotient in
+\nolinkurl{data/degree-1229-elliptic-split-eight.json} satisfies
+\[
+              r^{2^{735}}x^{583353}=U(x)/V(x).
+\]
+Here \(x\) is the certified primitive binary generator. Removing the
+known logarithms from this quotient leaves eight, of relative degrees
+\(3,3,6,7,9,11,18,19\). The verifier checks the quotient, the
+factorizations, and the full projected group identity. A complete
+set of exponents determines \(\gcd(C,\log_{x^K}(r^K))\), the common
+index for the pair.
+
+The two cubic masks are \(P=T^3+T^2+1\) and
+\(T^6+T^5+T^2+T+1\). They can be replaced by respectively 49 and
+250 relative quadratic logarithms. For the first use the binary
+polynomial identity
+\[
+ H_1^3 P(H_0/H_1)
+     =P(T)(T^6+T+1)(T^6+T^5+1).
+\]
+If \(q=1024\) and \(L(F)=\log_{x^K}(F(x)^K)\bmod C\), the
+Frobenius model gives
+\[
+ (1-q)L(P)=q\big(L(T^6+T+1)+L(T^6+T^5+1)-3L(H_1)\big).
+\]
+The multiplier \(1-q\) is invertible modulo \(C\) because
+\(\gcd(10,1229)=1\). The second sextic and \(H_1\) have known
+logarithms. The recorded rank-two Hermitian pencil for \(T^6+T+1\)
+supplies the 49 quadratics. The pencil for the second original cubic
+supplies the other 250. Direct field powering checks the assembled
+formula, with 299 distinct quadratics and the six original factors
+of larger relative degree. The elliptic descent checker accepts
+partial answers either for a cubic or for the whole formula.
+
 \end{document}

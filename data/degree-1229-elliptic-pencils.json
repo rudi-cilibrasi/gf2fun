@@ -185,5 +185,41 @@
     "0x13647199a908b7eb21bfcf6b424fc7af492ddce31bc16be5d5d0a8c2ca6f5": 113,
     "0x1de98221900768bd48f8a804bb08b35ecbe654ba4dd8cba03c96f73c65bd7ece177b00d": 146,
     "0x17e8afac0da1d31d3919457f1adcf78ec48131aa89ae9aad18693214a413798c88323bfee0dd7ccd5c6c4153bc9e80d5a5a63": 15
+  },
+  "eight_cubic_pencils": {
+    "0xd": {
+      "mask_hex": "0x43",
+      "relative_factor": [
+        810474,
+        810475,
+        1,
+        1
+      ],
+      "hermitian": [
+        0,
+        810474,
+        0,
+        1,
+        0,
+        810474
+      ]
+    },
+    "0x67": {
+      "mask_hex": "0x67",
+      "relative_factor": [
+        810474,
+        810475,
+        810474,
+        1
+      ],
+      "hermitian": [
+        19447,
+        564158,
+        810474,
+        1,
+        315745,
+        363168
+      ]
+    }
   }
 }

@@ -1,4 +1,4 @@
-"""Lower the ten logarithm targets of the degree-1229 elliptic pentanomial."""
+"""Reduce factors in the two logarithm formulas for the degree-1229 elliptic pentanomial."""
 
 import argparse
 import json
@@ -10,8 +10,9 @@ from pathlib import Path
 from check_1229_dyadic import halving_relation
 from check_1229_frobenius_curves import ELLIPTIC_TAPS
 from check_1229_hermitian_descent import (
-    F, H0, H1, K, Q, binary_factors, bits, coefficient_norm, element, scalar_groups,
+    F, H0, H1, K, Q, binary_factors, bits, coefficient_norm, element, relation, scalar_groups,
 )
+from check_1229_isogeny_logs import pullback
 from check_1229_log_descent import reduce_task
 from check_1229_power_images import SPLITS, split_coefficients, split_log_table
 from check_1229_seventh_descent import expand_index, substitute
@@ -92,23 +93,44 @@ def subfield_relation(mask, row, field):
     return terms
 
 
+def cubic_relation(mask, row):
+    parent = int(row["mask_hex"], 16)
+    terms = Counter(relation(parent, row))
+    if mask == parent == 0x67:
+        return terms
+    if (mask, parent) != (0xd, 0x43) or binary_factors(polynomial(pullback(mask))) != {mask: 1, parent: 1, 0x61: 1}:
+        raise ArithmeticError("the cubic pullback has unexpected factors")
+    terms.update({0x61: 1, 2: -3, 3: -6})
+    scale = Q*pow(1-Q, -1, COFACTOR)
+    return {p: scale*c % COFACTOR for p, c in terms.items() if c % COFACTOR}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--backend", type=Path, help="compiled degree_1229_dyadic.cpp for the even-degree targets")
-    parser.add_argument("--target", type=lambda s: int(s, 0), help="check one of the original ten binary masks")
+    parser.add_argument("--target", type=lambda s: int(s, 0), help="check one of the certified parent masks")
+    parser.add_argument("--eight", action="store_true", help="lower both cubics in the eight-input split")
     parser.add_argument("--json", action="store_true", help="export all residual logarithm masks and coefficients")
     parser.add_argument("--logs", type=Path, help="verify a mask,exponent CSV of residual logarithms")
     args = parser.parse_args()
     cert = json.loads(CERTIFICATE.read_text())
     forms = {int(r["mask_hex"], 16): r for r in cert["pencils"]}
     halvings = {int(k, 16): v for k, v in cert["halving_indices"].items()}
-    split = json.loads((DATA / SPLITS["elliptic"]).read_text())
+    cubics = {int(k, 16): v for k, v in cert["eight_cubic_pencils"].items()}
+    eight = args.eight or args.target in cubics
+    split = json.loads((DATA / SPLITS["elliptic-eight" if eight else "elliptic"]).read_text())
     original = {int(r["mask_hex"], 16) for r in split["logarithms"]["remaining"]}
-    if forms.keys() & halvings.keys() or forms.keys() | halvings.keys() != original or len(original) != 10:
-        raise ValueError("the certificate must cover the ten distinct original factors")
-    if args.target is not None and args.target not in original:
-        parser.error("unrecognized elliptic factor mask")
-    selected = [args.target] if args.target is not None else sorted(original)
+    if eight:
+        supported = set(cubics)
+        if supported != {0xd, 0x67} or not supported <= original or len(original) != 8:
+            raise ValueError("the eight-input split must include both designated cubics")
+    else:
+        supported = forms.keys() | halvings.keys()
+        if forms.keys() & halvings.keys() or supported != original or len(original) != 10:
+            raise ValueError("the certificate must cover the ten distinct original factors")
+    if args.target is not None and args.target not in supported:
+        parser.error("unrecognized elliptic descent target")
+    selected = [args.target] if args.target is not None else sorted(supported)
     if any(mask in halvings for mask in selected) and not args.backend:
         parser.error("the selected even-degree halving requires --backend")
 
@@ -124,7 +146,9 @@ def main():
         target, name = polynomial(args.target), hex(args.target)
         weights = Counter({args.target: 1})
     for mask in selected:
-        if mask in halvings:
+        if eight:
+            terms = cubic_relation(mask, cubics[mask])
+        elif mask in halvings:
             edges = expand_index(args.backend, field_mask, mask, halvings[mask])
             terms = halving_relation(mask, edges, field)
         else:

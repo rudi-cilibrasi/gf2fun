@@ -127,11 +127,14 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
-The degree-1229 pentanomial with interior taps $(136,683,819)$ and its reciprocal have an elliptic model. Ten projected logarithms determine their exact root order. The factors have degrees $7,9,11,12,13,14,17,19,19,20$ over $\mathbb F_{2^{20}}$. The command exports the field modulus, base, target masks, and relative polynomial factors. Add `--logs answers.csv` with columns `mask,exponent` to verify any subset. The complete set gives the common index, and index one proves both primitive. [Ten inputs](data/degree-1229-elliptic-split.json) · [Elliptic model](results.pdf#page=180)
+The degree-1229 elliptic pentanomial with interior taps $(136,683,819)$ and its reciprocal share one order. Eight projected logarithms of relative degrees $3,3,6,7,9,11,18,19$ determine it. The two cubic inputs can also be replaced by 299 quadratic logarithms. The commands export the eight targets and check the expanded formula. Add `--logs answers.csv` with columns `mask,exponent` to verify any subset. A complete set gives the exact index, and index one proves both pentanomials primitive. [Eight inputs](data/degree-1229-elliptic-split-eight.json) · [Cubic pencils](data/degree-1229-elliptic-pencils.json) · [Elliptic model](results.pdf#page=180)
 
 ~~~sh
-uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_power_images.py --split elliptic
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_power_images.py --split elliptic-eight
+uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_1229_elliptic_descent.py --eight
 ~~~
+
+An independent quotient uses ten logarithms of relative degrees $7,9,11,12,13,14,17,19,19,20$. Export it with `--split elliptic`. [Ten inputs](data/degree-1229-elliptic-split.json)
 
 The ten inputs also have a decomposition into 5,064 smaller logarithms. Every remaining factor has relative degree at most 13. To work on one of the original factors, use `--target 0x7d397`, for example. Add `--json` to export the masks and coefficients, or `--logs answers.csv` to check partial answers. [Pencil certificates](data/degree-1229-elliptic-pencils.json) · [Descent checker](scripts/check_1229_elliptic_descent.py)
 
