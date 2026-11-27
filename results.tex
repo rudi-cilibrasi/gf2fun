@@ -18945,4 +18945,84 @@ in \texttt{correction\_141\_order}. Its two short relations give
 The theorem concerns the norm correction. Index divisors can also
 come from the ray groups, as seven does for \(C_{11}\).
 
+\clearpage
+\section{The exact index away from primes dividing the degree}
+\label{sec:twisted-index-valuation}
+
+Keep the notation of Section~\ref{sec:twisted-full-ray}. Write
+\(J=(2^n-1)/\ord(x)\) for the root-order index.
+\begin{theorem}
+Let \(\ell\mid2^n-1\) be prime, \(d=\ord_\ell(2)\) and
+\(a=v_\ell(2^d-1)\). Then
+\[
+        \min(a,v_\ell J)=\min\bigl(a,v_\ell(D\,|B_d|)\bigr).
+\]
+For every prime \(\ell\nmid n\), the valuations of \(J\) and
+\(\gcd(2^n-1,D\,|B_n|)\) are equal. In particular this gcd gives
+the entire index when \(n\) and \(2^n-1\) are coprime.
+\end{theorem}
+\begin{proof}
+Use the faithful character \(\chi\) at degree \(d\) and the cyclic
+residue group \(W\) of order \(\ell^a\) in the earlier proof.
+Put \(t_0=v_\ell [W:\overline{U_\chi}]\) and
+\(c=v_\ell|\operatorname{Cl}(E_d)_\chi|\), with the bar denoting
+reduction at two. The ray sequence gives
+\(v_\ell |(R_d)_\chi|=t_0+c\). The Gras theorem and rank one give
+\(C_\chi=\ell^c U_\chi\). Therefore
+\[
+          v_\ell[W:\overline{C_\chi}]=\min(a,t_0+c).
+\]
+On every other character component \(\sigma-2\) is invertible.
+On the \(\chi\)-component it is multiplication by
+\(\chi(\sigma)-2\), of valuation \(a\). Indeed the factorization
+of \(2^d-1\) over \(\mathbb Z_\ell\) has exactly one nonunit
+factor since \(d\mid\ell-1\). Hence the \(\ell\)-primary part
+of \(B_d\) is \((R_d)_\chi/\ell^a(R_d)_\chi\). For any finite
+abelian \(\ell\)-group \(A\), its order and that of \(A/\ell^a A\)
+have the same valuation after truncation at \(a\), by the cyclic
+decomposition. This identifies the last display with
+\(\min(a,v_\ell |B_d|)\).
+
+Norm between the two finite fields sends a generator to a
+generator. Thus its effect on the valuation of an index is
+truncation at \(a\). When \(d\mid m\), the norm of the period
+reduces the circular generator and the half-field identity raises
+the period to \(2^j-3\), followed by an inverse square.
+This adds \(v_\ell(2^j-3)\) to its index valuation up to the
+ambient bound. Its contribution truncated at \(a\) equals that
+of \(v_\ell D\). When \(d\nmid m\), the norm of \(x\) gives the
+circular generator up to a square and a factor of order prime to
+\(\ell\). In this case \(v_\ell D=0\). This proves the first formula.
+
+Suppose now \(\ell\nmid n\) and \(\ell\mid2^n-1\). Write
+\(H=\operatorname{Gal}(F/E_d)\). On the \(\ell\)-primary ray
+groups, ideal extension identifies \(R_d\) with the \(H\)-invariants
+of \(R_n\). Indeed norm composed with extension is multiplication by
+\(|H|\), while extension composed with norm is the sum over \(H\).
+These identifications commute with Frobenius. On the complement
+of the invariants, \(\sigma^d-1\) is invertible because \(|H|\)
+is prime to \(\ell\). One can see this modulo \(\ell\) by averaging
+over \(H\), followed by Nakayama's lemma. Since \(2^d=1\bmod\ell\),
+\(\sigma-2\) is also invertible there by factoring
+\(\sigma^d-2^d\) modulo \(\ell\). Thus \(B_n\) and \(B_d\) have
+isomorphic \(\ell\)-primary parts. Finally
+\(v_\ell(2^n-1)=a\) by lifting the exponent, as \(\ell\nmid n/d\).
+This gives the full valuation at \(\ell\). Both integers in the
+second assertion divide \(2^n-1\), handling the other primes.
+\end{proof}
+
+
+For the five-term family the exceptional primes have an explicit description.
+Put \(s=k-2\), \(A=2^s+1\), \(n=4A\) and \(r=\gcd(s,A)\), where \(k\ge3\) is odd. Then
+\[
+                    \gcd(n,2^n-1)=2^r+1.
+\]
+Indeed \(A\mid 2^{2s}-1\), so \(\gcd(A,2^n-1)\) equals
+\(\gcd(A,2^{\gcd(n,2s)}-1)\). Since \(s\) is odd, \(\gcd(n,2s)=2r\).
+The quotient \(s/r\) is odd, giving \(2^r+1\mid A\), while
+\(A\equiv2\bmod(2^r-1)\) gives \(\gcd(A,2^r-1)=1\).
+At \(k=141\) this leaves only the prime three. At \(k=191\) we
+have \(r=27\) and \(2^{27}+1=3^4\cdot19\cdot87211\).
+The theorem determines the exact index valuations at every other prime.
+
 \end{document}

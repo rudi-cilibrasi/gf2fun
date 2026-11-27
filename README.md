@@ -857,6 +857,8 @@ For the explicit gcd in the full-order criterion, every possible prime divisor a
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_correction.py --jobs 4
 ~~~
 
+The ray quotient also gives the exact prime-power multiplicities in the root-order index away from primes dividing the degree. For $k=141$ the only exceptional prime is 3. For $k=191$ they are 3, 19 and 87,211. [Index formula](results.pdf#page=252)
+
 To reproduce the optimal normal basis classification, run the finite orbit and order checks and the formal coefficient bound.
 
 ~~~sh
