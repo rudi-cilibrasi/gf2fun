@@ -31,6 +31,7 @@ import GF2Sparse.Linearized
 import GF2Sparse.Many
 import GF2Sparse.MersenneDivisors
 import GF2Sparse.MersenneExamples
+import GF2Sparse.MiddleRank
 import GF2Sparse.NormCoverBounds
 import GF2Sparse.NormExamples
 import GF2Sparse.NormQuotients

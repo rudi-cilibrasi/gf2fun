@@ -15459,4 +15459,131 @@ block \(n/e\) times. Since \(e\) is odd, every sign pair contains
 a word of weight at most \((n-n/e)/2\). In particular, every omitted
 prime with \(e\le\sqrt n\) gives the same square-root saving.
 
+\section{When the middle rank is the first failure}\label{sec:middle-rank-twists}
+Let \(f\) be a binary irreducible of even degree \(n\), with root of
+index \(h>1\) in the group of order \(N=2^n-1\). Precisely \(h-1\)
+nonempty proper subsets of its conjugates have product one. Their
+indicator words are the integers \(jN/h\) for \(1\le j<h\).
+The following criterion applies to composite indices as well as primes.
+
+\begin{theorem}\label{thm:middle-index}
+All these subsets have size \(n/2\) if and only if \(-1\) is a power
+of \(2\) modulo \(h\). Write \(n=2^a m\) with \(m\) odd. Equivalently,
+the index \(h\) divides one of the \(a\) integers
+\[
+               2^{2^i m}+1,\qquad 0\le i<a .
+\]
+\end{theorem}
+\begin{proof}
+The digits of \(jN/h\) form the period of \(j/h\), repeated to length
+\(n\). If \(2^k=-1\bmod h\), shifting by \(k\) complements each
+digit. The word therefore has as many zeros as ones.
+
+Conversely, let \(H=\langle2\rangle\) in the units modulo \(h\).
+If \(-1\notin H\), the finite abelian quotient by \(H\) has a
+character taking the nontrivial element \(-H\) to \(-1\). Its
+primitive inducing character \(\chi\) of conductor \(d\mid h\)
+is odd and has \(\chi(2)=1\). By
+\href{https://math.dartmouth.edu/~carlp/b2012-09-17.pdf\#page=3}{Pomerance
+and Ulmer, \emph{On balanced subgroups of the multiplicative group},
+Lemma 2.2}, its sum on the lower half \(0<b<d/2\) is nonzero.
+The sum over all units is zero. Since \(\chi\) is constant on cosets
+of \(\langle2\rangle\bmod d\), at least one such coset has different
+counts in the two halves. For a representative \(b\), the \(n\)-bit
+word of \(bN/d\) then has unequal counts of zeros and ones. It is one
+of the words \(jN/h\), with \(j=bh/d\).
+
+For the last equivalence, write the order of 2 modulo \(h\) as
+\(2^v u\) with \(u\) odd. It divides \(n\). If \(-1\) is a power of
+2, then \(v\ge1\) and \(2^{2^{v-1}u}=-1\bmod h\). Raising to the
+odd power \(m/u\) preserves \(-1\). The reverse implication follows
+by taking the indicated power of 2. The displayed factors and
+\(2^m-1\) are pairwise coprime by successive differences of squares.
+\end{proof}
+
+There is an explicit five-term family that realizes the middle-rank
+obstruction. Its order and the first failing rank follow from smaller
+binary polynomials. For a nonzero root \(\beta\) of degree \(m>1\),
+let \(k\) be the smallest size of a nonempty subset of its conjugates
+with product one, allowing the full set. Let \(A_k\) count the
+subsets of size \(k\) with that product. Thus \(2\le k\le m\), and
+\(k=m\) precisely when \(\beta\) is primitive.
+
+\begin{theorem}\label{thm:cubic-root-twist}
+Suppose \(m\ge3\) is odd, \(\beta\) has minimal polynomial \(g\) and
+order \(L\), and \(\zeta\) has order three. Then \(r=\zeta\beta\)
+has degree \(2m\), order \(3L\), and minimal polynomial
+\[
+                      f(X)=g(\zeta X)g(\zeta^2 X).
+\]
+Its first product-one subset has size \(k\), with exactly
+\(A_k(2^k+2(-1)^k)/3\) choices at that size. If \(g\) is a trinomial,
+\(f\) is a pentanomial. In particular every primitive trinomial
+of odd degree \(m\ge3\) gives an irreducible, nonprimitive pentanomial
+of degree \(2m\) whose \((2^m-2)/3\) product-one proper subsets
+all have size \(m\).
+\end{theorem}
+\begin{proof}
+Since \(3\nmid 2^m-1\), both \(\zeta\) and \(\beta\) are powers of
+\(r\), which generates the compositum of \(\mathbb F_4\) and
+\(\mathbb F_{2^m}\) over \(\mathbb F_2\). The order of \(r\) is
+\(3L\) and the compositum degree is \(2m\). The displayed monic
+polynomial of degree \(2m\) vanishes at \(r\) and has binary
+coefficients, as Frobenius interchanges its factors.
+
+Above each \(\beta^{2^i}\) the conjugates of \(r\) give two independent
+choices \(\zeta\beta^{2^i}\) and \(\zeta^{-1}\beta^{2^i}\). A
+product-one selection downstairs lifts when its signs sum to zero
+modulo three. For \(k\ge2\) this can always be done, using opposite
+pairs and, for odd \(k\), three equal signs. Conversely project
+any product-one selection for \(r\) to the \(\beta\)-coordinate.
+A repeated conjugate there can be replaced by its square, the next
+conjugate cyclically. Each replacement shortens the selection and
+retains a nonempty product-one multiset. Thus every selection has
+size at least \(k\), and at size \(k\) all projected positions are
+distinct. A roots-of-unity filter over \(\mathbb C\) counts the
+signs of sum zero modulo three as \((2^k+2(-1)^k)/3\).
+
+For \(g=X^m+X^b+1\), the three exponents occupy exactly two residue
+classes modulo three. All three classes would give \(g(\zeta)=0\).
+A single class would give \(g\in\F[X^3]\), and the additional root
+\(\zeta\beta\) would have to lie in \(\mathbb F_{2^m}\).
+In the product defining \(f\), each doubled exponent occurs and
+a cross term \(i+j\) occurs exactly when \(i\ne j\bmod3\).
+There are two such cross terms. All six possible sums of an unordered
+pair with repetition are distinct, since \(m\) is odd and \(m\ne2b\).
+For a primitive seed \(A_m=1\). The index is \((2^m+1)/3\), so the
+count at size \(m\) exhausts all \(h-1\) proper product-one subsets.
+\end{proof}
+
+The primitive degree-2047 trinomial with tap \(3\) from
+Theorem~\ref{thm:primitive2047} gives
+\[
+                 X^{4094}+X^{2050}+X^{2047}+X^6+1 .
+\]
+Its first failing rank is 2047 and its root order is exactly
+\(3(2^{2047}-1)\). Applying the same construction to the published
+primitive trinomial of degree \(74{,}207{,}281\) with tap
+\(9{,}156{,}813\) gives
+\[
+       X^{148414562}+X^{83364094}+X^{74207281}+X^{18313626}+1 .
+\]
+It passes every exterior test through rank \(74{,}207{,}280\) and
+first fails at \(74{,}207{,}281\). The seed certificate is due to
+\href{https://arxiv.org/abs/1605.09213}{Brent and Zimmermann,
+\emph{Twelve new primitive binary trinomials}}.
+
+For the 639,166 irreducible degree-1229 pentanomials, this construction
+gives respectively \(65{,}234\), \(176{,}426\) and \(397{,}506\)
+degree-2458 polynomials of weights 9, 11 and 13. Each of the 639,144
+survivors gives a twist whose first failure lies in ranks 11 through
+596 if the seed is nonprimitive, or exactly at rank 1229 if it is
+primitive. The sign-lifting implication and the binary weight of
+complementary halves are formalized in
+\nolinkurl{GF2Sparse/MiddleRank.lean}.
+\nolinkurl{scripts/check_middle_rank_twists.py} verifies the index
+criterion through \(h=4095\), checks every irreducible seed in odd
+degrees 3 through 11 by exact orders and counting binary words,
+and recovers both degree-2047 seed roots in their degree-4094 fields.
+
 \end{document}
