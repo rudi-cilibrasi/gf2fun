@@ -21661,4 +21661,95 @@ has \(j\le12\) and \(\ell\ge2q+1>12\). Use the coefficient calculation
 to choose the rows. With at most three columns the degree bound four
 suffices. The compression proof now applies verbatim.
 
+\clearpage
+\section{Exactly which two subfields supply a trinomial root?}
+\label{sec:trinomial-subfield-pairs}
+Let \(F=X^n+X^k+1\) be irreducible over \(\mathbb F_2\), with
+\(0<k<n\). Set \(g=\gcd(n,k)\), \(m=n/g\), and let \(r\) be a root.
+For a divisor \(d\mid n\) write \(A_d=\mathbb F_{2^d}\).
+\begin{theorem}
+For distinct primes \(p,q\mid n\),
+\[
+ r\in A_{n/p}^\times A_{n/q}^\times
+      \quad\Longleftrightarrow\quad
+ \gcd\bigl(g,pq,2^{n/(pq)}-1\bigr)>1.
+\]
+For any divisors \(d,e\mid n\), the root belongs to
+\(A_d^\times A_e^\times\) if and only if every integer in
+\[
+        \{m\}\ \cup\
+        \{\ell^{v_\ell(n)}\ord_\ell(2):\ell\text{ prime},\ \ell\mid g\}
+\]
+divides at least one of \(d,e\).
+\end{theorem}
+
+\paragraph{An additive pair in a subfield product.}
+Let \(H=A_d^\times A_e^\times\). In a binary field,
+\[
+              H\cap(1+H)=(A_d\cup A_e)\setminus\{0,1\}.
+\]
+Indeed put \(\sigma(x)=x^{2^d}\), \(\tau(x)=x^{2^e}\). For every
+\(x\in H\), writing \(x=ab\) with \(\sigma(a)=a,\ \tau(b)=b\) gives
+\(x\,\sigma\tau(x)=\sigma(x)\tau(x)\). If \(x+1\in H\) as well,
+subtracting the two identities gives
+\(x+\sigma\tau(x)=\sigma(x)+\tau(x)\); hence
+\((\sigma(x)-x)(\tau(x)-x)=0\). This proves the equality, since
+the other inclusion follows inside each subfield. For a trinomial
+root \(r\in H\), use \(x=r^k\) and \(x+1=r^n\). These powers lie
+in the same subfield, so their B\'ezout combination \(r^g\) does too.
+Lean checks both the commuting-endomorphism identity and the
+gcd-power conclusion in \nolinkurl{GF2Sparse/SubfieldProducts.lean}.
+
+\paragraph{Order contributions from a dilation, at every weight.}
+More generally let any irreducible binary \(F=G(X^g)\) of degree
+\(n=mg\) have nonzero constant term. The element \(y=r^g\) has
+degree \(m\), and \(X^g-y\) is irreducible over \(A_m\) by its
+root degree \(g\). Every prime \(\ell\mid g\) is odd. Since
+\(y\) is not an \(\ell\)-th power in \(A_m\), cyclicity gives
+\[
+   v_\ell(\ord(y))=v_\ell(2^m-1)>0,\qquad
+   v_\ell(\ord(r))=v_\ell(2^m-1)+v_\ell(g)=v_\ell(2^n-1).
+\]
+The last equality is lifting the exponent. This full \(\ell\)-power
+has binary multiplicative degree exactly
+\(D_\ell=\ell^{v_\ell(n)}\ord_\ell(2)\): for
+\(t=\ord_\ell(2)\mid m\), the valuation at a multiple \(tj\)
+is \(v_\ell(2^t-1)+v_\ell(j)\).
+All prime powers in \(\ord(r)\) away from \(g\) already occur in
+\(\ord(y)\). Thus when \(g>1\), \(\ord(r)\) has a prime power of
+binary degree \(n\) exactly when some \(D_\ell=n\), at any weight.
+
+For the trinomial, membership in \(H\) requires \(m\mid d\) or
+\(m\mid e\) by the additive-pair argument. Each \(D_\ell\) must
+also divide one of those degrees, since the order of \(H\) is
+\(\operatorname{lcm}(2^d-1,2^e-1)\). Conversely these conditions
+place every prime power of \(\ord(r)\) in one of the two group orders.
+This proves the criterion for arbitrary \(d,e\).
+
+For the maximal pair, \(m\mid n/p\) or \(m\mid n/q\) exactly when
+\(p\mid g\) or \(q\mid g\). Suppose \(p\mid g\), and put
+\(s=n/(pq)\). Then \(D_p\nmid n/p\). It divides \(n/q\) exactly
+when \(\ord_p(2)\mid s\), since this order is coprime to \(p\).
+Every prime power of \(\ord(r)\) away from \(p\) divides
+\(2^{n/p}-1\), since \(r^p\) has degree \(n/p\). Thus the root
+splits exactly when \(p\mid2^s-1\). Interchanging \(p,q\) gives
+the displayed gcd test, also when both divide \(g\).
+
+\paragraph{An infinite family missing every full-degree prime power.}
+For every \(b\ge1\), \(X^{6\cdot7^b}+X^{7^b}+1\) is irreducible
+of degree \(6\cdot7^b\) and has root order \(9\cdot7^{b+1}\).
+Indeed \(X^6+X+1\) divides \(X^{63}-1\) and has gcd one with
+both \(X^9-1\) and \(X^{21}-1\), so every root has order 63.
+Each \(7^b\)-th root then has order
+\(9\cdot7^{b+1}\). Its two primary components have binary degrees
+\(6\) and \(3\cdot7^b\), whose lcm is the polynomial degree.
+The root splits across these two proper subfields with intersection
+of degree three.
+
+As an independent check, \nolinkurl{scripts/check_trinomial_subfield_pairs.py}
+enumerates all 572 irreducible trinomials up to reciprocal through degree
+384. Direct powering tests 2,327 pairs of distinct proper subfields that
+span the ambient field. It detects 218 split cases, in agreement with
+the degree-only test in every case.
+
 \end{document}

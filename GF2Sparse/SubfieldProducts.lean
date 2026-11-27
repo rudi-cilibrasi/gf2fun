@@ -39,6 +39,48 @@ theorem coordinate_rank_sum {F K I J E : Type*} [Field F] [Field K] [Algebra F K
     exact Fintype.linearIndependent_iff.1 hi _ hz (i,j)
   simpa only [Matrix.rank_transpose] using Matrix.rank_add_rank_le_card_of_mul_eq_zero hm
 
+/-- If both x and x+1 are products from the fixed rings of two commuting
+endomorphisms, then x belongs to one of the fixed rings. -/
+theorem fixed_of_additive_product_pair {F : Type*} [CommRing F] [IsDomain F]
+    (σ τ : F →+* F) (comm : Function.Commute σ τ) {x : F}
+    (hx : ∃ a b : F, σ a = a ∧ τ b = b ∧ x = a*b)
+    (hx1 : ∃ a b : F, σ a = a ∧ τ b = b ∧ x+1 = a*b) :
+    σ x = x ∨ τ x = x := by
+  have rectangle (z : F) (hz : ∃ a b : F, σ a = a ∧ τ b = b ∧ z = a*b) :
+      z * σ (τ z) = σ z * τ z := by
+    obtain ⟨a, b, ha, hb, rfl⟩ := hz
+    have hστ : σ (τ a) = τ a := (comm a).trans (congrArg τ ha)
+    simp only [map_mul, hb, hστ, ha]
+    ring
+  have h0 := rectangle x hx
+  have h1 := rectangle (x+1) hx1
+  simp only [map_add, map_one] at h1
+  have hsum : x + σ (τ x) = σ x + τ x := by linear_combination h1 - h0
+  have hprod : (σ x - x) * (τ x - x) = 0 := by linear_combination x * hsum - h0
+  exact (mul_eq_zero.mp hprod).imp sub_eq_zero.mp sub_eq_zero.mp
+
+/-- A trinomial relation on a product from two fixed fields puts the power
+at the gcd of the exponents in one of those fields. -/
+theorem trinomial_subfield_gcd {F : Type*} [Field F]
+    (σ τ : F →+* F) (comm : Function.Commute σ τ) {a b : F}
+    (ha : σ a = a) (hb : τ b = b) (hne : a*b ≠ 0) {k n : ℕ}
+    (htri : (a*b)^k + 1 = (a*b)^n) :
+    σ ((a*b)^(k.gcd n)) = (a*b)^(k.gcd n) ∨
+    τ ((a*b)^(k.gcd n)) = (a*b)^(k.gcd n) := by
+  have split (e : ℕ) : ∃ u v : F, σ u = u ∧ τ v = v ∧ (a*b)^e = u*v :=
+    ⟨a^e, b^e, by rw [map_pow, ha], by rw [map_pow, hb], mul_pow a b e⟩
+  have fixed (φ : F →+* F) (hk : φ ((a*b)^k) = (a*b)^k) :
+      φ ((a*b)^(k.gcd n)) = (a*b)^(k.gcd n) := by
+    have hn : φ ((a*b)^n) = (a*b)^n := by rw [← htri, map_add, map_one, hk]
+    have divides (e : ℕ) (he : φ ((a*b)^e) = (a*b)^e) :
+        orderOf (φ (a*b) / (a*b)) ∣ e := by
+      apply orderOf_dvd_of_pow_eq_one
+      rw [div_pow, ← map_pow, he, div_self (pow_ne_zero _ hne)]
+    have hg := orderOf_dvd_iff_pow_eq_one.mp (Nat.dvd_gcd (divides k hk) (divides n hn))
+    rwa [div_pow, div_eq_one_iff_eq (pow_ne_zero _ hne), ← map_pow] at hg
+  have hx1 := htri.symm ▸ split n
+  exact (fixed_of_additive_product_pair σ τ comm (split k) hx1).imp (fixed σ) (fixed τ)
+
 private def binomialMask : ℕ → ℕ
   | 0 => 1
   | n+1 => maskProduct 3 (binomialMask n)

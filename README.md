@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **For an irreducible trinomial $X^n+X^k+1$, the degree and tap determine exactly which pairs of subfields can supply its root.** For distinct primes $p,q\mid n$, a root is a product from the subfields of degrees $n/p,n/q$ exactly when $\gcd(k,pq,2^{n/(pq)}-1)>1$. The criterion for arbitrary pairs uses only divisors of $n$. Direct powering agrees on all 2,327 pairs tested through degree 384. [Proof](results.pdf#page=301) · [Lean](GF2Sparse/SubfieldProducts.lean) · [Verifier](scripts/check_trinomial_subfield_pairs.py)
+
 - **In every degree $n=3q^b$ with prime $q>3$, a three-term arithmetic progression in an irreducible pentanomial forces a prime-power divisor of its root order with binary multiplicative degree $n$.** The conclusion also holds in every degree $n=5q^b$ with prime $q>5$ for any three of five equally spaced positions. Outside $(p,q)=(3,7),(5,31)$ the divisor can be taken prime. The quadratic-residue code bound rules out the remaining class $q^b\equiv11\pmod{12}$. [Proof](results.pdf#page=300) · [Exact coefficient verifier](scripts/check_relative_fourier_minors.py)
 
 - **For every pair of odd primes $p<q$, all sufficiently large powers $q^b$ work.** In degree $n=pq^b$, every irreducible pentanomial containing three of $p$ equally spaced positions has a prime power of binary multiplicative degree $n$ in its root order whenever $2q^b+1>(6p-5)^9$. The proof reduces a subfield split to a binary determinant with at most 24 terms. [Determinant argument](results.pdf#page=298) · [Small relative degrees](results.pdf#page=300)
