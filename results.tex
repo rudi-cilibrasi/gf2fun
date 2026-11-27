@@ -20015,4 +20015,116 @@ exponents \(2977,5954,19350\). The norm certificates in
 cube and this fourth pentanomial independently. The exhaustive
 trinomial search checks all 11163 reciprocal representatives.
 
+\clearpage
+\section{A prime scalar of size bounded independently of the larger degree}
+\label{sec:scalar-independent-bound}
+\begin{theorem}\label{thm:scalar-independent-bound}
+Let \(p<q\) be odd primes. If an irreducible binary polynomial of
+degree \(n=pq\) and weight at most five has a root in
+\(\mathbb F_{2^p}^{\times}\mathbb F_{2^q}^{\times}\), its component in
+degree \(p\) has prime order \(A\), with
+\[
+       3p^2/4\le A<12p^2/5,\qquad A\equiv1\pmod{2p}.
+\]
+The group of \(A\)-th roots contains \(x,1+x\) for some \(x\).
+\end{theorem}
+\begin{proof}
+Write the root as \(\alpha\beta\) in the two respective subfields.
+Theorem~\ref{thm:semiprime-parity} gives the lower bound, the additive
+pair, and two pairs of exponents \((a,a+uA),(b,b+vA)\) whose powers
+of \(\beta\) both sum to the power at the singleton \(c\).
+Set \(B=\ord(\beta)\) and \(y=\beta^A\). The subfield group orders are
+coprime, so \(y\) generates \(\langle\beta\rangle\) and has degree \(q\).
+In particular
+\[
+     y=\beta^A,\qquad 1+y^u=\beta^{c-a},\qquad 1+y^v=\beta^{c-b}.
+\]
+If \(u=v\), equality of the pair sums forces \(B\mid b-a\), which is
+impossible since \(0<|b-a|\le n-A<B\). If \(u/v\) or \(v/u\) is a
+power of two greater than one, Section~\ref{sec:dyadic-scalar-gaps}
+gives \(3A\min(u,v)<4p^2\). This already implies the upper bound.
+
+For the other ratios the rational functions
+\(Y,1+Y^u,1+Y^v\) are multiplicatively independent. Valuation at
+zero separates \(Y\). The sets of roots of the other two functions
+are distinct because the odd parts of \(u,v\) differ. A relation
+between powers of the two functions would give them identical root
+sets, unless both powers were zero.
+
+Put \(k=(q-1)/2\). Take all triples of integers \((i,j,l)\) for which
+the positive coordinates sum to at most \(k\) and the absolute values
+of the negative coordinates also sum to at most \(k\). Choosing the
+\(s\) positive and \(t\) negative positions, then their sizes, gives
+\[
+ S=\sum_{s+t\le3}\binom3s\binom{3-s}t\binom ks\binom kt
+   =\frac{5q^3+7q}{12}.
+\]
+Within one class \(j\equiv j_0\pmod u,\ l\equiv l_0\pmod v\), evaluate
+\[
+  y^i(1+y^u)^{(j-j_0)/u}(1+y^v)^{(l-l_0)/v}.
+\]
+These values are distinct. If two agree, clear the denominators of
+their quotient. The two polynomial degrees are bounded by the sums
+of the positive and negative coordinate differences, respectively,
+both at most \(2k<q\). Equality at \(y\) is a polynomial identity,
+and multiplicative independence identifies the triples.
+
+In this class all values are powers of \(\beta\) with integer exponents
+given, up to a fixed shift, by the linear form
+\(Ai+(c-a)j/u+(c-b)l/v\). Write \(D\) for the diameter of
+\(\{0,A,(c-a)/u,(c-b)/v\}\). Each triple is a difference of two
+nonnegative vectors with coordinate sums at most \(k\), so the range
+of this linear form has length at most \(2kD\).
+Moreover \(uvD\le n\max(u,v)\).
+For comparisons with zero or \(A\), this follows from the four pair
+endpoints and \(c\) lying in \([0,n]\). For the remaining comparison,
+suppose \(v\ge u\). Then
+\[
+ (c-a)-(u/v)(c-b)=(1-u/v)c+(u/v)b-a
+\]
+lies in \([-n,n]\); interchanging the pairs treats \(u>v\).
+There are at most \((q-1)D+1\) integer exponents in each of the
+\(uv\) classes. As \(A\max(u,v)\le n\) and \(uv\le n\max(u,v)\),
+\[
+        AS\le A\big((q-1)n\max(u,v)+uv\big)\le qn^2 .
+\]
+Thus \((5q^2+7)A\le12p^2q^2\).
+
+Every prime divisor of \(A\mid2^p-1\) has multiplicative order \(p\)
+for the base two, so is \(1\bmod 2p\). Two such divisors, counted with
+multiplicity, give at least \((2p+1)^2>12p^2/5\). Hence \(A\) is prime.
+\end{proof}
+
+\begin{corollary}\label{cor:scalar-10000}
+For every prime \(7\le p\le10000\) and \emph{every} prime \(q>p\), each
+binary irreducible of degree \(pq\) with at most five terms has a
+prime-power root-order divisor \(L\) with \(\ord_L(2)=pq\).
+The same conclusion holds for every Mersenne prime exponent \(p\ge7\),
+regardless of its size.
+\end{corollary}
+\begin{proof}
+If every prime-power component lay in a proper subfield, the root
+would belong to the product of the two subfield groups.
+For \(2^p-1\) prime, its only nonidentity subgroup has order
+\(2^p-1>12p^2/5\) for \(p\ge7\).
+For the finite bound, enumerate \(A=2kp+1\) in the stated interval
+and retain \(2^p\equiv1\pmod A\). Every retained integer is prime by
+the same prime-divisor argument. Across the 1,228 odd primes through
+10,000 this gives 96 integers. The gcd of \(X^A+1,(1+X)^A+1\)
+has positive degree only at \((p,A)=(3,7),(5,31)\), where its degrees
+are 6 and 30.
+
+The computation in \nolinkurl{scripts/check_scalar_order_bound.py}
+uses two auxiliary polynomials to keep the Euclidean divisions short.
+For a common root \(x\) and a signed representative
+\(t\equiv2^j\pmod A\), Frobenius gives \((1+x)^t=1+x^t\).
+Dividing an even \(t\) by two preserves this identity. For positive
+odd \(t>1\) use \((1+X)^t+1+X^t\); for \(t=-m<0\) use
+\((1+X)^m(1+X^m)+X^m\). Take the gcd of two such polynomials when
+available, then compute the gcd with the two original equations by
+modular powering. This preserves all common roots, and both original
+polynomials are squarefree. The calculation requires no factorization
+of the large Mersenne numbers.
+\end{proof}
+
 \end{document}
