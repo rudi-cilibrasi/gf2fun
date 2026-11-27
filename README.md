@@ -10,6 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **A normalized tap bound of 18 suffices for primitive pentanomials in 1,756 degrees.** This covers every degree from 5 through 1228 and every even degree from 1230 through 2292. Exactly two degrees, 1320 and 1380, need 18. Exhausting every smaller tap pair leaves just 3 and 10 irreducibles respectively, all of proper order. [Proof](results.pdf#page=224) · [First witness table](data/complementary-width-5-1228.csv) · [Even-degree table](data/complementary-width-1230-2292.csv) · [Sharpness check](scripts/check_complementary_width.py)
 - **In degree 3415 an 821-digit prime divides the order of every irreducible sparse root satisfying the quotient bound $K<683$.** Primitivity then reduces to two norm tests in degrees 5 and 683. More generally, for $n=p^a q^b$ with primes $p<q$, a quotient bound $K<q$ forces a prime of full binary degree into the root order whenever $p^a\nmid\operatorname{ord}_q(2)$. [Proof](results.pdf#page=223) · [Degree-3415 order factors](data/mersenne-3201-3456.json)
 - **A formula in every sufficiently large degree gives five terms, an increasing factor cutoff and a nearly quadratic period.** For any $B\ge2$, put $L=\mathrm{lcm}_{1\le i\le B}(2^i-1)$. In every degree $n\ge64(L+1)$ the formula gives a squarefree pentanomial with an odd number of irreducible factors, each of degree greater than $B$, and period $H\ge1+n(n-1)/(14L+2)$. Taking $B\to\infty$ with $B=o(\sqrt{\log n})$ gives $n^{1-o(1)}$ distinct choices of period at least $n^{2-o(1)}$. Six members have certified full order, including $X^{4224}+X^8+X^3+X^2+1$. [Proof](results.pdf#page=222) · [Construct a candidate and replay the six certificates](scripts/check_uniform_period.py)
 - **In every sufficiently large even degree $n$, a five-term polynomial passes the degree-16 factor sieve and has period $H\ge 1+n(n-1)/39$.** It is squarefree, has coprime exponents and has an odd number of irreducible factors. The constant 39 is sharp for the normalized tap bound used in the proof. If the candidate is irreducible in degree $2^h p^e$ with prime $p>39$ and $p\nmid 2^{2^{h-1}}+1$, its root order contains a prime of full binary degree. [Uniform construction and sharpness](results.pdf#page=220) · [Order consequence](results.pdf#page=221) · [Finite sieve](scripts/check_complementary_taps.py) · [Lean factor certificates](GF2Sparse/ReciprocalSieve.lean)
@@ -766,6 +767,12 @@ For the five witnesses in degrees 7854 through 9576, each row gives the degree $
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
+~~~
+
+The two normalized-width tables use the same factor tables and verification commands as the spacing tables below. Substitute `complementary-width-5-1228.csv` and `complementary-width-1230-2292.csv` for the corresponding `symmetric-witnesses` filenames. To check sharpness, run
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_complementary_width.py --sharpness
 ~~~
 
 The ranges with $b\le13$ use the pinned Cunningham table and two small supplements. The third order check verifies the alternative witnesses in multiples of eight. The census uses PARI/GP and accepts its executable path with the --gp option.

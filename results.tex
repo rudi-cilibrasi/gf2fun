@@ -17041,4 +17041,47 @@ therefore give \(\gcd(e,AB)=1\), while \(P\mid\ord(r)\) gives
 The archived example \(X^{3415}+(1+X^8)(1+X^{27})\) has \(K=35\)
 by taking its leading term as the first block.
 
+\section{A sharp bound of eighteen for primitive complementary taps in 1,756 degrees}
+\label{sec:complementary-width-witnesses}
+
+For \(X^n+X^{n-b}+X^a+X^b+1\), exchange \(b,n-b\) and take
+reciprocals to define the width of the reciprocal class as
+\[
+ W(n,b,a)=
+ \min_{\substack{s\in\{b,n-b\}\\t\in\{a,n-a\}}}
+       \frac{s+\max(s,t)}{\gcd(s,t)} .
+\]
+This is the smallest quotient bound \(K\) given by those orientations.
+A primitive support must satisfy \(\gcd(n,a,b)=1\). Indeed if a
+common divisor \(d>1\) exists, the \(d\)-th power of a primitive
+root has degree at most \(n/d\), while its order is at least
+\((2^n-1)/d>2^{n/d}-1\).
+
+Every degree from 5 through 1228 and every even degree from 1230
+through 2292 has a primitive complementary pentanomial with \(W\le18\).
+In 910 of these degrees the tables give \(W=3\), the smallest
+possible value for five distinct terms. Only degrees 1320 and 1380
+require 18 in these ranges. The table gives one witness in each
+extremal degree and a count of all reciprocal classes of smaller
+width with coprime exponents.
+\[
+\begin{array}{r|rr|rr}
+ n&b&a& W<18&\text{irreducibles among them}\\\hline
+1320&573&581&3402&3\\
+1380&63&49&3760&10
+\end{array}
+\]
+All three irreducibles in the first row have order dividing
+\((2^n-1)/s\) for \(s=3,3,5\), respectively. The ten in the second
+row give \(s=3,5,7,13\) with counts \(5,3,1,1\).
+
+The files \nolinkurl{data/complementary-width-5-1228.csv} and
+\nolinkurl{data/complementary-width-1230-2292.csv} are compatible
+with the symmetric power tests of \nolinkurl{scripts/check_product_range.py}.
+Each row uses the smaller complementary tap and the smaller reciprocal
+singleton. The separate program \nolinkurl{scripts/check_complementary_width.py}
+enumerates the smaller-width supports in both extremal degrees by
+scanning all tap pairs. PARI tests each for irreducibility, and FLINT
+checks the proper-order obstructions.
+
 \end{document}
