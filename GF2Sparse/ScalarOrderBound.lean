@@ -185,27 +185,53 @@ theorem geometric_triple_cube {F : Type*} [Field F] [CharP F 2] {z : F}
          _ = z^2+z := by ring
          _ = 1 := by rw [h]; ring_nf; simp [CharTwo.two_eq_zero (R := F)]
 
+/-- The binary degree after lifting from an odd prime to a power of that prime. -/
+theorem binary_prime_power_lift {p t : ℕ} [hp : Fact p.Prime]
+    (hodd : Odd p) (ht : 0 < t) (horder : orderOf (2 : ZMod p) = t) (a n : ℕ) :
+    p^(padicValNat p (2^t-1) + a) ∣ 2^n-1 ↔ t*p^a ∣ n := by
+  have base (j : ℕ) : p ∣ 2^j-1 ↔ t ∣ j := by
+    rw [← ZMod.natCast_eq_zero_iff, Nat.cast_sub (Nat.two_pow_pos j), Nat.cast_pow,
+      Nat.cast_ofNat, Nat.cast_one, sub_eq_zero, ← orderOf_dvd_iff_pow_eq_one, horder]
+  have ht1 : 1 < 2^t := Nat.one_lt_two_pow ht.ne'
+  have hbase := (base t).2 (dvd_refl t)
+  have hvalpos : 1 ≤ padicValNat p (2^t-1) :=
+    (padicValNat_dvd_iff_le (by omega : 2^t-1 ≠ 0)).mp (by simpa using hbase)
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  by_cases hdiv : t ∣ n
+  · obtain ⟨j, rfl⟩ := hdiv
+    have hj : j ≠ 0 := by rintro rfl; simp at hn
+    have hsub : (2^t)^j-1 ≠ 0 := by have := one_lt_pow₀ ht1 hj; omega
+    have hunit : ¬p ∣ 2^t := by
+      intro h
+      have heq := (Nat.prime_dvd_prime_iff_eq hp.out Nat.prime_two).mp (hp.out.dvd_of_dvd_pow h)
+      exact (Nat.not_even_iff_odd.mpr hodd) (heq ▸ (by decide : Even 2))
+    have hv := padicValNat.pow_sub_pow (p := p) hodd ht1 hbase hunit hj
+    simp only [one_pow] at hv
+    rw [pow_mul, Nat.mul_dvd_mul_iff_left ht, padicValNat_dvd_iff_le hsub,
+      padicValNat_dvd_iff_le hj, hv]
+    omega
+  · exact iff_of_false
+      (fun h => hdiv ((base n).mp ((dvd_pow_self p (by omega)).trans h)))
+      (fun h => hdiv ((dvd_mul_right t _).trans h))
+
+
 /-- The exact binary degree of a root of unity of order 3^(a+1). -/
 theorem three_power_divides_mersenne_iff (a n : ℕ) :
     3^(a+1) ∣ 2^n-1 ↔ 2*3^a ∣ n := by
-  rcases eq_or_ne n 0 with rfl | hn
-  · simp
-  rcases Nat.even_or_odd n with ⟨m, hm⟩ | ho
-  · have he : n = 2*m := by omega
-    have hm0 : m ≠ 0 := by omega
-    have hsub : 4^m-1 ≠ 0 := by
-      have : 1 < 4^m := one_lt_pow₀ (by decide) hm0
-      omega
-    have hval := padicValNat.pow_sub_pow (p := 3) (by decide : Odd 3) (by decide : 1 < 4)
-      (by decide : 3 ∣ 4-1) (by decide : ¬3 ∣ 4) hm0
-    simp only [one_pow, show padicValNat 3 (4-1) = 1 from padicValNat.self (by decide : 1 < 3)] at hval
-    rw [he, pow_mul, show (2:ℕ)^2 = 4 by decide, Nat.mul_dvd_mul_iff_left (by decide : 0 < 2),
-      padicValNat_dvd_iff_le hsub, padicValNat_dvd_iff_le hm0, hval]
-    omega
-  · have h3 := Nat.prime_three.coprime_iff_not_dvd.mp ((mersenne_coprime_three_iff_odd n).2 ho).symm
-    have h2 : ¬2 ∣ n := fun h => Nat.not_even_iff_odd.mpr ho (even_iff_two_dvd.mpr h)
-    exact iff_of_false (fun h => h3 (dvd_trans (dvd_pow_self 3 (by omega : a+1 ≠ 0)) h))
-      (fun h => h2 (dvd_trans (dvd_mul_right 2 _) h))
+  have h := binary_prime_power_lift (p := 3) (t := 2) (by decide) (by decide)
+    (orderOf_eq_prime (by decide) (by decide)) a n
+  simpa only [show (2:ℕ)^2-1 = 3 by decide, padicValNat.self (by decide : 1 < 3),
+    Nat.add_comm 1 a] using h
+
+/-- The 7-primary component in the degree 6·7^b and 9·7^b sparse examples. -/
+theorem seven_power_divides_mersenne_iff (b n : ℕ) :
+    7^(b+1) ∣ 2^n-1 ↔ 3*7^b ∣ n := by
+  letI : Fact (Nat.Prime 7) := ⟨by decide⟩
+  have h := binary_prime_power_lift (p := 7) (t := 3) (by decide) (by decide)
+    (orderOf_eq_prime (by decide) (by decide)) b n
+  simpa only [show (2:ℕ)^3-1 = 7 by decide, padicValNat.self (by decide : 1 < 7),
+    Nat.add_comm 1 b] using h
 
 /-- An odd-prime divisor of k+1 eliminates k*t+1 whenever t is one modulo that divisor. -/
 theorem progression_candidate_not_prime {k t r : ℕ} (hr : 1 < r) (hd : r ∣ k+1)
@@ -246,32 +272,11 @@ theorem two_four_mersenne_candidates {z ell : ℕ} (hz : 1 < z) (ho : Odd z) (h3
 /-- Exact binary degree of a root of order 31^(b+1), realizing the ramified exception. -/
 theorem thirty_one_power_divides_mersenne_iff (b n : ℕ) :
     31^(b+1) ∣ 2^n-1 ↔ 5*31^b ∣ n := by
-  rcases eq_or_ne n 0 with rfl | hn
-  · simp
-  by_cases h5 : 5 ∣ n
-  · obtain ⟨m, rfl⟩ := h5
-    have hm : m ≠ 0 := by omega
-    have hsub : 32^m-1 ≠ 0 := by
-      have : 1 < 32^m := one_lt_pow₀ (by decide) hm
-      omega
-    letI : Fact (Nat.Prime 31) := ⟨by decide⟩
-    have hv := padicValNat.pow_sub_pow (p := 31) (by decide : Odd 31) (by decide : 1 < 32)
-      (by decide : 31 ∣ 32-1) (by decide : ¬ 31 ∣ 32) hm
-    simp only [one_pow, show padicValNat 31 (32-1) = 1 from padicValNat.self (by decide : 1 < 31)] at hv
-    rw [pow_mul, show (2:ℕ)^5 = 32 by decide, Nat.mul_dvd_mul_iff_left (by decide : 0 < 5),
-      padicValNat_dvd_iff_le hsub, padicValNat_dvd_iff_le hm, hv]
-    omega
-  · have no : ¬ 31 ∣ 2^n-1 := by
-      intro h
-      have hz := (ZMod.natCast_eq_zero_iff (2^n-1) 31).2 h
-      rw [Nat.cast_sub (Nat.two_pow_pos n), Nat.cast_pow, Nat.cast_ofNat, Nat.cast_one,
-        sub_eq_zero] at hz
-      have hd := orderOf_dvd_of_pow_eq_one (show (2 : ZMod 31)^5 = 1 by decide)
-      have ho : orderOf (2 : ZMod 31) = 5 :=
-        ((Nat.dvd_prime (by decide : Nat.Prime 5)).mp hd).resolve_left
-          (fun h => (by decide : (2 : ZMod 31) ≠ 1) (orderOf_eq_one_iff.mp h))
-      exact h5 (ho ▸ orderOf_dvd_of_pow_eq_one hz)
-    exact iff_of_false (fun h => no (dvd_trans (dvd_pow_self 31 (by omega : b+1 ≠ 0)) h))
-      (fun h => h5 (dvd_trans (dvd_mul_right 5 _) h))
+  letI : Fact (Nat.Prime 31) := ⟨by decide⟩
+  letI : Fact (Nat.Prime 5) := ⟨by decide⟩
+  have h := binary_prime_power_lift (p := 31) (t := 5) (by decide) (by decide)
+    (orderOf_eq_prime (by decide) (by decide)) b n
+  simpa only [show (2:ℕ)^5-1 = 31 by decide, padicValNat.self (by decide : 1 < 31),
+    Nat.add_comm 1 b] using h
 
 end GF2Sparse.SubfieldProducts
