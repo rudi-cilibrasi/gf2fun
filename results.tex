@@ -14065,4 +14065,64 @@ of relative degrees two through thirteen. Only 23 have degree
 thirteen. The original ten-input formula remains available for
 submissions that give an entire parent logarithm.
 
+\section{A squarefree-divisor sieve for 309 terms in degree 1229}
+\label{sec:selberg-weight}
+\begin{theorem}
+There are more than \(2^{616}\) primitive degree-1229 binary
+polynomials of weight at most 309. More generally, for every monic
+degree-1229 template with constant one, more than \(2^{616}\)
+primitive polynomials agree with its first 508 interior coefficients
+and differ in at most 308 positions overall. For an even-weight
+template the distance bound is 307.
+\end{theorem}
+\begin{proof}
+In the degree-1229 count of Section~\ref{sec:paired-weight}, replace
+the irreducibility majorant by Selberg's square. Write
+\(|D|=2^{\deg D}\), let \(\mathcal D\) consist of all squarefree
+monic \(D\) of degree at most \(z=20\) coprime to \(T(T+1)\),
+and set \(\phi(D)=\prod_{P\mid D}(|P|-1)\).
+Use the majorant \((\sum_{D\mid f,\,D\in\mathcal D}\lambda_D)^2\).
+It equals one on irreducibles of degree 1229 if \(\lambda_1=1\).
+The constant Fourier coefficient of its \(D,E\) divisor indicator
+is \(1/|\operatorname{lcm}(D,E)|\). Since
+\(\sum_{J\mid\gcd(D,E)}\phi(J)=|\gcd(D,E)|\), the constant for
+the square is \(\sum_{J\in\mathcal D}\phi(J)y_J^2\), where
+\(y_J=\sum_{J\mid D}\lambda_D/|D|\) and all sums are over
+\(\mathcal D\). Write \(\mu\) for the polynomial M\"obius function.
+Inversion gives \(\lambda_1=\sum_J\mu(J)y_J\). Set
+\[
+ G=\sum_{J\in\mathcal D}\frac1{\phi(J)},\qquad
+ y_J=\frac{\mu(J)}{\phi(J)G}.
+\]
+This gives \(\lambda_1=1\) and constant coefficient \(1/G\). Also
+\(\lambda_D=|D|\sum_{D\mid J}\mu(J/D)y_J\). For fixed \(D\),
+every summand has sign \(\mu(D)\), hence
+\[
+ A=\sum_D|\lambda_D|
+   =\frac1G\sum_{J\in\mathcal D}
+     \prod_{P\mid J}\frac{1+|P|}{|P|-1}.
+\]
+The absolute Fourier coefficients of each divisor indicator sum to
+one, so \(A^2\) bounds their total for the square. Each pair uses a
+modulus of degree at most \(2z\), coprime to \(T(T+1)\).
+Thus the two-block Krawtchouk error estimate of
+Section~\ref{sec:paired-weight} applies with length \(2z+1\),
+constant \(1/G\), and absolute coefficient bound \(A^2\).
+Both divisor sums follow by multiplying the prime-degree generating
+functions and retaining degrees at most \(z\).
+
+Use \(d=508\), the bound of 19 on the number of order primes, and
+the 16 nonnegative integer frequencies in
+\nolinkurl{scripts/check_primitive_weight_bound.py}.
+The exact integer lower bound for a cutoff of 309 exceeds \(2^{616}\).
+For an even-weight template use the translated Fourier weights of
+Theorem~\ref{thm:weight-entropy-rate}. Every primitive polynomial
+has odd distance from this template. In difference coordinates a
+translation changes each additive residue character by a constant
+sign, so the same two-block estimate applies to distances greater
+than \(309-2=307\). The template \(X^{1229}+1\) gives the weight
+claim. For an odd-weight template flip one free interior coefficient
+above position \(1016\) and apply the triangle inequality.
+\end{proof}
+
 \end{document}

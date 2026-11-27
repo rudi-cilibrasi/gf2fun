@@ -117,8 +117,13 @@ def paired_factor_bound(block, free, cutoff, squared, overweight):
     constant = delta*(1-mean+(mean**2-sum(x*x for x in hits))/2)
     fourier_mass = 2**len(small)*delta*(1+len(hits)+comb(len(hits), 2))
 
-    # Each summand uses the six small factors and at most two more of degree <= 11.
     length = sum(small)+2*11+1
+    error = character_error(block, free, cutoff, squared, length)
+    return ceil(constant*overweight + fourier_mass*error)
+
+
+def character_error(block, free, cutoff, squared, length):
+    """Upper bound per unit of nonconstant Fourier mass for moduli of degree < length."""
     middle = [krawtchouk_row(block, u, block) for u in range(block//length, block//2+1)]
     middle_max = [max(map(abs, column)) for column in zip(*middle)]
     first = [min(free+1, max(0, cutoff-1-i)) for i in range(block+1)]
@@ -129,21 +134,50 @@ def paired_factor_bound(block, free, cutoff, squared, overweight):
         for k in range(free, -1, -1):
             tail[k] += tail[k+2]
         free_max = [max(previous, abs(tail[k])) for previous, k in zip(free_max, first)]
-    error = sum(a*b*c for a, b, c in zip(squared, middle_max, free_max))
-    return ceil(constant*overweight + fourier_mass*error)
+    return sum(a*b*c for a, b, c in zip(squared, middle_max, free_max))
+
+
+def selberg_constants(z):
+    """Constant coefficient and absolute Fourier mass bound for squarefree divisors."""
+    counts = {}
+    for d in range(1, z+1):
+        counts[d] = (2**d - sum(j*c for j, c in counts.items() if d % j == 0))//d
+
+    def sum_products(numerator):
+        coeff = [Fraction(1)] + [Fraction(0)]*z
+        for d in range(2, z+1):
+            norm = 2**d
+            weight = Fraction(numerator(norm), norm-1)
+            choices = [comb(counts[d], k)*weight**k for k in range(min(counts[d], z//d)+1)]
+            coeff = [sum(val*coeff[i-k*d] for k, val in enumerate(choices[:i//d+1]))
+                     for i in range(z+1)]
+        return sum(coeff)
+
+    g = sum_products(lambda norm: 1)
+    absolute = sum_products(lambda norm: 1+norm)/g
+    return 1/g, absolute**2
 
 
 def fourier_count(n, block, radius, base, cutoff, prime_count, paired=False):
     """Count primitive polynomials using the radial Fourier weights and the small-factor sieve."""
-    if not odd_prime(n) or n <= (11 if paired else 4):
-        raise ValueError("the prime degree must exceed the degree of every sieve factor")
-    if not 0 < 2 * block < n or not 0 <= radius <= block or base < 1:
-        raise ValueError("invalid block, frequency radius or base")
-    free = n - 1 - 2 * block
+    if not 0 <= radius <= block or base < 1:
+        raise ValueError("invalid frequency radius or base")
     frequency = [
         isqrt(base**(2 * (radius - j)) * (factorial(radius) // factorial(radius - j)))
         for j in range(radius + 1)
     ]
+    return frequency_count(n, block, frequency, cutoff, prime_count, paired=paired)
+
+
+def frequency_count(n, block, frequency, cutoff, prime_count, *, paired=False, selberg=None):
+    if not odd_prime(n) or n <= (selberg or (11 if paired else 4)):
+        raise ValueError("the prime degree must exceed the degree of every sieve factor")
+    if not 0 < 2*block < n or not 1 <= len(frequency) <= block+1 or min(frequency) < 0 or not any(frequency):
+        raise ValueError("invalid coefficient block or Fourier frequencies")
+    if selberg is not None and (selberg < 2 or paired):
+        raise ValueError("choose one small-factor sieve with degree at least two")
+    free = n - 1 - 2 * block
+    radius = len(frequency)-1
     maximum = sum(comb(block, j) * g for j, g in enumerate(frequency))**2
     tails = [extension_tails(free, parity) for parity in (0, 1)]
     mass = 0
@@ -158,7 +192,11 @@ def fourier_count(n, block, radius, base, cutoff, prime_count, paired=False):
         overweight += weight_mass * tails[1 - i % 2][first_bad]
     assert mass == (1 << block) * sum(comb(block, j) * g*g for j, g in enumerate(frequency))
 
-    if paired:
+    if selberg is not None:
+        constant, absolute = selberg_constants(selberg)
+        error = character_error(block, free, cutoff, squared, 2*selberg+1)
+        bad = ceil(constant*overweight + absolute*error)
+    elif paired:
         bad = paired_factor_bound(block, free, cutoff, squared, overweight)
     else:
         # The six irreducibles of degrees 2, 3 and 4 give a modulus of degree 20.
@@ -209,6 +247,13 @@ def main():
         assert bound > 2**exponent
         print(f"degree {n}, weight <= {cutoff}, at most {count} order primes")
         print(f"  at least {bound} primitive polynomials (> 2^{exponent})")
+
+    # A radial frequency vector for the squarefree-divisor sieve.
+    frequency = [87562546122, 22856382314, 5849044663, 1460837027, 354444590, 83157868,
+                 18776391, 4059835, 835957, 162853, 29770, 5050, 783, 108, 13, 1]
+    bound = frequency_count(n, 508, frequency, 309, 19, selberg=20)
+    assert bound > 2**616
+    print(f"degree {n}, weight <= 309, at least {bound} primitive polynomials (> 2^616)")
 
 
 if __name__ == "__main__":
