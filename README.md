@@ -222,6 +222,13 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
+The large-degree table gives candidate pentanomials, the complete proposed factor list for each field order, and identifiers for the external primality certificates. NTL tested irreducibility and each listed factor-index power during the search. To check one row independently, choose a degree and run the command below. It verifies the integer certificates with PARI/GP and the polynomial powers with FLINT. The cache retains a downloaded chain after it passes verification. To check just the factor product and polynomial powers, use `--powers-only`. [Large-degree table](data/mers-project-large-orders.json) · [Verifier](scripts/check_mers_project_orders.py)
+
+```bash
+uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py \
+  --table data/mers-project-large-orders.json --degree 17698 --fetch-to /tmp/gf2fun-prime-proofs
+```
+
 The degree-1229 elliptic pentanomial with interior taps $(136,683,819)$ and its reciprocal share one order. Seven projected logarithms of relative degrees $2,6,13,15,15,16,17$ determine it. The smallest input is the degree-eight binary mask `0x15f`. The other six can be expanded into smaller factors. The combined task then has 4,404 logarithms, all of relative degree at most 15. The checker exports the targets and coefficients. Add `--logs answers.csv` with columns `mask,exponent` to verify any subset. A complete set gives the exact index, and index one proves both pentanomials primitive. [Seven inputs](data/degree-1229-elliptic-split-seven.json) · [Proof](results.pdf#page=187)
 
 ~~~sh
