@@ -17,7 +17,7 @@ twisted_frobenius_two(b) = {
 \\ Return the class number, ordinary two-ray class number, and order of
 \\ the quotient of the ray class group by the image of Frobenius minus two.
 twisted_ray_quotient(p, d) = {
-  if(!isprime(p) || p%8 != 5 || znorder(Mod(2,p)) != p-1 || (p-1)%d || d < 2,
+  if(p < 5 || !isprime(p) || znorder(Mod(-2,p)) != p-1 || d < 2 || (p-1)%d,
     error("ineligible prime or subfield degree"));
   my(f = if(((p-1)/2)%d == 0, p, 3*p));
   my(field = galoissubcyclo(f, [-1, lift(Mod(2,f)^d)], 2, 'y));

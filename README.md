@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **A ray class group gives a full-order criterion for the twisted cyclotomic family.** For a prime $p\ge5$ with $-2$ primitive modulo $p$, choose $2^j\equiv\pm3\bmod p$. A root of $D_p$ is primitive exactly when $\gcd(2^{(p-1)/2}-1,2^j-3)=1$ and Frobenius minus two maps the ordinary ray class group modulo two of $\mathbb Q(\zeta_{3p})^+$ onto itself. Individual primes can be tested in smaller subfields. A cubic field detects the factor seven in the root-order index of the degree-2,052 pentanomial. Direct powering agrees in 325 root tests and 195 Gauss period tests across 253 ray groups. [Proof](results.pdf#page=247) · [Certified computations](scripts/check_twisted_ray.py)
+
 - **The minimum weight in degree 3,927 is three.** Of the 1,963 reciprocal pairs of trinomials, ten are irreducible and five are primitive. The smallest tap giving full order is 367. Cubing the five primitive trinomial roots gives five pentanomial pairs, and $X^{3927}+X^{113}+X^{101}+X^{12}+1$ is another primitive pentanomial. The order tests use all 29 prime divisors of $2^{3927}-1$. [Proof and exact orders](results.pdf#page=245) · [Reproduce the certificates](scripts/check_3927_thirds.py)
 
 - **Lean certifies five-term irreducibles in degrees $2^{141}+4$ and $2^{191}+4$.** For odd $k\ge3$, the polynomial $X^{2^k+4}+X^{2^k+1}+X^{2^k}+X^5+1$ is irreducible exactly when $2^k+5$ is prime and $-2$ has full order modulo that prime. At $k=191$ its root order is at least $2^{2^{96}}$. The full multiplicative orders of these two roots remain open. Across $20<n\le 2^{191}+4$, just five candidates up to reciprocity remain for a primitive polynomial of weight at most five with a nonidentity binary projective symmetry of its roots. [Proof](results.pdf#page=241) · [Lean certificates](GF2Sparse/TwistedCyclotomic.lean) · [Reproduce the order and factor checks](scripts/check_translation_lift_orders.py)
@@ -832,7 +834,7 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_cubi
 lake build GF2Sparse.TwistedCyclotomic
 ~~~
 
-The ray class checker compares the Frobenius action on an ordinary ray class group modulo two with direct binary powering. The sample covers 160 number fields and 229 prime-index tests. At $p=2053$, a cubic field detects the factor seven in the index of the degree-2052 pentanomial.
+The ray class checker compares the Frobenius action on an ordinary ray class group modulo two with direct binary powering. The sample covers 253 number fields, with 325 prime-index tests for the twisted roots and 195 for the Gauss periods. At $p=2053$, a cubic field detects the factor seven in the index of the degree-2052 pentanomial.
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --case 2053 3
