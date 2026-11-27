@@ -832,6 +832,13 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_cubi
 lake build GF2Sparse.TwistedCyclotomic
 ~~~
 
+The ray class checker compares the Frobenius action on an ordinary ray class group modulo two with direct binary powering. The sample covers 160 number fields and 229 prime-index tests. At $p=2053$, a cubic field detects the factor seven in the index of the degree-2052 pentanomial.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --case 2053 3
+uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --jobs 4
+~~~
+
 To reproduce the optimal normal basis classification, run the finite orbit and order checks and the formal coefficient bound.
 
 ~~~sh
