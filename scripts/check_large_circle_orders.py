@@ -63,12 +63,13 @@ def mersenne_prime(n):
 
 def check_prime_order(n, interiors):
     """Check the Mersenne prime and the full polynomial power at every support."""
-    mersenne_prime(n)
-    stages = make_stages(n)
     for taps in interiors:
         if (len(taps) not in (1, 3) or list(taps) != sorted(set(taps))
                 or not 0 < taps[0] <= taps[-1] < n):
             raise ValueError(f"invalid interior exponents for degree {n}: {taps}")
+    mersenne_prime(n)
+    stages = make_stages(n)
+    for taps in interiors:
         # n iterations of v -> X*v^2 starting at 1 give X^(2^n-1).
         if advance(1, n, [n, *taps, 0], stages, n) != 1:
             raise ArithmeticError(f"full power failed for degree {n} and taps {taps}")
@@ -147,7 +148,13 @@ if __name__ == "__main__":
     selection.add_argument("--degree", type=int, help="check one archived order from the large-degree tables")
     selection.add_argument("--mersenne-prefix", action="store_true",
                            help="verify the five-term bound at the first 33 Mersenne prime exponents")
+    selection.add_argument("--pentanomial", nargs=4, type=int, metavar=("N", "A", "B", "C"),
+                           help="check a new sparse witness of prime group order, with A < B < C")
     args = parser.parse_args()
+    if args.pentanomial:
+        n, *taps = args.pentanomial
+        check_prime_order(n, [taps])
+        raise SystemExit(0)
     prefix = {int(n): taps for n, taps in json.loads((DATA / "mersenne-exponent-prefix.json").read_text()).items()}
     if args.mersenne_prefix:
         check_mersenne_prefix(prefix)
@@ -168,7 +175,7 @@ if __name__ == "__main__":
     prime_order = {
         # Kumada et al., Keio report KSTS/RR-98/009 (1998), Table 2.
         86243: [(11754, 50942, 62833), (19434, 41667, 64043)],
-        216091: [prefix[216091]],
+        216091: [prefix[216091], (3, 10, 130)],
     }
     for n, triples in prime_order.items():
         if args.degree is None or args.degree == n:

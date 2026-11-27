@@ -17685,19 +17685,21 @@ and the two full replays use
 \label{sec:mersenne-216091}
 
 \begin{theorem}
-The polynomial
+Both polynomials
 \[
-       F(X)= X^{216091}+X^{68}+X^{26}+X^{13}+1
+ X^{216091}+X^{68}+X^{26}+X^{13}+1,\qquad
+ X^{216091}+X^{130}+X^{10}+X^3+1
 \]
-is primitive over \(\F\). Five is the minimum weight in this degree.
+are primitive over \(\F\). Five is the minimum weight in this degree.
 \end{theorem}
 \begin{proof}
-Put \(n=216091\) and \(M=2^n-1\). Lucas--Lehmer gives final residue
+Let \(F\) be either displayed polynomial. Put \(n=216091\) and
+\(M=2^n-1\). Lucas--Lehmer gives final residue
 zero, proving \(M\) prime. Starting from \(v=1\), apply
 \(v\gets Xv^2\bmod F\) exactly \(n\) times. Packed binary polynomial
-arithmetic gives final residue one, so \(F\mid X^M-1\).
-This computation is independent of the NTL irreducibility test
-that found the support. To see why the two residues suffice,
+arithmetic gives final residue one in both cases, so \(F\mid X^M-1\).
+These computations are
+independent of the NTL irreducibility tests that found both supports. To see why the two residues suffice,
 \(X^M-1\) is squarefree and \(F(1)=1\). Any root of \(F\) therefore
 has order \(M\). Its degree is \(n\), since \(2^j-1<M\) for
 \(0<j<n\). Hence \(F\) is its minimal polynomial.
@@ -17711,6 +17713,9 @@ This is also \href{https://maths-people.anu.edu.au/~brent/pd/rpb212.pdf}
 {Brent and Zimmermann, Theorem 6.1, case A}.
 \end{proof}
 
+The two reciprocals give two further distinct primitive pentanomials,
+since the inverse of a root of order \(M\) also has order \(M\).
+
 \paragraph{Consecutive Mersenne prime exponents.}
 There is now a witness with at most five terms for each of the first
 33 exponents in the \href{https://www.mersenne.org/primes/}{GIMPS table},
@@ -17719,7 +17724,8 @@ All 31 other degrees have explicit pentanomials. One set of interior
 exponents per degree is in \nolinkurl{data/mersenne-exponent-prefix.json}.
 For example, the cube of the known degree-44,497 trinomial root adds
 the two intermediate exponents 20,549 and 32,523 between 8,575 and
-44,497, by Section~\ref{sec:short-trinomial-powers}.
+44,497, by Section~\ref{sec:short-trinomial-powers}. Lean verifies
+the resulting pentanomial in \nolinkurl{GF2Sparse/LargeTrinomialSamples.lean}.
 
 The option \texttt{--mersenne-prefix} of
 \nolinkurl{scripts/check_large_circle_orders.py} checks the first
@@ -17728,5 +17734,127 @@ two it reduces the proposed pentanomial at a power of a published
 primitive trinomial root and tests coprimality of the power, as in
 Section~\ref{sec:large-trinomial-samples}. The degree-216,091 checks
 can be run separately with \texttt{--degree 216091}.
+
+\clearpage
+\section{Can a power of an almost primitive trinomial root have five terms?}
+\label{sec:almost-power-windows}
+
+\href{https://maths-people.anu.edu.au/~brent/pd/rpb212.pdf}
+{Brent and Zimmermann, Tables 1 and 2}, give 32 trinomials
+\(T=X^{n+\delta}+X^s+1=HF\) with a specified small cofactor \(H\)
+and a primitive degree-\(n\) factor \(F\). These include degrees
+where every trinomial is reducible. If \(r\) is a root of \(F\),
+we consider the six binary fractional linear transformations of
+\(r^e\) for \(1\le e\le n\).
+
+\begin{theorem}
+In these 32 source cases, this construction produces pentanomials
+only in degrees 8 and 13. There are fourteen distinct pentanomials
+in degree 8, of which ten are primitive, and two in degree 13,
+both primitive. Every image from the other 29 sources has
+at least seven terms. For the published degree-216,091 source,
+all images have at least 17 terms. The two translated families
+and their reciprocals have at least 33.
+\end{theorem}
+
+\paragraph{A general lower bound.}
+Let \(C_m(U)\) be the monic polynomial whose roots are the
+\(m\)-th powers of the roots of a monic binary polynomial \(U\),
+with multiplicities. For any such trinomial factorization with
+\(\deg H=\delta>0\), and any odd positive \(m\),
+\[
+             \operatorname{wt}(C_m(F))
+             \ \ge\ \left\lceil\frac{n+\delta}{m\delta}\right\rceil .
+\]
+To prove this, split the exponents of \(C_m(F)\) at consecutive
+gaps larger than \(\delta\). If there is one group containing all
+\(w\) exponents, then \(n\le(w-1)\delta\). Otherwise let the end
+groups have sizes \(u,v\), so \(u+v\le w\). Multiplying each
+group by \(C_m(H)\) yields disjoint intervals, with both endpoints
+nonzero. Consequently the first and last exponent gaps of
+\(C_m(T)\) are at most \(u\delta\) and \(v\delta\).
+Put \(D=n+\delta\). The product of \(T(\zeta X)\) over
+\(\zeta^m=1\) is \(C_m(T)(X^m)\). Any nonconstant term in the
+product has degree at least \(s\), and any nonleading term has
+degree at most \(mD-(D-s)\). Thus the two end gaps of \(C_m(T)\)
+sum to at least \(D/m\), proving the bound. At degree 216,091 it
+gives at least 18,009 terms for the initial primitive factor.
+
+\paragraph{Computing 64 coefficients of a power image.}
+The even part of \(e\) acts by Frobenius, giving 3,013,378 odd
+powers across the 32 source trinomials. All the powered roots have
+degree \(n\), since their orders are at least
+\((2^n-1)/n>2^{\lfloor n/2\rfloor}-1\) for \(n\ge 8\). The six
+fractional linear transformations preserve the generated field.
+We need only the original minimal polynomial, its translate by
+one, and the translate of its reciprocal. The other three are
+their reciprocals.
+
+Use monic integer lifts of \(T,H\) with constant one and let
+\(S_k\) be the difference of their root power sums. For a lift with
+reciprocal \(P(Z)\) these sums are the coefficients of
+\(-ZP'(Z)/P(Z)\). Thus the sparse lifts give linear recurrences.
+For the \(m\)-th powers the ghost components (power sums) are
+\(S_{mk}\). The quotient of the two reciprocal power polynomials
+over the integers has an integral series expansion. Its binary
+reduction is the reciprocal of \(C_m(F)\), by multiplicativity
+of the root-power operation.
+
+Write the integer series uniquely as
+\(\prod_{j\ge1}(1-Z^j)^{b_j}\) by eliminating the coefficients
+in ascending order. Logarithmic differentiation gives
+\(S_{mk}=\sum_{j\mid k} j b_j\). For \(j=2^v u\) with \(u\) odd,
+M\"obius inversion gives
+\[
+ u^{-1}\sum_{d\mid u}\mu(u/d)S_{m2^v d}
+     =\sum_{h=0}^v 2^h b_{2^h u}.
+\]
+Modulo two the factors for a fixed odd \(u\) combine by repeated
+squaring. Hence bit \(v\) of the displayed integer selects the
+factor \(1+Z^j\) in the binary series. For \(j<64\) the calculation
+needs the power sums only modulo 64. Reciprocal input gives the
+opposite end of the same polynomial.
+
+\paragraph{A weight bound from both ends after translation.}
+For a polynomial \(G\), let \(A\) consist of the known leading
+terms and the constant term if it lies outside that window. Then
+\[
+ \operatorname{wt}(G)\ge \operatorname{wt}(A)
+   +\operatorname{wt}\big((G-A)\bmod(X^{64}-1)\big).
+\]
+Each nonzero residue coefficient needs a distinct remaining term.
+When \(G=J(X+1)\), the leading coefficients of \(J\) give those
+of \(G\) by Lucas' binomial criterion. Its trailing 64 coefficients
+give \(G\bmod(X^{64}-1)\), since \((X+1)^{64}=X^{64}+1\).
+Applying this bound in both orientations and counting the original
+end windows leaves 72,336 power and transformation pairs. Fourteen
+are in degrees 8 and 13, where the windows give the complete
+polynomials. Among the other degrees only 9941, 21701 and 1398269
+require more coefficients.
+
+\paragraph{Finishing the remaining powers.}
+In all 72,322 remaining pairs, the exponent is divisible by the
+order of \(X\) modulo \(H\). Hence \(C_m(H)=(X+1)^\delta\) and
+\(C_m(T)(X+1)=X^\delta C_m(F)(X+1)\). The two sides have the
+same weight after dropping the monomial factor. This holds for
+reciprocal input as well.
+
+For an independent longer window use \(P=1+Z^a+Z^D\), where
+\(a=s\) or \(D-s\). In the coefficient of \(-ZP'/P\) at
+\(Z^{mk}\), a pair \(i,j\ge0\) with \(ia+jD=mk\) contributes
+\[
+   (-1)^{i+j}\left(
+      a\binom{i+j-1}{j}+D\binom{i+j-1}{i}\right),
+\]
+with a binomial equal to zero when its lower index exceeds the
+upper one. These are all contributions by geometric expansion.
+Ordinary integer Newton identities give the corresponding
+coefficients of the reciprocal of \(C_m(T)\). Translating the
+leading window gives at least six terms in every remaining case
+using at most 4096 positions. The public verifier also compares
+the coefficients with full binary companion matrices for all odd
+powers in the source degrees through 128. The source data and
+calculation are \nolinkurl{data/almost-trinomial-power-windows.csv}
+and \nolinkurl{scripts/check_almost_trinomial_powers.py}.
 
 \end{document}
