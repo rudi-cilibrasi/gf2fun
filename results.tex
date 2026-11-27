@@ -21406,4 +21406,51 @@ signatures without reconstructing every degree-17029 polynomial.
 The degree, support and certificate source are recorded in
 \nolinkurl{data/cyclotomic-order-witnesses.json}.
 
+\clearpage
+\section{The exact exceptional weight in degree 17029}
+\label{sec:complete-spectrum-17029}
+Let \(s=418879343\), \(n=17029\) and \(P=(2^n-1)/s\) as in
+Section~\ref{sec:trace-prefix-17029}. The least weight of a
+degree-\(n\) irreducible whose roots have order indivisible by
+\(P\) is exactly \(8279\). Precisely two such polynomials attain
+this weight, and they are reciprocal. All irreducibles of degree
+\(n\) and smaller weight therefore carry the 5118-digit factor.
+\[
+\begin{array}{l|r|r|r|r}
+ \text{polynomials} & \text{number} & \text{least weight} &
+ \text{number at minimum} & \text{greatest weight}\\ \hline
+ f(X)\ \text{with roots of order }s & 24598 &8279&2&8749\\
+ f(X+1)\ \text{for the same }f & 24598 &8241&1&8757
+\end{array}
+\]
+The two sets of polynomials are disjoint. Allowing all six binary
+fractional linear transformations of the roots gives minimum weight
+8241. Indeed inversion permutes the first set, and reversing a
+polynomial preserves its weight. The original set, its translates
+and the reciprocals of those translates account for all six maps.
+
+\begin{proof}
+Since \(2^n-1=sP\), a degree-\(n\) root missing \(P\) has prime
+order \(s\). For each of the \((s-1)/n=24598\) binary conjugacy
+classes, the power sums of the first \(2n\) consecutive exponents
+give its degree-\(n\) minimal recurrence. The enumerator recovers
+the polynomial from that recurrence, or by reciprocation for the
+inverse class.
+
+The census verifies that all returned monic polynomials have degree
+\(n\), are distinct and divide \(X^s+1\). This certifies completeness
+independently of the reconstruction: \(X^s+1\) is squarefree,
+with the linear factor \(X+1\) and exactly that many degree-\(n\)
+factors because \(\operatorname{ord}_s(2)=n\). The verifier also
+checks that each translated polynomial divides \((X+1)^s+1\) and
+that translating it back gives its original. It counts coefficients
+and tests the translated set for membership in the original set.
+\end{proof}
+The complete histograms are in
+\nolinkurl{data/cyclotomic-weight-spectra.json}.
+The \nolinkurl{--check-factors} option of
+\nolinkurl{scripts/cyclotomic_weight_census.cpp} uses modular powers
+for the individual divisibility checks. The combined order and
+spectrum verifier is \nolinkurl{scripts/check_cyclotomic_weights.py}.
+
 \end{document}

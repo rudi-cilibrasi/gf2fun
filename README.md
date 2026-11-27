@@ -10,7 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **In degree 17,029, every irreducible binary polynomial with at most eleven terms has a 5,118-digit prime in its root order.** The pentanomial $X^{17029}+X^{560}+X^2+X+1$ is primitive, and every trinomial is reducible. The proof checks the first 64 power sums of all 24,598 conjugacy classes in the only subgroup that could miss the large prime. [Proof](results.pdf#page=295) · [Witness and factors](data/cyclotomic-order-witnesses.json) · [Trace verifier](scripts/cyclotomic_weight_census.cpp)
+- **In degree 17,029, the least weight of an irreducible that can miss the 5,118-digit prime in the field order is exactly 8,279.** Exactly two of the 24,598 irreducibles in the exceptional subgroup attain this weight. The minimum primitive weight is five, with witness $X^{17029}+X^{560}+X^2+X+1$. [Complete distribution and proof](results.pdf#page=296) · [Weight spectra](data/cyclotomic-weight-spectra.json) · [Order certificate](data/cyclotomic-order-witnesses.json)
 
 - **The minimum primitive weight is five in degrees 3,837, 5,509 and 8,371, and three in degrees 5,785, 7,673 and 20,591.** In degree 7,673 the unique primitive trinomial up to reciprocation is $X^{7673}+X^{120}+1$. The four primitive trinomial taps up to reciprocation in degree 20,591 are 5,400, 6,435, 7,652 and 9,090. Each degree also has an explicit primitive pentanomial. [Witnesses and complete order factorizations](data/cyclotomic-order-witnesses.json) · [First five degrees](results.pdf#page=292)
 
@@ -890,10 +890,10 @@ lake build GF2Sparse.ScalarOrderBound
 lake env leanchecker GF2Sparse.ScalarOrderBound
 ~~~
 
-To reproduce the three prime-degree weight distributions, compile the enumerator with NTL and run the verifier with PARI/GP available.
+To reproduce the four prime-degree weight distributions, compile the enumerator with NTL and run the verifier with PARI/GP available. Add `--degree 17029` to check that degree alone.
 
 ~~~sh
-c++ -std=c++17 -O3 scripts/cyclotomic_weight_census.cpp -lntl -lgmp -o /tmp/gf2-cyclotomic-weights
+c++ -std=c++17 -O3 -fopenmp scripts/cyclotomic_weight_census.cpp -lntl -lgmp -o /tmp/gf2-cyclotomic-weights
 uv run --no-project --with python-flint==0.9.0 python scripts/check_cyclotomic_weights.py --census /tmp/gf2-cyclotomic-weights
 ~~~
 

@@ -1,5 +1,5 @@
 // Weights of all binary irreducible factors of Phi_s for a prime s.
-// Usage: cyclotomic_weight_census [--prefix-bound] degree s interior_tap [interior_tap ...]
+// Usage: cyclotomic_weight_census [--prefix-bound | --check-factors] degree s interior_tap [...]
 #include <NTL/GF2XFactoring.h>
 #include <NTL/ZZ.h>
 #include <algorithm>
@@ -131,7 +131,25 @@ static void prefix_bound(long n, long s, const std::vector<long>& trace,
               << ",\"minimum_weight_at_least\":" << minimum << "}\n";
 }
 
-static void census(long n, long s, const GF2X& field, bool prefix_only) {
+static void check_factors(long s, const std::vector<GF2X>& polynomials,
+                          const std::vector<GF2X>& translations) {
+    GF2X shifted_x;
+    NTL::SetCoeff(shifted_x, 0);
+    NTL::SetCoeff(shifted_x, 1);
+    std::vector<unsigned char> valid(polynomials.size());
+#ifdef _OPENMP
+#pragma omp parallel for schedule(dynamic, 16)
+#endif
+    for (long i = 0; i < static_cast<long>(polynomials.size()); ++i) {
+        valid[i] = NTL::IsOne(NTL::PowerXMod(s, NTL::GF2XModulus(polynomials[i])))
+                   && NTL::IsOne(NTL::PowerMod(shifted_x, s, NTL::GF2XModulus(translations[i])))
+                   && translate(translations[i]) == polynomials[i];
+    }
+    if (std::find(valid.begin(), valid.end(), 0) != valid.end())
+        throw std::runtime_error("a polynomial failed the cyclotomic divisibility or translation check");
+}
+
+static void census(long n, long s, const GF2X& field, bool prefix_only, bool individual) {
     if (n < 2 || s <= n || s >= NTL_SP_BOUND || prime_factors(s) != std::vector<long>{s}
             || (s - 1) % n || !has_order(2, n, s))
         throw std::invalid_argument("s must be a prime for which 2 has the specified degree");
@@ -184,6 +202,7 @@ static void census(long n, long s, const GF2X& field, bool prefix_only) {
     const long bytes = n / 8 + 1;
     std::unordered_set<std::string> keys;
     for (const auto& f : polynomials) keys.insert(encode(f, bytes));
+    if (keys.size() != polynomials.size()) throw std::runtime_error("repeated minimal polynomial");
     std::map<long, long> weights, translated_weights;
     std::vector<GF2X> translations;
     translations.reserve(count);
@@ -196,16 +215,19 @@ static void census(long n, long s, const GF2X& field, bool prefix_only) {
         translations.push_back(std::move(shifted));
     }
 
-    // This identity independently certifies the entire list. Every root of Phi_s
-    // has degree ord_s(2)=n, and Phi_s is squarefree.
-    GF2X product = product_tree(std::move(polynomials));
-    if (deg(product) != s - 1 || NTL::weight(product) != s)
-        throw std::runtime_error("factor product is not Phi_s");
-    // Phi_s(X+1) = ((X+1)^s+1)/X. Its exponents are the nonzero submasks of s minus one.
-    GF2X expected_shift;
-    for (long j = s; j > 0; j = (j - 1) & s) NTL::SetCoeff(expected_shift, j - 1);
-    if (product_tree(std::move(translations)) != expected_shift)
-        throw std::runtime_error("translated factor product is not Phi_s(X+1)");
+    if (individual) {
+        // Every nontrivial root has degree n. The (s-1)/n distinct monic divisors exhaust Phi_s.
+        check_factors(s, polynomials, translations);
+    } else {
+        GF2X product = product_tree(std::move(polynomials));
+        if (deg(product) != s - 1 || NTL::weight(product) != s)
+            throw std::runtime_error("factor product is not Phi_s");
+        // Phi_s(X+1) = ((X+1)^s+1)/X. Its exponents are the nonzero submasks of s minus one.
+        GF2X expected_shift;
+        for (long j = s; j > 0; j = (j - 1) & s) NTL::SetCoeff(expected_shift, j - 1);
+        if (product_tree(std::move(translations)) != expected_shift)
+            throw std::runtime_error("translated factor product is not Phi_s(X+1)");
+    }
     std::cout << "{\"degree\":" << n << ",\"prime\":" << s
               << ",\"additive_intersection\":" << additive_intersection << ",\"weights\":";
     print_histogram(weights);
@@ -216,8 +238,10 @@ static void census(long n, long s, const GF2X& field, bool prefix_only) {
 
 int main(int argc, char** argv) {
     try {
-        const bool prefix_only = argc > 1 && std::string(argv[1]) == "--prefix-bound";
-        const int first = prefix_only ? 2 : 1;
+        const std::string option = argc > 1 ? argv[1] : "";
+        const bool prefix_only = option == "--prefix-bound";
+        const bool individual = option == "--check-factors";
+        const int first = prefix_only || individual ? 2 : 1;
         if (argc < first+3) throw std::invalid_argument("supply degree, prime and interior exponents");
         long n = std::stol(argv[first]), s = std::stol(argv[first+1]);
         if (n < 2 || n >= s || s >= NTL_SP_BOUND) throw std::invalid_argument("invalid degree or prime");
@@ -231,7 +255,7 @@ int main(int argc, char** argv) {
                 throw std::invalid_argument("invalid interior exponent");
             NTL::SetCoeff(field, a);
         }
-        census(n, s, field, prefix_only);
+        census(n, s, field, prefix_only, individual);
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
         return 1;
