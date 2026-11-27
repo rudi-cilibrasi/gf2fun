@@ -17223,4 +17223,162 @@ The program \nolinkurl{scripts/check_affine_tap_span.py} factors the
 small trinomials, verifies their root orders, and computes all the
 minimal moduli by successive least common multiples.
 
+\section{Projective Frobenius and an order certificate in degree 4112}
+\label{sec:projective-4112}
+
+Let \(Q=256\), \(k=\mathbb F_{Q^2}\), and \(n=16(Q+1)=4112\).
+Put \(P(T)=T^{16}+T^6+T^4+T+1\).
+
+\begin{theorem}\label{thm:projective-4112}
+The binary polynomial \(F(X)=P(X^{257}+X)\) is primitive.
+It has eleven terms, with exponents
+\[
+  0,1,4,6,16,257,518,1028,1030,1542,4112 .
+\]
+The order certificate uses the primes \(3,5,17,257\) and 129
+projected power identities.
+\end{theorem}
+\begin{proof}
+Write \(M=2^n-1\), \(A=(Q+1)(Q^2-1)=3\cdot5\cdot17\cdot257^2\),
+and \(B=M/A\). The integers \(A,B\) are coprime.
+The checker verifies the degree-\(n\) Frobenius identity and the
+two proper-subfield gcds for \(n/2,n/257\), proving irreducibility.
+In \(E=\F[X]/F\) let \(r=X\bmod F\), \(a=r^{257}+r\), and
+\(H=\langle r\rangle\). The residue of \(T\) generates all
+65,535 nonzero residues modulo \(P\) in the power-basis calculation.
+Thus \(k=\F(a)\) and \([E:k]=257\).
+The four powers \(r^{M/p}\ne1\) for \(p\mid A\) prove that \(A\)
+divides \(|H|\). Hence \(H\) contains the kernel of the \(A\)-th
+power map, including \(k^\times\).
+
+For \(c\in k\) put \(L_c=r+c\), with \(L_\infty=1\).
+The equation \(r^Q=(r+a)/r\) induces the permutation
+\[
+  T(c)=a/(1+c^Q),\qquad T(1)=\infty,\qquad T(\infty)=0 .
+\]
+For \(c\ne1,\infty\) we have
+\(L_c^Q=(1+c^Q)L_{T(c)}/r\). For \(c=1\) the numerator is \(a\),
+and at infinity \(L_0/r=1\). Membership in \(H\) therefore
+propagates along each orbit of \(T\).
+There are 127 orbits of length 514, one of length 257, and one of
+length two. For one representative of each, the archived exponent
+\(e_c\) satisfies \(L_c^A=r^{A e_c}\). Direct modular powering
+checks all 129 identities. The kernel inclusion gives \(L_c\in H\)
+at the representatives, hence at all 65,537 directions.
+
+If \(H\) were proper, a nontrivial character \(\chi\) of \(E^\times/H\)
+would be trivial on \(k^\times\) and on every \(r+c\). It induces a
+primitive even Dirichlet character modulo the degree-257 minimal
+polynomial of \(r\) over \(k\). The factorization of its \(L\)-polynomial
+has one factor \(1-u\) and 255 other inverse roots of absolute value
+\(\sqrt{|k|}=256\). Comparing coefficients of \(u\) gives
+\[
+ \left|1+\sum_{c\in k}\chi(r+c)\right|\le 255\cdot256=65{,}280.
+\]
+The left side would be 65,537. This proves \(H=E^\times\).
+For the even-character factorization see
+\href{https://www.math.tau.ac.il/~rudnick/papers/KeatingRudnickIMRNfinal.pdf}
+{Keating and Rudnick, equations (3.34)--(3.38)}.
+\end{proof}
+
+\paragraph{Reconstructing the exponents.}
+For \(b\in k\) and \(v\in\mathbb F_Q^\times\) the circle
+\((c+b)^{Q+1}=v\) has \(Q+1\) points. At \(r\) its product satisfies
+\[
+ r\prod_{(c+b)^{Q+1}=v}(r+c)
+ =(1+b^Q)r^2+\bigl(a+b(1+b^Q)+v\bigr)r+ab.
+\]
+When this numerator splits over \(k\), its roots and the circle give
+a relation on linear factors. Work modulo \(B\), where constants
+disappear after the \(A\)-th power projection. The normalized exponents
+satisfy \(e_\infty=0\), \(e_0=1\), and \(e_{T(c)}=Qe_c+1\).
+After this substitution 265 rows give 128 invertible pivots modulo
+the entire 4,088-bit integer \(B\). The program
+\nolinkurl{scripts/solve_projective_4112.py} reconstructs the table.
+The independent powering check in
+\nolinkurl{scripts/check_projective_4112.py} suffices for the theorem.
+
+\paragraph{A five-term target.}
+Put \(S(X)=X^{4112}+X^{23}+X^{12}+X+1\) and \(t=X\bmod S\).
+The same irreducibility criterion proves that \(S\) is irreducible.
+Write \(M=DC\), where \(D\) is the product with multiplicities of
+the 23 distinct known prime factors and \(C\) is a coprime 539-digit
+cofactor. The checker proves the primality of the factors of \(D\),
+verifies \(t^{M/p}\ne1\) for each, and checks \(t^D\ne1\). Thus
+\(D\), a 2,322-bit integer, divides \(\ord(t)\).
+
+There is a certificate requiring just one further scalar modulo \(C\).
+The theorem gives \(r^D\) order exactly \(C\), and \(2\) has order
+\(4112\bmod C\) by the two proper-divisor tests. Its binary minimal
+polynomial \(h\) therefore has degree 4112. One evaluation
+\(h(r^D)=0\) identifies the archived monic polynomial of that
+degree. The root \(t\) is primitive if and only if some
+\(0\le e<C\) satisfies \(h(t^{De})=0\). Indeed, any root of \(h\)
+has order \(C\), and when \(t\) is primitive its \(D\)-th power
+generates the subgroup of order \(C\). The option
+\texttt{--target-exponent} tests a submitted integer. An exponent
+for this pentanomial is still unknown.
+
+\begin{theorem}\label{thm:projective-five-obstruction}
+Let \(Q\) be a power of two and \(5\le d<Q\). In degree \(d(Q+1)\),
+a primitive binary polynomial whose root \(z\) satisfies a fractional
+linear relation for \(z^Q\) over \(k=\mathbb F_{2^d}\) has at least
+seven terms.
+\end{theorem}
+\begin{proof}
+The relative degree of \(z\) over \(k\) is \(Q+1\). Clearing the
+denominator gives its relative minimal polynomial up to a scalar,
+since the degree is at most \(Q+1\). Before substituting
+\((U,V)=(X,X^Q)\), its shape is
+\(g(U,V)=UV+bU+cV+e\) after normalization, with \(e\ne0\).
+The binary minimal polynomial is the product of the \(d\) coefficient
+conjugates of \(g\) under this substitution. The product has
+bidegree at most \((d,d)\), and \(i+Qj\) distinguishes its monomials
+since \(d<Q\). Its support can therefore be counted in two variables.
+
+An edge of the Newton polygon joining two support monomials of \(g\)
+contributes the product of the \(d\) conjugate edge binomials.
+If this product contains only its two endpoints, the ratio \(w\)
+of the original two coefficients satisfies
+\(\prod_{i=0}^{d-1}(Z+w^{2^i})=Z^d+1\).
+Evaluation at one forces \(w=1\), and then \((Z+1)^d=Z^d+1\)
+forces \(d\) to be a power of two.
+
+Suppose the absolute polynomial has at most five terms. If \(g\)
+has four terms, at least three of the four edges contain only their
+endpoints. The corresponding coefficient equalities force
+\(g=(U+1)(V+1)\), contradicting relative irreducibility.
+If \(g\) has three terms, at least one of its three edges has only
+its endpoints. Divide by the third monomial and scale by a constant
+to write \(g\) as a monomial times \(U'+V'+w\), where the exponent
+vectors of the Laurent monomials \(U',V'\) are independent.
+The coefficient \(w\) has degree \(d\) over \(\F\), since the
+\(d\) relative conjugates are distinct. If \(J\) is its binary
+minimal polynomial, the norm has the weight of \(J(U'+V')\).
+The contribution from each \(j\) in the support of \(J\) is
+\(2^{\operatorname{popcount}(j)}\), and distinct \(j\) give disjoint
+terms. The constant term contributes one and the leading term
+contributes two. An irreducible \(J\) of degree \(d>1\) has odd
+weight at least three, so weight at most five forces
+\(J(Y)=Y^d+Y^{2^h}+1\). For \(h>0\) this is a square. For \(h=0\),
+write \(d=2^u\). Every root satisfies \(w^{2^{2u}}=w\), whereas
+\(2u<2^u=d\) for \(d\ge8\). Both cases contradict irreducibility.
+Finally, with only two terms \(g=UV+e\), and \(z^{Q+1}\in k^\times\)
+forces \(\ord(z)\le(Q+1)(2^d-1)<2^{d(Q+1)}-1\). These cases
+exhaust the relative shapes. The binary irreducible has odd weight.
+\end{proof}
+
+\paragraph{Fifteen more five-term witnesses.}
+The table \nolinkurl{data/complementary-width-cyclotomic.csv}
+supplies primitive pentanomials in fifteen further degrees between
+3472 and 4032. In the latter degree the witness is
+\(X^{4032}+X^{2955}+X^{1077}+X^{92}+1\).
+Splitting the group orders into cyclotomic components and comparing
+their separate integer factors from \href{https://factordb.com/}{FactorDB}
+gives complete factorizations. The independent verifier checks 712
+prime-index powers and proves all 569 distinct integer factors prime,
+using 21 archived ECPP chains. Together with
+Section~\ref{sec:further-complementary}, the repository covers at
+least 2,650 positive degrees through 10,351.
+
 \end{document}
