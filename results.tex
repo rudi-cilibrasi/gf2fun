@@ -21353,4 +21353,57 @@ indices above follow independently from the verified field powers.
 checks, the full tap census and the image supports.
 \nolinkurl{scripts/count_3073_circles.cpp} reproduces the circle counts.
 
+\clearpage
+\section{A forced 5118-digit factor for low weights in degree 17029}
+\label{sec:trace-prefix-17029}
+Let \(n=17029\), \(s=418879343\), and \(P=(2^n-1)/s\).
+Both \(s\) and \(P\) are prime. Every irreducible binary polynomial
+of degree \(n\) and weight at most eleven has root order divisible
+by \(P\). Its root \(r\) is primitive exactly when \(r^P\ne1\).
+In particular,
+\[
+                  X^{17029}+X^{560}+X^2+X+1
+\]
+is primitive. The minimum primitive weight in this degree is five.
+
+\begin{proof}
+The factor table and archived PRIMO certificate prove the claimed
+factorization. The root in the displayed quotient passes both
+prime-index tests and the full group-order test. The exhaustive
+trinomial search finds no irreducibles in its 8,514 reciprocal classes.
+It remains to treat the possible subgroup of prime order \(s\).
+
+For an element \(\alpha\) of order \(s\), write \(f\) for its binary
+minimal polynomial and \(G(Z)=Z^nf(1/Z)\). With \(S_j\) the sum of
+the \(j\)-th powers of its conjugates, logarithmic differentiation
+in characteristic two gives
+\[
+                 \sum_{j\ge1}S_j Z^j = \frac{ZG'(Z)}{G(Z)}.
+\]
+Thus the first 64 power sums depend only on the first 64 coefficients
+after the constant term in \(G\). For each support of at most four
+terms in positions 1 through 64, form \(G_0=1+D\) with that support.
+Compute \(ZG_0'/G_0\bmod Z^{65}\) using the factors
+\(1+D^{2^i}\) for \(0\le i<6\): their product times \(1+D\)
+is \(1+D^{64}\), and the derivative numerator has zero constant term.
+
+Here \(\operatorname{ord}_s(2)=17029\), so there are 24,598
+Frobenius orbits. A generator \(g\) modulo \(s\) enumerates the
+cosets of \(\langle2\rangle\), and one trace per coset gives
+every \(S_j=\operatorname{Tr}(\alpha^j)\).
+None of the 24,598 signatures occurs in the enumerated support list.
+Each \(f\) therefore has at least five interior terms among its
+64 highest interior positions. Applying the same test to the
+reciprocal gives five more at the low end. Including the two endpoints
+gives at least twelve terms, and irreducibility forces the weight
+to be odd. Every polynomial whose root order is \(s\) consequently
+has weight at least thirteen. Since the full group order is \(sP\),
+the asserted criterion follows.
+\end{proof}
+The \nolinkurl{--prefix-bound} option of
+\nolinkurl{scripts/cyclotomic_weight_census.cpp} checks the trace
+signatures without reconstructing every degree-17029 polynomial.
+The degree, support and certificate source are recorded in
+\nolinkurl{data/cyclotomic-order-witnesses.json}.
+
 \end{document}

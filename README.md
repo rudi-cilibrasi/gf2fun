@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In degree 17,029, every irreducible binary polynomial with at most eleven terms has a 5,118-digit prime in its root order.** The pentanomial $X^{17029}+X^{560}+X^2+X+1$ is primitive, and every trinomial is reducible. The proof checks the first 64 power sums of all 24,598 conjugacy classes in the only subgroup that could miss the large prime. [Proof](results.pdf#page=295) · [Witness and factors](data/cyclotomic-order-witnesses.json) · [Trace verifier](scripts/cyclotomic_weight_census.cpp)
+
 - **The minimum primitive weight is five in degrees 3,837, 5,509 and 8,371, and three in degrees 5,785 and 7,673.** In degree 7,673 the unique primitive trinomial up to reciprocation is $X^{7673}+X^{120}+1$. Each of the five degrees also has an explicit primitive pentanomial. [Witnesses and complete order factorizations](data/cyclotomic-order-witnesses.json) · [Proof and tap lists](results.pdf#page=292)
 
 - **All eight irreducible trinomial pairs in degree 3,073 pass the five known prime-index tests.** Their powers give 23 distinct pentanomial pairs with the same respective orders. Each root index is one or exceeds ten billion. For tap 1,023 a rational parametrization yields 9,145,564 split norm circles at $q=1024$. The 791-digit cofactor is composite, and full primitivity remains open. [Proof and tap list](results.pdf#page=293) · [Order verifier](scripts/check_3073_trinomials.py) · [Circle census](scripts/count_3073_circles.cpp)
@@ -915,11 +917,13 @@ c++ -O3 -std=c++17 scripts/count_3073_circles.cpp -o /tmp/gf2-3073-circles
 /tmp/gf2-3073-circles 1024
 ~~~
 
-The additional cyclotomic table gives the five degrees from 3,837 to 8,371. With PARI/GP and the NTL development libraries installed, these commands verify the orders and repeat the exhaustive trinomial search.
+With PARI/GP and the NTL development libraries installed, these commands verify all orders in the additional cyclotomic table, repeat the exhaustive trinomial searches and reproduce the weight bound at degree 17,029.
 
 ~~~sh
 c++ -O3 -std=c++17 scripts/prime_degree_trinomials.cpp -lntl -lgmp -o /tmp/gf2-trinomials
 uv run --no-project --with python-flint==0.9.0 python scripts/check_composite_orders.py --table data/cyclotomic-order-witnesses.json --ntl /tmp/gf2-trinomials
+c++ -O3 -std=c++17 scripts/cyclotomic_weight_census.cpp -lntl -lgmp -o /tmp/gf2-cyclotomic-weights
+/tmp/gf2-cyclotomic-weights --prefix-bound 17029 418879343 1 2 560
 ~~~
 
 The Python command verifies all 22 composite degrees in the original witness table with PARI/GP. Add `--degree 24853` to check only that degree, or `--ntl` with the path to the compiled trinomial enumerator to repeat the exhaustive tap search. The Lean command builds the general norm criterion. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)

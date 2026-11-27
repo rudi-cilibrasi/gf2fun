@@ -1,7 +1,10 @@
 // Weights of all binary irreducible factors of Phi_s for a prime s.
-// Usage: cyclotomic_weight_census degree s interior_tap [interior_tap ...]
+// Usage: cyclotomic_weight_census [--prefix-bound] degree s interior_tap [interior_tap ...]
 #include <NTL/GF2XFactoring.h>
 #include <NTL/ZZ.h>
+#include <algorithm>
+#include <array>
+#include <cstdint>
 #include <iostream>
 #include <map>
 #include <stdexcept>
@@ -78,7 +81,57 @@ static void print_histogram(const std::map<long, long>& counts) {
     std::cout << '}';
 }
 
-static void census(long n, long s, const GF2X& field) {
+// Bit j-1 represents Z^j in ZG'/G through degree 64 for G with the prescribed taps.
+static std::uint64_t trace_prefix(const std::array<unsigned, 4>& taps, unsigned used) {
+    std::uint64_t trace = 0;
+    for (unsigned i = 0; i < used; ++i)
+        if (taps[i] % 2) trace |= std::uint64_t(1) << (taps[i]-1);
+    // If G=1+D, its inverse is the product of 1+D^(2^i) to this precision.
+    for (unsigned power = 1; power < 64; power *= 2) {
+        const auto previous = trace;
+        for (unsigned i = 0; i < used && taps[i]*power < 64; ++i)
+            trace ^= previous << (taps[i]*power);
+    }
+    return trace;
+}
+
+static void prefix_costs(std::unordered_map<std::uint64_t, unsigned>& cost,
+                         std::array<unsigned, 4>& taps, unsigned used) {
+    auto [position, inserted] = cost.emplace(trace_prefix(taps, used), used);
+    if (!inserted) position->second = std::min(position->second, used);
+    if (used == taps.size()) return;
+    for (unsigned j = used ? taps[used-1]+1 : 1; j <= 64; ++j) {
+        taps[used] = j;
+        prefix_costs(cost, taps, used+1);
+    }
+}
+
+static void prefix_bound(long n, long s, const std::vector<long>& trace,
+                         const std::vector<long>& shift) {
+    std::unordered_map<std::uint64_t, unsigned> cost;
+    std::array<unsigned, 4> taps{};
+    prefix_costs(cost, taps, 0);
+    const long count = trace.size();
+    std::vector<unsigned> ends(count);
+    for (long i = 0; i < count; ++i) {
+        std::uint64_t signature = 0;
+        for (long j = 1; j <= 64; ++j)
+            signature |= std::uint64_t(trace[(i + shift[j]) % count]) << (j-1);
+        auto match = cost.find(signature);
+        ends[i] = match == cost.end() ? taps.size()+1 : match->second;
+    }
+    unsigned minimum = 2 + 2*(taps.size()+1);
+    for (long i = 0; i < count; ++i) {
+        long reciprocal = n % 2 ? (i + count/2) % count : i;
+        minimum = std::min(minimum, 2 + ends[i] + ends[reciprocal]);
+    }
+    // The two endpoints are disjoint, and every irreducible here has odd weight.
+    if (minimum % 2 == 0) ++minimum;
+    std::cout << "{\"degree\":" << n << ",\"prime\":" << s << ",\"factors\":" << count
+              << ",\"minimum_weight_at_least\":" << minimum << "}\n";
+}
+
+static void census(long n, long s, const GF2X& field, bool prefix_only) {
     if (n < 2 || s <= n || s >= NTL_SP_BOUND || prime_factors(s) != std::vector<long>{s}
             || (s - 1) % n || !has_order(2, n, s))
         throw std::invalid_argument("s must be a prime for which 2 has the specified degree");
@@ -105,9 +158,14 @@ static void census(long n, long s, const GF2X& field) {
     }
 
     // Tr(z^(g^i*j)) equals the period at i+coset(j). At j=0 it is n mod 2.
-    std::vector<long> shift(2 * n);
-    for (long j = 0; j < 2 * n; ++j)
+    const long length = prefix_only ? 65 : 2*n;
+    std::vector<long> shift(length);
+    for (long j = 0; j < length; ++j)
         shift[j] = j % s ? coset.at(NTL::PowerMod(j % s, n, s)) : -1;
+    if (prefix_only) {
+        prefix_bound(n, s, trace, shift);
+        return;
+    }
     std::vector<GF2X> polynomials;
     polynomials.reserve(count);
     NTL::vec_GF2 sequence;
@@ -158,19 +216,22 @@ static void census(long n, long s, const GF2X& field) {
 
 int main(int argc, char** argv) {
     try {
-        if (argc < 4) throw std::invalid_argument("supply degree, prime and interior exponents");
-        long n = std::stol(argv[1]), s = std::stol(argv[2]);
+        const bool prefix_only = argc > 1 && std::string(argv[1]) == "--prefix-bound";
+        const int first = prefix_only ? 2 : 1;
+        if (argc < first+3) throw std::invalid_argument("supply degree, prime and interior exponents");
+        long n = std::stol(argv[first]), s = std::stol(argv[first+1]);
         if (n < 2 || n >= s || s >= NTL_SP_BOUND) throw std::invalid_argument("invalid degree or prime");
+        if (prefix_only && n <= 128) throw std::invalid_argument("disjoint 64-bit ends require degree above 128");
         GF2X field;
         NTL::SetCoeff(field, 0);
         NTL::SetCoeff(field, n);
-        for (int i = 3; i < argc; ++i) {
+        for (int i = first+2; i < argc; ++i) {
             long a = std::stol(argv[i]);
             if (a <= 0 || a >= n || NTL::IsOne(NTL::coeff(field, a)))
                 throw std::invalid_argument("invalid interior exponent");
             NTL::SetCoeff(field, a);
         }
-        census(n, s, field);
+        census(n, s, field, prefix_only);
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
         return 1;
