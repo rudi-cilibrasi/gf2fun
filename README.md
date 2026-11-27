@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Every sparse irreducible in degrees 1,637, 3,359 and 4,243 has a large certified prime in its root order.** The conclusion holds for all six binary fractional linear images of its root at weights below 733, 1,649 and 2,029, respectively. For the root itself the exact thresholds are 737, 1,683 and 2,029. The census multiplies all exceptional factors and their translates to verify both lists. [Proof](results.pdf#page=263) · [Weight distributions](data/cyclotomic-weight-spectra.json) · [Verifier](scripts/check_cyclotomic_weights.py)
+
 - **Thirteen additional composite degrees have certified primitive pentanomials.** In degree $16{,}129=127^2$, the only primitive trinomial taps up to reciprocity are 79 and 7,575. The minimum weight is also three in degrees 3,481 and 4,913, and five in the other ten, including 15,856. In degree 3,481 a 1,031-digit prime divides the root order of every irreducible, so primitivity reduces to a norm test in degree 59. [Lean proof of the norm criterion](GF2Sparse/PartialOrder.lean) · [Witnesses and order factorizations](data/composite-order-witnesses.json) · [ECPP archive](data/composite-order-prime-certificates.json.gz) · [Degree-16,129 certificate](data/degree-16129-primality.cert.gz) · [Proof](results.pdf#page=260)
 
 - **For $k=141$ and $191$, the prime $2^k+5$ divides the root order of the degree-$2^k+4$ pentanomial exactly once. The exact powers of three in those orders are 9 and 243.** The conductor-prime test uses binary quadratic forms and agrees with direct powering at all 125 eligible primes through 2,053. The powers of three follow unconditionally from two certified imaginary quadratic class numbers. [Conductor-prime proof](results.pdf#page=253) · [Powers of three](results.pdf#page=257) · [Class-number verifier](scripts/check_twisted_three_class.py)
@@ -828,6 +830,13 @@ For the five witnesses in degrees 7854 through 9576, each row gives the degree $
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
+~~~
+
+To reproduce the three prime-degree weight distributions, compile the enumerator with NTL and run the verifier with PARI/GP available.
+
+~~~sh
+c++ -std=c++17 -O3 scripts/cyclotomic_weight_census.cpp -lntl -lgmp -o /tmp/gf2-cyclotomic-weights
+uv run --no-project --with python-flint==0.9.0 python scripts/check_cyclotomic_weights.py --census /tmp/gf2-cyclotomic-weights
 ~~~
 
 The Python command verifies all thirteen composite degrees with PARI/GP. Add `--degree 16129` to check only the largest degree, or `--ntl` with the path to the compiled trinomial enumerator to repeat the exhaustive tap search. The Lean command builds the general norm criterion. [Trinomial enumerator](scripts/prime_degree_trinomials.cpp)
