@@ -172,7 +172,8 @@ def fourier_count(n, block, radius, base, cutoff, prime_count, paired=False):
     return frequency_count(n, block, frequency, cutoff, prime_count, paired=paired)
 
 
-def frequency_count(n, block, frequency, cutoff, prime_count, *, paired=False, selberg=None, two_ends=False):
+def frequency_statistics(n, block, frequency, cutoff, *, paired=False, selberg=None, two_ends=False):
+    """Return the peak weight, total middle-block mass and overweight irreducible majorant."""
     if not odd_prime(n) or n <= (selberg or (11 if paired else 4)):
         raise ValueError("the prime degree must exceed the degree of every sieve factor")
     if not 0 < 2*block < n or not 1 <= len(frequency) <= block+1 or min(frequency) < 0 or not any(frequency):
@@ -215,6 +216,12 @@ def frequency_count(n, block, frequency, cutoff, prime_count, *, paired=False, s
         error_numerator = mass << (free + len(degrees))
         bad += (error_numerator + error_denominator - 1) // error_denominator
 
+    return maximum, mass, bad
+
+
+def frequency_count(n, block, frequency, cutoff, prime_count, *, paired=False, selberg=None, two_ends=False):
+    maximum, mass, bad = frequency_statistics(n, block, frequency, cutoff, paired=paired,
+                                               selberg=selberg, two_ends=two_ends)
     order = (1 << n) - 1
     least_prime = 2 * n + 1
     denominator = least_prime << (2 * block)

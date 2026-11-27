@@ -15014,4 +15014,159 @@ heuristic. Reciprocation and some power maps give exact dependencies
 among their orders. A counterexample in degree 1229 would require
 every surviving pair to fail a prime-index test for some prime dividing \(C\).
 
+\section{The proportion of primitive polynomials in a restricted support}
+\label{sec:window-order-density}
+A counterexample in degree 1229 would force a single prime divisor of
+the remaining cofactor to exclude at least 21,305 of the 319,572
+surviving reciprocal pairs. Indeed assign one failing prime to each
+pair. There are at most 15 possible primes, and all conjugates and
+inverses fail the same prime test. Thus one proper subgroup would
+contain at least \(21{,}305\cdot2\cdot1229=52{,}367{,}690\) distinct
+roots of irreducible pentanomials. No independence assumption enters
+this count.
+
+There is also a deterministic test using several candidates.
+If 16 surviving roots can be chosen such that each pairwise quotient
+has full projection to the group of order \(C\), at least one of those
+roots is primitive. Otherwise two would fail the same prime test, and
+their quotient would fail it too. For comparison, take one root from
+each surviving reciprocal pair in a common field and let \(x\) be
+the certified primitive generator. Among the \(4{,}793{,}581\) multipliers
+\(x^{Kj}\), \(0\le j\le15\cdot319{,}572\), at least one makes all
+these roots primitive simultaneously. Every known prime projection is
+preserved. For each chosen root and each unknown prime \(\ell\), just
+one residue of \(j\bmod\ell\) gives failure, and the interval is
+shorter than every such prime. The resulting elements can have
+different minimal-polynomial weights. Lean verifies the subgroup-cover
+arguments and the bound of 21,305 pairs in
+\nolinkurl{GF2Sparse/SubgroupCover.lean}.
+\begin{theorem}
+Fix any interval of 680 consecutive positions among the 1228 interior
+coefficients in degree 1229. Count all irreducible binary polynomials
+with interior terms confined to this interval, weight at most \(w\),
+and roots passing the four known prime-index tests.
+The count exceeds \(2^e\), and the fraction of this set that is
+nonprimitive is strictly below \(\rho\), for the following parameters.
+\[
+\begin{array}{c|rrrrrr}
+w & 313&315&319&325&345&375\\
+e & 619&622&627&634&653&670\\
+\rho & 0.29 &0.037 &10^{-3} &10^{-5} &1.4\cdot10^{-11}&1.3\cdot10^{-16}
+\end{array}
+\]
+Every polynomial in the stated population counts once. In particular,
+with the cutoff of 319 terms, more than 99.9 percent of the survivors
+are primitive in each of the 549 possible windows. The five-term
+subsets of these populations still have unknown primitive counts.
+\end{theorem}
+\begin{proof}
+Put \(d=548,\ n=1229,\ N=2^n-1,\ S=1+\lfloor\sqrt N\rfloor\) and
+\(J=818085338814611458\). Write \(a+b=d\) for the numbers of zero
+coefficients at the low and high ends. For a prime \(\ell\mid N\),
+let \(H_\ell\) be the subgroup of index \(\ell\). Let \(V\) be the
+indicator of these prescribed coefficients on \(P_z\), the product of
+the \(n\) Frobenius-conjugate linear factors of \(z\). The normalized
+Fourier coefficients of its coset indicator on \(U_a\times U_b\)
+have total absolute value one and constant term \(2^{-d}\).
+The character expansion of the subgroup indicator also has total
+absolute value one. The two-ended character bound of
+Section~\ref{sec:two-ended-weight} gives
+\[
+  \sum_{z\in H_\ell}V(P_z)\ \le\ \frac{N}{2^d\ell}+dS.
+\]
+The cofactor \(C\) has at most 15 distinct prime divisors, all at
+least \(J\). Every failure among the four-test survivors lies in
+one of these subgroups. Each counted polynomial contributes \(n\)
+roots. This bounds the number of failures in the entire window by
+\[
+ U=\left\lceil\frac{15}{n}\left(\frac{N}{2^d J}+dS\right)\right\rceil.
+\]
+
+For the lower bound on the population use the radial Fourier weight
+of Section~\ref{sec:two-ended-weight} on the next \(a\) and \(b\)
+coefficients at the two ends of the window. The 132 central
+coefficients are free. For each cutoff the checker specifies a
+nonnegative integer frequency vector \(g\). Write \(Q\) for the sum of
+the squared transform over the \(d\)-bit block and \(M\) for its maximum.
+The resulting nonnegative weight has constant coefficient
+\(Q/2^{2d}\) and absolute Fourier mass at most \(M\).
+Use the unrestricted field sum and remove the four known subgroups
+by the union bound. The sum of the four reciprocal primes is less
+than \(1/20000\), so these five character estimates cost at most
+\(5(2d)SM\). The element one fails all four tests, and every remaining
+element has degree \(n\) since \(n\) is prime.
+
+Let \(B\) be the Selberg upper bound on the weight carried by
+irreducible polynomials above the cutoff, computed as in
+Section~\ref{sec:selberg-weight} at level 20. In any split of the
+window, \(\lfloor a/41\rfloor+\lfloor b/41\rfloor\ge12\) and
+\(\lfloor132/41\rfloor=3\). These are the lower bounds on both
+character-symbol counts in the weighted and free blocks used by the
+Krawtchouk estimate. Removing the overweight roots and dividing by
+the largest weight per polynomial gives the integer lower bound
+\[
+ D=\left\lfloor\frac{19999NQ/(20000\cdot2^{2d})-5(2d)SM-nB}{nM}\right\rfloor .
+\]
+The six integer calculations give \(D>2^e\) and \(U<\rho D\).
+\nolinkurl{scripts/check_1229_weight_density.py} uses exact rational
+sieve coefficients. The Lean kernel verifies the same strict inequalities
+with outward-rounded coefficients in \nolinkurl{GF2Sparse/SelbergWeight.lean}.
+\end{proof}
+
+The same method gives a lower bound on the primitive fraction in a
+family with two exact coefficient counts, in every sufficiently large
+degree \(n\). Put \(N=2^n-1\). Set the first \(d\) interior coefficients
+to zero, require exactly \(i\) ones in the next \(d\) positions, and
+exactly \(j\) ones in the remaining \(L=n-1-2d\) positions. There exist
+\(d,i,j\) for which every polynomial in this family has at most
+\(0.219245n\) terms. The family contains at least \(2^{0.5438n}\)
+irreducibles, and the fraction of those that are primitive is at least
+\[
+                     \frac{\varphi(N)}{N}-\frac{1}{n^2}.
+\]
+In prime degrees the fraction tends to one, with nonprimitive
+proportion \(O(\log n/n)\).
+
+Use \(r=1/36\), the parameters \(p,d,u\) and the Fourier weight
+from Theorem~\ref{thm:weight-entropy-rate}, for the zero interior
+template. Write \(\mu\) for the constant Fourier coefficient and
+\(M\) for the maximum weight. For every subgroup \(H\) of index \(h\),
+the weighted sum over \(H\) is \(N\mu/h+O(2d\sqrt{2^n}M)\).
+Relative to \(N\mu\) the error is \(O(n)2^{-\sqrt n}\) by the
+frequency support bound of that theorem. There are at most
+\(n2^{n/2}\) elements in proper subfields. Their total weight is
+at most \(n2^{n/2}M\), also negligible on this scale.
+
+Apply both Bonferroni inequalities to the union of the prime-index
+subgroups, truncating at the two consecutive integers starting at
+\(\lceil100\log(n+1)\rceil\). The intersection for a subset of primes
+has index equal to their product. For the corresponding main terms,
+the full inclusion-exclusion gives \(\theta=\varphi(N)/N\) for the
+complement. Since there are at most \(n\) primes and their reciprocals
+sum to \(S_0\le1+\log n\), the omitted terms have total absolute value
+bounded by \(\sum_{k\ge100\log(n+1)}S_0^k/k!=O(n^{-30})\).
+The \((n+1)^{O(\log n)}\) individual character errors still sum to
+\(o(n^{-30}N\mu)\). Thus the primitive fraction of the weight on the
+degree-\(n\) elements is \(\theta+O(n^{-30})\).
+
+In the normalized measure on polynomials, the irreducibles have mass
+\(\asymp1/n\), by the unrestricted sum and the \(n\) roots per
+irreducible. The product measure with middle-bit probability \(p\)
+and fair free bits differs from this measure in total variation by
+\(O(n^{-16})\). Passing to that measure and restricting to
+\(|i-pd|,|j-L/2|\le u\) changes the primitive fraction among
+irreducibles by \(O(n^{-15})\), using the binomial tails. Within each
+count pair the product measure is constant. The pairs whose ordinary
+primitive fraction is at least \(\theta-1/n^2\) carry at least
+\(1/(2n^2)\) of the irreducible mass in the windows for all large
+\(n\), by the bound on the average and the upper bound one on every
+fraction. Some such pair carries irreducible mass \(\gg n^{-5}\)
+under the product measure since there are at most \((n+1)^2\) pairs.
+Each polynomial there has probability \(2^{-sn+O(u)}\) with
+\(s>0.5438\), and weight \(2+i+j\le cn+O(u)\) with \(c<0.219245\),
+as evaluated in Theorem~\ref{thm:weight-entropy-rate}.
+Finally, if \(n\) is an odd prime then two has order \(n\) modulo
+each prime \(\ell\mid N\). The \(k\)-th such prime is at least
+\(2nk+1\), giving \(1-\theta\le(1+\log n)/(2n)\).
+
 \end{document}

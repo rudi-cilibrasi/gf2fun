@@ -71,31 +71,34 @@ private def positiveTails (n parity : ℕ) : List ℕ :=
   (List.range (n+1)).reverse.foldl (fun tails k =>
     (tails.head! + if k%2 = parity then Nat.fast_choose n k else 0) :: tails) [0]
 
-private def frequencyBound309 (millionths absolute : ℕ) : ℕ :=
+private def weightedCount (d cutoff middleMin freeMin millionths absolute
+    mainNum mainDen errorCount : ℕ) (weights : List ℕ) : ℕ :=
   let n := 1229
-  let d := 508
   let free := n-1-2*d
-  let terms := frequencies.zipIdx
+  let terms := weights.zipIdx
   let maximum := (terms.map fun (g,j) => Nat.fast_choose d j * g).sum ^ 2
   let mass := 2^d * (terms.map fun (g,j) => Nat.fast_choose d j * g^2).sum
-  let middle := characterMaxima d 12 false
-  let tail := characterMaxima free 5 true
+  let middle := characterMaxima d middleMin false
+  let tail := characterMaxima free freeMin true
   let even := positiveTails free 0
   let odd := positiveTails free 1
   let sums := (List.range (d+1)).foldl (fun (tot : ℕ × ℕ) i =>
-    let row := krawtchoukRow d i (frequencies.length-1)
-    let squared := ((List.zipWith (fun (g : ℕ) (k : ℤ) => g*k) frequencies row).sum).natAbs^2
-    let first := min (free+1) (309-1-i)
+    let row := krawtchoukRow d i (weights.length-1)
+    let squared := ((List.zipWith (fun (g : ℕ) (k : ℤ) => g*k) weights row).sum).natAbs^2
+    let first := min (free+1) (cutoff-1-i)
     let k := first + (1+i+first)%2
     let tails := if i%2 = 0 then odd else even
     (tot.1 + squared*Nat.fast_choose d i*tails.getD first 0,
      tot.2 + squared*middle.getD i 0*tail.getD k 0)) (0,0)
   let bad := (millionths*sums.1 + 999999)/1000000 + absolute*sums.2
   let order := 2^n-1
-  let denominator := (2*n+1)*2^(2*d)
-  let mainTerm := (2*n+1-19)*order*mass
-  let cost := 20*(2*d)*(order.sqrt+1)*maximum + n*bad
+  let denominator := mainDen*2^(2*d)
+  let mainTerm := mainNum*order*mass
+  let cost := errorCount*(2*d)*(order.sqrt+1)*maximum + n*bad
   (mainTerm-denominator*cost)/(denominator*n*maximum)
+
+private def frequencyBound309 (millionths absolute : ℕ) : ℕ :=
+  weightedCount 508 309 12 5 millionths absolute 2440 2459 20 frequencies
 
 /-- The level-20 bound when all prescribed coefficients are at one end. -/
 def count309 : ℕ := frequencyBound309 171067 10090475241
@@ -105,6 +108,34 @@ theorem primitiveCountArithmetic309 : 2^616 < count309 := by
 
 /-- The level-19 bound for every allocation of the prescribed coefficients to the two ends. -/
 theorem twoEndedCountArithmetic309 : 2^616 < frequencyBound309 178710 2753023822 := by
+  decide +kernel
+
+/-- Character weights for a window of 680 possible interior terms at sieve level 20. -/
+theorem window680CharacterWeights : ∀ a ∈ List.range 549,
+    12 ≤ a/41 + (548-a)/41 ∧ 3 ≤ 132/41 := by
+  decide +kernel
+
+private def window680FailureBound : ℕ :=
+  let indexFloor := 818085338814611458
+  let order : ℕ := 2^1229-1
+  let period := indexFloor*2^548
+  let denominator := 1229*period
+  (15*(order+548*(order.sqrt+1)*period)+denominator-1)/denominator
+
+/-- Cutoffs, frequency weights, population exponents and upper failure fractions. -/
+private def window680Cases : List (ℕ × List ℕ × ℕ × ℕ × ℕ) := [
+  (313, [338258387341,50052925585,6895969111,874342382,100279148,10121411,854553,52701,100],
+    619, 29, 100),
+  (315, [1312773419,185773167,24377617,2927119,315242,29457,2229,100], 622, 37, 1000),
+  (319, [185918844,23803765,2788558,293226,26826,2009,100], 627, 1, 1000),
+  (325, [39562098,4303710,417529,34924,2356,100], 634, 1, 100000),
+  (345, [94296071,4797761,160903,100], 653, 14, 10^12),
+  (375, [1], 670, 13, 10^17)]
+
+/-- Counts and conditional failure bounds using the four known prime tests. -/
+theorem window680DensityArithmetic : window680Cases.all (fun (w, g, e, num, den) =>
+    let lower := weightedCount 548 w 12 3 171067 10090475241 19999 20000 5 g
+    decide (2^e < lower ∧ den*window680FailureBound < num*lower)) = true := by
   decide +kernel
 
 end GF2Sparse.SelbergWeight
