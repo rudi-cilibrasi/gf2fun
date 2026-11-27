@@ -20499,6 +20499,9 @@ At \((i,j,h)=(2,9,3)\) there are four split pentanomials among 180
 supports, agreeing with direct factorization of \(X^{1533}+1\).
 \nolinkurl{scripts/check_odd_scalar_splits.py} enumerates the
 remaining degree pairs and reproduces the exclusion.
+\nolinkurl{data/odd-scalar-splits-2048.csv} records every case. The
+checker also independently reconstructs all support counts from the
+three residue classes and their two fixed endpoints.
 
 \clearpage
 \section{Four terms in seven progression positions exclude every odd-degree split}
@@ -20750,11 +20753,11 @@ Since \(u_1u_2\le nW\), one has \(S\le jnW\), proving \(5j<12iW\).
 
 Otherwise reorder so \(u_2=Ku_1\) for a power of two \(K\ge1\).
 If the singleton is an endpoint, the three scalar points normalize to
-\(1,y,y^K\); their sum cannot vanish in odd degree. For an interior
+\(1,y,y^K\), whose sum cannot vanish in odd degree. For an interior
 singleton, \(B=\ord(\beta)\) divides \(L_2-KL_1\) by Frobenius.
-This integer is nonzero: on the scalar side \(\alpha^{L_b}\) is 1
+On the scalar side \(\alpha^{L_b}\) is 1
 for the left-hand point and \(z^{u_b}\) for the right-hand point.
-Equality would give \(z^{u_2}=1\), contradicting distinctness. The
+Thus \(L_2=KL_1\) would give \(z^{u_2}=1\), contradicting distinctness. The
 ratios \(\beta^{e-c}\) all lie in \(\mathbb F_2(x^{u_1})\) in this
 case, so \(x^{u_1}\) has degree \(j\). It and its translate belong
 to the partner subgroup. Thus \(3j^2/4\le B\le(K+1)n\le Wn\),
@@ -20762,7 +20765,7 @@ which also gives the claimed strict bound.
 
 For \(W\le6\) the index differences are units and odd \(i\le5\),
 so any normalized exception would have \(n<360\). For \(W\le22\)
-and \(\gcd(n,6)=1\) the differences are again units; the scalar
+and \(\gcd(n,6)=1\) the differences are again units. The scalar
 census leaves only \(i=5\), giving \(n<1320\). The odd-degree census
 through 2048 excludes both ranges. For descent first make
 \(\gcd(m,W)=1\) by rescaling the step. Then the support gcd divides
