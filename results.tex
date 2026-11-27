@@ -13937,17 +13937,19 @@ Let \(h\) denote binary entropy. Fix \(0<r<1/2\) and put
 There is a choice \(d=\delta n+O_r(\sqrt{n\log n})\) with the
 following property. Set \(L=n-1-2d\) and \(u=4\sqrt{n\log n}\).
 Among monic binary polynomials of degree \(n\) with constant one,
-require coefficients \(1\) through \(d\) to vanish, the next \(d\)
-coefficients to have weight within \(u\) of \(pd\), and the last
-\(L\) interior coefficients to have weight within \(u\) of \(L/2\).
+fix any such polynomial \(f\) as a template. Require coefficients
+\(1\) through \(d\) to agree with \(f\), the next \(d\) coefficients
+to differ from \(f\) at \(pd\pm u\) positions, and the last \(L\)
+interior coefficients to differ at \(L/2\pm u\) positions.
 The base-two logarithm of the number of primitive polynomials in
-these windows is
+these windows, uniformly in \(f\), is
 \[
  L+d h(p)+O_r(\sqrt{n\log n})=sn+O_r(\sqrt{n\log n}).
 \]
-In particular, for every sufficiently large \(n\), at least
-\(2^{0.5438n}\) distinct primitive binary polynomials of degree \(n\)
-have at most \(0.219245n\) terms.
+In particular, for every sufficiently large \(n\), every template
+is within \(0.219245n\) coefficient changes of at least
+\(2^{0.5438n}\) distinct primitive polynomials. For the template
+\(X^n+1\), at least as many have at most \(0.219245n\) terms.
 \end{theorem}
 \begin{proof}
 Let \(a=\sqrt{(1-r)/r}\), \(b=\lfloor rd+u\rfloor\), and choose
@@ -13956,16 +13958,33 @@ Let \(a=\sqrt{(1-r)/r}\), \(b=\lfloor rd+u\rfloor\), and choose
  \frac{n/2-\sqrt n-7\log_2 n-u h'(r)}{1+h(r)}\right\rfloor .
 \]
 Use the Fourier transform \(A\) of
-\(a^{d-|y|}{\bf1}_{|y|\le b}\) on the middle block, as in
-Theorem~\ref{thm:fourier-weight}. The support has size at most
+\(a^{d-|y|}{\bf1}_{|y|\le b}\) as in
+Theorem~\ref{thm:fourier-weight}. Let \(v= f\bmod T^{d+1}\)
+be represented in degrees \(0,\ldots,d\), and let \(z\) be the
+template's middle vector. The first \(d\) coefficients agree with
+the template on the coset \(vH\) of the square-zero subgroup \(H\).
+In the coordinates \(v(1+T^{d+1}y)\) of this coset, the middle
+coefficient vector is \(B_v y\), where \(B_v\) is multiplication by
+\(v\bmod T^d\) on \(d\)-bit vectors. It is invertible because
+\(v(0)=1\). Give this coset the weight \(A(B_v y+z)^2\) and set
+the weight to zero elsewhere. Translating to the coset multiplies
+each character coefficient by a unit complex number. The invertible
+linear change permutes the dual characters of \(H\), and translating
+by \(z\) changes only their signs. Every character of \(H\) occurs
+equally often among restrictions from \(U_{2d}\). Hence the total
+mass \(Q\) and the sum of absolute Fourier coefficients are the
+same as for the zero template, uniformly in \(v,z\).
+
+The frequency support has size at most
 \(2^{dh(r)+uh'(r)}\) by the entropy bound and concavity. The same
 sieve therefore gives primitive-root weight
 \(\gg\theta NQ/2^{2d}\), where \(Q=\sum_x A(x)^2\),
 \(N=2^n-1\), and \(\theta\ge1/(n+1)\). Indeed the relative
 character error is \(O(n^2)2^{\sqrt n-n/2+(1+h(r))d+uh'(r)}
 =O(n^{-5})\). Each primitive polynomial has \(n\) roots. Thus under
-the probability measure assigning each polynomial mass
-\(A(x)^2/(Q2^L)\), the primitive event has probability \(\gg n^{-2}\),
+the probability measure assigning each polynomial in the coset
+mass \(A(x)^2/(Q2^L)\) for its middle difference vector \(x\), the
+primitive event has probability \(\gg n^{-2}\),
 since \(2d+L=n-1\).
 
 The untruncated transform is \(A_0(x)=(a+1)^{d-|x|}(a-1)^{|x|}\).
@@ -13975,17 +13994,19 @@ For two unit vectors \(v,w\), Cauchy--Schwarz gives
 \(\sum_x|v(x)^2-w(x)^2|\le2\|v-w\|_2\). Normalizing \(A,A_0\)
 therefore changes the squared-weight distributions by \(O(n^{-16})\)
 in total variation. Appending independent fair bits preserves this
-bound. The primitive event still has probability \(\gg n^{-2}\)
-under the product distribution with middle-bit probability
+bound, including after subtracting the free template bits.
+The primitive event still has probability \(\gg n^{-2}\)
+under the product distribution with middle-difference probability
 \((a-1)^2/(2(a^2+1))=p\). Hoeffding's inequality places all but
 \(O(n^{-32})\) of its mass in the two stated windows.
 
-A particular polynomial of middle weight \(i\) has probability
+A particular polynomial with \(i\) middle differences has probability
 \(2^{-L}p^i(1-p)^{d-i}\). For \(|i-pd|\le u\) its base-two logarithm
 equals \(-L-dh(p)+O_r(u)\). Dividing the primitive mass in the
 windows by the largest such probability proves the lower bound.
 Dividing one by the smallest proves the upper bound.
-The total weight there is at most \(2+pd+L/2+2u=cn+O_r(u)\).
+The distance to the template there is at most \(pd+L/2+2u=cn+O_r(u)\).
+For \(f=X^n+1\) the weight is two more than this distance.
 At \(r=1/36\), one has \(p=1/2-\sqrt{35}/36\),
 \(c=0.2192447139\ldots\) and \(s=0.5438379957\ldots\).
 The rational interval calculation in
