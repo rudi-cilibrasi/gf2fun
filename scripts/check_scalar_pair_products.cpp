@@ -8,6 +8,7 @@
 #include <array>
 #include <iostream>
 #include <limits>
+#include <numeric>
 #include <set>
 #include <stdexcept>
 #include <vector>
@@ -51,17 +52,45 @@ GF2X anchored_product(long c, long anchor, long h, long n, long q) {
     return level[0];
 }
 
-// Every input factor has constant coefficient one and odd weight, so the
-// linear factors of X^(2^q)+X cannot occur. The other factors have degree q.
-GF2X degree_q_part(const GF2X& f, long q) {
-    if (NTL::deg(f) < q) return GF2X(1);
-    NTL::GF2XModulus modulus(f);
-    GF2X x, y;
-    NTL::SetX(x);
-    y = x;
-    for (long j = 0; j < q; ++j) NTL::SqrMod(y, y, modulus);
-    return NTL::GCD(f, y+x);
+std::vector<long> maximal_subfields(long degree) {
+    std::vector<long> result;
+    long left = degree;
+    for (long p = 2; p <= left/p; ++p) {
+        if (left%p) continue;
+        result.push_back(degree/p);
+        do { left /= p; } while (left%p == 0);
+    }
+    if (left > 1) result.push_back(degree/left);
+    return result;
 }
+
+struct DegreeFactors {
+    long q;
+    std::vector<long> steps;
+
+    explicit DegreeFactors(long degree) : q(degree), steps(maximal_subfields(degree)) {
+        // X and X+1 cannot divide an input trinomial, which is nonzero at both points.
+        steps.erase(std::remove(steps.begin(),steps.end(),1),steps.end());
+        std::sort(steps.begin(),steps.end());
+    }
+
+    GF2X operator()(const GF2X& f) const {
+        if (NTL::deg(f) < q) return GF2X(1);
+        NTL::GF2XModulus modulus(f);
+        GF2X x,y;
+        NTL::SetX(x);
+        y = x;
+        GF2X smaller(1);
+        long done = 0;
+        for (long step : steps) {
+            while (done < step) { NTL::SqrMod(y,y,modulus); ++done; }
+            GF2X in_subfield = NTL::GCD(f,y+x);
+            smaller *= in_subfield / NTL::GCD(smaller,in_subfield);
+        }
+        for (; done < q; ++done) NTL::SqrMod(y,y,modulus);
+        return NTL::GCD(f,y+x) / smaller;
+    }
+};
 
 using Pair = std::array<long, 2>;
 
@@ -85,6 +114,23 @@ struct Counts {
     long interior_degree_q = 0;
     long endpoint_degree_q = 0;
     std::set<Support> splits;
+
+    void add(const Counts& other, long n, bool reflect) {
+        const long multiplier = reflect ? 2 : 1;
+        supports += multiplier*other.supports;
+        max_interior_gcd = std::max(max_interior_gcd,other.max_interior_gcd);
+        interior_degree_q += multiplier*other.interior_degree_q;
+        endpoint_degree_q += multiplier*other.endpoint_degree_q;
+        splits.insert(other.splits.begin(),other.splits.end());
+        if (reflect) {
+            for (const auto& support : other.splits) {
+                Support reciprocal;
+                for (size_t i = 0; i < support.size(); ++i)
+                    reciprocal[i] = n-support[support.size()-1-i];
+                splits.insert(reciprocal);
+            }
+        }
+    }
 };
 
 void record(const GF2X& roots, long q, long c, long r, long s, long h, long n,
@@ -104,28 +150,34 @@ void record(const GF2X& roots, long q, long c, long r, long s, long h, long n,
 }
 
 // These anchored factors are shared by every possible third residue.
-GF2X endpoint_candidates(long c, long h, long n, long q) {
+GF2X endpoint_candidates(long c, long h, long n, const DegreeFactors& factors) {
     long anchor = n-c;
     GF2X candidates;
     NTL::set(candidates);
     for (long a = anchor%h; a <= n; a += h) {
         if (a == anchor) continue;
-        GF2X roots = degree_q_part(odd_part(trinomial(c,a,anchor)),q);
+        GF2X roots = factors(odd_part(trinomial(c,a,anchor)));
         candidates *= roots / NTL::GCD(candidates,roots);
     }
     return candidates;
 }
 
-void check_singleton(long c, long third, long h, long n, long q,
-                     const std::array<GF2X,2>& endpoint_roots, Counts& counts) {
-    long endpoint = n%h;
+void check_singleton(long c, long third, long h, long n, const DegreeFactors& factors,
+                     const GF2X& endpoint_roots, Counts& counts) {
+    const long q = factors.q, endpoint = n%h;
     const long left = n/h, right = (n-endpoint)/h, free = (n-third)/h+1;
-    if (c != 0 && c != n) {
+    if (endpoint == 0) {
+        // Both endpoints exhaust one pair, leaving a free pair in the third residue.
+        counts.supports += NTL::to_ZZ(free)*(free-1)/2;
+        GF2X roots = factors(odd_part(trinomial(0,c,n)));
+        counts.endpoint_degree_q += NTL::deg(roots)/q;
+        record(roots,q,c,0,third,h,n,counts);
+    } else if (c != 0 && c != n) {
         counts.supports += NTL::to_ZZ(left)*right;
         GF2X a = anchored_product(c,0,h,n,q), b = anchored_product(c,n,h,n,q);
         GF2X g = NTL::GCD(a,b);
         counts.max_interior_gcd = std::max(counts.max_interior_gcd, NTL::deg(g));
-        GF2X roots = degree_q_part(g,q);
+        GF2X roots = factors(g);
         if (!NTL::IsOne(roots)) {
             ++counts.interior_degree_q;
             record(roots,q,c,0,endpoint,h,n,counts);
@@ -133,9 +185,8 @@ void check_singleton(long c, long third, long h, long n, long q,
     } else {
         long anchor = n-c;
         counts.supports += NTL::to_ZZ(anchor ? right : left)*free*(free-1)/2;
-        const GF2X& candidates = endpoint_roots[c == 0 ? 0 : 1];
-        counts.endpoint_degree_q += NTL::deg(candidates)/q;
-        record(candidates,q,c,anchor%h,third,h,n,counts);
+        counts.endpoint_degree_q += NTL::deg(endpoint_roots)/q;
+        record(endpoint_roots,q,c,anchor%h,third,h,n,counts);
     }
 }
 
@@ -143,36 +194,50 @@ int run(int argc, char** argv) {
     if (argc != 4) throw std::invalid_argument("expected p q h");
     long p = std::stol(argv[1]), q = std::stol(argv[2]), h = std::stol(argv[3]);
     if (p < 2 || q <= p || q > std::numeric_limits<long>::max()/p ||
-        h <= 1 || h > p*q || h%2 == 0 || p*q%h == 0 ||
-        !NTL::ProbPrime(NTL::to_ZZ(p)) || !NTL::ProbPrime(NTL::to_ZZ(q)) ||
+        h <= 1 || h > p*q || h%2 == 0 || std::gcd(p,q) != 1 ||
         NTL::PowerMod(NTL::to_ZZ(2),p,NTL::to_ZZ(h)) != 1)
-        throw std::invalid_argument("expected distinct prime degrees and a scalar order with distinct endpoint residues");
+        throw std::invalid_argument("expected coprime degrees p < q and a scalar order dividing 2^p-1");
+    for (long d : maximal_subfields(p))
+        if (NTL::PowerMod(NTL::to_ZZ(2),d,NTL::to_ZZ(h)) == 1)
+            throw std::invalid_argument("the scalar order must have full degree p");
     long n = p*q, endpoint = n%h, planes = 0;
     GF2X phi = cyclotomic(h);
     std::vector<std::array<long,2>> tasks;
-    for (long v = 1; v < h; ++v) {
-        if (v == endpoint || NTL::IsOne(NTL::GCD(phi,trinomial(0,endpoint,v)))) continue;
-        ++planes;
-        tasks.push_back({0,v});
-        tasks.push_back({n,v});
-        for (long c = v; c <= n; c += h) tasks.push_back({c,v});
+    for (long u = endpoint ? endpoint : 1; u < h; ++u) {
+        for (long v = endpoint ? 1 : u+1; v < h; ++v) {
+            if (v == u || NTL::IsOne(NTL::GCD(phi,trinomial(0,u,v)))) continue;
+            ++planes;
+            if (endpoint) {
+                tasks.push_back({0,v});
+                tasks.push_back({n,v});
+                for (long c = v; c <= n; c += h) tasks.push_back({c,v});
+            } else {
+                for (long c = v; c <= n; c += h) tasks.push_back({c,u});
+                for (long c = u; c <= n; c += h) tasks.push_back({c,v});
+            }
+        }
+        if (endpoint) break;
     }
-    const std::array<GF2X,2> endpoint_roots{endpoint_candidates(0,h,n,q), endpoint_candidates(n,h,n,q)};
+    const DegreeFactors factors(q);
+    GF2X endpoint_roots(1);
+    if (endpoint && !tasks.empty()) endpoint_roots = endpoint_candidates(0,h,n,factors);
+    // Reflection exchanges the endpoints and sends the singleton from c to n-c.
+    tasks.erase(std::remove_if(tasks.begin(),tasks.end(),[n](const auto& task) {
+        return task[0] > n/2;
+    }),tasks.end());
     Counts total;
     #pragma omp parallel
     {
         Counts local;
         #pragma omp for schedule(dynamic)
-        for (size_t i = 0; i < tasks.size(); ++i)
-            check_singleton(tasks[i][0], tasks[i][1], h, n, q, endpoint_roots, local);
-        #pragma omp critical
-        {
-            total.supports += local.supports;
-            total.max_interior_gcd = std::max(total.max_interior_gcd,local.max_interior_gcd);
-            total.interior_degree_q += local.interior_degree_q;
-            total.endpoint_degree_q += local.endpoint_degree_q;
-            total.splits.insert(local.splits.begin(),local.splits.end());
+        for (size_t i = 0; i < tasks.size(); ++i) {
+            long c = tasks[i][0];
+            Counts one;
+            check_singleton(c, tasks[i][1], h, n, factors, endpoint_roots, one);
+            local.add(one,n,c < n-c);
         }
+        #pragma omp critical
+        total.add(local,n,false);
     }
     std::cout << planes << ' ' << total.supports << ' ' << total.max_interior_gcd << ' '
               << total.interior_degree_q << ' ' << total.endpoint_degree_q << ' '

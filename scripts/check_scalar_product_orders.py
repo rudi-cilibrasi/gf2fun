@@ -57,7 +57,7 @@ def check_sparse_witness(n, row, gp, trinomials):
     masks = {int(d):int(mask,16) for d,mask in row["norm_polynomials"].items()}
     if set(masks) != {p,q}:
         raise ValueError("missing subfield norm")
-    verify_norm_embeddings(support,masks,gp)
+    verify_norm_embeddings(support,masks,gp,nontrivial_powers=(h*((1 << q)-1),))
     primes = row["known_large_subfield_primes"]
     cofactor = int(row["large_subfield_cofactor"])
     check_norm(masks[p],p,[h],1)
@@ -98,6 +98,8 @@ if __name__ == "__main__":
     rows = json.loads((DATA / "scalar-pair-products.json").read_text())
     if args.degree is not None and str(args.degree) not in rows:
         parser.error("degree is outside the table")
+    if scalar_counts(args.products,2,9,3) != [1,180,0,0,4,4]:
+        raise ArithmeticError("failed the composite-degree control from X^1533+1")
     if scalar_counts(args.products,2,5,3) != [1,45,5,2,2,4]:
         raise ArithmeticError("failed the positive control from the factorization of X^93+1")
     for key,row in rows.items():

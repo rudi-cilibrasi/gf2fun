@@ -19,7 +19,7 @@ TABLES = {
 }
 
 
-def verify_norm_embeddings(support, masks, gp):
+def verify_norm_embeddings(support, masks, gp, nontrivial_powers=()):
     """Verify irreducibility and the given annihilating polynomial at each norm."""
     n = support[-1]
     if any(m.bit_length() != d+1 for d, m in masks.items()):
@@ -28,6 +28,7 @@ def verify_norm_embeddings(support, masks, gp):
     terms = "+".join(f"x^{i}" for i in support)
     checks = [f'if(subst(Pol(binary({masks[d]})),x,r^((2^{n}-1)/(2^{d}-1)))!=0,'
               f'error("norm polynomial in degree {d}"));' for d in masks]
+    checks.extend(f'if(r^{e}==1,error("missing order component"));' for e in nontrivial_powers)
     program = (f'check()={{my(f=Mod(1,2)*({terms}),r);'
                'if(!polisirreducible(f),error("reducible input"));r=ffgen(f,\'z);'
                + "".join(checks) + 'print("verified")};\niferr(check(),E,print(E);quit(1));\n')

@@ -20452,4 +20452,51 @@ Each has a primitive norm and a proper root order.
 \nolinkurl{scripts/check_dyadic_scalar_lifts.py} independently
 multiplies the conjugate trinomials over the degree-\(K\) field.
 
+\clearpage
+\section{Removing the support-gcd hypothesis from two subfield exclusions}
+\label{sec:odd-scalar-descent}
+Let \(f\) be a binary irreducible of degree \(n\) and weight at most
+five with a split root \(r=\alpha\beta\) across coprime proper
+subfield degrees \(i,j\). For \(g\) the gcd of its exponents,
+write \(f(X)=F(X^g)\). Then \(F\) is irreducible of degree \(n/g\),
+has support of gcd one and has split root
+\(r^g=\alpha^g\beta^g\). Both new component degrees exceed one.
+Indeed \(\alpha^g=1\) would give \(f(\beta)=f(r)=0\) in a proper
+subfield, and likewise for \(\beta^g\). Their field degrees divide
+\(i,j\) respectively. Their multiplicative orders are coprime, so
+their product generates both components by powering and has field
+degree equal to the product of the two new degrees.
+
+In particular, if \(\gcd(n,30)=1\) and \(\min(i,j)\le1000\),
+no root of \emph{any} such sparse irreducible splits across this pair
+of subfields.
+Otherwise the smaller normalized component degree is at most 1000
+and divides \(n\). All eight degrees in
+Section~\ref{sec:scalar-composite-census} are divisible by 2, 3 or 5.
+This excludes every coprime partition of every \(n\le10^6\)
+coprime to 30.
+
+For odd \(n\le1200\) the same conclusion holds without the
+coprimality-to-30 restriction. The only normalized scalar degrees
+left are \(i=3,5,9\), with orders \(h=7,31,73\), respectively.
+The requirements \(3h\le ij\), \(9i\le4j\) and \(\gcd(i,j)=1\)
+leave 257 scalar cases in 230 distinct degrees. The product test
+counts 725,361,232 possible supports across those cases and finds
+no split. Descent by \(g\) includes supports of arbitrary gcd.
+
+For composite \(j\), first intersect the two-trinomial product gcd
+with \(X^{2^j}+X\). Remove by exact division the union of the factors
+in \(X^{2^{j/t}}+X\) for all primes \(t\mid j\). The remaining
+squarefree polynomial contains precisely the degree-\(j\) factors.
+When \(h\mid ij\), the endpoints exhaust a single pair. For each
+interior singleton \(c\), test the single trinomial \(1+X^c+X^{ij}\)
+and compare its degree-\(j\) factors with the other possible pairs.
+In both endpoint patterns, sending every exponent \(a\) to \(ij-a\)
+pairs a singleton \(c\) with \(ij-c\). The verifier computes one
+side of this reflection, reconstructing both sets of supports.
+At \((i,j,h)=(2,9,3)\) there are four split pentanomials among 180
+supports, agreeing with direct factorization of \(X^{1533}+1\).
+\nolinkurl{scripts/check_odd_scalar_splits.py} enumerates the
+remaining degree pairs and reproduces the exclusion.
+
 \end{document}
