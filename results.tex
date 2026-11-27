@@ -14236,4 +14236,47 @@ distinct integer primes. FLINT proves primality directly. A second
 verification uses the ten archived PARI elliptic-curve primality
 certificates for the largest factors, which have 2,086 to 3,347 bits.
 
+\section{Seven logarithms for the elliptic pair}
+\label{sec:elliptic-seven}
+For \(r\) a root of \(X^{1229}+X^{819}+X^{683}+X^{136}+1\) in
+the certified generator model, a new quotient satisfies
+\[
+                 r^{2^{499}}x^{1231523}=U(x)/V(x).
+\]
+Factoring its numerator and denominator over \(\F\) and subtracting
+the known projected logarithms leaves seven inputs. Their binary
+and relative degrees, with the latter measured over \(\mathbb F_{2^{20}}\),
+are
+\[
+\begin{array}{c|rrrrrrr}
+ \text{binary}&8&24&260&300&300&320&17\\
+ \text{relative}&2&6&13&15&15&16&17 .
+\end{array}
+\]
+The smallest input is \(T^8+T^6+T^4+T^3+T^2+T+1\).
+The archive \nolinkurl{data/degree-1229-elliptic-split-seven.json}
+contains the quotient, every mask and coefficient, and the known
+part of the logarithm. The verifier checks the full field identity.
+As in Section~\ref{sec:elliptic-eight}, determining all seven
+exponents gives the exact multiplicative index of both reciprocal
+pentanomials.
+
+The eight-input quotient of Section~\ref{sec:elliptic-eight} also
+admits a reduction of every input. The two cubic reductions are
+as before. Subfield pencils over \(\mathbb F_4\) and
+\(\mathbb F_{1024}\) reduce the factors of binary degrees 14 and 90
+to relative degrees at most three and eight, respectively.
+Four projective pencils halve the binary degrees \(120,220,360,380\)
+at indices \(6,36,56,44\). The source of the halving in
+Section~\ref{sec:dyadic-1229} is a projective
+\(\mathbb F_{1024}\)-line. Its points lie in the half field
+\(\mathbb F_{2^m}\) whenever \(10\mid m\). This applies at
+\(m=110,190\) as well as at \(m=60,180\). A child has binary
+degree dividing \(m\), hence relative degree dividing
+\(m/\gcd(m,20)\). At \(m=110,190\) the binary degree drops even
+when the relative degree stays the same. Direct field calculations
+verify all four identities and their combination with the other
+four reductions. The combined task has 5,391 distinct remaining
+logarithms, all of binary degree at most 190.
+
 \end{document}

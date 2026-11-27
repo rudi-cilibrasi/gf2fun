@@ -24,6 +24,7 @@ TARGET = (332, 726, 1089)
 SPLITS = {"6": "degree-1229-seventh-power-split-six.json", "9": "degree-1229-seventh-power-split.json",
           "degree-20": "degree-1229-seventh-power-degree20.json",
           "elliptic": "degree-1229-elliptic-split.json",
+          "elliptic-seven": "degree-1229-elliptic-split-seven.json",
           "elliptic-eight": "degree-1229-elliptic-split-eight.json"}
 
 
@@ -164,8 +165,9 @@ def main():
             row = {"source_taps": list(SOURCE), **json.loads(args.check_split.read_text())}
         else:
             row = json.loads((DATA / SPLITS[args.split]).read_text())
-            expected_source = ELLIPTIC_TAPS if args.split in ("elliptic", "elliptic-eight") else SOURCE
-            expected_count = {"6": 6, "9": 9, "degree-20": 6, "elliptic": 10, "elliptic-eight": 8}[args.split]
+            expected_source = ELLIPTIC_TAPS if args.split.startswith("elliptic") else SOURCE
+            expected_count = {"6": 6, "9": 9, "degree-20": 6,
+                              "elliptic": 10, "elliptic-seven": 7, "elliptic-eight": 8}[args.split]
             if tuple(row["source_taps"]) != expected_source or len(row["logarithms"]["remaining"]) != expected_count:
                 raise ArithmeticError("unexpected source or number of factor tasks")
         if tuple(row["source_taps"]) == SOURCE:

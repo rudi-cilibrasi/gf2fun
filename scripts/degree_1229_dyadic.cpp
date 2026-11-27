@@ -434,8 +434,9 @@ int run(int argc, char** argv) {
     while (std::cin >> mask) {
         if (mask <= 0) throw std::invalid_argument("invalid binary mask");
         GF2X parent = from_integer(mask);
-        if (deg(parent) < 40 || deg(parent) % 40 || !IterIrredTest(parent))
-            throw std::invalid_argument("expected a binary irreducible of degree divisible by 40");
+        // The source projective line needs F_1024 in the half field.
+        if (deg(parent) < 20 || deg(parent) % 20 || !IterIrredTest(parent))
+            throw std::invalid_argument("expected a binary irreducible of degree divisible by 20");
         GF2E::init(parent);
         if (terminal) {
             if (deg(parent) != 40) throw std::invalid_argument("terminal requires binary degree 40");
@@ -461,7 +462,8 @@ int run(int argc, char** argv) {
                 if (mode == "replay-lines") {
                     const auto& [a,b,c,d] = matrix;
                     bool infinity = IsZero(c) || frobenius(a,10)*c == a*frobenius(c,10);
-                    std::cout << mask << " " << 1025-infinity+deg(residual) << " " << target.m/20 << '\n';
+                    std::cout << mask << " " << 1025-infinity+deg(residual) << " "
+                              << target.m/GCD(target.m, 20L) << '\n';
                     continue;
                 }
             } else {

@@ -59,8 +59,8 @@ def halving_relation(mask, edges, field):
     """Verify the unprojected norm identity before extracting its logarithmic coefficients."""
     degree = mask.bit_length() - 1
     m = degree // 2
-    if degree % 40:
-        raise ValueError("the binary target degree must be divisible by 40")
+    if degree < 20 or degree % 20:
+        raise ValueError("the binary target degree must be divisible by 20")
     source = residual = polynomial(1)
     relation = Counter({2: m, 3: 2*m})  # h1 = T(T+1)^2
     inverse = pow(Q, -1, COFACTOR)
