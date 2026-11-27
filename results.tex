@@ -20082,7 +20082,7 @@ suppose \(v\ge u\). Then
 \[
  (c-a)-(u/v)(c-b)=(1-u/v)c+(u/v)b-a
 \]
-lies in \([-n,n]\); interchanging the pairs treats \(u>v\).
+lies in \([-n,n]\). Interchanging the pairs treats \(u>v\).
 There are at most \((q-1)D+1\) integer exponents in each of the
 \(uv\) classes. As \(A\max(u,v)\le n\) and \(uv\le n\max(u,v)\),
 \[
@@ -20119,12 +20119,59 @@ uses two auxiliary polynomials to keep the Euclidean divisions short.
 For a common root \(x\) and a signed representative
 \(t\equiv2^j\pmod A\), Frobenius gives \((1+x)^t=1+x^t\).
 Dividing an even \(t\) by two preserves this identity. For positive
-odd \(t>1\) use \((1+X)^t+1+X^t\); for \(t=-m<0\) use
+odd \(t>1\) use \((1+X)^t+1+X^t\). For \(t=-m<0\) use
 \((1+X)^m(1+X^m)+X^m\). Take the gcd of two such polynomials when
 available, then compute the gcd with the two original equations by
 modular powering. This preserves all common roots, and both original
 polynomials are squarefree. The calculation requires no factorization
 of the large Mersenne numbers.
 \end{proof}
+
+\paragraph{Even and composite partners.}
+Let \(n=ij\) with coprime \(i,j>1\), and suppose an irreducible of
+weight at most five has support of gcd one and a split root.
+Write \(i\) for the degree of the side on which the support powers
+span a plane, and \(A\) for its scalar order. Then \(i<j\).
+If \(i\) is odd, one again has
+\[
+                       3i^2/4\le A<12i^2/5 .
+\]
+Section~\ref{sec:scalar-support} supplies the lower bound and the two
+pairs. For equal gaps or gaps \(g,Kg\) with \(K\) a power of two, put
+\(z=\beta^g\). The four ratios \(\beta^{e-c}\) at paired exponents
+are \((1+z)^{-1},z/(1+z)\) and their \(K\)-th powers.
+Since \(0,c\) belong to the support and the support has gcd one, the
+differences \(e-c\) have gcd one. The ratios generate
+\(\langle\beta\rangle\), so \(z\) has degree \(j\). Both \(z,1+z\)
+belong to this group, giving \(B=\ord(\beta)\ge3j^2/4\). Equal
+gaps force \(B\mid b-a\) with \(0<|b-a|\le n-A<B\), an impossibility.
+If \(i\ge j\), then \(2A\ge3i^2/2>n\), forcing both gaps to equal
+\(A\). Thus the plane lies on the smaller side.
+
+For \(K>1\), suppose \(3A\ge4i^2\). Then
+\(K(n-g)<Kn\le n^2/g\le3j^2/4\le B\).
+As in Section~\ref{sec:dyadic-scalar-gaps}, this gives
+\(b+(K-1)c=Ka\). The three distinct scalar points, divided by the
+singleton, are therefore \(1,w,w^K\) with \(w=\alpha^{a-c}\).
+Their sum is zero. The absolute trace in the scalar field of odd
+degree \(i\) rules this out, including when \(j\) is even.
+
+For the other gap ratios, \(\beta^A\) still has degree \(j\).
+The signed-triple proof applies directly to odd \(j\). For \(j=2k\),
+allow a positive coordinate sum up to \(k\) and a negative magnitude
+sum up to \(k-1\). The differences have degree bounds \(2k-1<j\),
+and the linear form has range of length at most \((j-1)D\). In the
+count replace \(\binom kt\) by \(\binom{k-1}t\), giving
+\(S=j(5j^2+4)/12\). Thus \((5j^2+4)A\le12n^2\) in even degree.
+
+Consequently, for every prime \(7\le p\le10000\) and every integer
+\(m>p\) coprime to \(p\), no such root of degree \(pm\) lies in
+\(\mathbb F_{2^p}^{\times}\mathbb F_{2^m}^{\times}\).
+This also holds for every Mersenne prime exponent \(p\ge7\).
+For composite \(m\) the assertion concerns this specified pair of
+subfields. Lean verifies the signed-count formulas, the exponent
+interval and its numerical consequence, the prime-divisor step and
+positive Frobenius residue identities in
+\nolinkurl{GF2Sparse/ScalarOrderBound.lean}.
 
 \end{document}
