@@ -1,8 +1,10 @@
 """Verify the field embedding and subfield multiple for the degree-4112 pentanomial."""
 
+import argparse
 import json
 from collections import Counter
-from math import prod
+from math import gcd, prod
+from pathlib import Path
 
 from flint import fmpz_mod_poly_ctx, fq_default_ctx, fq_default_poly_ctx
 
@@ -131,16 +133,28 @@ def factor_product(factors, lead, field, ring):
     return result, sorted(degrees)
 
 
-def descend(record, field, ring, modulus, cofactor):
-    # The signed coefficients are exponents in the projected multiplicative group.
+def frontier(record, cofactor, fixed=(), cutoff=0):
     pending = Counter()
     for p, e in record["initial"]["factors"]:
         pending[tuple(p)] += e
     for relation in record["relations"]:
-        target = tuple(relation["target"])
-        weight = pending.pop(target, 0)
+        p = tuple(relation["target"])
+        if p in fixed or len(p)-1 <= cutoff:
+            continue
+        weight = pending.pop(p, 0)
         if not weight:
-            raise ValueError("relation does not eliminate a pending factor")
+            if not fixed and not cutoff:
+                raise ValueError("relation does not eliminate a pending factor")
+            continue
+        for side, multiplier in (("right", relation["a"]), ("left", -1)):
+            for factor, e in relation[side][1]:
+                pending[tuple(factor)] += weight*multiplier*e
+    return {p: weight % cofactor for p, weight in pending.items() if weight % cofactor}
+
+
+def descend(record, field, ring, modulus, cofactor):
+    for relation in record["relations"]:
+        target = tuple(relation["target"])
         a, b = relation["a"], relation["b"]
         if not 1 <= a < Q or a & (a-1) or not 0 <= b < M:
             raise ValueError("invalid Frobenius or torsion exponent")
@@ -151,15 +165,91 @@ def descend(record, field, ring, modulus, cofactor):
         h = ring([element(field, c) for c in target])
         if (h*lower - ring.gen()**b * upper.pow_mod(a, modulus)) % modulus:
             raise ValueError("invalid multiplicative descent identity")
-        for factors, multiplier in ((right, a), (left, -1)):
-            for p, e in factors:
-                pending[tuple(p)] += weight*multiplier*e
     if ORDER//cofactor % ((K-1)*M):
         raise ValueError("the projection must kill the coordinate and all constants")
-    return {p: weight % cofactor for p, weight in pending.items() if weight % cofactor}
+    return frontier(record, cofactor)
+
+
+def contribution_values(files, record, cofactor):
+    # Accept an ancestor as well as a leaf. A verified ancestor covers its entire subtree.
+    allowed = {tuple(p) for p, _ in record["initial"]["factors"]}
+    for relation in record["relations"]:
+        for side in ("left", "right"):
+            allowed.update(tuple(p) for p, _ in relation[side][1])
+    values = {}
+    for path in files:
+        sheet = json.loads(path.read_text())
+        if "cofactor" in sheet and sheet["cofactor"] != cofactor:
+            raise ValueError(f"incorrect cofactor in {path}")
+        for row in sheet["factors"]:
+            e = row["exponent"]
+            if e is None:
+                continue
+            p = tuple(row["coefficients"])
+            if p not in allowed or any(type(c) is not int for c in p):
+                raise ValueError(f"unrecognized factor in {path}")
+            if type(e) is not int or not 0 <= e < cofactor:
+                raise ValueError(f"invalid projected exponent in {path}")
+            if p in values and values[p] != e:
+                raise ValueError(f"conflicting exponents for {p}")
+            values[p] = e
+    if values:
+        f, x, y, embed = field_coordinate(record)
+        known = ORDER//cofactor
+        base = x.pow_mod(known, f)
+        for p, e in values.items():
+            value = 0*x
+            for c in reversed(p):
+                value = (value*y + embed(c)) % f
+            if value.pow_mod(known, f) != base.pow_mod(e, f):
+                raise ValueError(f"incorrect logarithm for {p}")
+    return values
+
+
+def task_sheet(record, cofactor, files, cutoff, output):
+    from check_4112_binomials import expand, orbits, read_rows
+
+    supplied = contribution_values(files, record, cofactor)
+    leaves = frontier(record, cofactor, supplied, cutoff)
+    linear = expand(read_rows()[1], orbits(ConstantField(), record["unit"]))
+    known_exponent = 0
+    remaining = []
+    for p, weight in sorted(leaves.items(), key=lambda item: (len(item[0]), item[0])):
+        if p in supplied:
+            e = supplied[p]
+        elif len(p) == 2:
+            e = linear[p[0]]
+        else:
+            signed = weight if 2*weight <= cofactor else weight-cofactor
+            remaining.append({"coefficients": p, "multiplier": signed, "exponent": None})
+            continue
+        known_exponent = (known_exponent + weight*e) % cofactor
+    if not remaining:
+        f, x, y, _ = field_coordinate(record)
+        t = polynomial(int(record["target_in_torsion_basis"], 16)).compose_mod(y, f)
+        known = ORDER//cofactor
+        if t.pow_mod(known, f) != x.pow_mod(known*known_exponent, f):
+            raise ValueError("the assembled exponent does not match the pentanomial")
+        print(f"Verified the assembled cofactor exponent. The target order has index "
+              f"{gcd(known_exponent, cofactor)} given its archived known-prime tests.")
+    if output:
+        sheet = {"cofactor": cofactor, "known_exponent": known_exponent, "factors": remaining}
+        output.write_text(json.dumps(sheet, indent=2) + "\n")
+    print(f"Accepted {len(supplied)} contributed logarithms. "
+          f"{len(remaining)} nonlinear factors remain at this cutoff.")
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--tasks", type=Path, help="write the unresolved factors and their signed weights to JSON")
+    parser.add_argument("--logs", type=Path, action="append", default=[],
+                        help="verify and incorporate filled exponents from a task sheet (repeatable)")
+    parser.add_argument("--max-degree", type=int, default=0,
+                        help="stop descent early when a factor reaches this degree")
+    args = parser.parse_args()
+    if args.max_degree < 0:
+        parser.error("--max-degree must be nonnegative")
+
     record = json.loads(DESCENT.read_text())
     known = prod(json.loads(TARGET.read_text())["known_prime_factors"])
     if ORDER % known or known % (2**(N//2)-1):
@@ -184,6 +274,8 @@ def main():
     census = Counter(len(p)-1 for p in leaves if len(p)>2)
     print(f"Verified {len(record['relations'])} descent identities. "
           f"The remaining nonlinear factors by degree are {dict(sorted(census.items()))}.")
+    if args.tasks or args.logs or args.max_degree:
+        task_sheet(record, ORDER//known, args.logs, args.max_degree, args.tasks)
 
 
 if __name__ == "__main__":

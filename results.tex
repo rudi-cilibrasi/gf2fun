@@ -17521,4 +17521,96 @@ over \(k\), so its binary minimal polynomial has at least seven
 terms by the obstruction in Section~\ref{sec:projective-4112}.
 \end{proof}
 
+\section{A quadratic reduction and a weight bound for trace translates}
+\label{sec:4112-traces}
+
+\begin{lemma}
+Let \(Q\) be a power of two, \(k=\mathbb F_{Q^2}\), and
+\(v^Q=w/v\) with \(w\ne1\) and \(w^{Q+1}=1\) in \(k\).
+In any multiplicative projection killing \(v\) and \(k^\times\),
+the logarithms of \(v+c\), \(c\in k\), determine all logarithms
+of \(v+v^{-1}+p\), \(p\in k\), whenever the elements are nonzero.
+\end{lemma}
+\begin{proof}
+Multiply the translate by \(v\) to obtain \(H(v)\) for
+\(H(Y)=Y^2+pY+1\). If \(H\) splits, use the two linear factors.
+Otherwise take \(b_0^{Q-1}=w\) in \(k\), and write
+\(s=p b_0^Q\). If \(s+s^Q\ne0\), put
+\[
+ b=b_0\frac{w+w^Q}{s+s^Q},\qquad h=w+b^{Q+1}+p b^Q .
+\]
+Then \(b^Q=wb\) and \(h^Q=h\). The circle identity of
+Section~\ref{sec:4112-binomials} has numerator \(b^QH(v)\).
+A zero radius would split that quadratic, so the radius is nonzero
+and all \(Q+1\) points are in \(k\).
+If \(s+s^Q=0\), then \(p^Q=wp\).
+The map \(c\mapsto c^Q+wc\) has kernel of size \(Q\) and
+its image is exactly the line \(d^Q=d/w\), which contains \(wp\).
+Thus
+\[
+ v\!\prod_{c^Q+wc=wp}(v+c)=v(v^Q+wv+wp)=w H(v).
+\]
+This also reduces the desired logarithm to linear factors.
+\end{proof}
+
+\begin{theorem}
+For \(1\le j\le256\) put \(z_j=y^j+y^{-j}\). Of the
+\(16{,}777{,}216\) distinct \(z_j+p\), \(p\in k\), exactly
+\(4{,}208{,}864\) are primitive. All \(16{,}711{,}680\) elements
+with \(p\notin\mathbb F_{256}\) have full projected order \(C\).
+Each of their binary minimal polynomials has at least 97 terms.
+\end{theorem}
+\begin{proof}
+In the relative basis,
+\(z_j=y^j+u^{-1}y^{257-j}\). This proves distinctness, including
+when the two indices are interchanged. The halfway involution fixes
+\(z_j\), hence the translates by \(p\in\mathbb F_{256}\) lie in
+\(E_0\). For any other \(p\), the translate lies in neither maximal
+proper subfield \(E_0\) nor \(k\), so has absolute degree 4112.
+The sixteen charts from Section~\ref{sec:4112-binomials} suffice
+here as well. The adjustment by a power of \(u\) can be realized by
+a \(k\)-Frobenius since \(v^{65536}/v\) has order 257.
+
+Define the Dickson polynomial by \(D_m(V+V^{-1})=V^m+V^{-m}\).
+For \(v=y^j\) and \(w=u^j\), the relative minimal polynomial of
+\(z_j+p\) is
+\[
+                    D_{257}(X+p)+w+w^{-1}.
+\]
+It has degree 257 and the element generates the relative extension.
+Its constant coefficient gives the relative norm.
+Using the lemma, the archived binomial logarithms and the two
+order tests of Section~\ref{sec:4112-binomials} gives the counts.
+Direct exponentiation also verifies an example of each of the three
+reductions in every chart.
+
+For the weight, multiply the sixteen binary conjugates of this
+relative polynomial. Changing \(w+w^{-1}\) first affects a
+coefficient 257 positions below the leading term. The leading 257
+coefficients therefore depend only on the binary orbit of \(p\).
+The recurrence \(D_{i+1}=XD_i+D_{i-1}\), \(D_0=0,D_1=X\),
+and Lucas' binomial criterion give those coefficients in each
+relative factor. Four successive multiplications by coefficientwise
+Frobenius conjugates, truncated in the reciprocal variable, give
+the leading binary coefficients. Across the 4,080 orbits of \(p\)
+the minimum number of ones in those positions is 96. The constant
+coefficient gives one more. The calculation is reproduced by
+\nolinkurl{scripts/check_4112_trace_translates.py}.
+\end{proof}
+
+\paragraph{Distributing the five-term computation.}
+A further 35 identities in the descent of Section~\ref{sec:4112-descent}
+eliminate all degree-ten and degree-eleven factors. Tracking signed
+multiplicities modulo \(C\) leaves 568 nonlinear factors. In degrees
+two through nine their respective counts are
+\(69,63,67,59,64,70,78,98\). The binomial table supplies all 133
+distinct linear factors left at this stage.
+The descent checker exports the known contribution, the monic
+factors and their multipliers. For a submitted factor \(H\) and
+exponent \(e\) it checks \(H(y)^D=(r^D)^e\) directly. A submitted
+logarithm of an earlier factor eliminates its entire subtree.
+When the sum is complete the checker verifies it against the
+embedded five-term root. Its greatest common divisor with \(C\)
+gives the exact index of the root order.
+
 \end{document}
