@@ -18050,4 +18050,124 @@ The first case was excluded above. In the second \(p\equiv5\pmod8\),
 so two is a quadratic nonresidue and \(2^{2n}\equiv-1\pmod p\),
 contrary to \(m\mid 2^{2n}-1\).
 
+\clearpage
+\section{All quadratic rational images of optimal normal bases}
+\label{sec:quadratic-optimal-images}
+
+\begin{theorem}
+Let \(a\) range over generators of binary optimal normal bases in all
+extension degrees, and \(R\) over binary rational functions of degree
+at most two. The possible degrees greater than one of a primitive
+minimal polynomial of \(R(a)\) with at most five terms are precisely
+\[
+                        2,3,4,5,6,9,11,23,30 .
+\]
+This includes images in proper subfields of the source field.
+At \(n=23,30\) the same map \(R(T)=(T+1)/T^2\) on a type-II
+generator gives respectively
+\[
+ X^{23}+X^{17}+X^{15}+X^3+1,\qquad X^{30}+X^{13}+X^6+X+1 .
+\]
+\end{theorem}
+
+\paragraph{A finite test for a fixed rational map.}
+Let \(F_n(T)\) be either \(1+T+\cdots+T^n\) for type I or the
+reciprocal period polynomial \(P_n\) for type II. For coprime binary
+\(N,D\), put
+\[
+         J_n(X)=\operatorname{Res}_T(F_n(T),N(T)+X D(T)).
+\]
+For any fixed map \(N/D\) and fixed weight bound \(w\), a finite
+automaton reading the binary digits of \(n\) decides
+\(\operatorname{wt}(J_n)\le w\). In particular one can decide whether
+infinitely many indices satisfy this weight bound, before imposing
+the conductor conditions.
+
+Here is the construction. Over an algebraic closure of
+\(\mathbb F_2(X)\), let \(s_1,\ldots,s_h\) be the roots, with
+multiplicity, of \(N+XD\) with leading coefficient \(a\). Then
+\(J_n=a^n\prod_i F_n(s_i)\). Each sequence \(F_n(s_i)\) has a
+two-dimensional transfer matrix with entries of degree at most one
+in \(s_i\). For type I the recurrence has coefficients \(s_i+1,s_i\);
+for type II they are \(s_i,1\). The tensor product of these matrices,
+scaled by \(a\), gives a recurrence of order at most \(2^h\).
+The coefficient at \(Z^j\) in its characteristic denominator
+\(\det(I-ZM)\) is \(a^j\) times a symmetric polynomial of degree
+at most \(j\) in each \(s_i\). It is polynomial in \(X\).
+Indeed, a symmetric polynomial of individual degree at most \(j\)
+can be expressed using products of at most \(j\) elementary symmetric
+functions. The usual leading-monomial elimination for exponents
+\(b_1\ge\cdots\ge b_h\) uses \(b_1\le j\) factors. Since each elementary
+symmetric function has denominator \(a\), the factor \(a^j\) clears
+all denominators. Hence
+\[
+        \sum_{n\ge0} J_n(X)Z^n=H(Z,X)/Q(Z,X),
+        \qquad H,Q\in\mathbb F_2[Z,X],\quad Q(0,X)=1 .
+\]
+
+Let \(\Lambda_{ij}\) retain coefficients at \(Z^{2k+i}X^{2l+j}\)
+and return them at \(Z^kX^l\). In characteristic two,
+\(\Lambda_{ij}(H/Q)=\Lambda_{ij}(HQ)/Q\). The new numerators have
+degree in each variable bounded by the larger of the corresponding
+degrees of \(H,Q\). Thus only finitely many occur. For a state \(G\)
+write \(v_G(n)\) for the weight of \([Z^n]G/Q\). Then
+\[
+ v_G(2n+i)=v_{\Lambda_{i0}(GQ)}(n)+v_{\Lambda_{i1}(GQ)}(n),
+ \qquad v_G(0)=\operatorname{wt}(G(0,X)).
+\]
+Clipping each component at \(w+1\) respects these updates, so the
+whole vector ranges over a finite set. Reading the digits from most
+significant to least computes the clipped weight of \(J_n\). A cycle
+reachable after the leading one and from which an accepting state is
+reachable gives infinitely many accepted indices. In the other case
+the paths leading to acceptance form a finite acyclic graph and can
+be enumerated exactly.
+
+\paragraph{The quadratic computation.}
+There are 24 reduced binary maps of degree two. Their numerators
+and denominators have degree at most two and at least one has degree
+two. They include the square of every degree-one map, which gives the
+same binary minimal polynomial. Write \(N+XD=aT^2+bT+c\). In type I the
+characteristic denominator factors as
+\[
+       Q=(1+aZ)(1+cZ)(1+bZ+acZ^2).
+\]
+Indeed the four eigenvalues are \(a,c,as_1,as_2\).
+In type II take \(u+u^{-1}=s_1\), \(v+v^{-1}=s_2\). The scaled
+eigenvalues are \(a u^{\pm1}v^{\pm1}\). Multiplication gives
+\[
+       Q=1+cZ+b^2Z^2+a^2cZ^3+a^4Z^4 .
+\]
+The four initial resultants determine \(H\). A type-I conductor
+\(n+1\) has two as a primitive root, hence as a quadratic nonresidue,
+so one can restrict the accepted words to \(n\equiv2,4\pmod8\).
+
+At weight bound five all 48 graphs have finitely many accepted words.
+Each type-I computation has at most 55 reachable digit states, including
+the residue modulo eight. Its possible indices are
+\(2,4,10,12,18,20,26\). The type-II computations have at most 128 states.
+The largest index before imposing the conductor conditions is 512.
+Primality and the required Frobenius orbit leave only
+\[
+\begin{array}{l|l}
+\text{source type}&\text{possible source degrees above one}\\ \hline
+\mathrm I& 2,4,10,12,18\\
+\mathrm {II}& 2,3,5,6,9,11,14,23,30.
+\end{array}
+\]
+For these cases compute \(R(a)\) in the field of its source polynomial,
+then its minimal polynomial and order. At a finite image its field has
+index at most two, since \(a\) satisfies \(N(T)+R(a)D(T)=0\).
+Thus \(J_n\) is the minimal polynomial or its square, and either has
+the same weight. In type I the primitive target degrees above one are
+\(2,4,5,6,9\), including the subfield images. In type II they are
+\(2,3,5,6,9,11,23,30\). The two degree-fourteen pentanomials have
+order 5461, one third of \(2^{14}-1\).
+The program \nolinkurl{scripts/check_quadratic_period_images.py}
+constructs every graph, compares its accepted indices through 512 with
+the direct resultant recurrence, and checks its sparse field images.
+Lean also verifies both degree-23 and degree-30 pullback divisibilities
+and both full multiplicative orders in
+\nolinkurl{GF2Sparse/GaussPeriodWeights.lean}.
+
 \end{document}

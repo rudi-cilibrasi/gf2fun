@@ -1,5 +1,6 @@
 import GF2Sparse.Certificate
 import GF2Sparse.ShiftWeight
+import Mathlib.Tactic.NormNum.Prime
 
 /-! Binary recurrences for Gauss period polynomials and their projective changes of variable. -/
 
@@ -301,6 +302,49 @@ theorem typeII_primitive_examples :
     (check_sound (factors := [3,3,7]) (by decide) (by decide +kernel : check 6 _ _ = true)).2.2,
     (check_sound (factors := [7,73]) (by decide) (by decide +kernel : check 9 _ _ = true)).2.2,
     (check_sound (factors := [23,89]) (by decide) (by decide +kernel : check 11 _ _ = true)).2.2⟩
+
+/-- Pull a sparse polynomial back along (X+1)/X² and clear its denominator. -/
+def quadraticPullback (n : ℕ) (exponents : List ℕ) : BinaryPoly :=
+  (exponents.map (fun i => X^(2*(n-i)) * (X+1)^i)).sum
+
+private def shiftedPower : ℕ → ℕ
+  | 0 => 1
+  | k+1 => let m := shiftedPower k; (m <<< 1) ^^^ m
+
+private theorem decode_shiftedPower (i : ℕ) : decode (shiftedPower i) = (X+1)^i := by
+  induction i with
+  | zero => simp [shiftedPower]
+  | succ i ih => simp only [shiftedPower, decode_xor, decode_shift, ih, pow_succ']; ring
+
+private def pullbackMask (n : ℕ) : List ℕ → ℕ
+  | [] => 0
+  | i :: rest => ((shiftedPower i) <<< (2*(n-i))) ^^^ pullbackMask n rest
+
+private theorem decode_pullback (n : ℕ) (taps : List ℕ) :
+    decode (pullbackMask n taps) = quadraticPullback n taps := by
+  induction taps with
+  | nil => simp [pullbackMask, quadraticPullback]
+  | cons i rest ih =>
+    simp only [pullbackMask, decode_xor, decode_shift_by, decode_shiftedPower, ih,
+      quadraticPullback, List.map_cons, List.sum_cons]
+
+theorem quadratic_period_witnesses :
+    (periodForm X 1 23 ∣ quadraticPullback 23 [0,3,15,17,23]) ∧
+    (periodForm X 1 30 ∣ quadraticPullback 30 [0,1,6,13,30]) ∧
+    Primitive (decode 0x828009) ∧ Primitive (decode 0x40002043) := by
+  refine ⟨⟨decode 0xffff4f, ?_⟩, ⟨decode 0x43003333, ?_⟩, ?_, ?_⟩
+  · rw [← (mask_forms 23).1, ← decode_maskProduct, ← decode_pullback]
+    exact congrArg decode (by decide +kernel)
+  · rw [← (mask_forms 30).1, ← decode_maskProduct, ← decode_pullback]
+    exact congrArg decode (by decide +kernel)
+  · have primes : ∀ p ∈ [47,178481], Nat.Prime p := by
+      intro p hp
+      simp at hp
+      rcases hp with rfl | rfl <;> norm_num
+    exact (check_sound primes
+      (by decide +kernel : check 23 _ _ = true)).2.2
+  · exact (check_sound (factors := [3,3,7,11,31,151,331]) (by decide +kernel)
+      (by decide +kernel : check 30 _ _ = true)).2.2
 
 end
 end GF2Sparse.GaussPeriod
