@@ -15264,4 +15264,59 @@ The program, its signed reference controls and the checked input loader
 are \nolinkurl{scripts/census_1229_power_transfers.cpp} and
 \nolinkurl{scripts/check_1229_power_transfers.py}.
 
+\section{Ten exterior-power tests for every degree-1229 candidate}
+\label{sec:1229-ten-products}
+Let \(r\) be a root of any of the 639,166 irreducible degree-1229
+pentanomials. All
+\[
+              \sum_{j=0}^5 {1229\choose j}=23{,}270{,}993{,}347{,}436
+\]
+products of subsets of at most five distinct conjugates are distinct.
+No product of one through ten conjugates equals one, even allowing
+repetitions.
+
+For the computation put \(n=1229\). Let \(p_3,p_4\) denote the
+two largest of the four known prime divisors of \(2^n-1\), in
+increasing order. For each of \(p=36{,}871\) and \(46{,}703\), put
+\(m=p p_3 p_4\). The order census proves that every candidate root
+has order divisible by at least one of these two values of \(m\).
+For a nonempty subset \(A\) of the \(n\) exponent indices, set
+\(v(A)=\sum_{i\in A}2^i\). Rotation multiplies the residue of
+\(v(A)\) modulo \(m\) by a power of two. The computation verifies that
+for \(1\le |A|\le5\), these residues are nonzero and representatives
+of different subset orbits are distinct even up to sign and rotation.
+
+To see how the verification works, write the positive cyclic gaps
+of each subset starting at a largest gap, breaking ties by the
+lexicographically largest rotation. As \(n\) is prime all these
+orbits have size \(n\). For sizes one through five the numbers of
+representatives are
+\[
+  1,\quad 614,\quad 251{,}126,\quad 76{,}970{,}119,\quad
+  18{,}857{,}679{,}155.
+\]
+For each nonzero small-prime residue \(v\bmod p\), a lookup table
+gives a sign and a rotation taking it to the least member of its
+signed orbit. Apply the same sign and rotation to \(v\bmod p_3\).
+When \(v\equiv0\bmod p\), use the smaller of \(v^n\) and \(-v^n\)
+as residues modulo \(p_3\), checking that it is nonzero.
+Signed rotations therefore always give identical normalized data.
+The program hashes each such record into 64 bits and collects every
+repeated hash in each batch. For each repeated hash it compares the
+original supports modulo \(m\) under both signs and all \(n\)
+rotations. There was one repeated hash in each full search and neither
+was an actual collision. Within a single representative the nonzero
+component has a dyadic orbit of odd prime length \(n\), disjoint
+from its negative. The complete verification uses
+\nolinkurl{scripts/check_1229_five_products.cpp}.
+
+Equality of two conjugate products would give equality of their
+exponent sums modulo \(m\). A product equal to one of up to ten
+distinct conjugates can be split into two selections of size at
+most five with opposite sums, or gives a nonempty zero sum of size
+at most five. For repeated conjugates, replace two equal factors
+by their square, which is again a conjugate. This reduces the number
+of factors down to a nonempty distinct selection. The product
+implications are formalized in \nolinkurl{GF2Sparse/RootProducts.lean}.
+
 \end{document}
