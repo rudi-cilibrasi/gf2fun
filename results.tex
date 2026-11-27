@@ -15908,4 +15908,123 @@ factor table \nolinkurl{data/mersenne-4224-7560-extra.json} and witness
 table \nolinkurl{data/product-witnesses-4224-7560-extra.csv} can be
 verified offline with \nolinkurl{scripts/check_product_range.py}.
 
+\section{A five-term family with one free odd exponent}
+\label{sec:progression-factor-parity}
+For every \(n\equiv4\pmod8\) with \(n\ge12\), fixing the four exponents
+\(0,4,n-4,n\) leaves \(n/2\) choices of an odd interior exponent.
+Each choice gives a squarefree pentanomial with an odd number
+of irreducible factors. The following factor-parity formula gives this
+construction and also excludes a quaternary factorization approach in
+infinitely many degrees.
+
+\begin{theorem}\label{thm:progression-factor-parity}
+Let \(K=\mathbb F_{2^d}\), let \(b>0\) be divisible by four, and let
+\(D\in K[T]\) be monic with nonzero constant coefficient. Put
+\(m=b(2\deg D+1)\). For every odd \(a\) with \(0<a<m\) and every
+\(c\in K^\times\), the polynomial
+\[
+              H=(1+X^b)D(X^{2b})+cX^a
+\]
+is squarefree. It has an odd number of irreducible factors over \(K\)
+exactly when \(d\) is odd and \(b\equiv4\pmod8\).
+\end{theorem}
+\begin{proof}
+The derivative in \(K[X]\) is \(cX^{a-1}\), and \(H(0)\ne0\).
+Lift the coefficients to the ring of integers of the unramified
+2-adic extension with residue field \(K\), keeping \(D\) monic.
+At a root \(r\) of the lifted polynomial, \(1+r^b\) is a unit because
+any residue root with \(r^b=1\) would give \(H(r)=cr^a\ne0\).
+Modulo eight, the derivative term with factor \(2b\) vanishes.
+Using the root equation in the remaining term gives
+\[
+ H'(r)\equiv ca r^{a-1}
+   \left(1-\frac ba\frac{r^b}{1+r^b}\right)\pmod8 .
+\]
+As \(4\mid b\), products of two correction terms vanish modulo eight.
+It suffices to find \(S=\sum_r r^b/(1+r^b)\) in the residue field,
+where the sum runs over all roots of the reduction.
+
+Write \(b=2^v t\) with \(t\) odd. The sum \(S\) is the \(2^v\)-th
+power of \(\sum_r r^t/(1+r^t)\). The logarithmic derivative of
+\(X^t-1\) gives \(r^t/(1+r^t)=\sum_{\eta^t=1}r/(r-\eta)\).
+For each such \(\eta\), \(H(\eta)=c\eta^a\), whence
+\[
+ \sum_r\frac r{r-\eta}=m+\eta H'(\eta)/H(\eta)=1\quad\text{in }K.
+\]
+Summing over the odd number \(t\) of roots gives \(S=1\).
+The discriminant sign is positive since \(4\mid m\). Multiplying
+the derivatives now gives
+\[
+ \operatorname{disc}(H)\equiv (ca)^m D(0)^{a-1}(1-b/a)\pmod8 .
+\]
+The first two factors are unit squares. The last is one modulo eight
+if \(8\mid b\), and five modulo eight otherwise. A square root of
+five modulo eight must reduce to one, so writing it as \(1+2z\)
+reduces the condition to \(z^2+z=1\) in \(K\). Such a root exists
+exactly when \(d\) is even. The sign criterion of
+\href{https://msp.org/pjm/1962/12-3/pjm-v12-n3-p27-p.pdf}{Swan, Corollary~2},
+identifies square discriminant modulo eight with number of factors
+congruent to \(m\) modulo two. This gives the stated parity.
+\end{proof}
+
+For the binary construction take \(D=1+T^e\), \(e\ge1\). Then
+\(n=(2e+1)b\), and every odd interior \(a\) gives
+\[
+             (1+X^b)(1+X^{n-b})+X^a .
+\]
+Taking \(b=4\) gives the assertion at the beginning of the section.
+More generally, fix a cutoff \(B\ge1\), set
+\(L=\mathrm{lcm}_{1\le j\le B}(2^j-1)\), and take \(b=4L\).
+In every degree \(n=(2e+1)b\), all \(n/2\) odd taps also avoid every
+irreducible factor of degree at most \(B\), since each nonzero element
+in the corresponding fields has \(b\)-th power one.
+Two examples for which the entire order is verified are
+\[
+ X^{5964}+X^{5936}+X^{1573}+X^{28}+1,\qquad
+ X^{6300}+X^{6216}+X^{84}+X^{13}+1 .
+\]
+Here \(b=28,84\), respectively. The factorizations archived in
+Sections~\ref{sec:products-5964} and~\ref{sec:products-7560} suffice
+to check all prime-index powers for these two polynomials. Factor
+parity itself permits any positive odd number of factors. In degree
+12 the three reciprocal classes in this family, indexed by taps
+1, 3 and 5, have factor degrees \((3,4,5),(2,4,6),(12)\), respectively.
+The irreducible pair has order 273. The product table
+\nolinkurl{data/product-witnesses-5-1206.csv} gives a degree-12
+witness with \((u,v)=(3,4)\) and full order 4095.
+
+\begin{corollary}\label{cor:quaternary-multiples}
+For every positive multiple \(n\) of 2520, a primitive binary
+polynomial of degree \(n\) with at most five terms has at least six
+nonzero coefficients in each of its factors over \(\mathbb F_4\).
+\end{corollary}
+\begin{proof}
+Put \(n=2m\), so \(1260\mid m\). Use the two forms of
+Theorem~\ref{thm:sparse-quaternary-factors}. The binary exponent gcd
+gives \(\gcd(a,b)=1\) in either form. In the first form interchange
+the two runs so \(n=2^ia\). Then \(15\mid a\). In
+\(\mathbb F_{16}^\times\), the map \(z\mapsto z^b\) is bijective.
+Choose \(z\) with \(1+z^b+(z^b)^{2^j}=0\). For \(j=1,3\) take
+\(z^b\) of order three. For \(j=2\), a root of \(Y^4+Y+1\) obeys
+\(Y^{16}=Y\). At \(z\) the two terms from the other run cancel,
+giving a root of degree at most four.
+
+In the second form, if \(a=m\) then \(63\mid a\) and \(z\mapsto z^b\)
+permutes \(\mathbb F_{64}^\times\). A root \(y\) of \(Y^6+Y+1\)
+belongs to this field by successive squaring, which gives \(y^8=y^3+y^2\),
+\(y^{16}=y^4+y+1\), \(y^{32}=y^3+1\), and \(y^{64}=y\).
+Taking \(z^b=y\) makes the binary polynomial vanish since \(z^a=1\).
+The remaining case is \(3b=m\), where \(4\mid b\) and \(a\) is odd.
+Its quaternary factor is \((1+X^b)(X^{2b}+\omega)+X^a\). With
+\(D(T)=T+\omega\) and \(d=2\), Theorem~\ref{thm:progression-factor-parity}
+gives an even number of factors. All cases exclude a primitive source.
+\end{proof}
+In degree 7560, the primitive pentanomial of Section~\ref{sec:products-7560}
+has exactly 2,831 terms in each degree-3780 quaternary factor. To recover
+one factor, compute \(G=X^{(2^{7560}-1)/3}\bmod F\) and take
+\(\gcd(F,G+\omega)\) over \(\mathbb F_4\). Multiplication by its
+coefficient conjugate recovers \(F\). These computations and 72
+checks of the parity formula over four fields are in
+\nolinkurl{scripts/check_progression_factor_parity.py}.
+
 \end{document}

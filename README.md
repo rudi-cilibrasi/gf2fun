@@ -10,6 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In every degree $n\ge12$ congruent to four modulo eight, all $n/2$ odd choices of $a$ make $X^n+X^{n-4}+X^a+X^4+1$ squarefree with an odd number of irreducible factors.** The general construction allows other fixed exponents and can simultaneously exclude every factor of any prescribed bounded degree on an infinite progression. Two verified primitive members have degrees 5964 and 6300. In every positive multiple of 2520, a primitive five-term binary polynomial must have at least six terms in each factor over $\mathbb F_4$. The degree-7560 example has 2,831 in each. [Parity theorem](results.pdf#page=209) · [Multiples of 2520](results.pdf#page=210) · [Verify the examples](scripts/check_progression_factor_parity.py)
 - **In even degrees above 16, exactly two families can give a primitive binary polynomial and a factor over $\mathbb F_4$ both having at most five terms.** This cuts the search in each degree to a linear number of candidates. In degree 2458 only one of the 2,558 reciprocal classes is irreducible. The norm of its root down to degree 1229 has a minimal polynomial with 631 terms, ruling out this construction for a degree-1229 pentanomial. [Classification](results.pdf#page=207) · [Degree-1229 consequence](results.pdf#page=208) · [Exact enumeration](scripts/check_quaternary_norm_shapes.py)
 - **In degree 1229, over 99.9% of the four-test survivors with at most 319 terms are primitive when their interior terms lie in any chosen window of 680 positions.** The bound holds for the ordinary count in each window, which has more than $2^{627}$ survivors. At a cutoff of 325 terms the failure fraction is below one in 100,000. The five-term case remains open. In every sufficiently large degree, a family with at most $0.219245n$ terms contains at least $2^{0.5438n}$ irreducibles and has primitive fraction at least $\varphi(2^n-1)/(2^n-1)-1/n^2$ among them. [Proof](results.pdf#page=197) · [Exact density bounds](scripts/check_1229_weight_density.py) · [Lean arithmetic](GF2Sparse/SelbergWeight.lean)
 - **The $0.219245n$ weight bound still holds when a primitive root and its inverse must both generate normal bases.** In every sufficiently large degree, at least $2^{0.5438n}$ polynomials satisfy that weight bound with all six binary fractional linear images of a root primitive. Three specified images are normal, and all six are normal in even degree. Degree 44 is the first even degree above two where a five-term polynomial meets all six conditions of each kind. [Counting proof](results.pdf#page=193) · [Finite examples and checker](scripts/check_endpoint_normality.py)
@@ -731,6 +732,12 @@ To classify the quaternary factors, run the rational enumeration. The degree che
 uv run --no-project --with sympy python scripts/check_quaternary_norm_shapes.py
 uv run --no-project --with sympy python scripts/check_quaternary_norm_shapes.py --degree 30 --orders
 uv run --no-project --with sympy python scripts/check_quaternary_norm_shapes.py --degree 2458
+~~~
+
+The progression test checks 72 factorizations over four finite fields, proves the orders of the degree-5964 and degree-6300 examples, and reconstructs both degree-3780 factors of the degree-7560 witness.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_progression_factor_parity.py
 ~~~
 
 The 122 witnesses in degrees 4100 through 5964 use 4,040 distinct primes. The checker proves primality, reconstructs each group order and verifies 5,611 prime-index powers. To reproduce the search in order of increasing tap span, replace `--verify` and its CSV path with `--search --least-span`.
