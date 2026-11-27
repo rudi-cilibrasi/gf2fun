@@ -20228,18 +20228,28 @@ sparse polynomial independently of the projective enumeration.
 \clearpage
 \section{A product test for the remaining scalar orders 7 and 31}
 \label{sec:scalar-product-test}
-In degrees \(3415=5\cdot683\) and \(5403=3\cdot1801\), every binary
-irreducible with at most five terms has the prime
+For each degree in the table every binary irreducible of weight at
+most five has the prime
 \[
-             P=\frac{2^{pq}-1}{(2^p-1)(2^q-1)}
+                P=\frac{2^{pq}-1}{(2^p-1)(2^q-1)}
 \]
-in its root order. The two primes have 821 and 1084 decimal digits.
-Up to reciprocal, the only irreducible trinomial of degree 3415 is
-\(X^{3415}+X^{1272}+1\), and it is primitive. The degree-5403
-pentanomial with interior exponents \(6,11,14\) has full projection
-to the group of order \(P\). Its index divides the 538-digit
-cofactor of \(2^{1801}-1\), and its projection onto that cofactor
-is nontrivial.
+in its root order. In degree 3415 the only irreducible trinomial up
+to reciprocal is \(X^{3415}+X^{1272}+1\), and it is primitive.
+In the remaining rows the displayed pentanomial has full projection
+to the group of order \(P\) and carries every certified prime power
+of the two subfield groups. Its index divides the recorded composite
+cofactor of \(2^q-1\), with nontrivial projection onto that cofactor.
+The last column gives its decimal digit count, or 1 for full order.
+\[
+\begin{array}{r|r|r|r|l|r}
+ n&p&q&\text{digits of }P&\text{interior exponents}&\text{cofactor}\\\hline
+3415&5&683&821&1272&1\\
+5403&3&1801&1084&6,11,14&538\\
+7617&3&2539&1528&9,17,20&760\\
+12365&5&2473&2977&2,3,14&711\\
+13045&5&2609&3141&17,22,23&734\\
+\end{array}
+\]
 
 Here the smaller subfield multiplicative group has prime order
 \(h=2^p-1\). To exclude a split, take the two pairs and singleton
@@ -20269,7 +20279,10 @@ other possible pairs against the surviving factors.
  n&\text{residue triples}&\text{supports}&
  \text{largest interior product gcd degree}&\text{split supports}\\\hline
 3415&6&15\,972\,000&720&0\\
-5403&2&1\,835\,633\,808&4284&0
+5403&2&1\,835\,633\,808&4284&0\\
+7617&2&5\,149\,286\,400&6430&0\\
+12365&6&758\,438\,352&3302&0\\
+13045&6&891\,172\,800&3702&0\\
 \end{array}
 \]
 At the positive control \((p,q,h)=(2,5,3)\) the test recovers all
@@ -20279,12 +20292,11 @@ enumeration in Section~\ref{sec:scalar-pair-census}.
 The exclusion and primality of \(P\) now force \(P\) into each sparse
 irreducible root order. Verify the two subfield norms of every named
 witness by evaluating their archived minimal polynomials in the
-large field. In degree 3415 both norms are primitive. In degree 5403
-the smaller norm is primitive and the larger one contains the known
-prime 28817 and a divisor greater than one of the remaining cofactor.
-The data include the
-\href{https://factordb.com/cert/1100000000000185517}{degree-5403
-primality certificate}.
+large field. In degree 3415 both norms are primitive. In every
+other row the smaller norm is primitive. The larger norm passes all
+known prime-index tests and its projection to the remaining cofactor
+is nontrivial. The prime certificates are archived for degrees
+\href{https://factordb.com/cert/1100000000000185517}{5403}, \href{https://factordb.com/cert/1100000000012990936}{7617}, \href{https://factordb.com/cert/1100000000013120642}{12365}, \href{https://factordb.com/cert/1100000000005182542}{13045}.
 
 In degree 3415, among the first 3415 positive powers of the trinomial
 root, exactly 42 have a minimal polynomial of weight at most five.
