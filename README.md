@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **The minimum weight in degree 3,927 is three.** Of the 1,963 reciprocal pairs of trinomials, ten are irreducible and five are primitive. The smallest tap giving full order is 367. Cubing the five primitive trinomial roots gives five pentanomial pairs, and $X^{3927}+X^{113}+X^{101}+X^{12}+1$ is another primitive pentanomial. The order tests use all 29 prime divisors of $2^{3927}-1$. [Proof and exact orders](results.pdf#page=245) · [Reproduce the certificates](scripts/check_3927_thirds.py)
+
 - **Lean certifies five-term irreducibles in degrees $2^{141}+4$ and $2^{191}+4$.** For odd $k\ge3$, the polynomial $X^{2^k+4}+X^{2^k+1}+X^{2^k}+X^5+1$ is irreducible exactly when $2^k+5$ is prime and $-2$ has full order modulo that prime. At $k=191$ its root order is at least $2^{2^{96}}$. The full multiplicative orders of these two roots remain open. Across $20<n\le 2^{191}+4$, just five candidates up to reciprocity remain for a primitive polynomial of weight at most five with a nonidentity binary projective symmetry of its roots. [Proof](results.pdf#page=241) · [Lean certificates](GF2Sparse/TwistedCyclotomic.lean) · [Reproduce the order and factor checks](scripts/check_translation_lift_orders.py)
 
 - **A real quadratic class number detects cubes in the cyclotomic family.** For primes $p\equiv5\pmod8$ with two primitive modulo $p$, the root-order index is divisible by three exactly when the quadratic order of discriminant $4p$ has class number divisible by three. Direct binary powering and certified class groups agree for all 63 eligible primes through 2053. [Proof](results.pdf#page=244) · [Reproduce the comparison](scripts/check_twisted_cubic.py)
@@ -837,6 +839,12 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_product_rang
 c++ -std=c++17 -O3 scripts/prime_degree_trinomials.cpp -lntl -lgmp -o /tmp/gf2-prime-degree-trinomials
 python3 -c 'import json; d=json.load(open("data/mersenne-prime-degrees-3467-5087.json")); [print(n,len(ps),*ps) for n,ps in d.items()]' | /tmp/gf2-prime-degree-trinomials > /tmp/gf2-prime-degree-trinomials.csv
 cmp /tmp/gf2-prime-degree-trinomials.csv data/prime-degree-trinomial-census.csv
+~~~
+
+The same NTL program checks all 1,963 trinomial reciprocal pairs at degree 3,927. The FLINT checker reads the factors from the table for degree 7,854 and verifies the exact orders of all ten irreducible trinomials and eleven pentanomials.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_3927_thirds.py --ntl /tmp/gf2-prime-degree-trinomials
 ~~~
 
 The additional composite degrees have a self-contained factor table and compressed PARI ECPP certificates. FLINT checks every polynomial order and proves the remaining factors prime.

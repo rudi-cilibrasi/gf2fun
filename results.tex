@@ -18497,4 +18497,65 @@ PARI's \texttt{bnfcertify}, computes the ray class number, and
 compares with direct binary powering. Among 63 primes, exactly
 22 give cubes. See \nolinkurl{scripts/check_twisted_cubic.py}.
 
+\clearpage
+\section{Five primitive trinomial pairs in degree 3927}
+\label{sec:3927-trinomials}
+
+\begin{theorem}
+The minimum weight of a primitive binary polynomial in degree
+\(3927\) is three. Up to taking reciprocals, exactly five trinomials
+\(T_s=X^{3927}+X^s+1\) are primitive, with
+\[
+                 s\in\{367,370,898,1385,1444\}.
+\]
+For these same five \(s\), the polynomials
+\[
+         G_s=X^{3927}+X^{2618}+X^{1309}+X^s+1
+\]
+give all the primitive degree-3927 pentanomials with four exponents
+in arithmetic progression, up to reciprocals. A further primitive
+pentanomial is \(X^{3927}+X^{113}+X^{101}+X^{12}+1\).
+\end{theorem}
+\begin{proof}
+Write \(n=3927=3\cdot7\cdot11\cdot17\) and \(M=2^n-1\). Since
+\(M\mid2^{7854}-1\), we select from the stored degree-7854 factorization
+the prime factors that divide \(M\), with their multiplicities.
+The product equals \(M\), and FLINT proves primality for the 29 distinct
+factors, including the largest of 578 decimal digits.
+Testing all \(1\le s\le1963\) with NTL gives ten irreducible trinomials.
+The table records the order of the residue of \(X\) for each.
+\[
+\begin{array}{r|l}
+ \text{root order} & s\\ \hline
+ M                  & 367,370,898,1385,1444\\
+ 7(2^{561}-1)       & 497,763,1085\\
+ M/127              & 1517\\
+ M/7                & 1520
+\end{array}
+\]
+For every proposed order \(d\), FLINT checks \(X^d=1\) and
+\(X^{d/p}\ne1\) modulo the polynomial for every prime \(p\mid d\).
+It also checks irreducibility of the ten trinomials by the Frobenius
+criterion using the four prime factors of \(n\). An irreducible of
+degree greater than one has nonzero constant term and takes value one
+at one, so three terms attain the minimum.
+
+For a root \(r\) of \(T_s\), the equality
+\((1+r^{3927})^3=r^{3s}\) gives \(G_s(r^3)=0\).
+Cubing permutes the multiplicative group in odd degree and preserves
+orders and fields of definition. Theorem~\ref{thm:progression}
+therefore accounts for every primitive pentanomial with four exponents
+in arithmetic progression. For each of the five primitive taps the
+only pair of congruent exponents modulo three in \(T_s\) is
+\(0,3927\), which gives the displayed \(G_s\). Reciprocation replaces
+\(s\) by \(3927-s\).
+The same prime-index powers certify order \(M\) directly for the
+pentanomial with taps \(12,101,113\).
+\end{proof}
+
+The verifier \nolinkurl{scripts/check_3927_thirds.py} uses the
+degree-7854 entry in the repository's factor table.
+Including this degree, the certificates cover at least 2,673 of the
+first 10,351 positive degrees.
+
 \end{document}
