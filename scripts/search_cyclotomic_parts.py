@@ -20,24 +20,59 @@ def prime_mask(bound):
 
 
 def initialize(bound):
-    global trial_primes
+    global trial_bound, trial_primes, sieve_primes
     if hasattr(sys, "set_int_max_str_digits"):
         sys.set_int_max_str_digits(0)
-    trial_primes = prime_mask(bound)
+    trial_bound = bound
+    if bound <= 2_000_000:
+        trial_primes = prime_mask(bound)
+        sieve_primes = ()
+    else:
+        trial_primes = None
+        sieve_primes = tuple(p for p, flag in enumerate(prime_mask(isqrt(bound))) if flag)
+
+
+def progression_primes(n, bound):
+    """Sieve p=1+k*step. In each segment strike multiples of r beginning at r squared."""
+    step = n if n % 2 == 0 else 2*n
+    if trial_primes is not None:
+        yield from (p for p in range(step+1, bound+1, step) if trial_primes[p])
+        return
+    strikes = []
+    for r in sieve_primes:
+        if r*r > bound:
+            break
+        if step % r:
+            residue = -pow(step, -1, r) % r
+            strikes.append((r, residue, (r*r-1 + step-1)//step))
+    end = (bound-1)//step + 1
+    segment_size = 65536
+    for start in range(1, end, segment_size):
+        stop = min(start+segment_size, end)
+        flags = bytearray([1]) * (stop-start)
+        for r, residue, lower in strikes:
+            first = max(start, lower)
+            first += (residue-first) % r
+            if first < stop:
+                flags[first-start::r] = bytes((stop-1-first)//r+1)
+        for offset, flag in enumerate(flags):
+            if flag:
+                yield 1 + (start+offset)*step
 
 
 def search(n):
     degree_primes = [int(p) for p, _ in fmpz(n).factor()]
     lower = [n//p for p in degree_primes]
     part = ((1 << n)-1) // lcm(*((1 << d)-1 for d in lower))
-    bound = len(trial_primes)-1
     small = []
     # A prime of Phi_n(2) either divides n or has multiplicative degree n.
-    for p in chain(degree_primes, range(n+1, bound+1, n)):
-        if p <= bound and trial_primes[p]:
-            while part % p == 0:
-                small.append(p)
-                part //= p
+    bound = min(trial_bound, part)
+    for p in chain((p for p in degree_primes if p <= bound), progression_primes(n, bound)):
+        while part % p == 0:
+            small.append(p)
+            part //= p
+        if part == 1:
+            break
     if part > 1 and not fmpz(part).is_probable_prime():
         return None
     return (n, " ".join(map(str, sorted(lower))), " ".join(map(str, sorted(small))),

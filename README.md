@@ -935,6 +935,12 @@ Workers can search disjoint degree intervals for further candidates. The search 
 uv run --no-project --with python-flint==0.9.0 python scripts/search_cyclotomic_parts.py --start 24260 --end 24265 --jobs 4
 ~~~
 
+For large trial bounds the search sieves the possible prime divisors in segments. At degree 3,837 a bound of two billion recovers 30,697 and 4,819,273 and leaves the 759-digit prime in the witness table.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/search_cyclotomic_parts.py --start 3837 --end 3837 --trial-limit 2000000000
+~~~
+
 In degree 16,129 the verifier checks the archived 514-step PRIMO certificate against the 4,789-digit factor of the group order. The same file can also be checked with `gzip -dc data/degree-16129-primality.cert.gz | vcert -q -`. [Original certificate](https://factordb.com/cert/1100000000252268434) · [Independent GMP verifier](https://github.com/danaj/Math-Prime-Util-GMP/blob/531591c6aa56c0f42450b8ca202dac56ab573b43/examples/vcert.c)
 
 To check the twisted cyclotomic family, the first command tests the root orders and the exclusion of every odd exponent strictly between 191 and 16,541. The second compares the cubic character with certified PARI class groups and checks the order formula for the projection to the subfield of half the degree.
