@@ -15029,7 +15029,11 @@ There is also a deterministic test using several candidates.
 If 16 surviving roots can be chosen such that each pairwise quotient
 has full projection to the group of order \(C\), at least one of those
 roots is primitive. Otherwise two would fail the same prime test, and
-their quotient would fail it too. For comparison, take one root from
+their quotient would fail it too. More generally, connect two candidates
+by an edge whenever their quotient has a verified full projection. If
+every candidate fails a test, assigning one failing prime to each
+vertex gives a proper coloring with at most 15 colors. Any verified
+graph requiring more colors therefore suffices. For comparison, take one root from
 each surviving reciprocal pair in a common field and let \(x\) be
 the certified primitive generator. Among the \(4{,}793{,}581\) multipliers
 \(x^{Kj}\), \(0\le j\le15\cdot319{,}572\), at least one makes all
@@ -15168,5 +15172,43 @@ as evaluated in Theorem~\ref{thm:weight-entropy-rate}.
 Finally, if \(n\) is an odd prime then two has order \(n\) modulo
 each prime \(\ell\mid N\). The \(k\)-th such prime is at least
 \(2nk+1\), giving \(1-\theta\le(1+\log n)/(2n)\).
+
+\section{Primitive pentanomials in 122 further degrees through 5964}
+\label{sec:products-5964}
+There is a verified primitive polynomial of weight at most five for every
+degree \(n\equiv4\pmod8\) from 4 through 4580. The new table gives
+122 primitive pentanomials in degrees 4100 through 5964, including all
+61 degrees \(4100,4108,\ldots,4580\). Together with the 2,425
+degrees through 4096 in Section~\ref{sec:products-4096} and the
+Lean-certified degrees 4253 and 4423, this establishes at least
+2,549 of the first 5,964 degrees. For example, the root orders of
+\[
+  X^{4580}+X^{108}+X^{105}+X^3+1,\qquad
+  X^{5964}+X^{127}+X^{80}+X^{47}+1
+\]
+are \(2^{4580}-1\) and \(2^{5964}-1\), respectively.
+
+For each degree the search takes \(X^n+(1+X^u)(1+X^v)\) with
+\(0<u<v\) in increasing order of \(u+v<n\). PARI/GP tests
+irreducibility and computes the order. All 122 witnesses have
+\(u+v\le251\), attained in degree 4380 at \((48,203)\).
+The pinned Cunningham transcription provides 102 full group
+factorizations. FactorDB provides the 20 further complete rows
+among the missing degrees \(n\equiv4\pmod8\) from 4364 through 4916.
+The multiplication and primitivity proof depend only on the integers
+in the archive. FLINT proves primality of all 4,040 distinct factors,
+checks their multiplicities against each group order, and verifies
+the full exponent and all 5,611 prime-index powers in the indicated
+quotient rings. The verifier shares modular powers between primes. At a node carrying a set \(A\) of distinct primes and the value
+\(X^{(2^n-1)/\prod A}\), split \(A\) in two and raise the value to
+the product of one part to obtain the value for the other. Each leaf
+gives the corresponding prime-index power. The original direct
+powering calculation independently verifies the same orders.
+Full order then accounts for every nonzero class.
+\href{https://github.com/postvakje/Reformatted-Cunningham-Project-tables/blob/dff2e282ff15399b16b4fb840a410aa2a37076b7/pmain422_table2-.json}{Pinned Cunningham table}.
+\href{https://factordb.com/index.php?query=2\%5E4364-1}{FactorDB entry for degree 4364}.
+The supports and full factor lists are
+\nolinkurl{data/product-witnesses-4097-5964.csv} and
+\nolinkurl{data/mersenne-4097-5964.json}.
 
 \end{document}

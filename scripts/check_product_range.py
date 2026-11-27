@@ -26,6 +26,24 @@ def search(row, least_span=False):
     return n, u, v
 
 
+def prime_index_powers(x, order, primes, modulus):
+    """Yield x^(order/p) for each distinct prime, sharing powers across a product tree."""
+    if not primes:
+        return
+    pending = [(primes, x.pow_mod(order // prod(primes), modulus))]
+    while pending:
+        group, value = pending.pop()
+        if len(group) == 1:
+            yield group[0], value
+            continue
+        middle = len(group) // 2
+        left, right = group[:middle], group[middle:]
+        # The current exponent is order / prod(group). Remove the sibling's
+        # factors from its denominator to get the exponent for each child.
+        pending.append((right, value.pow_mod(prod(left), modulus)))
+        pending.append((left, value.pow_mod(prod(right), modulus)))
+
+
 def verify(n, u, v, factors):
     if not 0 < u < v or u + v >= n:
         raise ValueError(f"invalid support in degree {n}")
@@ -34,8 +52,8 @@ def verify(n, u, v, factors):
     order = 2**n - 1
     if x.pow_mod(order, f) != 1:
         raise ValueError(f"failed full power in degree {n}")
-    for p in set(factors):
-        if x.pow_mod(order // p, f) == 1:
+    for p, power in prime_index_powers(x, order, sorted(set(factors)), f):
+        if power == 1:
             raise ValueError(f"index divisible by {p} in degree {n}")
 
 

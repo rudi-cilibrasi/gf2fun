@@ -10,6 +10,16 @@ namespace GF2Sparse.SubgroupCover
 
 variable {G I P J : Type*} [Group G]
 
+/-- A cover by the listed subgroups labels each input by a failing test.
+Each pair with a verified quotient outside every subgroup has different labels. -/
+theorem coloring_of_cover (x : I → G) (H : P → Subgroup G) (edge : I → I → Prop)
+    (separate : ∀ i j, edge i j → ∀ p, x i / x j ∉ H p)
+    (covered : ∀ i, ∃ p, x i ∈ H p) :
+    ∃ color : I → P, ∀ i j, edge i j → color i ≠ color j := by
+  choose hit mem using covered
+  refine ⟨hit, fun i j hij equal => ?_⟩
+  exact separate i j hij (hit i) ((H _).div_mem (mem i) (equal.symm ▸ mem j))
+
 /-- Pairwise quotients outside each tested subgroup force a surviving element. -/
 theorem exists_outside_of_quotients [Fintype I] [Fintype P]
     (x : I → G) (H : P → Subgroup G) (size : Fintype.card P < Fintype.card I)
@@ -17,10 +27,9 @@ theorem exists_outside_of_quotients [Fintype I] [Fintype P]
     ∃ i, ∀ p, x i ∉ H p := by
   classical
   by_contra! covered
-  choose hit mem using covered
-  obtain ⟨i, j, hij, equal⟩ := Fintype.exists_ne_map_eq_of_card_lt hit size
-  apply separate i j hij (hit i)
-  exact (H _).div_mem (mem i) (equal.symm ▸ mem j)
+  obtain ⟨color, proper⟩ := coloring_of_cover x H (· ≠ ·) separate covered
+  obtain ⟨i, j, hij, equal⟩ := Fintype.exists_ne_map_eq_of_card_lt color size
+  exact proper i j hij equal
 
 /-- A common multiplier takes every input outside every subgroup. Distinct
 multipliers must have distinct cosets modulo each subgroup in the list. -/
