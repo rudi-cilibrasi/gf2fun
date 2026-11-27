@@ -10,6 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In degree 4112, exact order tests certify 8,392,592 primitive elements among 16,777,216 binomials in the torsion coordinate.** Of the whole family, 16,711,168 generate the component of order equal to the remaining 539-digit cofactor. The 2,048 stored logarithms also determine this component for every product or quotient of the binomials. Their binary minimal polynomials have at least seven terms whenever they are primitive. [Logarithms](data/degree-4112-binomial-logs.csv.gz) · [Power verifier](scripts/check_4112_binomials.py) · [Reconstruction](scripts/solve_4112_binomials.py)
 - **The degree-4112 five-term candidate now has an explicit logarithm descent.** Its root is encoded in the same field as the certified primitive polynomial. Multiplication by a subfield element leaves its unresolved order component unchanged and gives a polynomial of relative degree 129. Sixteen verified factorizations reduce the remaining logarithms to relative degrees at most eleven. [Field coordinates and factorizations](data/degree-4112-subfield-descent.json) · [Direct checker](scripts/check_4112_descent.py)
 - **Degree 4112 has a certified eleven-term primitive polynomial and a five-term candidate with a 2,322-bit proven order divisor.** The eleven-term polynomial is $P(X^{257}+X)$ for $P(T)=T^{16}+T^6+T^4+T+1$. Its full order follows from 129 directly verified power identities and four small-prime tests. The pentanomial $X^{4112}+X^{23}+X^{12}+X+1$ passes all 23 known prime-index tests. One scalar modulo a 539-digit cofactor would finish its certificate. A general obstruction shows why projective Frobenius alone cannot produce the five-term witness in this degree. [Full-order proof](results.pdf#page=227) · [Pentanomial reduction and obstruction](results.pdf#page=228) · [129 exponents](data/degree-4112-projective-logs.csv.gz) · [Five-term target](data/degree-4112-pentanomial-target.json)
 - **Fifteen more degrees between 3472 and 4032 have certified primitive pentanomials.** For example, $X^{4032}+X^{2955}+X^{1077}+X^{92}+1$ has order $2^{4032}-1$ at each root. Together with the earlier certificates this covers at least 2,650 of the first 10,351 positive degrees. The fifteen certificates check 712 prime-index powers. [Witnesses](data/complementary-width-cyclotomic.csv) · [Complete order factors](data/mersenne-complementary-cyclotomic.json) · [Primality certificates](data/mersenne-cyclotomic-prime-certificates.json.gz)
@@ -628,13 +629,20 @@ A pull request can include the generated table and the corresponding interval th
 
 ## Verification
 
-In degree 4112, the first command checks the eleven-term primitive polynomial by direct powering and verifies the known order divisor of the five-term candidate. The second reconstructs the 129 exponents from the circle equations. A contributor with a candidate scalar can pass it to the first command using `--target-exponent E`.
+In degree 4112, the first command checks the eleven-term primitive polynomial by direct powering and verifies the known order divisor of the five-term candidate. The descent checker verifies the subfield multiple and its factorizations. The projective solver reconstructs the original 129 exponents from the circle equations. A contributor with a candidate scalar can pass it to the first command using `--target-exponent E`.
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_projective_4112.py --jobs 6 --target
 uv run --no-project --with python-flint==0.9.0 python scripts/check_4112_descent.py
 uv run --no-project --with python-flint==0.9.0 --with gmpy2 python scripts/solve_projective_4112.py > /tmp/gf2fun-4112-logs.csv
 gzip -cd data/degree-4112-projective-logs.csv.gz | cmp - /tmp/gf2fun-4112-logs.csv
+~~~
+
+The following two commands independently verify the 2,048 binomial logarithms and reproduce the same order counts. The first checks each power directly in the binary field. The second rebuilds the table from the 129 projective logarithms.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_4112_binomials.py --jobs 8
+uv run --no-project --with python-flint==0.9.0 --with gmpy2 python scripts/check_4112_binomials.py --rebuild
 ~~~
 
 To reproduce the complete order and term-count census of the 52,488 degree-1229 factor-base values, use a C++17 compiler with NTL and OpenMP. Omitting the `--census` argument and its executable checks the two minimum-weight examples and the exceptional order directly in Python.

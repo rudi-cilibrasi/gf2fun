@@ -17462,4 +17462,63 @@ bidegree at most \((15,15)\).
 The field embedding, factorization, all descent identities, and rank
 are checked by \nolinkurl{scripts/check_4112_descent.py}.
 
+\section{Exact orders of binomials in the torsion coordinate}
+\label{sec:4112-binomials}
+
+With the notation of Section~\ref{sec:4112-descent}, put
+\(A=65535\cdot257\), \(B=M/A\), and define \(L(z)\bmod B\)
+by \(z^A=(r^A)^{L(z)}\). Since \(C\mid B\), reducing \(L(z)\)
+modulo \(C\) gives \(\ell(z)\). Torsion powers of \(y\) and
+nonzero constants in \(k\) have zero logarithm under both projections.
+
+\begin{theorem}
+Among the \(16{,}777{,}216\) distinct elements \(y^j+c\),
+\(1\le j\le256\), \(c\in k\), precisely \(8{,}392{,}592\) are
+primitive. Precisely \(16{,}711{,}168\) have full projected order
+\(C\). In the other cases, exactly when \(c=0\) or \(c^{257}=1\),
+the projection to the group of order \(C\) is trivial.
+\end{theorem}
+\begin{proof}
+For \(v=y^j\) and \(w=u^j\) one has \(v^Q=w/v\).
+On the nonzero constants the induced permutation is
+\(c\mapsto w/c^Q\), with logarithms multiplied by \(Q\).
+It suffices to treat \(j=3^h\bmod 257^2\) for \(0\le h<16\).
+Their sixteen squaring orbits modulo 257 partition the nonzero
+residues. Powers differing by a multiple of 257 differ by a
+scalar in \(\langle u\rangle\). This scalar has relative norm one
+and projected logarithm zero. Distinctness follows from the
+basis \(1,y,\ldots,y^{256}\).
+
+For the first power, the homography defining \(y\) expresses
+every logarithm as a difference of two entries of the projective
+table. At the next power, cubing a constant \(d\ne0\) supplies
+the anchor
+\[
+       L(v^3+d^3)=\sum_{\xi^3=1} L(v+\xi d).
+\]
+For \(b\in k\) and \(0\ne h\in\mathbb F_Q\) the roots of
+\((T+b)^{Q+1}+h\) lie in \(k\). Consequently
+\[
+ v\!\prod_{(c+b)^{Q+1}=h}(v+c)
+   = b^Q v^2+(w+b^{Q+1}+h)v+bw.
+\]
+Whenever the right side splits over \(k\), this is a linear
+equation in the logarithms. The archived reconstruction solves
+all remaining columns with unit pivots modulo \(B\). Independently
+the power verifier checks all 128 orbit representatives for each
+of the sixteen powers by exponentiation in the binary field.
+
+The relative norm to \(k\) is \(c^{257}+w\). It has order
+\(65535\) precisely when the exponent of our element to a
+primitive base is coprime to each prime dividing \(A\).
+Since \(\gcd(A,B)=1\), this norm test and \(\gcd(L(v+c),B)=1\)
+are equivalent to full order. Enumeration gives the two counts
+and the exceptional constants. The data are in
+\nolinkurl{data/degree-4112-binomial-logs.csv.gz} and the
+enumeration in \nolinkurl{scripts/check_4112_binomials.py}.
+Each primitive binomial still has projective 256th-power Frobenius
+over \(k\), so its binary minimal polynomial has at least seven
+terms by the obstruction in Section~\ref{sec:projective-4112}.
+\end{proof}
+
 \end{document}

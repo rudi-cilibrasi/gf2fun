@@ -74,7 +74,8 @@ def circle_rows(field, orbits):
     return rows
 
 
-def solve(rows):
+def solve_affine_rows(rows):
+    """Solve rows whose last entry is the affine constant, using only unit pivots."""
     modulus = mpz(B)
     matrix = [[mpz(x) for x in row] for row in rows]
     columns = len(matrix[0]) - 1
@@ -96,7 +97,11 @@ def solve(rows):
         values[j] = (-row[-1] - sum(x*y for x, y in zip(row[j+1:-1], values[j+1:]))) % modulus
     if any((row[-1] + sum(x*y for x, y in zip(row, values))) % modulus for row in rows):
         raise ValueError("inconsistent circle equations")
-    return [0, *values]
+    return values
+
+
+def solve(rows):
+    return [0, *solve_affine_rows(rows)]
 
 
 if __name__ == "__main__":
