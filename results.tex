@@ -17088,16 +17088,23 @@ checks the proper-order obstructions.
 \label{sec:further-complementary}
 
 The table \nolinkurl{data/complementary-width-extra.csv} supplies
-primitive witnesses in 65 additional degrees between 3510 and 8584.
-Together with Section~\ref{sec:symmetric-9576} this covers at least
-2,629 of the first 9,576 positive degrees. Some examples are
+primitive witnesses in 69 additional composite degrees between 3510
+and 10351. Of these, 65 are at most 9576. Together with
+Section~\ref{sec:symmetric-9576} this covers at least 2,629 of the
+first 9,576 positive degrees. The four larger entries and the earlier
+witnesses in degrees 9689 and 9941 give at least 2,635 through 10,351.
+Some examples are
 \[
 \begin{array}{r|rr|r}
 n&b&a&\omega(2^n-1)\\\hline
 3696&1017&791&73\\
 7911&3061&1789&19\\
 8001&412&206&28\\
-8584&618&3983&43
+8584&618&3983&43\\
+9583&3042&1521&9\\
+9757&2630&4497&11\\
+9985&691&1382&11\\
+10351&541&1082&7
 \end{array}
 \]
 All have \(W\le18\). In degree 3696 there are 10,212 reciprocal
@@ -17107,15 +17114,35 @@ The other three give the same obstruction with divisor 5, 7 or 23.
 
 The search used NTL. The independent verification multiplies the
 integer factors in \nolinkurl{data/mersenne-complementary-width-extra.json},
-checks \(X^{2^n-1}=1\) modulo each witness, and checks all 3,243
-prime-index powers. There are 2,144 distinct integer factors.
-PARI verifies archived ECPP proofs for 28 of them, including the
-1,579-digit prime in degree 7911. FLINT proves the others prime.
+checks \(X^{2^n-1}=1\) modulo each witness, and checks all 3,281
+prime-index powers. There are 2,172 distinct integer factors.
+PARI verifies archived ECPP proofs for 33 of them, including the
+2,824-digit prime in degree 10351. FLINT proves the other 2,139 prime.
 The certificate archive is
 \nolinkurl{data/mersenne-complementary-width-prime-certificates.json.gz}.
 The initial integer factorizations were obtained from
 \href{https://factordb.com/}{FactorDB}, splitting by cyclotomic
 and Aurifeuillean factors where needed.
+
+Degree \(9583=7\cdot37^2\) gives another application of
+Theorem~\ref{thm:two-maximal-subfields}. Here
+\[
+ P=\frac{(2^{9583}-1)(2^{37}-1)}{(2^{1369}-1)(2^{259}-1)}
+\]
+is a 2,406-digit prime coprime to both subfield orders. Every
+irreducible polynomial in this degree with quotient bound \(K<37\)
+has \(P\) in its root order. Indeed \(r^{(2^{1369}-1)(2^{259}-1)}\)
+has order dividing \(P\) and the theorem forces that order to be
+at least 37. Primitivity for the whole class therefore reduces to
+primitivity of both subfield norms. The displayed degree-9583
+witness has \(K=4\). Its norm polynomials in degrees 1369 and 259
+have weights 721 and 127 respectively, and both are primitive.
+\nolinkurl{scripts/check_two_subfield_norms.py} checks these norm
+polynomials, their embeddings, and the two analogous norm certificates
+in degree 3415. To reproduce the search for minimal-width witnesses,
+\nolinkurl{scripts/search_complementary_width.cpp} enumerates the
+orientations in order of \(K\) and tests the full order at each
+irreducible.
 
 \section{An obstruction to bounded tap width for every unit dilation}
 \label{sec:affine-tap-span}
