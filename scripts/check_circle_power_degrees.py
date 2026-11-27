@@ -13,7 +13,7 @@ from check_factor_base import irreducible, modulus, polynomial
 from power_images import direction, norm_pattern, power_characteristic, residue_profiles
 
 
-# Primitive exponent supports up to reciprocation, with the exact order of X.
+# Supports of exponent gcd one up to reciprocation, with the exact order of X.
 EXCEPTIONS = {
     3: {(0, 1, 3, 8, 10): 93},
     5: {(0, 1, 2, 3, 4): 5, (0, 1, 2, 4, 12): 315,

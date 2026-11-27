@@ -203,7 +203,7 @@ def field_orbits(d, tap_count):
 
 
 @cache
-def excluded_taps(d, g, tap_count):
+def excluded_taps(d, g, tap_count, scale=1):
     order = 2**d-1
     exponent = 2*g-2
     if exponent % order == 0:
@@ -214,8 +214,8 @@ def excluded_taps(d, g, tap_count):
         second_log = log_one_plus[exponent*u % order]
         if second_log < 0:
             continue
-        # At Y = generator^u the root equation is u*k = first_log + second_log (mod order).
-        total = first_log + second_log
+        # Raising the product to the given scale multiplies its logarithm.
+        total = scale*(first_log + second_log)
         if total % divisor == 0:
             k = (total//divisor)*inverse % step
             if k < tap_count:
@@ -250,18 +250,53 @@ def check_local_cutoff(bound):
           f"gcd classes. The largest of the least tap residues is {largest}.")
 
 
+def check_local_order_bound():
+    """Find odd normalized taps at both spacings and verify the obstruction to width below 39."""
+    period = lcm(*(2**d-1 for d in range(1, 17)))
+    divisors = [1]
+    for prime, exponent in fmpz(period).factor():
+        divisors = [g*int(prime)**i for g in divisors for i in range(exponent+1)]
+    fields = [(d, 2**d-1) for d in range(9, 17)]
+    units = [sign*2**j for j in range(10) for sign in (1, -1)]
+    for scale, maximum in ((1, 37), (2, 31)):
+        odd = sum(1 << k for k in range(1, maximum+1, 2))
+        for g in divisors:
+            for h in units:
+                choices = odd
+                for d, order in fields:
+                    choices &= ~excluded_taps(d, h*g % order, maximum+1, scale)
+                    if not choices:
+                        break
+                if choices:
+                    break
+            else:
+                raise ArithmeticError(f"no normalized tap at scale {scale}, gcd {g}")
+        # When g = L the residue h*g is always zero. The obstruction can be
+        # replayed directly by factoring the degree-at-most-39 trinomials.
+        x = nmod_poly([0, 1], 2)
+        c = 2*scale
+        for k in range(1, maximum+1, 2):
+            factors = (1+x**(2*c)+x**(c+k)).factor()[1]
+            if all(f.degree() > 16 for f, _ in factors) != (k == maximum):
+                raise ArithmeticError(f"unexpected small factor in the sharpness test at {(c, k)}")
+        print(f"All {len(divisors)} gcd classes have an odd tap at most {maximum} for normalized spacing {c}; "
+              f"the class g=L needs {maximum}.")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--census", action="store_true", help="check the even-spacing and degree-2040 censuses with PARI/GP")
     parser.add_argument("--gp", default="gp", help="PARI/GP executable")
     parser.add_argument("--local-cutoff", type=int, choices=range(1, 17), metavar="B",
                         help="certify the root-free residue choices in every gcd class, for 1 <= B <= 16")
+    parser.add_argument("--order-bound", action="store_true",
+                        help="prove the degree-16 sieve with normalized width at most 39")
     parser.add_argument("--candidates", type=int, metavar="N",
                         help="write the even-spacing reciprocal representatives in degree N as CSV (8 divides N)")
     args = parser.parse_args()
     if args.candidates is not None:
         n = args.candidates
-        if n < 8 or n % 8 or args.census or args.local_cutoff:
+        if n < 8 or n % 8 or args.census or args.local_cutoff or args.order_bound:
             parser.error("--candidates takes a positive multiple of eight and runs by itself")
         writer = csv.writer(sys.stdout, lineterminator="\n")
         writer.writerow(("degree", "b", "a"))
@@ -274,3 +309,5 @@ if __name__ == "__main__":
         check_spacing_2040(args.gp)
     if args.local_cutoff:
         check_local_cutoff(args.local_cutoff)
+    if args.order_bound:
+        check_local_order_bound()

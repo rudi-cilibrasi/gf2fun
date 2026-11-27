@@ -8,6 +8,18 @@ namespace GF2Sparse.MiddleRank
 
 open scoped Pointwise
 
+/-- The e-th power is fixed by the q-power map precisely when the relative
+quotient is killed by e, writing q=k+1. -/
+theorem half_field_power_iff {G : Type*} [Group G] (r : G) (e k : ℕ) :
+    (r^e)^(k+1) = r^e ↔ (r^k)^e = 1 := by
+  have swap : (r^e)^k = (r^k)^e := by rw [← pow_mul, ← pow_mul, Nat.mul_comm e k]
+  rw [pow_succ, swap]
+  constructor
+  · intro h
+    exact mul_right_cancel (b := r^e) (h.trans (one_mul _).symm)
+  · intro h
+    rw [h, one_mul]
+
 /-- For independent coordinates, adjoining a set containing u, 1/u and 1/u²
 preserves the product-one test at every length at least two. -/
 theorem product_one_after_twist {M G : Type*} [Monoid M] [Group G]

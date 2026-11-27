@@ -489,4 +489,29 @@ theorem complementary_quartic_divisor (k j : ℕ) :
   simpa only [complementaryTaps, map_add, map_mul, map_one, map_pow, AdjoinRoot.mk_X,
     pow_add, pow_mul, hz, one_pow, one_mul] using (AdjoinRoot.mk_eq_zero.2 hbase)
 
+-- Factors and cofactors of X^(2i+3)+X^4+1 in binary coefficient notation.
+private def widthFactor (i : Fin 18) : ℕ × ℕ :=
+  (#[(25,1), (7,11), (145,1), (529,1), (7,875), (13,1869),
+     (32785,1), (7,56171), (11,94951), (59,108823), (7,3595115),
+     (41,1431801), (13,30648141), (7,230087531), (19,162468703),
+     (11,1555657447), (7,14725602155), (103,4065644683)] : Array (ℕ × ℕ))[i.val]!
+
+/-- Each odd normalized tap k below 37 leaves a factor of degree at most
+sixteen in the obstruction X^(k+2)+X^4+1. -/
+theorem complementary_short_tap_factor (i : Fin 18) :
+    ∃ g : BinaryPoly, Irreducible g ∧ g.natDegree ≤ 16 ∧
+      g ∣ X^(2*i.val+3) + X^4 + 1 := by
+  have check : ∀ j : Fin 18, 0 < (widthFactor j).1.log2 ∧
+      (widthFactor j).1.log2 ≤ 16 ∧
+      maskProduct (widthFactor j).1 (widthFactor j).2 = 2^(2*j.val+3) ^^^ 2^4 ^^^ 1 := by
+    decide +kernel
+  obtain ⟨hpos, hle, heq⟩ := check i
+  let f := decode (widthFactor i).1
+  have pos : 0 < f.natDegree := (natDegree_decode _).symm ▸ hpos
+  have hn : f ≠ 0 := by intro h; simp [h] at pos
+  obtain ⟨g, hg, hd⟩ := WfDvdMonoid.exists_irreducible_factor (not_isUnit_of_natDegree_pos f pos) hn
+  refine ⟨g, hg, (natDegree_le_of_dvd hd hn).trans ((natDegree_decode _).trans_le hle), hd.trans ?_⟩
+  exact ⟨decode (widthFactor i).2, (by
+    simpa only [decode_maskProduct, decode_xor, decode_pow_two, decode_one] using (congrArg decode heq).symm)⟩
+
 end GF2Sparse

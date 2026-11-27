@@ -16710,4 +16710,139 @@ The input files are \nolinkurl{data/large-quadratic-circle-orders.json}
 and \nolinkurl{data/large-mersenne-complementary-taps.json}, with
 verification in \nolinkurl{scripts/check_large_circle_orders.py}.
 
+
+\section{A sharp normalized tap bound and a quadratic period in every large even degree}
+\label{sec:complementary-order}
+
+For \(S=(1+X^b)(1+X^{n-b})+X^a\) with five distinct exponents, write
+\(t=\gcd(a,b),\ c=b/t,\ k=a/t\) and
+\[
+                         K=c+\max(c,k).
+\]
+The period \(H\) of \(X\) modulo a squarefree \(S\) is the least
+common multiple of the orders of its roots.
+
+\begin{theorem}\label{thm:local-quadratic-order}
+In every sufficiently large even degree there is such a squarefree
+pentanomial with even \(b=O(\log n)\), coprime exponents, an odd
+number of irreducible factors, no factor of degree at most sixteen,
+and \(K\le39\). In particular its period satisfies
+\[
+                           39(H-1)\ \ge\ n(n-1).
+\]
+For every positive degree divisible by \(8L_{16}\), any five-term
+member with even \(b\) passing the three tests of
+Theorem~\ref{thm:complementary-local} has \(K\ge39\).
+\end{theorem}
+\begin{proof}
+The bound on \(H\) follows from Theorem~\ref{thm:two-block} with
+the decomposition
+\[
+ S=X^{n-b}A(X^t)+B(X^t),\quad A(Y)=1+Y^c,\quad
+ B(Y)=1+Y^c+Y^k .
+\]
+The two polynomials are coprime since their difference is \(Y^k\).
+For each quotient other than one, there are at most \(K\) ordered
+root pairs with that quotient. Squarefreeness gives \(n(n-1)\)
+ordered pairs of distinct roots, and every quotient is an
+\(H\)-th root of unity.
+
+Set \(L=L_{16},\ m=n/2,\ g=\gcd(m,L)\). The following finite
+calculation uses the units \(h=\pm2^j,\ 0\le j\le9\). For every
+one of the 49,152 divisors \(g\mid L\), and separately for each
+\(s\in\{1,2\}\), some such \(h\) and positive odd \(k\) make
+\[
+       \big((1+Y^2)(1+Y^{2hg-2})\big)^s+Y^k
+\]
+nonzero at every nonzero element of every binary field of degree
+at most sixteen. The maximum permitted \(k\) is 37 at \(s=1\)
+and 31 at \(s=2\). Negative powers are read in the multiplicative
+group. To reproduce the calculation use degrees 9 through 16.
+In each field take \(Y=\alpha^u\) in the orbit representatives from
+Theorem~\ref{thm:complementary-local}. When both factors are nonzero,
+remove the \(k\) satisfying
+\[
+ uk\equiv s\big(\log_\alpha(1+\alpha^{2u})+
+               \log_\alpha(1+\alpha^{(2hg-2)u})\big)
+                  \pmod{2^d-1}.
+\]
+Check that at least one odd tap survives in all eight fields for
+a common \(h\). The option \texttt{--order-bound} of
+\nolinkurl{scripts/check_complementary_taps.py} performs both
+enumerations. At \(g=L\) the smallest possible odd taps are
+respectively 37 and 31.
+
+Take \(s=2\) when \(n\equiv4\pmod8\) and \(s=1\) otherwise. Choose
+an odd prime \(t>2\), coprime to \(m\), with \(m\equiv shgt\bmod L\).
+After division by \(g\) this prescribes a unit modulo \(L/g\),
+which extends to a unit class modulo \(L\). When \(n\equiv2\pmod8\)
+prescribe \(kt\equiv1\pmod4\); when \(n\equiv6\pmod8\)
+prescribe \(kt\equiv3\pmod4\). The progression argument of
+Theorem~\ref{thm:complementary-local}, now modulo \(4L\), gives
+\(t=O(\log n)\). Set \(c=2s,\ b=ct,\ a=kt\). The exponents have gcd
+one and the indicated finite test applies with \(Y=X^t\).
+For \(s=2\) both complementary exponents are multiples of four
+and the base discriminant in Theorem~\ref{thm:complementary-discriminant}
+is five. For \(s=1\) exactly one correction holds, namely
+\(t\mid a\). Indeed \(t\nmid n\), and the other half-spacing is
+larger than \(a\) and \(|a-b|>0\) for large \(n\). The base
+discriminant is one by the chosen residues, giving five after the
+correction. The derivative is \(X^{a-1}\). Finally the normalized
+width is at most \(2+37=39\) or \(4+31=35\).
+
+For sharpness take \(8L\mid n\) and suppose \(K<39\). The tap \(a\)
+is odd by exponent coprimality, so \(t,k\) are odd and \(c\) is
+even. Since \(2c\le K\) we have \(c\le18\). If four divides
+\(c\), both complementary exponents are multiples of four and
+the discriminant is one. If \(c\equiv2\pmod4\) and \(c>2\),
+an odd prime dividing \(c/2\) divides \(L\), hence both
+\(b/2\) and \((n-b)/2\). It is coprime to \(a\) by exponent
+coprimality, so none of the four divisibility corrections holds.
+This again excludes odd factor count. It remains to take \(c=2\)
+and \(k\le35\) odd. On the small fields \(X^n=1\) for \(X\ne0\),
+and multiplying \(S(X)\) by \(X^b\) gives
+\[
+                       1+Y^4+Y^{k+2},\qquad Y=X^t .
+\]
+Here \(\gcd(t,L)=1\), so taking \(t\)-th powers is a bijection in
+each such multiplicative group. Each of the eighteen trinomials
+has a nonconstant factor of degree at most sixteen. Lean verifies
+explicit divisors in \nolinkurl{GF2Sparse/ReciprocalSieve.lean}.
+At \(k=37\) the resulting degree-39 trinomial is irreducible.
+This proves sharpness of \(K\).
+\end{proof}
+
+\begin{corollary}\label{cor:local-full-degree-prime}
+Let any irreducible member of this complementary family have even
+degree \(n\) and coprime exponents. For every odd prime \(p\mid n\)
+with \(p>K\), its root order has a prime-power divisor whose
+binary multiplicative degree is divisible by
+\(2^{v_2(n)}p^{v_p(n)}\). The divisor can be taken prime if
+\(p\nmid 2^{n/2}+1\). In particular for \(n=2^h p^e\),
+\(h,e\ge1\), this prime has full degree \(n\) whenever
+\(p\nmid 2^{2^{h-1}}+1\). The preceding theorem makes \(p>39\)
+sufficient for the size condition on its candidates.
+\end{corollary}
+\begin{proof}
+Let \(w=r^{2^{n/2}}/r\), a quotient of distinct conjugates, and
+let \(D=\operatorname{ord}(w)\mid 2^{n/2}+1\). If \(w\) belonged
+to \(\mathbb F_{2^{n/p}}\), successively raising numerator and
+denominator to \(2^{n/p}\) would give \(p\) distinct ordered pairs
+with quotient \(w\), contradicting the bound \(K\). Thus some
+prime power \(s^j\mid D\) has binary degree not dividing \(n/p\).
+This degree divides \(n\), and cannot divide \(n/2\) since
+\(2^{n/2}=-1\bmod s^j\). This gives both claimed prime powers
+in the degree. If \(p\nmid 2^{n/2}+1\) then \(s\ne p\).
+The degree modulo \(s^j\) differs from that modulo \(s\) by
+a power of the odd prime \(s\), so the degree modulo \(s\)
+retains its full 2-part and \(p\)-part. For the indicated
+two-prime degrees, Fermat's congruence gives
+\(2^{n/2}\equiv 2^{2^{h-1}}\pmod p\).
+\end{proof}
+
+The uniform construction supplies the quotient-ring period bound
+without an irreducibility assumption. Proving that a member generates
+a field of order \(2^n\) and has full period \(2^n-1\) remains the
+existence problem.
+
 \end{document}
