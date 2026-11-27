@@ -18403,4 +18403,81 @@ symmetries. Each test is reproduced by
 \nolinkurl{scripts/check_translation_lift_orders.py}.
 \end{proof}
 
+
+\clearpage
+\section{A cubic residue test from a real quadratic class number}
+\label{sec:torus-cubic-class}
+
+\begin{theorem}
+Let \(p\equiv5\pmod8\) be prime with two primitive modulo \(p\).
+For a root \(x\) of \(D_p\) in \(\mathbb F_{2^{p-1}}\), the index
+of its multiplicative order is divisible by three if and only if
+\[
+                  3\mid h(4p),
+\]
+where \(h(4p)\) is the ordinary ideal class number of the real
+quadratic order of discriminant \(4p\). This includes every
+irreducible pentanomial \(C_k\) of Section~\ref{sec:twisted-torus}.
+\end{theorem}
+\begin{proof}
+Set \(n=p-1\), \(q=2^{n/2}\), \(t=z+z^{-1}\) for \(z\) of order
+\(p\), and \(x=x(z)\) as before. We have
+\[
+ b=x^{q+1}=1+1/t,\qquad
+ b^2=t^{2^j}/t^3,\qquad 2^j\equiv3\pmod p.
+\]
+The second identity follows from
+\(z^3+z^{-3}=t^3+t=t^{2^j}\). Taking the norm from
+\(\mathbb F_q\) to \(\mathbb F_4\), squaring and raising to
+\(2^j\) are automorphisms of the group of order three. Thus
+\(\operatorname{Norm}_{2^n/4}(x)=1\) if and only if
+\(\operatorname{Norm}_{q/4}(t)=1\). The former norm is precisely
+the power \(x^{(2^n-1)/3}\).
+
+Write \(S\) for the nonzero quadratic residues modulo \(p\).
+Multiplication by four generates \(S\), and \(-1\in S\).
+Consequently the conjugates of \(t\) over \(\mathbb F_4\) are
+\(z^a+z^{-a}\) indexed by \(S/\{\pm1\}\). Their product is
+\[
+                     \prod_{a\in S}(1+z^a),
+\]
+since \((1+z^a)(1+z^{-a})=z^a+z^{-a}\).
+Lift \(z\) to a complex primitive \(p\)-th root \(\zeta\) by choosing
+the reduction homomorphism \(\mathbb Z[\zeta]\to\mathbb F_{2^n}\)
+taking \(\zeta\) to \(z\).
+For \(K=\mathbb Q(\sqrt p)\), let \(\varepsilon>1\) be its
+fundamental unit and \(h=h(p)\) its ordinary class number.
+The cyclotomic product formula gives
+\[
+ \prod_{a\in S}(1-\zeta^a)=\sqrt p\,\varepsilon^{-h}
+\]
+for \(\zeta=\exp(2\pi i/p)\). Indeed, the products for squares
+and nonsquares are positive, their product is \(p\), and their ratio
+is \(\varepsilon^{-2h}\) by Dirichlet's real quadratic class number
+formula. See \href{https://doi.org/10.4153/CMB-1995-013-6}
+{Mitsuhiro, Nakahara and Uehara, p.~98}.
+Reduction sends \(\sqrt p\) to one. We conclude that the binary
+norm is trivial exactly when \(\bar\varepsilon^{\,h}=1\).
+
+Two is inert in \(K\). Write \(e\in\{1,3\}\) for the order of
+\(\bar\varepsilon\) in \((\mathcal O_K/2)^\times=\mathbb F_4^\times\).
+The order \(\mathbb Z+2\mathcal O_K\) has discriminant \(4p\).
+The exact sequence for the Picard group of an order identifies the
+kernel of its map to the ideal class group of \(K\) with
+\((\mathcal O_K/2)^\times\) modulo the images of
+\(\mathcal O_K^\times\) and \((\mathbb Z/2)^\times\).
+Thus \(h(4p)=3h/e\). Divisibility by three is equivalent to
+\(e\mid h\), which gives the assertion.
+\end{proof}
+
+For \(p=13,37,2053\) the respective class numbers \(h(4p)\) are
+\(1,3,1\), in agreement with the exact indices \(1,3,7\) of the
+three pentanomials. For every eligible prime \(p\le2053\), the
+ordinary ray class number of \(K\) at the modulus \(2\) equals
+\(h(4p)\), since \((\mathbb Z/2)^\times\) is trivial.
+The checker certifies the maximal order class group and units with
+PARI's \texttt{bnfcertify}, computes the ray class number, and
+compares with direct binary powering. Among 63 primes, exactly
+22 give cubes. See \nolinkurl{scripts/check_twisted_cubic.py}.
+
 \end{document}
