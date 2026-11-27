@@ -1,4 +1,4 @@
-"""Verify a mixed PRIMO format-4 certificate for a specified integer with PARI/GP."""
+"""Verify a mixed PRIMO format-3 or format-4 certificate for a specified integer with PARI/GP."""
 
 import configparser
 import gzip
@@ -34,12 +34,34 @@ def check_primo(path, candidate, gp):
     with gzip.open(path, "rt", encoding="ascii") as stream:
         certificate.read_file(stream)
     header = certificate["PRIMO - Primality Certificate"]
-    n = primo_integer(certificate["Candidate"]["N"])
-    if header["Format"] != "4" or n != candidate:
+    version = header.getint("Format")
+    if version == 3:
+        n = int(certificate["Candidate"]["N$"], 16)
+    elif version == 4:
+        n = primo_integer(certificate["Candidate"]["N"])
+    else:
+        raise ValueError("unsupported PRIMO format")
+    if n != candidate:
         raise ValueError("PRIMO certificate does not match the requested prime")
     steps = []
-    for i in range(1, header.getint("TestCount") + 1):
-        data = {k: primo_integer(v) for k, v in certificate[str(i)].items()}
+    count = header.getint("TestCount")
+    for i in range(1, count + 1):
+        record = certificate[str(i)]
+        if version == 3:
+            kind = record.getint("Type")
+            fields = {1: {"s", "r", "b"}, 2: {"s", "r", "q"},
+                      3: {"s", "r", "a", "b", "t"}, 4: {"s", "r", "j", "t"}}
+            if i == count:
+                if kind != 0 or set(record) != {"type"}:
+                    raise ValueError("missing terminal PRIMO step")
+                break
+            if kind not in fields or set(record) != {"type"} | {k+"$" for k in fields[kind]}:
+                raise ValueError(f"invalid format-3 record at PRIMO step {i}")
+            data = {k: int(record[k+"$"], 16) for k in fields[kind]}
+            if kind in (3, 4):
+                data["w"] = n + 1 - data["s"] * data["r"]
+        else:
+            data = {k: primo_integer(v) for k, v in record.items()}
         s = data["s"]
         if n <= 3 or n % 2 == 0 or s <= 0:
             raise ValueError(f"invalid parent or cofactor at PRIMO step {i}")
@@ -70,7 +92,7 @@ def check_primo(path, candidate, gp):
                 if gcd(2*lucas_q*(lucas_p**2-4*lucas_q), n) != 1:
                     raise ValueError(f"singular Lucas sequence at PRIMO step {i}")
                 steps.append([n, q, s, lucas_p, lucas_q])
-        if remainder or not 1 < q < n:
+        if remainder or not 1 < q < n or ("r" in data and data["r"] != q):
             raise ValueError(f"broken prime chain at PRIMO step {i}")
         n = q
     if not steps or n >= 2**64 or not fmpz(n).is_prime():

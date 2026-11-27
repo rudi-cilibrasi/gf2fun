@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **The minimum primitive weight is five in degree 5,053 and three in degree 14,263.** The first has the pentanomial with interior exponents 461, 922 and 4592. The second has exactly one irreducible trinomial up to reciprocity, with tap 5985. Every sparse irreducible in these degrees has a 1,463- or 4,036-digit prime, respectively, in its root order. The other tests use norms to the two prime-degree subfields. [Proof](results.pdf#page=266) · [Certificates](data/semiprime-scalar-norms.json) · [Verifier](scripts/check_semiprime_scalar_norms.py)
+
 - **Every sparse irreducible of degree $pq$ has a full-degree prime-power factor in its root order whenever $4q\le9p$.** This holds for all odd primes $p<q$. In a hypothetical product of proper subfield elements, a class pattern of $3,1,1$ makes the polynomial vanish in a proper subfield. The remaining pattern forces the smaller component order to lie between $3p^2/4$ and $pq/3$. [Proof and norm criterion](results.pdf#page=264) · [Lean tensor argument](GF2Sparse/SubfieldProducts.lean)
 
 - **Every sparse irreducible in degrees 1,637, 3,359 and 4,243 has a large certified prime in its root order.** The conclusion holds for all six binary fractional linear images of its root at weights below 733, 1,649 and 2,029, respectively. For the root itself the exact thresholds are 737, 1,683 and 2,029. The census multiplies all exceptional factors and their translates to verify both lists. [Proof](results.pdf#page=263) · [Weight distributions](data/cyclotomic-weight-spectra.json) · [Verifier](scripts/check_cyclotomic_weights.py)
@@ -832,6 +834,13 @@ For the five witnesses in degrees 7854 through 9576, each row gives the degree $
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 7854 --end 9576 --available --symmetric --factor-table data/mersenne-symmetric-above-7560.json --verify data/symmetric-witnesses-above-7560.csv --jobs 4
+~~~
+
+To verify degrees 5,053 and 14,263, compile the NTL trinomial enumerator and run the norm and primality certificates with PARI/GP available.
+
+~~~sh
+c++ -std=c++17 -O3 scripts/prime_degree_trinomials.cpp -lntl -lgmp -o /tmp/gf2-trinomials
+uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_semiprime_scalar_norms.py --trinomials /tmp/gf2-trinomials
 ~~~
 
 To reproduce the three prime-degree weight distributions, compile the enumerator with NTL and run the verifier with PARI/GP available.

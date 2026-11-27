@@ -19742,4 +19742,41 @@ separated primes. Lean verifies the odd multiplicity obstruction and the
 three-term additive relation in either proper subfield in
 \nolinkurl{GF2Sparse/SubfieldProducts.lean}.
 
+\clearpage
+\section{Minimum weights in degrees 5053 and 14263 from subfield norms}
+\label{sec:semiprime-norm-witnesses}
+
+In each row the first two columns are primes \(p,q\), the degree is
+\(n=pq\), and \(C=(2^n-1)/((2^p-1)(2^q-1))\) is prime. The last column
+lists the interior exponents of a primitive binary polynomial; the
+constant and leading terms are understood.
+\[
+\begin{array}{r|r|r|r|l}
+ p&q&n&\text{digits of }C&\text{interior exponents}\\\hline
+ 31&163&5053&1463&461,922,4592\\
+ 17&839&14263&4036&5985\\
+ 17&839&14263&4036&3444,6888,10819
+\end{array}
+\]
+Every sparse irreducible in either degree already has \(C\) in its
+root order. Indeed \(2^{31}-1\) and \(2^{17}-1\) are prime, and
+\(pq<3(2^p-1)\) in both cases. Apply
+Corollary~\ref{cor:semiprime-forced-norm}.
+For each displayed polynomial, a direct irreducibility check and two
+norm embeddings finish the proof. If \(z\) is a root, the archived
+binary degree-\(d\) polynomial vanishes at
+\(z^{(2^n-1)/(2^d-1)}\) for \(d=p,q\).
+In each smaller quotient, ordinary powering gives exact order
+\(2^d-1\) using its complete, prime-checked factorization.
+
+Exhausting the trinomials \(X^n+X^a+1\), \(1\le a\le n/2\), gives none
+irreducible in degree 5053 and precisely \(a=5985\) in degree 14263.
+Thus the minimum primitive weights are five and three, respectively.
+The power checks in the subfields and the independent full-size
+trinomial enumeration are reproduced by
+\nolinkurl{scripts/check_semiprime_scalar_norms.py}. PARI verifies
+the original PRIMO certificates for the large primes, archived from
+\href{https://factordb.com/cert/1100000000001997225}{FactorDB for degree 5053} and
+\href{https://factordb.com/cert/1100000000005636398}{FactorDB for degree 14263}.
+
 \end{document}
