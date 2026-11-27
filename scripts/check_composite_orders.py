@@ -11,6 +11,7 @@ from pathlib import Path
 
 from flint import fmpz, nmod_poly
 
+from check_primo_certificate import check_primo
 from check_product_range import certified_primes, prime_index_powers, verify
 
 
@@ -51,12 +52,21 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gp", default="gp", help="PARI/GP executable for ECPP certificates")
     parser.add_argument("--ntl", help="compiled scripts/prime_degree_trinomials.cpp for an exhaustive census")
+    parser.add_argument("--degree", type=int, help="verify only this degree from the table")
     args = parser.parse_args()
     if hasattr(sys, "set_int_max_str_digits"):
         sys.set_int_max_str_digits(0)
     rows = json.loads((DATA / "composite-order-witnesses.json").read_text())
+    if args.degree is not None:
+        if str(args.degree) not in rows:
+            parser.error(f"degree {args.degree} is absent from the witness table")
+        rows = {str(args.degree): rows[str(args.degree)]}
     primes = {p for row in rows.values() for p in row["order_factors"]}
     certified = certified_primes(DATA / "composite-order-prime-certificates.json.gz", primes, args.gp)
+    if "16129" in rows:
+        p = max(rows["16129"]["order_factors"])
+        check_primo(DATA / "degree-16129-primality.cert.gz", p, args.gp)
+        certified.add(p)
     if not all(fmpz(p).is_prime() for p in primes - certified):
         raise ValueError("composite factor in order data")
     for degree, row in rows.items():

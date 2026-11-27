@@ -19458,14 +19458,18 @@ The last column lists all primitive trinomial taps \(s\le n/2\) for
  6640&393&262&\text{---}\\
  7480&2902&2289&\text{---}\\
  7548&1231&1393&\text{---}\\
- 15856&1498&7179&\text{---}
+ 15856&1498&7179&\text{---}\\
+ 16129&2520&5040&79,7575
 \end{array}
 \]
 To find the factorizations, write \(2^n-1=\prod_{d\mid n}\Phi_d(2)\)
 and reuse the factors at proper divisors of \(n\). For the remaining
 primitive part we used integer factors from
-\href{https://factordb.com/}{FactorDB}. Verification takes the product
-of the archived factors and proves primality by ECPP or FLINT.
+\href{https://factordb.com/}{FactorDB}. We check their product and prove
+each factor prime. In degree \(127^2=16129\) the largest factor has
+4,789 digits. Its archived \href{https://factordb.com/cert/1100000000252268434}{PRIMO
+certificate} has 499 elliptic steps, seven \(N-1\) steps and eight
+Lucas \(N+1\) steps. The other large factors have PARI ECPP certificates.
 For each pentanomial \(f\), FLINT checks \(X^{2^n-1}=1\bmod f\) and
 \(X^{(2^n-1)/\ell}\ne1\bmod f\) at every distinct prime factor
 \(\ell\). The first identity makes \(f\) squarefree. If it had more
@@ -19477,8 +19481,8 @@ Swan's theorem excludes irreducible trinomials when \(8\mid n\).
 In the remaining degrees NTL tests every tap up to reciprocity, and
 FLINT checks each surviving trinomial by the Rabin test and
 prime-index powers. All irreducible taps are primitive in degrees
-\(3481=59^2\) and \(4913=17^3\). The list of irreducible taps in
-degree 3885 is empty. In degrees 3998 and 7548 the irreducible taps
+\(59^2,17^3,127^2\). Degree 3885 has no irreducible tap.
+In degrees 3998 and 7548 the irreducible taps
 are respectively \(153\) and \(1689,2277\), all of proper order.
 Even weight would give a factor \(X+1\). See
 \nolinkurl{scripts/check_composite_orders.py}.
