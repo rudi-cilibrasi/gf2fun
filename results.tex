@@ -14125,4 +14125,29 @@ claim. For an odd-weight template flip one free interior coefficient
 above position \(1016\) and apply the triangle inequality.
 \end{proof}
 
+\section{The 104,968 quaternary norm logarithms at \(q=1024\)}
+\label{sec:quaternary-large-logs}
+In the notation of Section~\ref{sec:quaternary-doubled}, let
+\(a=N_{E/H}(x)\), \(V_0=a^{10}\), and
+\(V_t=N_{E\mathbb F_{4^{10}}/H}(x+t)\). For each fourth-power
+orbit of \(t\in\mathbb F_{4^{10}}\), the archive
+\nolinkurl{data/degree-1229-q1024-quaternary-logs.csv.gz} gives
+the unique \(0\le e_t<C\) satisfying
+\[
+                     V_t^K=(V_0^K)^{e_t}.
+\]
+All 104,968 exponents are coprime to \(C\), so all these projections
+have order exactly \(C\). Indeed \(a\) is primitive by
+Section~\ref{sec:quaternary-rank}, and \(10\) is coprime to \(2^{1229}-1\).
+
+Applying the archived recurrence to the matrix yields the integer
+vector. It satisfies all 172,222 homogeneous circle rows modulo
+\(C\) and \(e_0=1\). A separate field calculation constructs the
+minimal polynomial \(p_t\) over \(\mathbb F_4\), evaluates both
+conjugates of \(p_t(x)\) in the degree-2458 binary field, and raises
+their product to \(10/\deg p_t\). Direct binary powering checks
+the displayed equality at every label. At \(t\in\mathbb F_4\)
+the normalized exponents also agree with the four corresponding
+entries of the \(q=512\) table, whose norms use ninth powers.
+
 \end{document}

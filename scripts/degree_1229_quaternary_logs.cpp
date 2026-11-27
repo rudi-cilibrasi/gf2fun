@@ -12,7 +12,7 @@ using NTL::GF2XModulus;
 using NTL::ZZ;
 
 namespace {
-constexpr int n = 1229, size = 1 << 18, constant_modulus = 0x41403;
+constexpr int n = 1229;
 constexpr int window = 6;
 using Powers = std::vector<std::array<GF2X, 1 << window>>;
 
@@ -26,7 +26,7 @@ class ConstantField {
     std::vector<int> powers, logs;
 public:
     int omega;
-    ConstantField() : powers(2*size), logs(size, -1) {
+    ConstantField(int size, int constant_modulus) : powers(2*size), logs(size, -1) {
         int x = 1;
         for (int i = 0; i < size-1; ++i) {
             if (logs[x] >= 0) throw std::logic_error("short constant orbit");
@@ -86,8 +86,20 @@ GF2X evaluate_power(const Powers& powers, const ZZ& e, const GF2XModulus& field)
 }
 
 int main(int argc, char** argv) {
-    const bool orders = argc == 2 && std::string(argv[1]) == "--orders";
-    if (argc != 1 && !orders) return 1;
+    bool orders = false;
+    int q = 512;
+    for (int i=1; i<argc; ++i) {
+        const std::string option(argv[i]);
+        if (option == "--orders") orders = true;
+        else if (option == "--q" && i+1 < argc) {
+            const std::string value(argv[++i]);
+            if (value == "1024") q = 1024;
+            else if (value == "512") q = 512;
+            else return 1;
+        } else return 1;
+    }
+    const int m = q == 512 ? 9 : 10;
+    const int size = q*q;
     ZZ modulus, z_mask, known, cofactor;
     if (!(std::cin >> modulus >> z_mask >> known >> cofactor)) return 1;
     std::array<ZZ,4> primes;
@@ -106,9 +118,9 @@ int main(int argc, char** argv) {
     const GF2X x(1,1);
     const GF2X conjugate_x = NTL::PowerXMod(NTL::power2_ZZ(n),field);
     const GF2X conjugate_z = z+1;
-    std::array<std::array<GF2X,4>,10> direct{}, conjugate{};
+    std::vector<std::array<GF2X,4>> direct(m+1), conjugate(m+1);
     GF2X a(1), b(1);
-    for (int i=0; i<=9; ++i) {
+    for (int i=0; i<=m; ++i) {
         direct[i][1]=a;
         direct[i][2]=NTL::MulMod(a,z,field);
         direct[i][3]=direct[i][2]+a;
@@ -118,11 +130,11 @@ int main(int argc, char** argv) {
         NTL::MulByXMod(a,a,field);
         NTL::MulMod(b,b,conjugate_x,field);
     }
-    const GF2X anchor = NTL::PowerMod(NTL::MulMod(x,conjugate_x,field),9,field);
+    const GF2X anchor = NTL::PowerMod(NTL::MulMod(x,conjugate_x,field),m,field);
     const GF2X projected = NTL::PowerMod(anchor,known,field);
     if (NTL::IsOne(projected) || !NTL::IsOne(NTL::PowerMod(projected,cofactor,field))) return 1;
     const Powers powers = powers_of(projected,cofactor,field);
-    const ConstantField constants;
+    const ConstantField constants(size, q == 512 ? 0x41403 : 0x100009);
     std::vector<std::pair<int,ZZ>> rows;
     int mask;
     ZZ log;
@@ -140,17 +152,17 @@ int main(int argc, char** argv) {
         for (size_t i=0; i<rows.size(); ++i) {
             const auto poly = constants.minimal(rows[i].first);
             const long d = static_cast<long>(poly.size())-1;
-            if (9 % d) { valid = false; continue; }
+            if (m % d) { valid = false; continue; }
             GF2X v, w;
             for (long j=0; j<=d; ++j) {
                 v += direct[j][poly[j]];
                 w += conjugate[j][poly[j]];
             }
             const GF2X norm = NTL::MulMod(v,w,local);
-            if (NTL::PowerMod(norm,known*(9/d),local) != evaluate_power(powers,rows[i].second,local))
+            if (NTL::PowerMod(norm,known*(m/d),local) != evaluate_power(powers,rows[i].second,local))
                 valid = false;
             if (orders) {
-                const GF2X value = NTL::PowerMod(norm,9/d,local);
+                const GF2X value = NTL::PowerMod(norm,m/d,local);
                 const GF2X small = NTL::PowerMod(value,cofactor,local);
                 for (size_t j=0; j<primes.size(); ++j)
                     if (NTL::IsOne(NTL::PowerMod(small,known/primes[j],local))) missing[i] |= 1 << j;
