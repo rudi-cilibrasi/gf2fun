@@ -852,7 +852,7 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --jobs 4
 ~~~
 
-For the five-term examples in degrees $2^{141}+4$ and $2^{191}+4$, the first two commands certify the quadratic, cubic and quartic number fields that test index primes 3, 7 and 5. The third proves the exact powers of three in the two root orders without assuming the generalized Riemann hypothesis. It bounds the imaginary quadratic class numbers by a signed sum over integers with small prime factors, then checks a quadratic form of conductor three. The final PARI calculation gives the stronger real class-number value $h(4p)=1$ under GRH. [Field equations](results.pdf#page=250) · [Unconditional proof](results.pdf#page=257)
+For the five-term examples in degrees $2^{141}+4$ and $2^{191}+4$, the first two commands certify the quadratic, cubic and quartic number fields that test index primes 3, 7 and 5. The third proves the exact powers of three in the two root orders without assuming the generalized Riemann hypothesis. It bounds the imaginary quadratic class numbers using signed sums with prime cutoffs $2^{21}$ and $2^{26}$, respectively, then checks a quadratic form of conductor three. The final PARI calculation gives the stronger real class-number value $h(4p)=1$ under GRH. [Field equations](results.pdf#page=250) · [Unconditional proof](results.pdf#page=257)
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_twisted_ray.py --fields 141

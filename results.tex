@@ -19309,23 +19309,25 @@ coefficient is zero. The geometric sum at frequency \(r\) is bounded
 by \(D/(2\min(r,D-r))\). Summing over \(r\) and applying partial
 summation above \(X\) gives the stated tail.
 
-Put \(u=\log X/\log Y\). For \(Y\ge286\) we have
+Put \(u=\log X/\log Y\), \(g=256\), \(J=\lfloor gu\rfloor\) and
+\(\varepsilon=1/\log^2 Y\). Set
 \[
- R\le 1+\frac{1+\log X}{Y-1}
- +\sum_{j=1}^{\lfloor u\rfloor}
-    \frac{\bigl(\log(u-j+1)+1/\log^2 Y\bigr)^j}{j!}.             \tag{2}
+ P(Z)=\varepsilon Z^g+\sum_{j=g}^{J}\log((j+1)/j)Z^j,\qquad
+ R\le\frac{1+\log X}{Y-1}+\sum_{j=0}^{J}[Z^j]\exp P(Z).          \tag{2}
 \]
-A nonsquarefree \(b\) is divisible by \(r^2\) for some prime
-\(r>Y\), giving the second term by the harmonic sum bound. If a
-squarefree \(b\) has \(j\) prime factors, each is at most
-\(X/Y^{j-1}\), and the factors admit \(j!\) orderings. The sum of
-reciprocals of primes in \((Y,Z]\) is at most
-\(\log(\log Z/\log Y)+1/\log^2 Y\) by
+The first term bounds the contribution of \(b\) divisible by some prime
+square \(r^2\) with \(r>Y\). Give each \(t=\log r/\log Y\) mass \(1/r\)
+for primes \(r>Y\). On every interval \([1,v]\) the total mass is at
+most \(\varepsilon+\log v\) for \(Y\ge286\), by
 \href{https://doi.org/10.1215/ijm/1255631807}{Rosser and Schoenfeld,
-\emph{Approximate formulas for some functions of prime numbers},
-Theorem~5}. This gives (2).
+Theorem~5}. The indicator of \(\sum t_i\le u\) decreases in each
+coordinate, so replacing each prime measure by
+\(\varepsilon\delta_1+dt/t\) on \([1,\infty)\) gives an upper bound.
+Rounding \(gt_i\) down admits every valid tuple. The mass in bin \(j\)
+is the coefficient of \(Z^j\) in \(P\). Each squarefree product of
+\(s\) primes has \(s!\) orderings, giving the exponential in (2).
 
-For the signed sums take \(m=512\), \(i(r)=\lfloor m\log_2 r\rfloor\)
+For the signed sums take \(m=1024\), \(i(r)=\lfloor m\log_2 r\rfloor\)
 at each prime, and extend \(i\) completely additively. Consider the
 power series
 \[
@@ -19365,8 +19367,8 @@ The resulting outward bounds, including both approximation errors, are
 \[
 \begin{array}{r|rr|rr|rr}
  k&\log_2Y&\log_2X&S<&R<&L(1,\chi)<&3\pi H/\sqrt D>\\\hline
- 141&24&82&3.012&2.633&8.05&8.64\\
- 191&29&108&4.992&2.850&14.31&14.51
+ 141&21&82&2.977&2.766&8.36&8.64\\
+ 191&26&108&4.923&2.903&14.38&14.51
 \end{array}
 \]
 The last two columns are evaluated before rounding the preceding

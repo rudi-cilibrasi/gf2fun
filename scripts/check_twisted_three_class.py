@@ -3,7 +3,7 @@
 import argparse
 import json
 from itertools import compress
-from math import ceil, factorial, isqrt, prod
+from math import ceil, isqrt, prod
 from pathlib import Path
 
 from flint import arb, arb_series, ctx, fmpz
@@ -13,8 +13,8 @@ from check_twisted_ray import eligible
 
 
 DATA = Path(__file__).resolve().parents[1] / "data" / "translation-lift-orders.json"
-PARAMETERS = {141: (24, 82), 191: (29, 108)}  # binary logarithms of the smoothness and sum cutoffs
-MESH = 512
+PARAMETERS = {141: (21, 82), 191: (26, 108)}  # binary logarithms of the smoothness and sum cutoffs
+MESH = 1024
 SCALE = 1 << 48
 
 
@@ -100,12 +100,14 @@ def smooth_bound(disc, y_bits, x_bits):
 
 def character_bound(disc, y_bits, x_bits):
     y, x = 1 << y_bits, 1 << x_bits
-    u = arb(x_bits) / y_bits
-    # Nonsquarefree rough numbers have a square divisor p^2 with p > y.
-    rough = 1 + (1 + arb(x).log()) / (y - 1)
-    prime_error = 1 / arb(y).log()**2
-    for j in range(1, x_bits // y_bits + 1):
-        rough += ((u-j+1).log() + prime_error)**j / factorial(j)
+    # Bound unordered tuples of distinct large primes with product <= x.
+    grid = 256
+    length = grid * x_bits // y_bits + 1
+    bins = [arb(0)] * grid + [(arb(j+1)/j).log() for j in range(grid, length)]
+    bins[grid] += 1 / arb(y).log()**2
+    ctx.cap = length
+    tuples = arb_series(bins, prec=length).exp()
+    rough = sum(tuples[j] for j in range(length)) + (1 + arb(x).log()) / (y - 1)
     tail = 2 * arb(-disc).sqrt() * (1 + arb(-disc).log()) / x
     return smooth_bound(disc, y_bits, x_bits) * rough + tail
 
