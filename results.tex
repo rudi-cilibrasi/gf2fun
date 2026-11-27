@@ -15740,4 +15740,144 @@ identities and export the complete equations with their coefficients.
 Lean checks denominator clearing, the tail sum and the linear
 perturbation argument in \nolinkurl{GF2Sparse/QuinticIsogeny.lean}.
 
+\section{Sparse quaternary factors of binary primitive pentanomials}
+\label{sec:sparse-quaternary-factors}
+Fix \(\omega^2=\omega+1\) in \(\mathbb F_4\). A binary irreducible
+of degree \(2m\) splits over \(\mathbb F_4\) as \(H\bar H\), where
+\(H\) is monic of degree \(m\) and the bar squares its coefficients.
+The two factors have the same weight. One can therefore ask exactly
+when a primitive polynomial and this lower-degree factor can both
+have at most five terms.
+
+\begin{theorem}\label{thm:sparse-quaternary-factors}
+Let \(F\) be binary primitive of degree \(2m>16\). Both \(F\) and
+\(H\) have at most five terms if and only if, up to reciprocation,
+\(F\) has one of the following forms with five distinct terms:
+\begin{align*}
+ &1+X^a+X^{2^i a}+X^b+X^{2^j b},
+   && a,b,i,j>0,\quad i+j\le4,\\
+ &1+X^{6b}+X^{2a}+X^a+X^{a+b},
+   && a,b>0,\quad a\notin\{b,2b,3b\}.
+\end{align*}
+If the quaternary factor has at most four terms, the first family with
+\(i+j\le3\) suffices, and each primitive member has such a factor.
+Every primitive binary trinomial of even degree above 16 has at least
+six terms in each quaternary factor.
+\end{theorem}
+\begin{proof}
+For a root \(r\) of \(H\), the constant coefficient \(H(0)\) is
+\(r^{(4^m-1)/3}\). Primitivity makes this a generator of
+\(\mathbb F_4^\times\). Choose the conjugate so that \(H(0)=\omega\).
+The positive exponents of \(H\) have gcd one. Indeed, if they were
+multiples of \(s>1\), then \(r^s\) would have degree at most \(m/s\)
+over \(\mathbb F_4\), giving order at most \(s(4^{m/s}-1)<4^m-1\)
+for \(r\). The strict inequality follows from the geometric sum.
+The same argument over \(\F\) gives gcd one for the exponents of \(F\).
+Also \(H(1)\ne0\), by irreducibility.
+
+Write the coefficients on the support \(0=e_0<\cdots<e_k=m\) as
+\(\omega^{c_i}\), so that \(c_0=1\) and \(c_k=0\). The coefficient
+at any exponent in \(H\bar H\) is the parity of the following
+contributions. Each \(i\) contributes at \(2e_i\). A pair \(i<j\)
+contributes at \(e_i+e_j\) precisely when \(c_i\ne c_j\), since the
+sum of the two cross coefficients is then one.
+
+Here is the finite enumeration used in the proof. Use gap coordinates
+\(g_i=e_i-e_{i-1}>0\). Form the hyperplanes on which two distinct
+pair sums, including doubles, become equal. Retain only equations with
+both signs among their gap coefficients. Enumerate their rational row
+spaces of rank less than \(k\), starting at zero and adjoining one
+independent equation at a time. On a nullspace with basis columns \(B\),
+the restrictions of two pair sums agree exactly when their row vectors
+have the same product with \(B\). A positive gap vector exists precisely
+when the nonnegative rays cover all the coordinates. To check this in
+dimension \(d\), set \(d-1\) independent coordinates to zero at a time
+and retain the nonnegative directions. These include every extreme ray
+of the pointed cone. Their sum is strictly positive exactly when the
+cone contains a strictly positive vector. The relative open positive
+set then contains rational points outside the remaining proper
+hyperplanes, giving exactly the equalities of this row space.
+
+For every such space enumerate \(c_1,\ldots,c_{k-1}\in\{0,1,2\}\).
+Discard \(H(1)=0\), equivalently all three coefficient counts have the
+same parity. Group the remaining pair contributions by their restricted
+row vectors and discard configurations with more than five odd groups.
+The table counts the surviving (space, coefficient assignment) pairs
+by multiplicities of the coefficient values. The degree on a ray is
+the sum of its positive integral gap coordinates after removing their
+gcd. There are five hyperplanes and 12 candidate spaces for four
+terms, and 15 hyperplanes and 180 candidate spaces for five terms.
+\[
+\begin{array}{c|c|l|c}
+ \mathrm{wt}(H)&d&\text{multiplicities and counts}&
+   \text{largest normalized }m\text{ on a ray}\\\hline
+ 4&1&(3,1):6,\quad (2,1,1):13&4\\
+ 4&2&(3,1):6&\\
+ 5&1&(4,1):20,\quad (3,2):40,\quad (2,2,1):43&8\\
+ 5&2&(4,1):12,\quad (3,2):8&
+\end{array}
+\]
+No higher-dimensional configuration survives. For two terms the
+exponent gcd already forces \(m=1\). For three terms \(H(1)\ne0\)
+forces multiplicities \((2,1)\).
+
+If a coefficient occurs once and all the others agree, the exceptional
+term is at an endpoint since \(c_0\ne c_k\). A monic reciprocal and
+coefficient conjugation put it at zero. Thus \(H=\omega+A\) for binary
+\(A\) with zero constant, and \(F=1+A+A^2\). Partition the support of
+\(A\) into maximal runs \(a,2a,\ldots,2^{i-1}a\). Each run contributes
+its two boundary exponents \(a,2^ia\) to \(A+A^2\). Distinct maximal
+runs have disjoint boundaries. The weight bound allows at most two
+runs. One run would give \(a=1\) and \(m\le8\). Two runs give the
+first family, with \(i+j\) equal to the number of terms of \(A\).
+
+For the eight two-dimensional configurations of multiplicities
+\((3,2)\), the same rational check identifies an arithmetic progression
+\(0,b,2b,3b\) with coefficients \(\omega,\omega,1,1\), in one of the
+two reciprocal orientations. Explicitly, in each orientation omit one
+nonconstant support point and check that the three remaining differences
+are equal as linear forms on \(B\), with those four coefficients.
+Reciprocation sends the ordered colors to \(1-c_{k-i}\pmod 3\) after
+monic normalization and conjugation. The extra point \(a\) lies inside
+the progression or has coefficient one when \(a>3b\).
+Put \(Z=X^b, U=X^a, Q=(1+Z)(Z^2+\omega)\). Multiplication gives
+\[
+ (Q+U)(\bar Q+U)=1+Z^6+U^2+(1+Z)U .
+\]
+If the extra coefficient is \(\omega\), the cross term becomes
+\((Z^2+Z^3)U\). Here \(0<a<3b\), and the binary reciprocal is the
+second displayed family with parameter \(3b-a\). Coinciding exponents
+in that family, subject to its restrictions, would require \(a=5b\)
+or \(6b\). The exponent gcd then forces \(b=1\), giving \(m\le6\).
+Hence both families have five distinct terms in the asserted range.
+Conversely, the first family is the norm of \(\omega+A\) with \(A\)
+the sum of its two runs. The displayed product supplies the quaternary
+factor in the second family. For a primitive \(F\) these degree-\(m\)
+factors are irreducible.
+\end{proof}
+
+\begin{corollary}\label{cor:1229-quaternary-lift}
+No primitive degree-1229 pentanomial occurs as the minimal polynomial
+of the multiplicative norm of a primitive degree-2458 root whose binary
+and quaternary minimal polynomials each have at most five terms.
+\end{corollary}
+\begin{proof}
+At a fixed degree, the highest of \(2^i a,2^j b\) or of \(6b,2a\)
+fixes one parameter in the respective family. This leaves a linear
+number of choices. At degree 2458 discard supports with exponent gcd
+greater than one and take one member of each reciprocal pair. Exactly
+one of the 2,558 candidates is irreducible, with support
+\(\{0,910,971,1229,2458\}\). For its root \(r\), compute the minimal
+polynomial of \(r^{2^{1229}+1}\) in the binary field. Its degree is
+1229 and it has 631 nonzero coefficients. The reciprocal yields the
+inverse norm with the same weight. PARI/GP and NTL give identical
+minimal polynomials. By comparison, in degree 30 the second family
+with \((a,b)=(3,5)\) gives the unique primitive reciprocal pair in
+the classification. Its root has order \(2^{30}-1\).
+\end{proof}
+The exact rational enumeration and the two degree computations are in
+\nolinkurl{scripts/check_quaternary_norm_shapes.py}. Lean checks the
+progression product and the two-run identity in
+\nolinkurl{GF2Sparse/FrobeniusPairs.lean}.
+
 \end{document}

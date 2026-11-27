@@ -10,6 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In even degrees above 16, exactly two families can give a primitive binary polynomial and a factor over $\mathbb F_4$ both having at most five terms.** This cuts the search in each degree to a linear number of candidates. In degree 2458 only one of the 2,558 reciprocal classes is irreducible. The norm of its root down to degree 1229 has a minimal polynomial with 631 terms, ruling out this construction for a degree-1229 pentanomial. [Classification](results.pdf#page=207) · [Degree-1229 consequence](results.pdf#page=208) · [Exact enumeration](scripts/check_quaternary_norm_shapes.py)
 - **In degree 1229, over 99.9% of the four-test survivors with at most 319 terms are primitive when their interior terms lie in any chosen window of 680 positions.** The bound holds for the ordinary count in each window, which has more than $2^{627}$ survivors. At a cutoff of 325 terms the failure fraction is below one in 100,000. The five-term case remains open. In every sufficiently large degree, a family with at most $0.219245n$ terms contains at least $2^{0.5438n}$ irreducibles and has primitive fraction at least $\varphi(2^n-1)/(2^n-1)-1/n^2$ among them. [Proof](results.pdf#page=197) · [Exact density bounds](scripts/check_1229_weight_density.py) · [Lean arithmetic](GF2Sparse/SelbergWeight.lean)
 - **The $0.219245n$ weight bound still holds when a primitive root and its inverse must both generate normal bases.** In every sufficiently large degree, at least $2^{0.5438n}$ polynomials satisfy that weight bound with all six binary fractional linear images of a root primitive. Three specified images are normal, and all six are normal in even degree. Degree 44 is the first even degree above two where a five-term polynomial meets all six conditions of each kind. [Counting proof](results.pdf#page=193) · [Finite examples and checker](scripts/check_endpoint_normality.py)
 - **In every degree congruent to 29 modulo 40, five terms cannot give an irreducible polynomial whose root and inverse both generate normal bases.** In degree 1229, exactly 1,203 irreducible pentanomials have a normal root and each passes the four known prime-index tests. Seven terms are necessary and sufficient for irreducibility with both normality properties. The example is $X^{1229}+X^{1228}+X^{12}+X^{11}+X^8+X+1$. Its full order is open. [Proof](results.pdf#page=192) · [Lean exclusion](GF2Sparse/Trinomial1229.lean) · [Independent checker](scripts/check_endpoint_normality.py)
@@ -721,6 +722,14 @@ The 81 product witnesses from 3460 through 4096 use 2,426 distinct prime factors
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_product_range.py --start 3457 --end 4096 --available --factor-table data/mersenne-3457-4096.json --verify data/product-witnesses-3457-4096.csv --prime-certificates data/mersenne-3457-4096-prime-certificates.json.gz --jobs 6
 uv run --no-project --with python-flint==0.9.0 python scripts/check_4096_small_taps.py
+~~~
+
+To classify the quaternary factors, run the rational enumeration. The degree checks use PARI/GP. The degree-30 example has full order, and the degree-2458 run computes the norm polynomial of its single irreducible candidate.
+
+~~~sh
+uv run --no-project --with sympy python scripts/check_quaternary_norm_shapes.py
+uv run --no-project --with sympy python scripts/check_quaternary_norm_shapes.py --degree 30 --orders
+uv run --no-project --with sympy python scripts/check_quaternary_norm_shapes.py --degree 2458
 ~~~
 
 The 122 witnesses in degrees 4100 through 5964 use 4,040 distinct primes. The checker proves primality, reconstructs each group order and verifies 5,611 prime-index powers. To reproduce the search in order of increasing tap span, replace `--verify` and its CSV path with `--search --least-span`.
