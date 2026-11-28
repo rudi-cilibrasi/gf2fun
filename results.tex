@@ -25840,7 +25840,7 @@ on \(B_m^\times\), forcing \(b\in B_{m/q}\). Every common prime
 of the exponents would divide the top exponent \(pm\), so this
 exhausts the possibilities. Sections~\ref{sec:scalar-all-parities}
 and~\ref{sec:scalar-independent-bound} exclude this normalized
-product. The smaller degree is the prime \(p\); the scalar-order
+product. The smaller degree is the prime \(p\). The scalar-order
 bound for a composite partner and the prime census leave only
 \(p=3,5\) through 10000. The trinomial case is already excluded
 by the two-subfield test of Section~\ref{sec:trinomial-subfield-pairs}.
@@ -25909,5 +25909,160 @@ so every root has order \(2047m\). Integer powering verifies that
 this order has the full binary degree. For the two other bases,
 an annihilating exponent in each quotient gives a proper subfield
 period. See \nolinkurl{scripts/check_multiprime_supports.py}.
+
+\clearpage
+\section{A full-degree order prime in sparse two-prime degrees}
+\label{sec:cyclotomic-row-isolation}
+Let \(n=p^i q^j\) with odd primes \(p<q\) and \(i,j\ge1\).
+A full-degree prime is a prime \(\ell\) of the root order for which
+\(\ord_\ell(2)=n\). Put \(A=\mathbb F_{2^{n/q}}\) and
+\(B=\mathbb F_{2^{n/p}}\).
+\begin{theorem}\label{thm:all-five-row-primes}
+Assume \(p\ge5\). Apart from \(p=5,q=31,i=1,j\ge2\), an
+irreducible binary pentanomial misses a full-degree prime exactly when
+its root belongs to \(A^\times B^\times\) or all three interior taps
+are multiples of \(q\).
+\end{theorem}
+This removes the earlier cutoff \(p\ge53\), including when both prime
+exponents are arbitrarily large. Each irreducible pentanomial having
+three consecutive exponents therefore has a full-degree prime in
+the stated range. The consecutive exponents exclude both the
+substitution and the subfield product by Section~\ref{sec:three-progression-scalar}.
+
+In degrees \(15025=25\cdot601\) and \(45025=25\cdot1801\), exactly
+406 irreducible pentanomials and four irreducible trinomials
+\emph{outside} the product of the maximal subfields miss a full-degree
+prime, counting both orientations. In each degree nine bits index all
+406 pentanomials. An unrestricted tap triple requires 40 or 44 bits,
+respectively. Both larger primes have binary order 25. The degree-25
+census gives four irreducible trinomials and 406 irreducible
+pentanomials, all passing both index tests. The substitutions by \(q\)
+are irreducible. Their orders contain one more power of \(q\) than
+\(2^{25}-1\) has, and \(q\nmid 2^{5q}-1\), so none belongs to
+the subfield product. The theorem and the trinomial tap test prove
+the counts are exhaustive there.
+
+For the proof, page~\pageref{sec:two-prime-trinomial-tap} reduces the
+arithmetic outside the ordinary product to \(\ord_q(2)=p^i\).
+Put \(H=|B|\bmod q\). It generates a subgroup of order \(p\).
+The five-column determinant needs one isolated row assignment with
+consecutive rows within each residue block. We may take rows in a
+progression of any step \(t\) coprime to \(p\). On \(A\), the
+\(|B|^t\)-power map still generates the relative group over
+\(A\cap B\), since \([A:A\cap B]=p\). Thus the within-block Moore
+minors still certify independence. This also permits a separate
+progression step for each block when a single assignment has that
+form. The earlier counting proof covers \(p\ge53\).
+For each of the thirteen smaller primes from 5 to 47 the following
+calculation checks all possible characteristics \(q\) at once.
+
+\clearpage
+\subsection*{Specializing a projective calculation}
+Over \(K=\mathbb Q(\zeta_p)\) use row weights
+\(1,\zeta_p^t,\ldots,\zeta_p^{4t}\). With two to four occupied
+residue classes, a labelled assignment gives a weighted sum.
+As on page~\pageref{lem:sparse-kummer-descent}, translate the first
+residue to zero. A consecutive-block assignment has a list of
+collision normals: its weighted sum coincides with some other
+assignment precisely on the union of their hyperplanes.
+The allowed steps in \(K\) are \(t=1\) for \(p\ge11\), and all
+\(1\le t<p\) for \(p=5,7\).
+
+Work one hyperplane of the first list at a time. Record the absolute
+norm of a nonzero coordinate of its normal. A coordinate hyperplane
+or an equality of two residues contains no admissible point.
+In projective dimension one a remaining normal \((a,b)\) leaves the
+point \((-b,a)\). In projective dimension two take a second list
+with no line equal to the first line. Its crosses with the first
+normal give every possible intersection point. Record the norm of
+one nonzero coordinate at each point, including the points discarded
+for equal residues. At every admissible point find a block assignment
+for which every collision dot product is nonzero and record each of
+their absolute norms. In projective dimension zero every nonzero
+normal already excludes the only point. The procedure succeeds over
+\(K\) for all five multiplicities of the five columns.
+
+If each recorded integer is a unit modulo \(q\), reduction
+\(\zeta_p\mapsto H\) preserves the proof. All equalities persist,
+each chosen coordinate stays nonzero and so does every dot product
+in the final witness. The norm is the absolute resultant with
+\(\Phi_p\). A root shared by \(\Phi_p\) and the witness polynomial
+modulo \(q\) forces \(q\) to divide this resultant. The Lean lemma
+\texttt{modulus\_dvd\_resultant\_of\_common\_root} proves this implication.
+
+For a recorded norm \(N>1\), take the largest \(p^a<N\).
+Any relevant prime \(q\mid N\) has \(\ord_q(2)=p^i\le q-1<N\).
+It therefore divides \(\gcd(N,2^{p^a}-1)\), computed by modular
+powering. Factoring these gcds leaves only 27 pairs \((p,q)\) across
+all thirteen values of \(p\). Just four have \(i>1\):
+\[
+ (p,q,i)=(11,727,2),\ (11,2663,3),\ (13,4057,2),\ (29,341447,3).
+\]
+Repeat the projective calculation in \(\mathbb F_q\) at the retained
+primes with all nonzero steps modulo \(p\). A generator of the row
+weights is \(2^{p^{i-1}}\). Any other generator gives the same step
+choices. Every pair passes except \((5,31)\).
+At \(p=5,q=31,i=j=1\), the degree-155 census already proves the
+theorem. All calculations are generated from the five row weights by
+\nolinkurl{scripts/check_cyclotomic_row_isolation.py}.
+
+\clearpage
+\subsection*{Eight possible residue triples in the remaining tower}
+In degree \(5\cdot31^j\), suppose a pentanomial misses a full-degree
+prime, its root lies outside \(A^\times B^\times\), and its taps are
+not all divisible by 31. The three taps then have distinct nonzero
+residues. Up to scaling and permutation, they must be one of
+\[
+ \begin{array}{rrrr}
+ (1,2,8),&(1,3,10),&(1,3,22),&(1,5,23),\\
+ (1,6,11),&(1,6,15),&(1,10,22),&(1,12,13).
+ \end{array}
+\]
+These represent 240 of the \(\binom{30}{3}=4060\) unordered triples
+of distinct nonzero residues. All 240 can be named by an eight-bit
+index. The calculation gives a necessary condition on the support.
+
+Indeed, the five Frobenius weights are the subgroup generated by
+2 modulo 31. Every subset of at most four indices in \(\mathbb Z/5\)
+is a progression for some nonzero step. Hence every assignment
+has admissible within-block Moore minors. Enumerate all assignments
+and count the multiplicities of their weighted sums modulo 31.
+Every residue pattern has a sum of multiplicity one except in
+layout \((2,1,1,1)\) at the displayed triples and their scalar
+multiples. One can extend each within-class basis to the actual
+number of terms in the class since its relative dimension is five.
+The two endpoints already have residue zero, so in the remaining
+layout the repeated residue must be zero.
+
+For a concrete test, \(X^{4805}+X^{2667}+X^2+X+1\) is irreducible
+and its root order has a prime of binary degree 4805.
+Its consecutive exponents exclude the ordinary product and two
+interior residues coincide since \(2667\equiv1\pmod{31}\).
+As an independent computation, Rabin's field test proves
+irreducibility. Strip from \(2^{4805}-1\) every prime power
+supported on \((2^{961}-1)(2^{155}-1)\) by repeated gcds.
+Raising \(X\) to the product of the stripped factors gives a value
+different from one in the quotient ring.
+
+There is an unconditional count for the related mixed-prime question.
+Let \(C_j\) count all irreducible pentanomials of degree \(5\cdot31^j\)
+whose root order contains no \(\ell\) with \(155\mid\ord_\ell(2)\).
+The degree-155 census gives \(C_1=4\). For \(j\ge2\),
+\[
+           C_j\le C_{j-1}+240(5\cdot31^{j-1})^3.
+\]
+To see this, the coprime subfields of degrees 5 and \(31^j\)
+cannot contain such a split root by Section~\ref{sec:subfield-square-census}.
+The decomposition and descent on page~\pageref{sec:intersecting-kummer-descent}
+therefore apply with relative dimension five and row weights
+\(1,2,4,8,16\bmod31\). Either the taps contract by 31, preserving
+absence of a mixed prime, or their residues give one of the 240
+triples. Each nonzero residue supplies exactly \(5\cdot31^{j-1}\)
+positions. Thus in degree 4805 at most 893730004 tap triples are
+needed for this exception list, a 30-bit rank compared with 35 bits
+for all triples. Summing the recurrence bounds the limiting upper
+fraction among all tap triples by \(1440/(31^3-1)<0.04834\).
+The Lean lemma \texttt{cumulative\_residue\_count} checks the
+geometric summation.
 
 \end{document}

@@ -49,6 +49,7 @@ import GF2Sparse.OreIndexFortySeven
 import GF2Sparse.OreIndexSeven
 import GF2Sparse.OreOrderCounts
 import GF2Sparse.OrderPrimePartitions
+import GF2Sparse.CyclotomicRowBounds
 import GF2Sparse.OreNormObstructions
 import GF2Sparse.OreNorms
 import GF2Sparse.OrePrimitiveExamples
