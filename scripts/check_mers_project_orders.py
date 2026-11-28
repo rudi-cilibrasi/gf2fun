@@ -121,19 +121,28 @@ def verify(n, row, proven, args):
         print(f"Degree {n}, factor product, full power and {len(set(factors))} "
               "factor-index powers verified. Primality checks skipped.", flush=True)
         return
+    needed = set(factors) - proven
+    if args.defer_largest:
+        needed.discard(factors[-1])
     for index, proof in row["primo_certificates"].items():
         i = int(index)
         if not 0 <= i < len(factors) or str(i) != index:
             raise ValueError(f"invalid certificate reference in degree {n}")
         p = factors[i]
-        if p not in proven:
+        if p in needed:
             prove_with_certificate(p, proof, args.gp, args.fetch_to)
             proven.add(p)
-    for p in set(factors) - proven:
+            needed.remove(p)
+    for p in needed:
         if not fmpz(p).is_prime():
             raise ValueError(f"composite order factor in degree {n}")
         proven.add(p)
     verify_primitive_modulus(f, factors)
+    if args.defer_largest:
+        print(f"Degree {n}, all polynomial powers and the smaller primes verified. "
+              f"Full order follows if the largest listed factor "
+              f"({len(str(factors[-1]))} digits) is prime.", flush=True)
+        return
     weight = minimum_weight(n, row, args.gp)
     detail = f" Minimum primitive weight {weight}." if weight is not None else ""
     print(f"Degree {n}, interior exponents {taps}, full order verified "
@@ -147,8 +156,11 @@ def main():
     parser.add_argument("--table", type=Path, default=DATA / "mers-project-sparse-orders.json")
     parser.add_argument("--fetch-to", type=Path, metavar="DIRECTORY",
                         help="download external PRIMO certificates and cache verified chains here")
-    parser.add_argument("--powers-only", action="store_true",
-                        help="check the factor product and polynomial powers only, omitting primality proofs")
+    partial = parser.add_mutually_exclusive_group()
+    partial.add_argument("--powers-only", action="store_true",
+                         help="check the factor product and polynomial powers only, omitting primality proofs")
+    partial.add_argument("--defer-largest", action="store_true",
+                         help="check the factor product, polynomial powers and all but the largest prime proof")
     parser.add_argument("--trinomial-census", metavar="NTL_PROGRAM",
                         help="also replay the archived trinomial lists with prime_degree_trinomials.cpp")
     args = parser.parse_args()
@@ -179,7 +191,7 @@ def main():
                 raise ValueError(f"incomplete list of imprimitive trinomial orders in degree {n}")
             for tap, index in indices.items():
                 verify_trinomial_order(n, int(tap), index, rows[str(n)]["order_factors"])
-            detail = "replayed with the supplied factors" if args.powers_only else "verified"
+            detail = "replayed with the supplied factors" if args.powers_only or args.defer_largest else "verified"
             print(f"Degree {n}, both archived trinomial lists {detail}.", flush=True)
 
 

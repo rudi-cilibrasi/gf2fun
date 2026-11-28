@@ -22256,4 +22256,22 @@ primes \(p\). NTL independently tested irreducibility and the 27
 prime-index powers. This certifies a five-term witness in a 66th
 degree in this section.
 
+\paragraph{Seventeen candidates with one outstanding prime proof each.}
+For 17 further pentanomials in \nolinkurl{data/mers-project-large-orders.json},
+write \(2^n-1=AP\), where \(P\) is the largest listed factor.
+In every case \(\gcd(A,P)=1\) and the complete prime factorization
+of \(A\) is verified. NTL tested irreducibility and the 70 factor-index
+powers across these rows. FLINT independently verified each full group
+power and all 70 factor-index powers. Write \(r=X\bmod f\). For each prime \(p\mid A\),
+the test \(r^{(2^n-1)/p}\ne1\) forces the full power of \(p\)
+in \(2^n-1\) to divide the root order. The test \(r^A\ne1\) then gives
+\(\operatorname{ord}(r)=Ad\) for a divisor \(d>1\) of \(P\).
+A primality proof for \(P\) would give \(d=P\).
+
+The largest degree is 41521, with interior exponents \(6931,13862,34590\)
+and four listed factors. Its remaining integer certificate is for a
+12459-digit factor. The smallest remaining factor has 5701 digits in
+degree 19121. Each of the 17 certificates can be checked
+independently of the other degrees.
+
 \end{document}

@@ -226,14 +226,16 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
-The large-degree table gives pentanomials, the proposed factor lists for their field orders, and the primality certificate identifiers. NTL tested irreducibility and each listed factor-index power during the search. The proofs for degrees 17,683, 17,698 and 33,511 can be replayed offline. To check a further candidate independently, choose its degree and run the command below. It verifies the integer certificates with PARI/GP and the polynomial powers with FLINT. The cache retains a downloaded chain after it passes verification. To check just the factor product and polynomial powers, use `--powers-only`. [Large-degree table](data/mers-project-large-orders.json) · [Verifier](scripts/check_mers_project_orders.py)
+The large-degree table contains 20 pentanomials through degree 41,521. NTL and FLINT independently verified all 108 factor-index powers. The full proofs for degrees 17,683, 17,698 and 33,511 can be replayed offline. For each of the other 17 degrees, the primality of every smaller factor has been checked. One large integer primality certificate remains to be verified in each degree. The smallest is the 5,701-digit factor for degree 19,121. The largest is the 12,459-digit factor for degree 41,521. [Large-degree table](data/mers-project-large-orders.json) · [Verifier](scripts/check_mers_project_orders.py)
 
-In degrees 25,243, 25,933, 28,381, 28,771, 32,531 and 35,339, every trinomial is reducible. A primitive witness of weight at most five in any of these degrees must therefore have five terms. The proof uses Swan's theorem and explicit divisors of degree at most eight before substitution. [Proof](results.pdf#page=310)
+Choose a degree and run the command below for the full check. It verifies the integer certificates with PARI/GP and the polynomial powers with FLINT, then reports the root order. The cache retains each downloaded chain after it passes verification. Add `--defer-largest` to reproduce the polynomial checks and all smaller prime proofs offline. Use `--powers-only` for just the factor product and polynomial powers.
 
 ```bash
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py \
-  --table data/mers-project-large-orders.json --degree 41263 --fetch-to /tmp/gf2fun-prime-proofs
+  --table data/mers-project-large-orders.json --degree 19121 --fetch-to /tmp/gf2fun-prime-proofs
 ```
+
+In degrees 25,243, 25,933, 28,381, 28,771, 32,531 and 35,339, every trinomial is reducible. A primitive witness of weight at most five in any of these degrees must therefore have five terms. The proof uses Swan's theorem and explicit divisors of degree at most eight before substitution. [Proof](results.pdf#page=310)
 
 Degrees 41,681 and 53,381 are further targets for a sparse polynomial search. Each field order has three explicit smaller factors and one large cofactor in the Mers Project tables. The reconstruction command in Verification accepts `--degrees 41681 53381`. FactorDB supplies PRIMO chains for the respective 12,495-digit and 16,008-digit cofactors. [Degree 41,681 cofactor certificate](https://factordb.com/cert/1100000000776586446) · [Degree 53,381 cofactor certificate](https://factordb.com/cert/1100000000888500230)
 
