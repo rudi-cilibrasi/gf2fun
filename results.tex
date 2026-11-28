@@ -25105,8 +25105,8 @@ The last index is \(s_0+2L=481646222508032\), and
 between the previous endpoint and \(B_1\). All ten residues appear in
 \nolinkurl{data/degree-1229-wheel-continuation.json}.
 The \texttt{--continuation-only} option of
-\nolinkurl{scripts/check_1229_wheel.py} replays the eight smaller
-products from the preceding certified endpoint.
+\nolinkurl{scripts/check_1229_wheel.py} replays the continuation,
+including these eight smaller products.
 
 For the order bounds, Theorem~\ref{thm:1229-all-orders} gives every
 irreducible pentanomial at least one cofactor prime in its root order.
@@ -25150,13 +25150,13 @@ is three. The field calculations and the three smaller prime proofs
 are complete. The large integer proof can be replayed offline from
 \nolinkurl{data/mers-project-primality/1100000000776586446.cert.gz}.
 
-The factorization, all eight supports and the certificate identifier are
-in \nolinkurl{data/mers-project-extension-orders.json}.
-\nolinkurl{scripts/check_mers_project_orders.py} replays them. FLINT
-verified the full and four index powers on every support. An NTL search
-also checked the pentanomial independently. The exhaustive irreducible
-trinomial lists for both degrees are in
-\nolinkurl{data/mers-project-trinomial-census-supplement.csv}.
+\nolinkurl{data/mers-project-extension-orders.json} gives the factorization,
+all eight supports and the certificate identifier. The verifier
+\nolinkurl{scripts/check_mers_project_orders.py} uses FLINT to check
+the full and four index powers on each support. NTL independently
+checked the pentanomial. The table
+\nolinkurl{data/mers-project-trinomial-census-supplement.csv} lists
+all irreducible trinomials in both degrees.
 
 In degree \(53381\) every trinomial is reducible. This degree is
 prime and congruent to five modulo eight. Swan's theorem leaves only
@@ -25172,7 +25172,8 @@ The pentanomial
                X^{53381}+X^{41819}+X^{23124}+X^{11562}+1
 \]
 is irreducible and passes the four factor-index powers for
-\(2^{53381}-1\). NTL checked irreducibility and the powers. The three
+\(2^{53381}-1\). NTL checked irreducibility and the powers. FLINT
+independently verified the full power and all four index powers. The three
 smaller factors are the primes
 \(15588960193\), \(38922536168186976769\) and
 \(155991271597169062945033668006103\). The complementary factor
@@ -25707,5 +25708,60 @@ across blocks would allow a collision by a transposition, and all
 rows within a block are distinct. The Moore determinant descends
 the support as before. This argument requires no enumeration at
 individual primes.
+
+\clearpage
+\section{A 62-bit cofactor floor and a support-code target in degree 1229}
+\label{sec:1229-support-budget}
+Every prime divisor of the degree-1229 cofactor \(C\) exceeds
+\[
+                         B_2=2464190181310201857>2^{61}.
+\]
+For every irreducible pentanomial in this degree the root order now
+exceeds \(2^{332}\). For the 639144 pentanomials passing the four
+known prime-index tests it exceeds \(2^{347}\).
+
+Starting from \(s_0=332825605701632\) in the progression \(1+2458j\),
+take nine consecutive Newton products of length \(L=74410308403200\)
+as in Section~\ref{sec:1229-wheel-continuation}. Each has gcd one
+with \(C\). Four independently computed Lagrange products of one
+quarter the length give the same residue for each block. Hence
+no cofactor prime lies below or at \(1+2458(s_0+9L)=B_2\).
+The nine Newton and 36 Lagrange residues appear in
+\nolinkurl{data/degree-1229-wheel-continuation.json}. The order
+bounds follow as in the earlier section from \(KB_2/46703\) and
+\(KB_2\), respectively. Since \((B_2+1)^{16}>C\), there are at
+most fifteen distinct cofactor primes. In the uniform cyclic
+cofactor group the probability of failing a remaining prime test
+is at most \(15/(B_2+1)<6.09\cdot10^{-18}\).
+
+For the sparse supports there is an exact coding problem. Identify
+a polynomial with its reciprocal. The 319583 irreducible pairs
+include five failing at 36871 and six failing at 46703. The sets
+are disjoint, and the other two known primes exclude no pairs.
+One can encode any known failure by a four-bit rank in the sorted
+list of eleven. Given the failing prime, three bits suffice.
+The other 319572 pairs have a 19-bit index in the survivor list.
+
+For each distinct prime \(\ell\mid C\), let \(S_\ell\) be the
+surviving pairs whose root \(z\) has \(z^{(2^{1229}-1)/\ell}=1\).
+Suppose there is an injective code on each \(S_\ell\) of \(b_\ell\)
+bits, with the degree and the prime supplied to the decoder. Then
+the number of primitive reciprocal pairs is at least
+\[
+                 319572-\sum_{\ell\mid C,\ \ell\ {\rm prime}}2^{b_\ell}.
+\]
+A fourteen-bit code at every prime would give at least 73812
+primitive pairs. Even allowing four fifteen-bit codes and eleven
+fourteen-bit codes would give at least 8276. Conversely, a
+counterexample needs \(|S_\ell|\ge21305\) at some prime, so the
+maximum fixed-length rank for that prime would need at least
+fifteen bits. The sizes of these remaining sparse sets are open.
+The uniform group probability above bounds a different sample space.
+
+\nolinkurl{scripts/check_trace_incompressibility.py} compares the
+full support census with the eleven-entry list, recomputes all four
+field powers on each listed failure and checks the coding arithmetic.
+\nolinkurl{GF2Sparse/SubgroupCover.lean} proves the union bound for
+injective codes of different capacities and the fourteen-bit corollary.
 
 \end{document}
