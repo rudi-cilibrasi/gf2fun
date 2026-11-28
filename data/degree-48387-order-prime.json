@@ -1,4 +1,5 @@
 {
+  "taps": [14, 31, 40],
   "base": 13,
   "predecessor_prime_powers": [
     [

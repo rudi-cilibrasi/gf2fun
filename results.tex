@@ -27214,8 +27214,10 @@ The table \nolinkurl{data/degree-1229-small-subgroup-weights.csv}
 also records both minima.
 
 \clearpage
-\section{A cubic primality certificate for the field order in degree 48387}
+\section{Minimum primitive weight five in degree 48387}
 \label{sec:48387-order}
+The polynomial \(X^{48387}+X^{40}+X^{31}+X^{14}+1\) is primitive.
+Every trinomial of this degree is reducible.
 Put \(x=2^{127}\), \(y=2^{16129}\), and
 \[
              P=\frac{y^2+y+1}{x^2+x+1}=\Phi_{48387}(2).
@@ -27295,6 +27297,11 @@ permutes this smaller field, giving \(f\) a root there. Thus a
 trinomial would have coprime exponents. Since \(48387\equiv3\bmod8\),
 Swan's theorem leaves only \(X^{48387}+X^2+1\) and its reciprocal.
 The cubic \(X^3+X^2+1\) divides the former because \(48387\equiv3\bmod7\).
+
+For the displayed pentanomial \(f\), take \(M=2^{48387}-1\).
+Direct powering gives \(X^M=1\bmod f\) and \(X^{M/p}\ne1\bmod f\)
+for all eleven certified order primes \(p\). These force root order
+\(M\) and prove the minimum weight five.
 
 The cubic coefficients and predecessor factorization are in
 \nolinkurl{data/degree-48387-order-prime.json}.

@@ -1,4 +1,4 @@
-"""Verify the factorization of 2^48387-1 and the exclusion of all degree-48387 trinomials."""
+"""Verify the primitive pentanomial of degree 48387 and its minimum weight."""
 
 import argparse
 import json
@@ -10,7 +10,7 @@ from flint import fmpz
 
 from check_factor_base import modulus
 from check_primo_certificate import check_primo
-from check_product_range import prime_index_powers
+from check_product_range import prime_index_powers, verify_primitive_modulus
 
 
 DATA = Path(__file__).resolve().parents[1] / "data"
@@ -110,7 +110,13 @@ def main():
     largest = cyclotomic_factor()
     verify_residue_prime(largest, record, args.gp)
     if not args.prime_only:
-        full_factorization(largest, record, args.gp)
+        factors = full_factorization(largest, record, args.gp)
+        taps = record["taps"]
+        if (len(taps) != 3 or taps != sorted(set(taps)) or
+                not all(type(t) is int and 0 < t < 48387 for t in taps)):
+            raise ValueError("invalid degree-48387 pentanomial")
+        verify_primitive_modulus(modulus(48387, taps), factors)
+        print(f"Verified full order for taps {taps}. Minimum primitive weight five.", flush=True)
 
 
 if __name__ == "__main__":
