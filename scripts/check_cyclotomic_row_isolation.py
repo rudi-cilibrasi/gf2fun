@@ -146,6 +146,7 @@ def check_modulo_31():
         raise ArithmeticError(f"unexpected projective exceptions {failed}, {count}")
     print("Modulo 31, only 240 distinct unordered residue triples in eight scalar orbits "
           "lack an isolated assignment.", flush=True)
+    return failed
 
 
 def check_examples():

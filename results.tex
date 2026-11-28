@@ -26008,6 +26008,7 @@ theorem. All calculations are generated from the five row weights by
 
 \clearpage
 \subsection*{Eight possible residue triples in the remaining tower}
+\label{sec:31-residue-triples}
 In degree \(5\cdot31^j\), suppose a pentanomial misses a full-degree
 prime, its root lies outside \(A^\times B^\times\), and its taps are
 not all divisible by 31. The three taps then have distinct nonzero
@@ -26063,6 +26064,99 @@ needed for this exception list, a 30-bit rank compared with 35 bits
 for all triples. Summing the recurrence bounds the limiting upper
 fraction among all tap triples by \(1440/(31^3-1)<0.04834\).
 The Lean lemma \texttt{cumulative\_residue\_count} checks the
-geometric summation.
+geometric summation. The next section determines the exact value of \(C_j\).
+
+\clearpage
+\section{Two bits identify every mixed-prime exception in degree \(5\cdot31^j\)}
+\label{sec:five-31-tower}
+\begin{theorem}\label{thm:five-31-tower}
+Let \(j\ge1\) and \(n=5\cdot31^j\). Exactly four irreducible
+binary pentanomials of degree \(n\) have no prime \(\ell\) in their
+root order with \(155\mid\ord_\ell(2)\). Their interior taps are
+any three of \(31^j,2\cdot31^j,3\cdot31^j,4\cdot31^j\).
+The only exceptional trinomials have tap \(2\cdot31^j\) or
+\(3\cdot31^j\). All six polynomials have root order \(31^{j+1}\).
+\end{theorem}
+A two-bit decoder names the omitted multiple. At the first three
+levels the unrestricted ranks for pentanomials take 20, 35 and 49
+bits. The code remains two bits at every level. For \(j>1\),
+the required prime of a polynomial outside this list may have
+binary degree \(155,5\cdot31^2,\ldots,5\cdot31^j\).
+The full-degree condition singles out the last of these possibilities.
+
+Let \(z\) be an exceptional root. Its order primes divide either
+\(M_5=31\) or \(M_{31^j}\), since these are the two alternatives for
+a binary degree with no factor 155. The latter group order is prime
+to 31 and to 5. Lifting gives \(v_{31}(M_n)=j+1\). The valuations
+at primes of \(M_{31^j}\) stay fixed. Write \(z=yb\) where
+\(\ord(y)\mid31^{j+1}\) and \(b\in B^\times\) for
+\(B=\mathbb F_{2^{31^j}}\). If \(\ord(y)\mid31\), this is a split
+across the coprime proper subfields of degrees 5 and \(31^j\),
+excluded by Section~\ref{sec:subfield-square-census}.
+Hence \(\ord(y)=31^{h+1}\) for some \(1\le h\le j\).
+
+Set \(A=\mathbb F_{32}\). Then \(y^{31^h}\in A\) and
+\([A(y):A]=31^h\). Indeed \(v_{31}(2^{5t}-1)=1+v_{31}(t)\).
+Thus the powers of \(y\) from zero through \(31^h-1\) form an
+\(A\)-basis. In the row determinant, terms whose powers lie in
+different residue classes modulo \(31^h\) cannot cancel.
+The earlier calculation modulo 31 already implies that either
+all taps are divisible by 31 or the three taps are distinct units
+modulo 31 with residues in one of the eight scalar orbits on
+page~\pageref{sec:31-residue-triples}.
+For this application one may first take \(A'=\mathbb F_{2^{5\cdot31^{h-1}}}\)
+as on page~\pageref{sec:intersecting-kummer-descent}. We rule out
+the eight orbits using the smaller coefficient field \(A\).
+
+\clearpage
+\subsection*{Lifting the eight triples and combining the two endpoints}
+Suppose \(h\ge2\). The row multiplier \(|B|\) is 374 modulo
+\(31^2=961\) for every positive \(j\). Indeed \(2^{31}\equiv374\),
+\(374^5\equiv1\pmod{961}\) and \(31\equiv1\pmod5\).
+After reordering and multiplying by the inverse of one unit tap
+modulo 961, any lift of one of the eight triples has the form
+\[
+                  (1,b+31u,c+31v),\qquad 0\le u,v<31 .
+\]
+For every one of the \(8\cdot31^2=7688\) possibilities, assign
+the three singleton taps to three distinct row weights from
+\(1,374,374^2,374^3,374^4\). At least one of the 60 weighted sums
+occurs exactly once modulo 961. The two unused weights belong to
+the endpoint class. This isolates the same assignment modulo
+\(31^h\), since both endpoints are zero modulo \(31^h\).
+Within the endpoint class take an \(\F\)-basis of its coefficients
+in \(A\), extending to two independent coefficients if needed.
+Any two rows are a progression of nonzero step modulo five,
+so their Moore minor is nonzero. The three other classes are
+singletons with nonzero coefficients. This gives a nonzero
+determinant and contradicts the relation \(f(yb)=0\).
+
+If \(h=1<j\), then \(y^{961}=1\) and \(961\mid n\). The two
+endpoint powers of \(y\) are the same. Combine them in the
+relation to get four columns \(1,y^{e_1},y^{e_2},y^{e_3}\), with
+coefficients in \(B\) and nonzero coefficients at the three actual
+singleton taps \(e_1,e_2,e_3\).
+For each of the 4060 unordered triples of distinct nonzero
+residues modulo 31, some choice of four of the five Frobenius rows
+gives an assignment whose sum occurs exactly once modulo 31.
+The four columns are independent over \(B\), again a contradiction.
+The remaining case \(h=j=1\) is covered by the degree-155 census.
+For trinomials the same first contraction uses just the two
+endpoint rows and the single tap as in
+Section~\ref{sec:two-prime-trinomial-tap}: a nonzero tap residue
+is isolated using three distinct weights. This argument applies to
+the mixed-prime decomposition above at every level.
+
+Consequently all taps are divisible by 31. The contracted
+irreducible with root \(z^{31}\) still satisfies the absence
+condition. Induction gives \(f(X)=G(X^{31^j})\). In degree five
+there are two irreducible trinomials and four irreducible
+pentanomials. Each root has order 31. The prime-power substitution
+criterion makes every lift irreducible with order \(31^{j+1}\),
+which proves the converse. \nolinkurl{scripts/check_five_31_tower.py}
+replays both finite determinants and checks the powers directly
+in all eighteen quotient rings at \(j=1,2,3\).
+\nolinkurl{GF2Sparse/CyclotomicRowBounds.lean} proves the Frobenius
+weight modulo 961 at every positive level.
 
 \end{document}

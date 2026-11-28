@@ -14,6 +14,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 - **A 20-bit index describes every exceptional pentanomial in degree $1229m$ for any product $m>1$ of the four known primes, with arbitrary powers.** Here exceptional means that no prime in the root order has binary degree divisible by both 1229 and a prime of $m$. At $m=36{,}871\cdot46{,}703$ there are exactly 639,144 exceptions. Multiplying their three base taps by $m$ decodes them. The same count holds for the product of all four known primes, where an unrestricted tap rank takes 888 bits. Taking $m=2^{1229}-1$ makes the exceptional set correspond exactly to the primitive degree-1229 pentanomials, whose number remains open. [Proof and decoder](results.pdf#page=375) · [Lean base tests](GF2Sparse/OrderPrimePartitions.lean) · [Finite verifier](scripts/check_multiprime_supports.py)
 
+- **Two bits identify every exceptional pentanomial in degree $5\cdot31^j$ for all $j\ge1$.** Exactly four irreducible pentanomials have no root-order prime whose binary degree is divisible by 155. Take any three of $31^j,2\cdot31^j,3\cdot31^j,4\cdot31^j$ as the interior exponents. All four have root order $31^{j+1}$. In degree 148,955 an unrestricted support rank takes 49 bits. [Proof](results.pdf#page=381) · [Verifier and expanded examples](scripts/check_five_31_tower.py)
+
 - **For an irreducible trinomial $X^n+X^k+1$ of degree $n=p^i q^j$ with distinct odd primes $p<q$ and $i,j\ge1$, the root order contains a prime of binary degree $n$ exactly when $q$ does not divide $k$.** Both prime powers are unrestricted. For pentanomials and $p\ge5$, failure means that the root lies in the product of the maximal subfields or every tap is divisible by $q$. The remaining tower is $5\cdot31^j$ with $j\ge2$, where eight triples of tap residues can also occur in the necessary condition. [Trinomial theorem](results.pdf#page=372) · [Pentanomial theorem and 9-bit codes in degrees 15,025 and 45,025](results.pdf#page=378) · [Cyclotomic verifier](scripts/check_cyclotomic_row_isolation.py)
 
 - **In degree $pq$ with distinct odd primes $p<q$ and $p\le10{,}000$ or $pq>(p+1)^3$, a sparse irreducible misses a full-degree prime in its root order exactly when it is $G(X^q)$.** A full-degree prime $\ell$ satisfies $\operatorname{ord}_{\ell}(2)=pq$. In degrees 45,314,459 and 57,397,987 there are exactly 639,156 and 639,154 exceptional pentanomials. Each has a 20-bit index among the exceptions given the degree, compared with 74 or 75 bits for unrestricted three-tap supports. [Theorem and proof](results.pdf#page=364) · [Exact counts and incompressibility argument](results.pdf#page=367) · [Verifier](scripts/check_kummer_sparse_orders.py)
@@ -1065,6 +1067,12 @@ The following calculation checks all characteristics for the thirteen smaller pr
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_cyclotomic_row_isolation.py
+~~~
+
+The exact two-bit count uses the lifts of those residues modulo 961. To replay all determinant tests and the eighteen expanded examples, run
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_five_31_tower.py
 ~~~
 
 The simultaneous substitution theorem has an independent check in degrees 22,517 and 517,891. The same verifier recomputes the 20-bit counts for every nonempty subset of the four known degree-1229 primes.
