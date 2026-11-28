@@ -318,6 +318,13 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project
   --table data/mers-project-extension-orders.json --degree 41681 --degree 53381
 ~~~
 
+In degrees 42,991 and 44,431, the pentanomials with taps $(7480,14960,35511)$ and $(6565,13130,37866)$ pass the irreducibility and all prime-index power tests in NTL. The factor products are exact and all factors except the largest in each degree have been proved prime locally. The remaining primality chains have 11,943 and 13,231 decimal digits in their starting integers. Both public certificates are archived for an offline replay. [Witnesses and factors](data/complementary-order-witnesses.json) · [Degree-42,991 certificate](https://factordb.com/cert/1100000000028276765) · [Degree-44,431 certificate](https://factordb.com/cert/1100000000848838566)
+
+~~~bash
+uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py \
+  --table data/complementary-order-witnesses.json
+~~~
+
 The degree-1229 elliptic pentanomial with interior taps $(136,683,819)$ and its reciprocal share one order. Seven projected logarithms of relative degrees $2,6,13,15,15,16,17$ determine it. The smallest input is the degree-eight binary mask `0x15f`. The other six can be expanded into smaller factors. The combined task then has 4,404 logarithms, all of relative degree at most 15. The checker exports the targets and coefficients. Add `--logs answers.csv` with columns `mask,exponent` to verify any subset. A complete set gives the exact index, and index one proves both pentanomials primitive. [Seven inputs](data/degree-1229-elliptic-split-seven.json) · [Proof](results.pdf#page=187)
 
 ~~~sh
