@@ -52,7 +52,7 @@ private def frequencies : List ℕ :=
    4059835, 835957, 162853, 29770, 5050, 783, 108, 13, 1]
 
 /-- The coefficient recurrence of (1-z)^u (1+z)^(n-u). -/
-private def krawtchoukRow (n u last : ℕ) : List ℤ :=
+def krawtchoukRow (n u last : ℕ) : List ℤ :=
   ((List.range last).foldl (fun (rev : List ℤ) j =>
     let next := (((n : ℤ) - 2*u)*rev.head! - ((n+1-j : ℕ) : ℤ)*rev.getD 1 0) / (j+1 : ℕ)
     next :: rev) [1]).reverse
