@@ -12,6 +12,15 @@ from check_sparse_root_orders import (cyclotomic_census, excludes_single_tap_pre
 from check_trinomial_subfield_pairs import prime_divisors
 
 
+# Number of ones in the full period word for each order left by the gcd sieve.
+PERIOD_WEIGHTS = {
+    (281, 80929): 143, (1213, 327511): 147, (2591, 766937): 137,
+    (3863, 1120271): 133, (5431, 1401199): 137, (6883, 1885943): 153,
+    (7129, 1867799): 139, (8731, 2514529): 129, (9137, 2704553): 139,
+    (9337, 2614361): 139, (9403, 2576423): 145, (11719, 3093817): 121,
+}
+
+
 def rotate(bits, shift, length):
     shift %= length
     return ((bits << shift) | (bits >> (length-shift))) & ((1 << length)-1)
@@ -100,10 +109,12 @@ def prime_extension(ntl):
             total += 1
             if not excludes_single_tap_prefix(n, r, k, small_factors):
                 residual.append((n, r))
-    if (total, len(residual)) != (28261, 12):
+    if total != 28261 or len(residual) != len(PERIOD_WEIGHTS) or set(residual) != set(PERIOD_WEIGHTS):
         raise ArithmeticError(f"unexpected prime-degree sieve: {total}, {len(residual)}")
     for n, r in residual:
         word, labels = unit_trace_word(n, r)
+        if word.bit_count() != PERIOD_WEIGHTS[n, r]:
+            raise ArithmeticError(f"incorrect period weight in degree {n} at order {r}")
         if any(sparse_trace_prefix(n, word, labels, s) for s in range((r-1)//n)):
             raise ArithmeticError(f"a sparse trace prefix remains in degree {n} at order {r}")
     if ntl and cyclotomic_census(residual, ntl):
@@ -142,8 +153,8 @@ def composite_groups(ntl=None):
                 (21, 337): (2, 0), (22, 683): (0, 2)}
     if len(groups) != 9 or len(cases) != 23 or result != expected:
         raise ArithmeticError(f"unexpected composite-degree exceptions: {result}")
-    if supports[22, 6141] != {(2, 4, 11), (11, 18, 20)}:
-        raise ArithmeticError("unexpected degree-22 pentanomials")
+    if supports[21, 49] != {(7,), (14,)} or supports[22, 6141] != {(2, 4, 11), (11, 18, 20)}:
+        raise ArithmeticError("unexpected degree-21 or degree-22 supports")
     print("The five nonempty subgroups in composite degrees from 15 on have degrees 15, 16, 18, 21 and 22.")
 
 
