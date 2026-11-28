@@ -96,7 +96,8 @@ def minimum_weight(n, row, gp):
         # Compare all reciprocal representatives with an independent PARI census.
         command = (f"n={n};t=Mod(1,2)*x;f=t^n+1;v=List();"
                    "for(k=1,n\\2,if(polisirreducible(f+t^k),listput(v,k)));print(Vec(v));\n")
-        result = subprocess.run([gp, "-qf"], input=command, text=True, capture_output=True, check=True)
+        result = subprocess.run([gp, "-qf", "-s", "128M"], input=command, text=True,
+                                capture_output=True, check=True)
         if (result.stderr.strip() or json.loads(result.stdout) != taps or
                 any(gcd(n, k) == 1 for k in taps)):
             raise ValueError(f"trinomial census disagreement in degree {n}")

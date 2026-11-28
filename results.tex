@@ -27388,4 +27388,51 @@ and optional field replay are in
 \nolinkurl{scripts/check_1229_tap_pencils.py}. The field replay verifies
 irreducibility and all four known tests for each of the 443 vertices.
 
+\clearpage
+\section{Nine independently certified rows of Tkacik's table}
+\label{sec:tkacik-orders}
+Tom Tkacik's \href{https://www.jjj.de/mathdata/minweight-primpoly-large.txt}
+{May 2019 table hosted by J\"org Arndt} gives the supports below.
+We verify the exact root orders and minimum weights. Each polynomial
+also contains \(X^n\) and 1. The last two columns count the distinct
+primes dividing \(2^n-1\) and give the number of decimal digits in
+the largest one.
+\[
+\begin{array}{r|l|r|r|r}
+n&\text{interior exponents}&\text{minimum weight}&
+\text{order primes}&\text{digits}\\\hline
+10751&1148&3&10&2958\\
+12407&2952&3&9&3519\\
+14093&35,42,51&5&7&3964\\
+14377&841&3&8&3914\\
+15359&8,12,13&5&3&4560\\
+15409&5259&3&9&4355\\
+17587&24,35,37&5&9&5125\\
+17603&4,20,42&5&8&5075\\
+18527&2103&3&9&5477
+\end{array}
+\]
+For each row the listed factors multiply to \(M=2^n-1\).
+The verifier checks the archived \href{https://factordb.com}{FactorDB}
+PRIMO certificate for the largest prime and proves the remaining
+factors prime with FLINT. Modulo each polynomial it checks \(X^M=1\)
+and \(X^{M/p}\ne1\) for every prime \(p\mid M\). This gives 72
+prime-index tests across the nine rows.
+
+In degrees 14093, 17587 and 17603, Swan's theorem leaves only the
+tap 2 up to reciprocation among trinomials with coprime exponents.
+At tap 2 the respective divisors are
+\(X^4+X+1,\ X^2+X+1,\ X^4+X+1\). Exponents with a common divisor
+\(d>1\) give root order at most \(d(2^{n/d}-1)\) for an irreducible
+trinomial. In degree 15359, checking the 7679 possible taps through
+reciprocity gives no irreducible trinomial. The PARI computation
+checks irreducibility at every tap. An independent NTL enumeration
+using \nolinkurl{scripts/prime_degree_trinomials.cpp} gives the same
+empty list.
+
+The offline table for
+\nolinkurl{scripts/check_mers_project_orders.py} is
+\nolinkurl{data/tkacik-orders.json}. Use
+\texttt{--table data/tkacik-orders.json} to replay all nine rows.
+
 \end{document}
