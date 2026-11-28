@@ -57,4 +57,49 @@ theorem degree1229_light_pairs {ι : Type*} [Fintype ι] (d : ι → ℕ)
   norm_num only [Nat.reducePow, Nat.reduceSub] at h₁ h₂
   omega
 
+/-- Exchanging opposite digits at distance two moves one factor from the larger side. -/
+theorem balance_signed_products {p q r : ℕ} (h : q ≤ p) :
+    let t := min r ((p-q)/2)
+    max (p-t) (q+t) ≤ max ((p+q+1)/2) (p-r) := by
+  dsimp
+  omega
+
+private def digitPotential : List ℤ :=
+  [0,0,0,0,-6,-6,-6,-6,-2,-2,-2,-2,-2,-2,-14,-14,0,0,0,0,0,0,0,0]
+
+private def digitExcess (i : ℕ) : ℤ :=
+  (if 4 ≤ i ∧ i < 8 then 1 else 0) - (if 16 ≤ i ∧ i < 20 then 1 else 0) -
+    (if i = 19 then 2 else 0)
+
+private def digitStep (i : ℕ) : ℤ :=
+  12*digitExcess i + 1 + digitPotential.getD i 0 - digitPotential.getD ((2*i)%24) 0
+
+/-- The 24 cells for the half-period antisymmetric representative of the exchange count. -/
+theorem exchange_step_arithmetic :
+    (∀ i ∈ List.range 12, digitPotential.getD (2*i) 0 = digitPotential.getD (2*i+1) 0 ∧
+      digitStep (i+12) = -digitStep i) ∧
+    ((List.range 24).map digitExcess).sum = -2 ∧
+    ((List.range 24).map (fun i => (digitStep i)^2)).sum = 1576 ∧
+    ((List.range 24).map (fun i => (digitStep i).natAbs)).foldl max 0 = 21 ∧
+    ((List.range 24).map (fun i => (digitStep i-digitStep ((i+23)%24)).natAbs)).sum = 84 := by
+  decide +kernel
+
+private def leastOrderPrime : ℚ := 8317007399072301058
+
+private def spectralCheck (energy height variation main tail total : ℚ) : Prop :=
+  1229*(energy+2*height*variation/leastOrderPrime) < main^2 ∧
+  (1229*variation)^2*(1/(36*2^20)+3/leastOrderPrime) < tail^2 ∧
+  leastOrderPrime/(leastOrderPrime-1)*(main+tail)^2 < total^2
+
+/-- Outward square-root bounds and the counts of unordered collisions. -/
+theorem short_collision_arithmetic :
+    let j := leastOrderPrime
+    let halfWeight := 1229*(j+1)/(6*(j-1))
+    spectralCheck (1/3) 1 4 (20241/1000) (801/1000) (21044/1000) ∧
+    spectralCheck (197/432) (7/4) 7 (23674/1000) (1401/1000) (25076/1000) ∧
+    12*10^15 < (j-1)/2*(1-(halfWeight+21044/2000)/216) ∧
+    26*10^14 < (j-1)/2*(1-(halfWeight+1/2+3*(25076/1000)^2/1229)/207) := by
+  dsimp only [spectralCheck]
+  decide +kernel
+
 end GF2Sparse.FailureRanks
