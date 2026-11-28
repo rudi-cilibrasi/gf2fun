@@ -26572,4 +26572,161 @@ are checked in \nolinkurl{GF2Sparse/SignedWeight1229.lean}. A positive
 score requires distance below 301, and the even-template distance
 is odd. This proves the theorem.
 
+\clearpage
+\section{Equal products of at most 206 conjugates test degree 1229}
+\label{sec:signed-collisions}
+Let \(n=1229\), \(M=2^n-1\), and let \(z\) be a root of any of the
+639,144 irreducible pentanomials that pass the four known order tests.
+If \(z\) is nonprimitive, more than \(2.6\cdot10^{15}\) different
+unordered pairs of disjoint subsets of its conjugates have equal
+products, with at most 206 factors on each side. More than
+\(1.2\cdot10^{16}\) pairs have at most 215 factors on each side and
+have no adjacent positions in their combined cyclic support.
+A primitive root has no such equality. Its binary subset exponents
+are distinct modulo \(M\) apart from the empty and full selections.
+
+In particular a counterexample in this degree would give at least
+22,827 reciprocal pairs sharing the \emph{same} two-sided relations.
+All the relations below depend only on one missed prime \(p\),
+which can be chosen in common by Section~\ref{sec:1229-fourteen}.
+We have \(p\ge J=8317007399072301058\) and \(2\) has order \(n\)
+modulo \(p\). For each \(1\le j<p\) we will represent \(jM/p\)
+modulo \(M\) with signed binary digits. Its positive and negative
+positions give equal products whenever \(z^{M/p}=1\). An unordered
+pair determines \(j\) up to sign by subtracting the two binary
+subset exponents.
+
+Write \(x_i=\{2^i j/p\}\) with cyclic indices. In the lower third
+put \(t_i=x_i\), and in the upper third put \(t_i=x_i-1\). In the
+middle third use the first choice when \(x_{i-1}<1/2\), the second
+otherwise. Put \(d_i=2t_i-t_{i+1}\). By checking the thirds,
+\(d_i=1\) if \(x_{i-1}\in A=(1/6,1/3)\), \(d_i=-1\) if
+\(x_{i-1}\in -A=(2/3,5/6)\), and \(d_i=0\) otherwise.
+The middle third doubles into the other two thirds, so two nonzero
+digits cannot be adjacent. Telescoping gives
+\[
+      \sum_{i=0}^{n-1}d_i2^{n-1-i}=M t_0\equiv jM/p\pmod M.
+\]
+This is the cyclic nonadjacent form of
+\href{https://doi.org/10.1137/0121067}{F.~P.~Preparata,
+\emph{On the Representation of Integers in Nonadjacent Form}}.
+
+Let \(P,Q\) count its positive and negative digits, \(W=P+Q\),
+\(D=P-Q\). In descending binary order the pattern \((-1,0,1)\)
+can be replaced by \((0,-1,-1)\), since \(-4+1=-2-1\).
+This also works across the cyclic endpoint modulo \(M\). All
+occurrences of this orientation are disjoint. Their number \(R_+\)
+equals the count of \(x_i\) in \((19/24,20/24)\), the
+intersection of \(-A\) with the inverse image of \(A\) under
+quadrupling. Negation gives the other count \(R_-\). When \(P\ge Q\),
+apply \(\min(R_+,\lfloor(P-Q)/2\rfloor)\) exchanges. When \(Q>P\)
+use the opposite exchanges. The resulting larger side has size
+\[
+          K=\max\big(\lceil W/2\rceil, P-R_+, Q-R_-\big).
+\]
+
+\clearpage
+\subsection*{Separating the frequencies simultaneously at every remaining prime}
+Let \(B=2^{20}\) and \(C\) be the remaining cofactor of \(M\).
+For the 524,288 positive odd integers \(a<B\), form
+\(u_a=a^{2n}\bmod C\) and \(F(X)=\prod_a(X-u_a)\) modulo \(C\).
+The product \(\prod_a F'(u_a)\) is coprime to \(C\). Its residue is
+in \nolinkurl{data/degree-1229-signed-frequency-product.json}.
+A product tree and multipoint evaluation replay the certificate.
+Thus for any prime \(p\mid C\), writing \(H=\langle2\rangle\) modulo \(p\),
+all the cosets \(aH,-aH\) are disjoint. A shared element for
+different \(a\) gives equal \(2n\)-th powers. The two signs at one
+\(a\) are distinct since \(n\) is odd.
+
+The following estimate works for any prime with this separation.
+Let \(h\) be a real step function of integral zero on the circle,
+constant on equal half-open cells with an even denominator, with
+\(h(x+1/2)=-h(x)\). Write \(E=\int h^2\), \(L=\sup|h|\), and
+\(V\) for its total variation around the circle. For uniform
+\(j\ne0\bmod p\), the root mean square of \(\sum_{i<n}h(x_i)\)
+is at most
+\[
+ \sqrt{\frac p{p-1}}\left(\sqrt{n(E+2LV/p)}+
+        nV\sqrt{1/(36B)+3/p}\right).                         \tag{1}
+\]
+Use the Fourier transform on the whole grid \(\mathbb Z/p\),
+normalized by \(1/p\), and balanced integer frequencies
+\(|k|\le(p-1)/2\). For odd \(0<|k|\le B\), summing the rotated
+functions sends each Fourier coefficient to \(n\) distinct slots,
+all disjoint. Parseval bounds their squared norm by \(n(E+2LV/p)\),
+since sampling changes the integral of \(h^2\) by at most its
+variation divided by \(p\). This last estimate follows by comparing
+each grid value with the values on its interval of length \(1/p\).
+
+For \(k\ne0\), summation by parts bounds the coefficient by
+\(V/(2p|\sin(\pi k/p)|)\). More precisely its numerator is a sum
+over the jumps at cell boundaries, with a jump at \(x\) moved to
+\(\lceil px\rceil\) on the grid. Opposite jumps at \(x+1/2\) give
+phases separated by \((p\pm1)/2\) slots. At a nonzero even \(k\)
+this gives the bound \(V/(4p|\cos(\pi k/(2p))|)\le V/(2p)\).
+At zero, sampling gives \(V/p\). The entire even-frequency energy
+is at most \(V^2/p\).
+
+For \(B<|k|\le p/8\), use \(\sin(\pi |k|/p)\ge3|k|/p\), by
+concavity and \(\sin(\pi/8)>3/8\). Summing \(1/k^2\) over both odd
+tails gives at most \(1/B\), by integrating \(x^{-2}\) across each
+pair of neighboring unit intervals. The energy here is at most
+\(V^2/(36B)\). For \(|k|>p/8\), the coefficient is at most
+\(V/(4|k|)\), costing at most \(2V^2/p\) since \(p\ge17\).
+Sum the remaining \(n\) rotations by the triangle inequality and
+restrict the mean to nonzero \(j\). This proves (1).
+
+\clearpage
+\subsection*{Balancing the two sides and counting the collisions}
+For \(g=1_A-1_{-A}\), the sum over one orbit is \(D\). Here
+\((E,L,V)=(1/3,1,4)\). The two sixth-length intervals together
+contain at most \((p+1)/3\) residues, so
+\(\mathbb E W\le n(p+1)/(3(p-1))\) on nonzero residues.
+Equation (1) gives \(\|D\|_2<21.044\), hence
+\(\mathbb E\max(P,Q)\le(\mathbb EW+\|D\|_2)/2\).
+
+For the exchanges set \(f=g-2\,1_{(19/24,20/24)}\), so its orbit
+sum is \(D-2R_+\) and \(\int f=-1/12\). Use half-open cells in
+computations because their endpoints contain no nonzero sample. There is
+a step function \(u\) on the 24 cells such that
+\(h(x)=f(x)+1/12+u(x)-u(2x)\) changes sign at a half-turn.
+In cell order, the values of \(12u\) are four zeros, four copies
+of \(-6\), six copies of \(-2\), two copies of \(-14\), and eight
+zeros. The first twelve values of \(12h\) are
+\[
+                   1,1,7,7,9,9,9,21,-1,-1,-1,-1.
+\]
+Summing the correction over an orbit gives zero, and
+\((E,L,V)=(197/432,7/4,7)\). Thus (1) bounds the root mean square
+of \(D-2R_++n/12\) by \(25.076\).
+
+For any \(a>0\), \((x-a)_+\le x^2/(4a)\). Apply this with
+\(a=n/12\) to the preceding sum. The two orientations are exchanged
+by \(j\mapsto-j\). Consequently
+\[
+ \mathbb E K\le \tfrac12(\mathbb E W+1)+\mathbb E(D-2R_+)_+
+        \le\tfrac12(\mathbb E W+1)+3(25.076)^2/n.
+\]
+For any nonnegative integer cost of mean \(m\), at least a fraction
+\(1-m/(k+1)\) has cost at most \(k\). Multiply this by \((p-1)/2\)
+to count unordered pairs. At \(k=215\) before the exchanges it
+exceeds \(1.2\cdot10^{16}\). At \(k=206\) after the exchanges it
+exceeds \(2.6\cdot10^{15}\). The latter count includes more than
+\(2.1\cdot10^{12}\) classes up to cyclic rotation, since each class
+has at most 1229 members. \nolinkurl{scripts/check_1229_collision_ranks.py}
+replays the arithmetic and the signed representations in six small
+fields. \nolinkurl{GF2Sparse/FailureRanks.lean} checks the exchange
+bound, all 24 cells, and both population inequalities.
+
+
+For the incompressibility interpretation, order the prime divisors of
+\(C\) and use the first qualifying signed relation in lexicographic order
+for each prime. Given the degree and the fixed enumeration rule, four
+bits select a relation from this list of at most fourteen. Conversely, if
+\(d\) is the signed difference of the two binary subset exponents, then
+\(M/\gcd(M,d)=p\). Every relation obtained for one prime therefore
+selects exactly the same failing roots. To deduce a primitive pentanomial
+by counting, it suffices to bound how many different surviving reciprocal
+pairs satisfy each selected relation. A bound of 22,826 per relation
+would leave at least eight primitive reciprocal pairs.
 \end{document}
