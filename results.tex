@@ -28431,4 +28431,58 @@ period words. The \texttt{--ntl} option takes the cyclotomic
 census executable for an independent factorization.
 The composite-degree cutoff is also checked in Lean.
 
+\clearpage
+\section{How many bits identify a sparse prime-index failure?}
+\label{sec:prime-index-code-sizes}
+Fix $0\le c\le300$. In degree $n>1$ let $B_{n,p}$ consist of the
+reciprocal classes of irreducible pentanomials whose roots lie in the
+index-$p$ subgroup, for primes $p\mid M_n=2^n-1$ with
+$h=M_n/p\le cn$. With the degree and prime supplied to a decoder, the
+number of choices is $|B_{n,p}|$. With just the degree supplied, it is
+$|\bigcup_p B_{n,p}|$. The following are the exact maxima over all
+degrees. Each row applies from its left endpoint up to the next row,
+and the final row includes $c=300$. Below $5/4$ both maxima are zero.
+\[
+\begin{array}{r|rr|rr}
+ c&\max_{n,p}|B_{n,p}|&\max_n|\bigcup_p B_{n,p}|&
+ \text{degree at change}&\text{prime added}\\\hline
+ 5/4&1&1&4&3\\
+ 33/10&2&2&10&31\\
+ 73/9&3&3&9&7\\
+ 93/10&3&4&10&11\\
+ 341/10&6&10&10&3\\
+ 273/4&6&11&12&5\\
+ 455/4&10&18&12&3
+\end{array}
+\]
+Thus the degree and two bits identify every pair failing any test
+with $10h<341n$. At equality a single prime in degree ten already has
+six failures, with taps
+\[
+ (1,2,3),\ (1,2,6),\ (1,4,6),\ (1,5,6),\ (2,3,4),\ (3,4,7).
+\]
+Four bits with the prime supplied and five bits without it suffice
+over the full range $h\le300n$. Both lengths are necessary in degree
+twelve. These lengths count fixed-width indices in the explicit
+decoder. At degree 1229 the subgroup sizes relevant to the open tests
+exceed this range.
+
+By Section~\ref{sec:three-hundred-index} every relevant class occurs
+in degrees two through 22. Enumerate each tap triple in its
+lexicographically smaller reciprocal orientation, check irreducibility,
+and test $X^h=1$ modulo the polynomial. Retain its set of failed
+primes. Sort the test subgroups by the rational number $h/n$, adding
+all subgroups at an equal ratio together. Maintaining the union in
+each degree gives the second maximum including overlaps. For an
+independent calculation, factor $\Phi_r$ for each order $r\mid h$
+of binary degree $n$. An order-$r$ class fails exactly the primes with
+$r\mid M_n/p$. Each factor is self-reciprocal exactly when $n$ is even
+and $2^{n/2}\equiv-1\bmod r$. Otherwise two oriented factors give
+one class. The two calculations agree for every complete set of
+failed primes in every degree.
+
+\nolinkurl{scripts/check_prime_index_codes.py} checks the table.
+The \texttt{--degree} and optional \texttt{--prime} and \texttt{--limit}
+arguments list the tap triples with indices starting at zero.
+
 \end{document}
