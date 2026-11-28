@@ -20,11 +20,37 @@ def circular_span(support, multiplier, period):
     return period - max(gaps)
 
 
+def pentanomial_shape_obstruction(support, period):
+    """Apply the lattice volume bounds for triples, parallelograms and two progressions."""
+    n = support[-1]
+    for a, b, c in combinations(support, 3):
+        width = (c - a) // gcd(b - a, c - a)
+        if 2 * width * period**2 < n**3:
+            return f"three exponents in a progression of width {width}"
+    for a, b, c, d in combinations(support, 4):
+        if a + d == b + c and 3 * period**2 < n**3:
+            return f"the parallelogram {a}, {b}, {c}, {d}"
+    # Each partition of five positions has a unique smaller row of length one or two.
+    for size in (1, 2):
+        for first in combinations(support, size):
+            second = [e for e in support if e not in first]
+            gaps = [e - row[0] for row in (first, second) for e in row]
+            step = gcd(*gaps)
+            small, large = sorted((row[-1] - row[0]) // step for row in (first, second))
+            if 4 * large**2 * period < (3 * large - small) * n**2:
+                return f"two progressions of widths {small} and {large} with step {step}"
+    return None
+
+
 def span_obstruction(support, period):
     """Return one multiplier proving the root order cannot divide this odd period."""
     n = support[-1]
     if period < n:
         return f"period {period} is below degree {n}"
+    if len(support) == 5:
+        shape = pentanomial_shape_obstruction(support, period)
+        if shape:
+            return shape
     for u in range(1, period // 2 + 1):
         k = gcd(u, period)
         orbit = frobenius_period(k)
@@ -53,6 +79,8 @@ def check_small(limit, sweep):
             if 16 * h**3 < lower:
                 raise ArithmeticError(f"packing bound failed at {support}, order {h}")
             count += 1
+            if pentanomial_shape_obstruction(support, h):
+                raise ArithmeticError(f"shape bound failed at {support} with order {h}")
             if h <= sweep:
                 witness = span_obstruction(support, h)
                 if witness is not None:
