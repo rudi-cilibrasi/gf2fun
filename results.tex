@@ -22258,20 +22258,26 @@ prime-index powers.
 The pentanomial with taps \(2977,5954,19350\) in degree 22327 and the
 unique primitive trinomial pair there, with tap 2445, were already proved
 in Section~\ref{sec:semiprime-22327}. Its archived 6616-digit prime
-certificate completes the same row in the large-degree table. The combined
-tables certify 67 degrees. Of these, 66 have a known minimum weight,
+certificate completes the same row in the large-degree table. The
+trinomial census covers 66 degrees with a known minimum weight,
 three in 32 degrees and five in 34. Their census has 99 irreducible
 pairs and 93 primitive pairs in 282084 classes. The cases 10967, 11581,
 14263 and 14971 also occur in Sections~\ref{sec:semiprime-norm-witnesses}
 and~\ref{sec:scalar-pair-census}.
 
-\paragraph{Sixteen candidates with one outstanding prime proof each.}
-For 16 further pentanomials in \nolinkurl{data/mers-project-large-orders.json},
+In degree \(19121\), the pentanomial with taps \(1160,2320,17961\)
+is primitive. The field order has five distinct prime factors. The
+\href{https://factordb.com/cert/1100000000710088779}{5701-digit prime certificate}
+has been verified and is included in the archive. With this row the
+two Mers Project tables certify 68 distinct degrees.
+
+\paragraph{Fifteen candidates with one outstanding prime proof each.}
+For 15 further pentanomials in \nolinkurl{data/mers-project-large-orders.json},
 write \(2^n-1=AP\), where \(P\) is the largest listed factor.
 In every case \(\gcd(A,P)=1\) and the complete prime factorization
-of \(A\) is verified. NTL tested irreducibility and the 65 factor-index
+of \(A\) is verified. NTL tested irreducibility and the 60 factor-index
 powers across these rows. FLINT independently verified each full group
-power and all 65 factor-index powers. Write \(r=X\bmod f\). For each prime \(p\mid A\),
+power and all 60 factor-index powers. Write \(r=X\bmod f\). For each prime \(p\mid A\),
 the test \(r^{(2^n-1)/p}\ne1\) forces the full power of \(p\)
 in \(2^n-1\) to divide the root order. The test \(r^A\ne1\) then gives
 \(\operatorname{ord}(r)=Ad\) for a divisor \(d>1\) of \(P\).
@@ -22279,8 +22285,8 @@ A primality proof for \(P\) would give \(d=P\).
 
 The largest degree is 41521, with interior exponents \(6931,13862,34590\)
 and four listed factors. Its remaining integer certificate is for a
-12459-digit factor. The smallest remaining factor has 5701 digits in
-degree 19121. Each of the 16 certificates can be checked
+12459-digit factor. The smallest remaining factor has 6124 digits in
+degree 20521. Each of the 15 certificates can be checked
 independently of the other degrees.
 
 \end{document}
