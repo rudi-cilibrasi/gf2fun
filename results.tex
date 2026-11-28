@@ -24432,4 +24432,202 @@ trinomial reciprocal classes in this degree. These four pairs complete
 the classification of all 136 irreducible trinomial pairs in the 83
 selected Mers Project degrees.
 
+\clearpage
+\section{Counting quotients of elliptic functions at a five-term root}
+\label{sec:elliptic-quotient-counts}
+Let \(n=4^k+2\), \(k\ge2\), where \(n+1\) is prime and 2 generates
+\(\mathbb F_{n+1}^\times\). The pentanomial
+\[
+                 F_k(X)=X^n+X^{n-2}+X^3+X+1
+\]
+is then irreducible by Theorem~\ref{thm:elliptic-pentanomial-order}.
+Let \(r\) be a root. We will obtain an order exceeding \(2^{10^{13}}\)
+in the explicit degree \(2^{84}+2\), and an order exceeding \(2^{1387}\)
+in degree 262146. The same construction gives
+\(\log_2\ord(r)\ge(2.7819-o(1))\sqrt n\) throughout this family.
+
+Use the pairs \(\alpha=(a,b)\) with \(0<b<a\), \(\gcd(a,b)=1\)
+and \(3\nmid a+b\). Write \(N_\alpha=a^2-ab+b^2\). Each description
+assigns a vector \(z_\alpha\in\mathbb Z^5\) of coordinate sum zero
+to each pair, with finite support. Write \(h(z)=\sum_i\max(z_i,0)\).
+\begin{theorem}\label{thm:elliptic-quotient-diameter}
+Suppose a finite set \(S\) of such descriptions uses only norms below
+\(n+1\), and for any two distinct members \(z,w\) satisfies
+\[
+                  \sum_\alpha N_\alpha h(z_\alpha-w_\alpha)<n/2.
+\]
+Then \(\ord(r)\ge |S|/\gcd(n,2^n-1)\).
+\end{theorem}
+\begin{proof}
+Use the elliptic curve and notation of
+Theorem~\ref{thm:elliptic-pentanomial-order}. For each endomorphism
+\(\alpha\), evaluate the five homogeneous linear forms
+\[
+           Y,\quad Z+Y,\quad Z+\omega Y,\quad Z+\omega^2Y,\quad Z
+\]
+at the projective coordinate \(Y/Z=x(\alpha Q)\). Exponents of sum
+zero define a rational function of that coordinate, independently
+of the choice of \(Y,Z\). Its degree is at most \(h(z_\alpha)\).
+The coordinate map on the \(x\)-line has degree \(N_\alpha\), so the
+quotient belonging to two descriptions has degree at most the displayed
+sum. The four nonconstant functions in the affine chart are
+multiplicatively independent modulo constants across all the pairs,
+by the kernel and divisor argument of the cited theorem. Hence for
+distinct descriptions their quotient differs from one as a function.
+Clearing its denominator gives a nonzero numerator for the difference
+from one, of degree less than \(n/2\). It cannot vanish at \(u=1+r\),
+which has degree \(n/2\) over \(\mathbb F_4\). All factors are defined
+and nonzero there. Their values lie in \(G=\langle u,r\rangle\), and
+\([G:\langle r\rangle]\mid\gcd(n,2^n-1)\). This proves the count.
+\end{proof}
+In the incompressibility interpretation, give a decoder the field model,
+the functions and the finite set \(S\). Given a group element in the
+image, it recovers the description by enumeration. The degree bound
+proves uniqueness and turns the number of distinct descriptions into
+an order bound for a particular five-term polynomial.
+
+\clearpage
+\subsection*{How many descriptions fit a given height}
+Let \(A(H)\) count all descriptions with \(\sum N_\alpha h(z_\alpha)\le H\).
+For \(H=\lfloor(n-1)/4\rfloor\) their pairwise distances satisfy
+Theorem~\ref{thm:elliptic-quotient-diameter}, since
+\(h(z-w)\le h(z)+h(w)\) for zero-sum vectors. The generating
+series for the height at one pair is
+\[
+ L(q)=(1-q)^5\sum_{j\ge0}\binom{j+4}{4}^2q^j
+     =\frac{1+16q+36q^2+16q^3+q^4}{(1-q)^4}.
+\]
+For the first identity take the constant term in \(v\) of
+\(((1-q)/((1-v)(1-q/v)))^5\). Each coordinate contributes its
+signed exponent of \(v\) and its negative part as the exponent of \(q\).
+For the second identity multiply the binomial series by \((1-q)^9\)
+and take finite differences of the degree-eight polynomial in \(j\).
+
+Write \(\rho=\sqrt3/(2\pi)\). The number of eligible pairs of norm
+at most \(T\) is \(\rho T+O(\sqrt T\log(2T))\). Indeed the open
+sector in the Eisenstein lattice has angle \(\pi/3\), covolume
+\(\sqrt3/2\), and squared radius \(T\). Six of the nine residue
+classes modulo three satisfy the sum condition. Counting unit cells
+in each class gives an \(O(\sqrt T+1)\) boundary error. M\"obius
+inversion for the common divisors prime to three multiplies the area
+term by \(\prod_{p\ne3}(1-p^{-2})=27/(4\pi^2)\). Summing boundary
+errors and truncating the absolutely convergent product's Dirichlet
+series gives the asserted error.
+
+Put \(f(x)=\log L(e^{-x})\), \(I=\int_0^\infty f(x)\,dx\), and
+\(D=\rho I\). For \(s>0\), the generating function over all pairs is
+\(Z(s)=\prod_\alpha L(e^{-sN_\alpha})\). As \(s\downarrow0\),
+\[
+  s\log Z(s)\to D,\qquad
+  -s^2(\log Z)'(s)\to D,\qquad s^3(\log Z)''(s)\to 2D .
+\]
+In each case apply the pair count to the rescaled Riemann sum for
+\(f(x),-xf'(x),x^2f''(x)\), respectively. All have exponential tails
+up to polynomial factors. Near zero \(f(x)=-4\log x+O(1)\), while
+the other two functions are bounded there by the rational formula for
+\(L\). The linear upper bound on the pair count controls both tails
+of the sums. Integration by parts gives the three integrals
+\(I,I,2I\).
+
+Give each description of weight \(W=\sum N_\alpha h(z_\alpha)\)
+probability \(e^{-sW}/Z(s)\). Its mean is \(-(\log Z)'(s)\) and its
+variance is \((\log Z)''(s)\). Take
+\(s=\sqrt{D/((1-\varepsilon)H)}\) with fixed \(0<\varepsilon<1/2\).
+Chebyshev's inequality puts probability tending to one on
+\([(1-2\varepsilon)H,H]\). Thus \(A(H)\ge
+(1-o(1))Z(s)e^{s(1-2\varepsilon)H}\). Conversely
+\(A(H)\le Z(\sqrt{D/H})e^{\sqrt{DH}}\).
+Letting \(\varepsilon\downarrow0\) proves
+\(\log A(H)=(2\sqrt D+o(1))\sqrt H\).
+
+\clearpage
+\paragraph{The constant in the order bound.}
+Put \(a_\pm=\operatorname{arcosh}((8\pm\sqrt{30})/2)\).
+The numerator of \(L(q)\) factors into the four terms
+\(1+e^{\pm a_+}q,\ 1+e^{\pm a_-}q\).
+The integral of
+\(\log((1+e^{a-x})(1+e^{-a-x}))\) on \([0,\infty)\) is
+\(\pi^2/6+a^2/2\). Its derivative in \(a\) is \(a\), and the
+alternating reciprocal-square series gives its value at zero.
+The four denominator factors contribute \(4\pi^2/6\). Hence
+\[
+ I=\pi^2+(a_+^2+a_-^2)/2,\qquad
+ \log_2\ord(r)\ge
+ \left(\frac{\sqrt{\rho I}}{\log2}-o(1)\right)\sqrt n,
+ \qquad \frac{\sqrt{\rho I}}{\log2}=2.7819352\ldots .
+\]
+Here \(\gcd(n,2^n-1)\le n\) costs at most \(\log_2 n\) bits.
+The bound applies to all sufficiently large admissible degrees.
+Infinitude of those degrees is open.
+
+\paragraph{Degree 262146.}
+We have \(n=2\cdot3\cdot43691=4^9+2\), with three prime factors.
+The residues \(2^{n/p}\bmod(n+1)\) for the three primes are
+\(262146,131329,64\), respectively, and \(2^n=1\bmod(n+1)\).
+Lucas's criterion gives primality of \(n+1\) and full order of two.
+Here \(\gcd(n,2^n-1)=3\). The exact count with \(H=65536\) gives
+\(A(H)/3>2^{1387}\).
+To compute it, form \(\prod_{N_\alpha\le H} L(q^{N_\alpha})\)
+modulo \(q^{H+1}\) and sum the coefficients. The verifier combines
+the results modulo distinct primes above \(2^{30}\). Positivity
+also gives the upper bound
+\[
+       A(H)\le q^{-H}\prod_{N_\alpha\le H} L(q^{N_\alpha})<2^{1396},
+                 \qquad q=132/133,
+\]
+with the last inequality checked by interval arithmetic. The CRT modulus
+exceeds this bound. Direct enumeration gives an independent check of the
+series calculation through height 120.
+
+\paragraph{Degree \(2^{84}+2\).}
+For diameter \(d=2m+s\), \(s\in\{0,1\}\), use all vectors with
+coordinate sum \(s\) and negative part at most \(m\), subtracting the
+fixed vector \((0,0,0,0,s)\) to give sum zero. For any two vectors
+the positive part of their difference is at most \((m+s)+m=d\).
+The number of choices is
+\[
+ V(d)=\sum_{j=0}^{\min(m,4)}(-1)^j\binom4j
+       \binom{m-j+4+s}{4}\binom{m-j+4}{4}.
+\]
+This follows from the same coefficient extraction as for \(L\), now
+taking the coefficient of \(v^s\) and accumulating heights through \(m\).
+The integer cutoffs on \(a\) and the corresponding diameters are in
+\nolinkurl{scripts/check_elliptic_quotient_counts.py}. The pair-count
+recurrence from Corollary~\ref{cor:elliptic-84} gives
+\(\sum_\alpha d_\alpha N_\alpha=9667539411974250494725734<n/2\).
+The product of the \(V(d_\alpha)\), divided by three, exceeds
+\(2^{10134308948149}\). The verifier rounds every logarithm down
+using the integer bit length of \(V(d)^{2048}\).
+
+\clearpage
+\paragraph{An exact prime power in the root order.}
+The translated trinomial also determines one prime component without
+the counting estimate. Let \(d>1\) be odd, \(m\ge2\), and suppose
+\(U^{dm}+U^d+1\) is irreducible over \(\mathbb F_2\). For a root
+\(u\) put \(r=1+u\). For every prime \(\ell\mid d\) set
+\(e=\ord_\ell(2)\), \(c=v_\ell(2^e-1)\). Then
+\[
+ v_\ell(\ord(r))=c+v_\ell(d),\qquad
+ v_\ell([\mathbb F_{2^{dm}}^\times:\langle r\rangle])=v_\ell(m).
+\]
+Indeed \(y=u^d\) has degree \(m\) and \(T^d-y\) is irreducible over
+\(\mathbb F_{2^m}\), by the degree of \(u\). Thus \(y\) is not an
+\(\ell\)-th power in that field. This forces \(\ell\mid2^m-1\) and
+\(v_\ell(\ord(y))=v_\ell(2^m-1)=c+v_\ell(m)\), using the
+odd-prime lifting-the-exponent formula and \(e\mid\ell-1\).
+The relative norm of \(r\) is \(1+y=y^m\), whose order has valuation
+\(c>0\). The norm raises \(r\) to \((2^{dm}-1)/(2^m-1)\), of
+valuation \(v_\ell(d)\). This proves both equalities.
+
+In particular, the exact power of three in the order of every
+irreducible \(F_k\) is nine. Its index has 3-adic valuation
+\(v_3(2k-1)\) since \(4^k+2=2(2^{2k-1}+1)\). In both numerical
+examples above nine is the full 3-part of the field's group order.
+For the second family in Section~\ref{sec:translated-dilation-classification},
+\(X^{16^s+4}+X^{16^s}+X^5+X+1\), the exact power of five in every
+irreducible root order is 25, and its index has 5-adic valuation
+\(v_5(2s-1)\). Full order in the two numerical examples remains open.
+\nolinkurl{GF2Sparse/EllipticPentanomial.lean} checks the finite integer
+primitive-root conditions and the inequality on heights of differences.
+
 \end{document}
