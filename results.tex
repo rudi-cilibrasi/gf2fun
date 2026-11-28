@@ -27445,4 +27445,178 @@ The offline table for
 \nolinkurl{data/tkacik-orders.json}. Use
 \texttt{--table data/tkacik-orders.json} to replay all nine rows.
 
+\clearpage
+\section{Four independent columns from four conjugates}
+\label{sec:four-conjugates}
+Let $\alpha$ have prime order $\ell$ in characteristic two, let $K$ be a finite
+binary field, and put $d=[K(\alpha):K]$, $t=\ord_\ell(2)$, $k=(\ell-1)/t$.
+Suppose $d\ge4$ and $(\ell,d)\ne(13,4)$. Every four distinct powers
+$\alpha^{e_j}$ modulo $\ell$ are linearly independent over $K$ if
+\[
+ k=1,\qquad\text{or}\qquad k=2\text{ and }\ell>24^2,
+ \qquad\text{or}\qquad \ell>(6k+1)^9.
+\]
+The exception is necessary even for $k=1$. For a primitive thirteenth
+root, columns $0,1,3,9$ are dependent over $\mathbb F_8$.
+
+\begin{proof}
+For $4\le d\le7$ take any generator $u$ of the subgroup of order $d$ in
+$\mathbb F_\ell^\times$. Use the four conjugates with row indices
+$1,u,u^2,u^3$. We show that their determinant is nonzero in the binary
+group algebra $\mathbb F_2[T]/(T^\ell-1)$. Translate one column to zero
+and write the other columns as projective coordinates $C=(x,y,z)$.
+A repeated column lies on one of the six boundary lines given by
+$x,y,z,x-y,x-z,y-z$. The 24 frequencies of the determinant are
+$V_i\cdot C$, where $V_i$ omits the first entry of the $i$th permutation
+of the four rows. A frequency of odd multiplicity suffices.
+
+Lift $u$ to a primitive complex $d$th root $U$ and work in $\mathbb Z[U]$.
+If the first frequency is not unique after reduction modulo $\ell$, the
+point lies on a collision line $L=V_0-V_i$. Six lines force repeated
+columns; their nonzero coordinates are differences of distinct row powers
+and remain nonzero. For each of the remaining 17 lines choose a permutation
+$h$ for which every $P_j=L\times(V_h-V_j)$, $j\ne h$, is nonzero in
+characteristic zero. If $h$ also collides, the columns are proportional to
+one of these 23 points unless all its coordinates reduce to zero.
+
+For each point include $\gcd_a |N((P_j)_a)|$ in the obstruction list,
+where $N$ is the cyclotomic norm. Discard points on a boundary.
+At every remaining point there is a singleton over $\mathbb Z[U]$.
+For each singleton $i$ form $\prod_{j\ne i}|N((V_i-V_j)\cdot P)|$ and
+include the gcd of these products in the list. Any reduction losing every
+singleton must divide a listed integer, since a vanishing algebraic
+integer modulo a prime over $\ell$ has norm divisible by $\ell$.
+The exact intersections, resultants and remaining primes $\ell\equiv1\pmod d$
+are computed by \nolinkurl{scripts/check_four_column_descent.py}.
+\[
+\begin{array}{c|r|l|l}
+d&\text{nonboundary intersections of 391}&\text{remaining primes}&
+  \text{zero determinants per generator}\\\hline
+4&214&5,13,17&0,4,0\\
+5&238&11,31,41&0,0,0\\
+6&230&7,13,19&0,0,0\\
+7&238&29,43,71&0,0,0
+\end{array}
+\]
+The last column enumerates $(0,1,A,B)$ with $2\le A<B<\ell$ at each
+remaining prime, for every generator. At $(13,4)$ the stated four columns
+give a zero determinant. The four Frobenius rows are all the conjugates,
+so the Moore determinant criterion gives dependence over $\mathbb F_8$.
+
+For $d\ge8$ use Lemma~\ref{lem:eight-row-choices}.
+In all cases the resulting nonzero determinant has even augmentation and
+weight at most 24. If $k=1$, the only nonzero polynomial of degree
+below $\ell$ divisible by the minimal polynomial $\Phi_\ell$ is
+$\Phi_\ell$ itself, of odd weight. For $k=2$ use the square-root distance
+bound in Section~\ref{sec:all-three-five-relative}; for the last size
+bound use the nine-coordinate compression in
+Section~\ref{sec:relative-fourier-minors}. Hence the determinant evaluated
+at $\alpha$ is nonzero, as required.
+\end{proof}
+
+\clearpage
+\section{Decoding sparse exceptions from the degree of a prime-order root}
+\label{sec:sparse-four-column-descent}
+Let $f$ be irreducible over $\mathbb F_2$ of degree $n>1$ and weight
+at most five, with root $z$ and exponent gcd $g$. For an odd prime
+$\ell$ put $m=\deg_{\mathbb F_2}(z^\ell)$, $d=n/m$, $t=\ord_\ell(2)$.
+Suppose $1<d\ne\ell$. If every four distinct powers of a primitive
+$\ell$th root $\alpha$ are independent over $K=\mathbb F_{2^m}$, then
+\[
+ \boxed{n/g=t},\qquad
+ f=F(X^{n/t}),\qquad F\mid X^{\ell(2^{t/d}-1)}-1 .
+\]
+Here $F$ has degree $t$, weight exactly five, and its root order is
+divisible by $\ell$. If every five columns are independent, no such
+drop occurs. Section~\ref{sec:four-conjugates} supplies uniform
+four-column criteria for every relative degree $d\ge4$.
+
+\begin{proof}
+By Section~\ref{sec:safe-prime-powers}, $\ell\nmid g$ and
+$z=\alpha\beta$ with $\beta\in K^\times$ and $d=t/\gcd(t,m)$.
+Group the terms of $f(z)$ by exponent modulo $\ell$. The coefficient
+of each occupied residue is nonzero: otherwise a proper subsum and its
+complement would both vanish at $z$, one of them having degree below $n$.
+Four-column independence forces all five residues to be distinct.
+The five columns have rank four, and the relation normalized at exponent
+zero has coefficients $\beta^e$ for the exponents $e$ of $f$.
+
+Put $s=\gcd(t,m)=t/d$. The fields $\mathbb F_{2^t}$ and $K$ have
+coprime degrees over $\mathbb F_{2^s}$, so they are linearly disjoint
+over it. The normalized relation therefore has coefficients in
+$\mathbb F_{2^s}$: expanding the columns in a basis over that field
+gives the same rank and one-dimensional kernel after extending to $K$.
+B\'ezout on the exponents gives $\beta^g\in\mathbb F_{2^s}^\times$.
+Now $z^g\in\mathbb F_{2^t}$ has order dividing $\ell(2^s-1)$ and
+divisible by $\ell$, since $\ell\nmid g(2^s-1)$. Its binary degree
+both divides $t$ and is divisible by $\ord_\ell(2)=t$. Writing
+$f=F(X^g)$, irreducibility makes $F$ the minimal polynomial of $z^g$.
+This proves all the assertions.
+\end{proof}
+
+Given $n,\ell,d$, a decoder factors the displayed binomial and indexes
+the eligible five-term factors in order of coefficient mask. Its output
+is the indexed support multiplied by $n/t$. For fixed $\ell$ the number
+of possible bases is bounded independently of $n$; even without $d$ the
+decoder may take the union over divisors of $t$. If there is just one
+base, the degree specifies the exception without an index. This counts
+actual sparse supports and gives an explicit decoder in the sense of
+Vit\'anyi's incompressibility method. A root may miss a factor of
+$2^n-1$ while $z^\ell$ still has degree $n$, so the rank argument
+only covers the stated order obstructions.
+
+\clearpage
+\subsection*{The unique tower for the 43rd power}
+For $\ell=43$, $7\mid d$ holds exactly for
+\[
+ f=(X^{14}+X^9+X^7+X^5+1)\big|_{X\mapsto X^{3^j}},\qquad j\ge0.
+\]
+Its root order is $129\cdot3^j$, its degree is $14\cdot3^j$, and its
+43rd power has degree $2\cdot3^j$. Thus the index is always seven.
+
+Indeed $t=14$, and $7\mid d$ requires $d=7$ or 14.
+All four-column sets of 43rd roots are independent over $\mathbb F_4$,
+as checked on the $\binom{42}{3}=11480$ sets containing exponent zero;
+their ranks persist over $K$ by the same disjointness argument.
+The normalized support must come from $X^{129}-1$. Of its nine
+irreducible factors with root order divisible by 43, exactly one has
+weight five. It is the displayed base, of order 129. Every prime $p\mid g$
+must divide 129: otherwise raising to $p$ permutes the order-129
+subgroup, giving $F(X^p)$ a root of degree at most 14, whereas
+$f=F(X^g)$ irreducible implies $F(X^p)$ irreducible. Also $43\nmid g$.
+Hence $g=3^j$. Conversely, every $3^j$th root of an element of order
+129 has order $43\cdot3^{j+1}$. Its binary degree is
+$\operatorname{lcm}(14,2\cdot3^j)=14\cdot3^j$, by the order of 2
+modulo powers of three. This proves irreducibility and the stated drop.
+Lean checks the base order and both orders throughout the tower in
+\nolinkurl{GF2Sparse/FortyThirdPower.lean}.
+
+Since $2^{14}-1=3\cdot43\cdot127$, the displayed base is the only
+sparse irreducible in degree 14 failing the 127 test. Of the 73
+irreducible pentanomials, 43 pass the tests for 3 and 43. Deleting the
+single decoded exception leaves 42 primitive pentanomials.
+
+\paragraph{Other small primes.}
+The same calculation gives the following all-degree restrictions.
+The entries $(s,h)$ record independence of every $h$ columns over
+$\mathbb F_{2^s}$; this includes independence over its subfields.
+For the four-column checks, the last column gives the minimum weight
+among the eligible factors of $X^{\ell(2^s-1)}-1$.
+\[
+\begin{array}{c|c|l|l|l}
+\ell&t&\text{possible indices}&(s,h)&\text{minimum}\\\hline
+13&12&1,2,3,4,13 &(2,4)&9\\
+17&8&1,2,4,8,17 &(1,4)&5\\
+19&18&1,2,3,19 &(2,5),(3,5)&--\\
+29&28&1,2,29 &(4,5),(7,4)&9\\
+37&36&1,2,3,37 &(4,5),(6,5),(9,4)&11\\
+43&14&1,2,7,43 &(2,4)&5
+\end{array}
+\]
+Each row is an upper bound on the set of indices. In the row for 17
+the sole index-eight support is $X^8+X^5+X^4+X^3+1$: its base has
+order 17, so $17\nmid g$ forces $g=1$ by the prime-divisor argument
+above. The rank checks, base factorizations and degree-14 order census
+are in \nolinkurl{scripts/check_sparse_power_descent.py}.
+
 \end{document}

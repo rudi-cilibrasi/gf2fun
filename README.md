@@ -18,6 +18,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **One pentanomial accounts for every factor-of-seven degree drop under the 43rd power.** In degree $14\cdot3^j$ its taps are $(5,7,9)\cdot3^j$. Its root has order $129\cdot3^j$. Given the degree, the exceptional support needs zero index bits. In degree 14 it is the sole sparse irreducible missing 127, leaving 42 primitive pentanomials among the 43 that pass the two other prime tests. A four-column independence theorem gives a finite decoder for other primes as well. [Four-column theorem](results.pdf#page=408) · [Decoder and proof](results.pdf#page=409) · [Finite checks](scripts/check_sparse_power_descent.py) · [Lean order proof](GF2Sparse/FortyThirdPower.lean)
+
 - **Nine witnesses from Tom Tkacik's 2019 table have reproducible full-order certificates here.** Five have minimum weight three. Five terms are necessary in degrees 14,093, 15,359, 17,587 and 17,603. The replay checks 72 prime-index powers and the nine archived primality certificates. [Tkacik's table](https://www.jjj.de/mathdata/minweight-primpoly-large.txt) · [Witnesses and factors](data/tkacik-orders.json) · [Proof](results.pdf#page=407)
 
 - **Five terms are necessary and sufficient in degree 48,387.** The polynomial $X^{48387}+X^{40}+X^{31}+X^{14}+1$ has full order $2^{48387}-1$, and every trinomial of this degree is reducible. A cubic with integer coefficients proves primality of the 9,635-digit order factor $\Phi_{48387}(2)$. [Proof](results.pdf#page=403) · [Certificate](data/degree-48387-order-prime.json) · [Offline verifier](scripts/check_48387_order.py)
