@@ -91,4 +91,37 @@ theorem order_sixteen_composite_cutoff {d n : ℕ} (hn : n ≤ d^2)
     have hpow : d^2 ≤ 10^2 := by gcongr
     omega
 
+/-- Packing at the rational endpoint 127/7 bounds both variables in the finite census. -/
+theorem order_127_sevenths_cutoff {n r : ℕ} (hn : 0 < n) (hpack : 5*n^4 ≤ 16*r^3)
+    (hr : 7*r ≤ 127*n) : n ≤ 19110 ∧ r ≤ 346715 := by
+  have hcancel : (5*7^3*n)*n^3 ≤ (16*127^3)*n^3 := by
+    calc
+      _ = 7^3*(5*n^4) := by ring
+      _ ≤ 7^3*(16*r^3) := Nat.mul_le_mul_left _ hpack
+      _ = 16*(7*r)^3 := by ring
+      _ ≤ 16*(127*n)^3 := by gcongr
+      _ = _ := by ring
+  have hb := Nat.le_of_mul_le_mul_right hcancel (pow_pos hn 3)
+  norm_num at hb
+  omega
+
+/-- A prime-index subgroup of size at most 300 times the ambient composite
+degree forces the largest proper subfield degree to be at most sixteen. -/
+theorem subfield_size_gt_three_hundred_square (d : ℕ) (hd : 17 ≤ d) :
+    300*d^2 + 1 < 2^d := by
+  induction d, hd using Nat.le_induction with
+  | base => decide
+  | succ k hk ih =>
+    rw [pow_succ 2 k]
+    nlinarith [Nat.mul_le_mul_left k hk]
+
+theorem order_three_hundred_composite_cutoff {d n : ℕ} (hn : n ≤ d^2)
+    (hsmall : 2^d ≤ 300*n+1) : n ≤ 256 := by
+  by_cases hd : 17 ≤ d
+  · have h := subfield_size_gt_three_hundred_square d hd
+    omega
+  · have hle : d ≤ 16 := by omega
+    have hpow : d^2 ≤ 16^2 := by gcongr
+    omega
+
 end GF2Sparse

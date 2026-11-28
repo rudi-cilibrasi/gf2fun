@@ -28286,4 +28286,149 @@ Thus a concrete extra symmetry of even one survivor would already
 reveal a cofactor divisor from the multiplier alone. The seven probes
 above settle the tests at the four known primes on the specified sample.
 
+\clearpage
+\section{The sharp two-bit threshold is $127/7$}
+\label{sec:sharp-two-bit-orders}
+Given the degree $n>1$, two bits identify every irreducible binary
+pentanomial of root order $7R<127n$ up to reciprocation. There are
+at most four such classes and at most seven oriented polynomials in
+any degree, with equality in degree 42. Even allowing a mixture of
+orders, a single subgroup of size $7h<127n$ contains at most three
+classes and six oriented polynomials, attained at $h=73$, $n=9$.
+
+At $7R=127n$, five different reciprocal pentanomial classes occur
+in the \emph{same} subgroup in each degree $n=7\cdot127^j$, $j\ge0$.
+For $j\ge1$ all five classes are imprimitive. Thus even with the
+subgroup supplied to the decoder there are too few two-bit strings
+at the endpoint. In these degrees the five representatives are
+obtained by multiplying each triple in the first row below by $127^j$.
+
+For the proof normalize as in Section~\ref{sec:order-sixteen}, with
+$n=mg$ and $R=rg$. The inequalities $5m^4\le16r^3$ and $7r\le127m$
+give $m\le19110$ and $r\le346715$. In the interval $16m<r\le127m/7$
+there are 2895 orders satisfying the packing, degree and normalization
+tests of that section. Exactly 55 survive its unit-coset test.
+Factoring their binary cyclotomic polynomials gives the following
+additional normalized supports, up to reciprocation.
+\[
+\begin{array}{r|r|l|l}
+ m&r&\text{interior taps}&\text{allowed primes in }g\\\hline
+ 7&127&1,\ 3,\ (1,2,3),\ (1,2,5),\ (1,3,5),\ (1,3,6),\ (2,3,4)&127\\
+ 12&195&(2,4,5)&5,13\\
+ 16&257&(1,8,15),\ (3,8,13)&257
+\end{array}
+\]
+The first row has ratio exactly $127/7$. The other two rows, together
+with the previous table, have base degrees of lcm $55440$. Reducing
+to the divisors of this lcm as in Section~\ref{sec:order-sixteen}
+gives the strict-inequality maxima above. Including the endpoint gives
+64 normalized sparse polynomials in 36 reciprocal classes across
+all 261 cyclotomic orders sent to factorization. Dilation preserves
+irreducibility precisely for the primes in the last column. At $j\ge1$
+the endpoint order $127^{j+1}$ is smaller than $2^{7\cdot127^j}-1$.
+
+Run \nolinkurl{scripts/check_linear_order_classes.py} with
+\texttt{--sharp} to replay the sieve, both maxima, and the table.
+The \texttt{--degree} option reconstructs the actual taps at any degree.
+The \texttt{--ntl} option uses an independent cyclotomic factor census.
+\nolinkurl{GF2Sparse/CircuitOrderBounds.lean} verifies the numerical cutoff.
+
+\clearpage
+\section{Prime-index subgroups of size at most $300n$}
+\label{sec:three-hundred-index}
+In every degree $n\ge23$, every irreducible binary trinomial or
+pentanomial passes the order test at every prime $p\mid 2^n-1$ for
+which $h=(2^n-1)/p\le300n$. For $15\le n\le22$ the following list
+exhausts the failures. Counts include both reciprocal orientations.
+\[
+\begin{array}{r|r|r|rr}
+n&p&h&\text{trinomials}&\text{pentanomials}\\\hline
+15&31&1057&0&4\\
+16&17&3855&0&10\\
+18&73&3591&3&6\\
+21&337&6223&2&0\\
+22&683&6141&0&2
+\end{array}
+\]
+The last two pentanomials are $X^{22}+X^{11}+X^4+X^2+1$ and its
+reciprocal, both of order 6141. In degree 21 the two failures are
+$X^{21}+X^7+1$ and its reciprocal, of order 49.
+
+For composite $n$ let $d$ be its largest proper divisor. Then
+$n\le d^2$ and $2^d-1\le h$, as in Section~\ref{sec:order-sixteen}.
+At $d=17$ we have $2^d-1>300d^2$, and doubling preserves the strict
+inequality thereafter. Thus $n\le256$. Enumerate the odd $h\le300n$
+such that $h\mid 2^n-1$ and $(2^n-1)/h$ is prime. There are nine
+such subgroups in composite degrees $n\ge15$. For each, factor
+$\Phi_r$ over $\mathbb F_2$ for the divisors $r\mid h$ having
+$\operatorname{ord}_r(2)=n$. There are 23 distinct $(n,r)$ to
+check, yielding the five nonempty cases in the table.
+
+For prime $n\ge13$ we prove the stronger conclusion that
+\emph{every} such root has order $r>300n+1$.
+Section~\ref{sec:small-prime-degree-orders} covers $r\le256n+1$.
+A composite order in the extension would be at least $(2n+1)^2$,
+since every prime divisor is $1\bmod 2n$. Testing the resulting
+finite set by $2^n\bmod r$ gives none. A prime order is $r=kn+1$
+with even $258\le k\le300$, and $k\not\equiv4\bmod8$ since $2$
+is a square modulo $r$. Packing gives $5n\le16(k+1)^3$.
+The degree, primality and packing tests leave 28261 $(n,r)$.
+The odd-prefix gcd test of Section~\ref{sec:small-prime-degree-orders}
+excludes all but twelve. Their exact binary traces exclude the rest
+by the computation on the next page. Independent factorization of
+the twelve cyclotomic polynomials gives 3340 irreducible factors,
+all of weight at least 121.
+
+\clearpage
+\subsection*{Computing the full trace word from the doubling cosets}
+For an odd prime $r$, write $H=\langle2\rangle\bmod r$, $n=|H|$,
+and $k=(r-1)/n$. Choose a generator $gH$ of the cyclic quotient,
+and index its cosets by $i\bmod k$. In $\mathbb F_2[X]/\Phi_r$ set
+$T_i=\sum_{a\in g^iH}X^a$, using exponents between 1 and $r-1$.
+These $k$ elements are linearly independent: any nonzero combination
+has zero constant term and degree at most $r-1$, so it cannot be a
+multiple of $\Phi_r=1+\cdots+X^{r-1}$. Each $T_i$ is idempotent
+by doubling, and $\sum T_i=1$. Evaluating them on the $k$ Frobenius
+orbits of primitive $r$-th roots gives binary functions. The evaluation
+map on their span is injective, hence an isomorphism onto
+$\mathbb F_2^k$. At a root $z$, $T_i(z)=\operatorname{Tr}(z^{g^i})$.
+
+Write $c(a)$ for the coset index of a nonzero residue. Then
+\[
+ T_0T_i=\sum_{\substack{u\in g^iH\\u\ne-1}}T_{c(1+u)}
+        +[\,{-1}\in g^iH\,](n\bmod 2)\,1 .
+\]
+Indeed each pair of exponents in the product is uniquely $(a,au)$
+with $a\in H$. This computes all columns of multiplication by $T_0$
+in one pass over the nonzero residues. Multiplication by any $T_i$
+is obtained by rotating both the input and output indices.
+
+Starting with $v=1$, compute $vT_i$ for each $i$ in turn. If it is
+nonzero, replace $v$ by $vT_i$ and record bit one; otherwise record
+zero and keep $v$. This keeps a nonempty set of evaluations with
+exactly the recorded prefix. All $k$ bits distinguish every orbit
+because the $T_i$ span all binary functions. The cyclic translates
+of the resulting word therefore give the trace words of all $k$
+orbits. For each translate read its bits at $c(j)$ for odd
+$j\le(n-1)/2$. A sparse support in one of its two orientations
+requires either a zero prefix or ones exactly at the multiples of
+the first odd tap. The twelve remaining orders all fail this test.
+\[
+\begin{array}{r|r|r@{\qquad}r|r|r}
+ n&r&\text{ones}&n&r&\text{ones}\\\hline
+ 281&80929&143&6883&1885943&153\\
+ 1213&327511&147&7129&1867799&139\\
+ 2591&766937&137&8731&2514529&129\\
+ 3863&1120271&133&9137&2704553&139\\
+ 5431&1401199&137&9337&2614361&139\\
+ 9403&2576423&145&11719&3093817&121
+\end{array}
+\]
+The verifier is \nolinkurl{scripts/check_sparse_index_groups.py}.
+Its default calculation checks the composite degrees. Add
+\texttt{--prime-extension} to replay the prime-degree sieve and
+period words. The \texttt{--ntl} option takes the cyclotomic
+census executable for an independent factorization.
+The composite-degree cutoff is also checked in Lean.
+
 \end{document}
