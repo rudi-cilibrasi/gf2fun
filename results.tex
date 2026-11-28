@@ -24092,4 +24092,126 @@ are in \nolinkurl{data/mers-project-trinomial-census-supplement.csv}.
 The \texttt{--irreducible-only} mode of
 \nolinkurl{scripts/prime_degree_trinomials.cpp} takes degrees as its only input.
 
+\clearpage
+\section{Incompressibility inside a family of sparse supports}
+\label{sec:sparse-parameter-codes}
+In Vit\'anyi's incompressibility method one fixes the information available
+to a decoder and chooses an object of high complexity within the resulting
+finite set. Here the degree is given to the decoder. Three increasing
+interior exponents specify a monic pentanomial with constant one, so its
+support has a fixed-length rank of
+\(\lceil\log_2\binom{n-1}{3}\rceil\) bits. In degree 1229, after the four
+known order tests and identification with the reciprocal, just 19 bits
+index the 319,572 surviving pairs. See
+\href{https://homepages.cwi.nl/~paulv/papers/sorting.pdf}{P.~Vit\'anyi,
+\emph{Analysis of Sorting Algorithms by Kolmogorov Complexity}, Section~2}.
+
+There is a precise limitation to using Theorem~\ref{thm:weight-entropy-rate}
+alone. In degree \(n\) there are at most
+\(\sum_{j=0}^{3}\binom{n-1}{j}=O(n^3)\) monic polynomials with constant
+one and weight at most five. Delete every one of them from the primitive
+set. At \(r=1/36\) the original logarithmic count in each template window
+is \(sn+O(\sqrt{n\log n})\), uniformly in the template, with
+\(s=0.5438379957\ldots>0.5438\). Thus the original window contains a
+primitive polynomial of conditional plain complexity at least
+\(k=\lfloor0.5438n\rfloor\) given \(n\) and the template for all
+sufficiently large \(n\), since fewer than \(2^k\) programs have length
+below \(k\). Even after the deletion every window
+still contains at least \(2^{0.5438n}\) members for all sufficiently large
+\(n\). To reach weight five we need a constraint on the sparse supports
+themselves.
+
+\begin{theorem}\label{thm:sparse-parameter-codes}
+Let \(M=2^n-1=KC\) with \(\gcd(K,C)=1\), and let \(h\) generate the
+subgroup of order \(C\). Suppose \(r_t\in\mathbb F_{2^n}^{\times}\)
+passes every prime-index test for primes dividing \(K\), for \(t\) in
+a finite set \(T\) of integers. Suppose there are elements
+\(u_0,\ldots,u_{d-1}\in\langle h\rangle\), with \(d\ge1\), such that
+\[
+      r_t^K=h^{t^d}\prod_{j=0}^{d-1}u_j^{t^j}\qquad(t\in T).
+\]
+If distinct parameters stay distinct modulo each prime dividing \(C\),
+at most \(d\omega(C)\) parameters give imprimitive roots, where
+\(\omega(C)\) is the number of distinct primes dividing \(C\). The
+bound applies to any subset selected by minimal-polynomial weight.
+\end{theorem}
+\begin{proof}
+Write \(u_j=h^{a_j}\). For each prime \(p\mid C\), the test fails
+exactly when \(t^d+\sum_{j<d}a_jt^j=0\bmod p\), by raising the
+displayed identity to \(C/p\). This monic polynomial has at most
+\(d\) roots in \(\mathbb F_p\). Given the family and its ordered
+parameter set, encode a failing parameter by the ordinal of its least
+failing prime among the primes of \(C\), and its rank among the at
+most \(d\) failures at that prime. These ranks can be decoded by
+enumeration and powering. There are at most \(d\omega(C)\) distinct
+codes. This finite count has no additive machine constant.
+\end{proof}
+
+For a quadratic sequence it suffices that the projected values have
+a constant second multiplicative difference which generates the group
+of order \(C\). Indeed such a sequence has the form
+\(u v^t h^{\binom t2}\). Since \(C\) is odd, \(2\) is invertible
+modulo \(C\), and the leading generator in the theorem is
+\(h^{2^{-1}\bmod C}\). The field identities and the order of the
+leading generator suffice without the individual logarithms of \(u,v\).
+
+\clearpage
+\subsection*{A sharp example and a test in degree 1229}
+Take \(n=10\), \(K=3\), \(C=341=11\cdot31\), and let \(g\) be the
+residue of \(X\) modulo the binary polynomial with hexadecimal mask
+\(\mathtt{46f}\). The following masks specify five elements in its
+power basis. The three exponents specify their minimal polynomials.
+\[
+\begin{array}{c|c|c|c}
+t&r_t&\text{interior exponents}&\ord(r_t)\\\hline
+0&\mathtt{1e2}&1,3,8&93\\
+1&\mathtt{3f6}&5,6,8&93\\
+2&\mathtt{14b}&3,5,7&33\\
+3&\mathtt{26e}&1,5,9&33\\
+4&\mathtt{207}&2,3,8&1023
+\end{array}
+\]
+All five pass the test for 3. For \(z_t=r_t^3\) the three identities
+\(z_t z_{t+2}=g^{90}z_{t+1}^2\) hold, and \(g^{90}\) has order 341.
+The theorem gives a primitive pentanomial among the five reciprocal
+classes. Independent order tests give the displayed orders. Each of the
+two primes rules out exactly two classes, attaining the bound.
+
+In degree 1229 take the certified primitive \(g\) of
+Theorem~\ref{thm:1229-q1024-primitive} and set \(h=g^K\).
+Let \(a,b\) be the embedded sparse roots with taps \((27,50,77)\) and
+\((2,6,15)\) in the two single-logarithm archives, respectively. For
+each of the following sequences we took every integer
+\(-4096\le t\le4096\). Each row gives 8193 distinct degree-1229 minimal
+polynomials. The middle columns give all parameters of weight five and
+the least weight at the other parameters.
+\[
+\begin{array}{l|c|r|r|r}
+r_t&\text{weight five}&\text{least other weight}&t\text{ attaining it}
+  &\text{at least this many primitive}\\\hline
+a h^t&0&555&-1939&8178\\
+b h^t&0&549&334&8178\\
+a(b/a)^t h^{\binom t2}&0,1&545&-1545&8163
+\end{array}
+\]
+Raising to \(K\) preserves the order \(C\) of the leading generator
+because \(\gcd(K,C)=1\). The four known tests are constant along each
+linear sequence. At a known prime \(p\) the quadratic sequence has
+projection \(a^{M/p}((b/a)^{M/p})^t\). Direct multiplication checks
+that every one of these projections differs from one throughout the
+interval. Each prime of \(C\) exceeds its length, and
+Theorem~\ref{thm:1229-cofactor-bound} gives \(\omega(C)\le15\).
+The primitive counts follow by subtracting 15 or 30. Finding 16
+sparse positions on one such line, or 31 on one such quadratic,
+all passing the four known tests at distinct residues for every
+cofactor prime, would certify a primitive pentanomial. The orders
+of the two sparse seeds remain open.
+
+\nolinkurl{scripts/check_sparse_parameter_codes.py} checks the
+degree-ten example, the degree-1229 support count and the known
+prime tests. \nolinkurl{scripts/census_1229_parameter_weights.cpp}
+checks every minimal polynomial by substitution. Lean verifies the
+finite bound on the union of root sets in
+\nolinkurl{GF2Sparse/SubgroupCover.lean}.
+
 \end{document}
