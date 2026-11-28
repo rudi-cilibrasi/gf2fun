@@ -22,6 +22,7 @@ import GF2Sparse.FibreBound
 import GF2Sparse.FifthImage
 import GF2Sparse.FourierWeightBounds
 import GF2Sparse.SelbergWeight
+import GF2Sparse.SignedWeight1229
 import GF2Sparse.SubgroupCover
 import GF2Sparse.FrobeniusBoxes
 import GF2Sparse.GaussPeriod

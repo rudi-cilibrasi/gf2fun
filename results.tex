@@ -26159,4 +26159,208 @@ in all eighteen quotient rings at \(j=1,2,3\).
 \nolinkurl{GF2Sparse/CyclotomicRowBounds.lean} proves the Frobenius
 weight modulo 961 at every positive level.
 
+\clearpage
+\section{A signed weight proves 303 terms in degree 1229}
+\label{sec:1229-signed-weight}
+\begin{theorem}
+More than \(2^{619}\) distinct primitive binary polynomials in
+degree 1229 have at most 303 terms and no terms in positions 1
+through 516. More generally, fix any monic degree-1229 template
+with constant coefficient one. More than \(2^{619}\) primitive
+polynomials agree with its first 516 interior coefficients and
+differ from it in at most 302 positions. For an even-weight template
+the distance is at most 301.
+\end{theorem}
+The previous bound was 309 terms. We estimate the signed contribution
+of 556 coefficient bits directly at field elements. A short
+description of each additive character that can affect the remaining
+156 bits bounds the error of a polynomial divisor sieve.
+
+Put \(n=1229\), \(N=2^n-1\), \(d=516\), \(t=40\), \(u=156\).
+Fix the first \(d\) interior coefficients to their template values.
+Write \(I\) for the number of differences in the next \(d\) positions.
+Of the remaining 196 positions, let \(J\) count differences in the
+first and last 20 and \(Y\) count differences in the central 156.
+The score uses \(w=2+I+J+Y\), which is the ordinary weight for the
+template \(X^n+1\). In the middle block use the Walsh transform
+\[
+ A(x)=\sum_{y\in\mathbb F_2^d}g_{|y|}(-1)^{x\cdot y}
+\]
+of the nonnegative integer frequencies in
+\nolinkurl{scripts/check_1229_signed_weight.py}, zero beyond radius 12.
+Give the prescribed coset weight \(W=A(x)^2\) at its middle
+difference word \(x\), and set \(W=0\) elsewhere. The overlap at a
+translation of weight \(a\) is
+\[
+       U_a=\sum_y g_{|y|}g_{|y+e|},\qquad |e|=a.
+\]
+Hence \(U_a=0\) for \(a>24\). Put \(s=U_0\),
+\(M=(\sum_k\binom dk g_k)^2\), \(\mu=s/2^d\) and \(D=dU_1/(2s)\).
+The mean of \(W\) on the full binary coefficient group is \(\mu\).
+Its maximum and an upper bound for its absolute Fourier mass are
+both \(M\), by the square-zero coset calculation of
+Theorem~\ref{thm:weight-entropy-rate}. Its middle-weight mean,
+under the probability proportional to \(W\), is \(d/2-D\).
+This follows by expanding each difference bit as
+\((1-(-1)^{x_i})/2\). The free bits are fair in this coefficient
+measure.
+
+Write \(P_z\) for the polynomial of the \(n\) Frobenius conjugates
+of \(z\). The signed score over primitive roots is
+\(Z=\sum_{z\ {\rm primitive}}W(P_z)(305-w(P_z))\).
+A single light polynomial contributes at most \(n\cdot305M\), and
+terms with \(w\ge305\) contribute at most zero. We prove
+\(Z>2^{619}n\cdot305M\). For the zero interior template a primitive
+polynomial has odd weight, so \(w<305\) gives at most 303 terms.
+For an arbitrary template \(w-2\) is the distance, which is odd
+when the template has even weight.
+
+\clearpage
+\subsection*{Estimating the signed bits in the field}
+Use the simpler score \(W(305-2-I-J-85)\) on all nonzero field elements.
+To pass to primitive roots, each failed prime-index subgroup costs
+at most 305 times its \(W\)-mass. To restore the true score costs at
+most the sum of \(W(Y-85)_+\) over primitive roots, where
+\(h_+=\max(h,0)\).
+
+For a middle bit the signed function \(W(-1)^{x_i}\) still has
+Fourier mass at most \(M\) on the prescribed coset. For the \(i\)-th
+bit beyond the middle block, \(1\le i\le20\), extend the modulus
+to \(T^{2d+i+1}\). On the coset with the first \(d\) coefficients
+fixed, the sign of coefficient \(2d+i\) transforms by a single
+character under multiplication by any unit congruent to one modulo
+\(T^{d+i}\). Indeed the cross terms at that position use only
+the fixed low coefficients. On this subgroup the change of sign
+is multiplicative, since products of two augmentation terms have
+degree greater than \(2d+i\). Its index in the subgroup
+congruent to one modulo \(T^{d+1}\) is \(2^{i-1}\).
+Thus the sign has at most \(2^{i-1}\) Fourier coefficients on the
+coset. By Parseval and Cauchy--Schwarz its absolute Fourier mass
+is at most \(2^{(i-1)/2}\). Multiplication by \(W\) costs at most
+\(M\) more as a factor. Extending by zero from a coset preserves this
+bound because every subgroup character has equally many extensions.
+For the \(i\)-th bit from the top the same bound follows on the
+reciprocal group \(U_i\) by translating by \(1+T^i\).
+Its character at infinity is combined with the existing modulus
+at zero. All estimates allow a fixed sign from the template.
+
+Put \(S=1+\lfloor\sqrt N\rfloor\). The one-ended and two-ended
+field estimates on pages~\pageref{lem:weight-characters}
+and~\pageref{sec:two-ended-weight} bound each nonprincipal
+character by the sum of the two truncation lengths times \(S\).
+The simpler score has constant coefficient \(\mu(D-60)\). The cost
+of its field errors and the errors from all prime-index subgroups
+is at most \(SM E\), where
+\[
+ E=2d(60+d/2+19\cdot305)
+            +\sum_{i=1}^{20}(2d+i)2^{(i-1)/2}.
+\]
+There are at most 19 order primes, with reciprocal sum below
+\(1/20000\), using the four known primes and the earlier cofactor
+bound. Their principal terms cost at most \(305N\mu/20000\).
+For the last subtraction all primitive roots have degree \(n\),
+so it suffices to bound \(n\) times the sum of \(W(Y-85)_+\) over
+irreducible polynomials.
+
+\clearpage
+\subsection*{A degree-dependent bound on divisor-sieve characters}
+Use the Selberg square of Section~\ref{sec:selberg-weight} at level
+\(z=160\), multiplied by the indicator of \(f(1)=1\).
+It equals one on the irreducibles in question. Its constant
+coefficient is \(1/(2G)\), with \(G=\sum_D1/\phi(D)\) over
+squarefree \(D\) of degree at most \(z\) coprime to \(T(T+1)\).
+Grouping the monic polynomials of degree at most \(z\) coprime to
+\(T(T+1)\) by their radical shows \(G\ge(z+3)/4\).
+Indeed, for a fixed radical \(D\), summing the reciprocal norms
+over all positive powers of its factors gives \(1/\phi(D)\).
+The degree-zero summand is one and every degree from two through
+\(z\) supplies \(2^{k-2}\) summands of size \(2^{-k}\).
+
+An additive character of the sieve has a unique minimal modulus:
+it is the product of the irreducibles on which its local additive
+characters are nontrivial. Write \(F\) for the nonlinear part of
+that modulus and \(f=\deg F\). The absolute Fourier coefficient of
+the sieve is at most
+\[
+ \tfrac12\min\big(4/(z+3),\;5z^3\,3^{\omega(F)}2^{-f}\big).
+\]
+For the first bound use positivity of the sieve and its constant
+coefficient. For the second, Selberg's formula gives
+\(|\lambda_D|\le |D|/\phi(D)\) by summing the remaining reciprocal
+totients inside \(G\). A pair \(D,E\) contributes only if
+\(F\mid[D,E]\), with absolute coefficient
+\(|\lambda_D\lambda_E|/|[D,E]|\) before the parity factor.
+Drop both degree cutoffs but allow only nonlinear irreducibles
+of degree at most \(z\). For \(Q=|P|\), put \(v=Q/(Q-1)\) and
+\(b=2v+v^2\). The resulting Euler product has factors \(1+b/Q\).
+Requiring \(P\mid[D,E]\) multiplies the bound by
+\(b/(Q+b)\le3/Q\). Indeed \(b\le3+6/Q\) for \(Q\ge4\), and
+\((b-3)Q\le6\le3b\).
+There are at most \(2^k/k\) irreducibles of degree \(k\), so the
+logarithm of the unrestricted product is at most
+\[
+      3\sum_{k=2}^z 1/k+6\sum_{k=2}^z 2^{-k}/k
+        \le 3\log z+3/2.
+\]
+Since \(e^{3/2}<5\), this proves the second bound. The factor at
+\(T+1\) contributes \(1/2\) whether its character is trivial or not.
+
+For an upper bound depending only on \(f\), take as many distinct
+nonlinear irreducibles as the degree budget allows, in order of
+increasing degree. The counts in degrees two through eight already
+exhaust every needed budget. The complete minimal modulus has
+degree \(m=f\) or \(f+1\), and \(m\le2z+1\).
+
+\clearpage
+\subsection*{Coding the characters that reach the unobserved bits}
+An additive character gives a binary sequence of its values on
+\(1,T,T^2,\ldots\), writing the signs as bits. It satisfies the
+recurrence given by its minimal modulus, whose constant is one.
+A nonzero sequence has no run of \(m\) zeros. Any \(2h\) consecutive
+bits determine a sequence of this kind of memory at most \(h\):
+the difference of two candidates satisfies the recurrence of the
+least common multiple of their moduli, of degree at most \(2h\).
+A zero block then extends in both directions. The sequence determines
+the character since powers of \(T\) span the residue ring.
+
+The observed bits are free when bounding the positive tail
+\(W(Y-85)_+\) over all polynomials. A contributing character must
+be zero on both runs of 20 observed bits, hence \(m>20\).
+Let \(a\) be its weight on the 516 middle bits. Its middle correlation
+is \(U_a/s\), so \(a\le24\). Group the possible memories into
+intervals \([l,h]\) of length at most four. There are at most
+\[
+ V_a=\binom{516}{a}2^{\max(0,2h-516-20)}
+\]
+such characters of middle weight \(a\), by recording the middle
+block, the next known zeros, and any bits still needed to reach
+\(2h\). With \(k=\lfloor516/(2h)\rfloor>0\), this can be reduced to
+the minimum of \(V_a\) and
+\[
+       k\sum_{r=1}^{\lfloor a/k\rfloor}\binom{2h}{r}.
+\]
+Indeed one of the \(k\) disjoint determining blocks has no more
+than \(\lfloor a/k\rfloor\) ones. Its index and support decode the
+whole character. We also have \(a\ge\lfloor516/h\rfloor\).
+
+For character weight \(v\) on the unobserved block put
+\[
+ T_v=2^{-156}\sum_{j>85}(j-85)K_j(v;156).
+\]
+Normalize the uniform-polynomial expectation of the weighted sieve
+tail by dividing by \(\mu\). Its constant contribution is at most
+\(2T_0/(z+3)\). For each memory interval use the largest coefficient
+bound on the previous page for \(l-1\le f\le h\).
+Multiply it by \(\max_{v\ge\lfloor156/h\rfloor}|T_v|\) and by
+\(\sum_a V_a U_a/s\), with the reduced code counts. This gives a
+total normalized tail at most \(5025/10^6\).
+There are \(2^{1228}\) monic polynomials with constant one. Thus
+\[
+ Z\ge N\mu(D-60-305/20000)-SM E
+           -1229\cdot2^{1228}\mu\,(5025/10^6)
+      > 2^{619}\cdot1229\cdot305M.
+\]
+The independent integer sums in \nolinkurl{GF2Sparse/SignedWeight1229.lean}
+verify the tail and the strict inequality.
+
 \end{document}
