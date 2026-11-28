@@ -6,7 +6,8 @@ from math import comb, isqrt
 
 from check_1229_wheel import EXTENDED_BOUND
 from check_degree_1229 import COFACTOR, GROUP, N, PRIMES
-from make_witnesses import gcd, mask_product, remainder
+from check_factor_base import irreducible, polynomial
+from make_witnesses import gcd, mask_product, remainder, square_mod
 
 
 def check_residue_counts():
@@ -33,6 +34,24 @@ def check_residue_counts():
                 expected = 1 << (even_free - (d.bit_length() - 1))
                 if counts[remainder(odd_part, d)] != expected:
                     raise ArithmeticError(f"incorrect divisor frequency in degree {n}")
+
+
+def check_trace_prefixes():
+    for n in (9, 10, 11, 12):
+        for f in range(2**n + 1, 2**(n + 1), 2):
+            if not irreducible(polynomial(f)):
+                continue
+            first_odd = next(i for i in range(1, n + 1, 2) if f >> i & 1)
+            inverse = f >> 1  # X * inverse = 1 modulo f.
+            power = 1
+            for j in range(1, first_odd + 1):
+                power = remainder(mask_product(power, inverse), f)
+                conjugate, trace = power, 0
+                for _ in range(n):
+                    trace ^= conjugate
+                    conjugate = square_mod(conjugate, f)
+                if trace != int(j == first_odd):
+                    raise ArithmeticError(f"incorrect trace at power {j} modulo {f:#x}")
 
 
 def check_1229():
@@ -64,4 +83,5 @@ def check_1229():
 
 if __name__ == "__main__":
     check_residue_counts()
+    check_trace_prefixes()
     check_1229()
