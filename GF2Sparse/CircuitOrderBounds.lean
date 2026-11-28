@@ -40,4 +40,29 @@ theorem order_13th_power_dilations {M : Type*} [Monoid M] (z : M) (j : ℕ)
   rw [orderOf_pow_of_dvd (by decide) hd, hz, show 91 = 7*13 by decide,
     Nat.mul_right_comm, Nat.mul_div_cancel _ (by decide : 0 < 13), pow_succ']
 
+
+/-- The consecutive-element packing and the three singleton positions give a
+degree bound in terms of the fixed field parameters t and h. -/
+theorem consecutive_degree_bound {δ t h k : ℕ} (hδ : 0 < δ)
+    (hpack : 3*δ^2 ≤ 4*h*k) (hspan : 2*k ≤ t*δ) : 3*(t*δ) ≤ 2*h*t^2 := by
+  have hm : (3*δ)*δ ≤ (2*h*t)*δ := by
+    calc
+      _ = 3*δ^2 := by ring
+      _ ≤ 4*h*k := hpack
+      _ = (2*h)*(2*k) := by ring
+      _ ≤ (2*h)*(t*δ) := Nat.mul_le_mul_left _ hspan
+      _ = _ := by ring
+  have hc := Nat.mul_le_mul_left t (Nat.le_of_mul_le_mul_right hm hδ)
+  nlinarith
+
+/-- The orders before and after the 41st power of an iterated 31st root. -/
+theorem order_41st_power_dilations {M : Type*} [Monoid M] (z : M) (j : ℕ)
+    (h : orderOf (z^(31^j)) = 1271) :
+    orderOf z = 1271*31^j ∧ orderOf (z^41) = 31^(j+1) := by
+  have hz := order_of_iterated_root (d := 31) (by decide) (by decide : 31 ∣ 1271) j z h
+  refine ⟨hz, ?_⟩
+  have hd : 41 ∣ orderOf z := hz ▸ dvd_mul_of_dvd_left (by decide : 41 ∣ 1271) _
+  rw [orderOf_pow_of_dvd (by decide) hd, hz, show 1271 = 31*41 by decide,
+    Nat.mul_right_comm, Nat.mul_div_cancel _ (by decide : 0 < 41), pow_succ']
+
 end GF2Sparse

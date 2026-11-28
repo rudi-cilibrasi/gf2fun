@@ -34,7 +34,7 @@ def minimal_polynomial(root, field):
     table = multiplication_table(root, field)
     basis = {}
     value = 1
-    for i in range(N+1):
+    for i in range(field.bit_length()):
         column, relation = value, 1 << i
         while column:
             lead = column.bit_length()-1
