@@ -68,4 +68,11 @@ theorem degree1229_typical_1180_bits :
     2^37 * 1229 * 10000 < 3123 * (2 : ℕ)^49 := by
   decide +kernel
 
+/-- At a root of a² + x b², the determinant determines the value of c² + x e². -/
+theorem trace_decoder_residue {K : Type*} [Field K] [CharP K 2]
+    (a b c e x : K) (hf : a^2 + x*b^2 = 0) (hb : b ≠ 0) :
+    c^2 + x*e^2 = (a*e + b*c)^2 / b^2 := by
+  apply (eq_div_iff (pow_ne_zero _ hb)).2
+  simpa [hf, mul_comm] using logarithmic_cross_square a b c e x
+
 end GF2Sparse.OddCoefficientBounds
