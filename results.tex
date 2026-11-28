@@ -22264,13 +22264,13 @@ Sections~\ref{sec:semiprime-norm-witnesses} and~\ref{sec:scalar-pair-census}.
 The certificates for degrees 19121, 20521, 20887, 22193 and 35339 appear with
 the combined census in Section~\ref{sec:three-mers-trinomial-censuses}.
 
-\paragraph{Nine candidates with one outstanding prime proof each.}
-For nine further pentanomials in \nolinkurl{data/mers-project-large-orders.json},
+\paragraph{Eight candidates with one outstanding prime proof each.}
+For eight further pentanomials in \nolinkurl{data/mers-project-large-orders.json},
 write \(2^n-1=AP\), where \(P\) is the largest listed factor.
 In every case \(\gcd(A,P)=1\) and the complete prime factorization
-of \(A\) is verified. NTL tested irreducibility and the 35 factor-index
+of \(A\) is verified. NTL tested irreducibility and the 31 factor-index
 powers across these rows. FLINT independently verified each full group
-power and all 35 factor-index powers. Write \(r=X\bmod f\). For each prime \(p\mid A\),
+power and all 31 factor-index powers. Write \(r=X\bmod f\). For each prime \(p\mid A\),
 the test \(r^{(2^n-1)/p}\ne1\) forces the full power of \(p\)
 in \(2^n-1\) to divide the root order. The test \(r^A\ne1\) then gives
 \(\operatorname{ord}(r)=Ad\) for a divisor \(d>1\) of \(P\).
@@ -22278,8 +22278,8 @@ A primality proof for \(P\) would give \(d=P\).
 
 The largest degree is 41521, with interior exponents \(6931,13862,34590\)
 and four listed factors. Its remaining integer certificate is for a
-12459-digit factor. The smallest remaining factor has 7740 digits in
-degree 25933. Each of the nine certificates can be checked
+12459-digit factor. The smallest remaining factor has 8063 digits in
+degree 26903. Each of the eight certificates can be checked
 independently of the other degrees.
 
 \clearpage
@@ -22459,9 +22459,9 @@ root of either dilation. Then \(z^{47}\) has order \(2^{713}-1\),
 which is divisible by 47. Since
 \(\ord(z^{47})=\ord(z)/\gcd(47,\ord(z))\), the displayed order follows.
 
-Among the 74 degrees in the combined Mers Project census, 37 admit
-primitive trinomials and 37 require five terms. The complete table has
-121 irreducible and 113 primitive pairs in 384873 reciprocal classes.
+Among the 75 degrees in the combined Mers Project census, 37 admit
+primitive trinomials and 38 require five terms. The complete table has
+121 irreducible and 113 primitive pairs in 397839 reciprocal classes.
 The other six imprimitive orders are given in Section~\ref{sec:mers-project-orders}.
 
 \clearpage
@@ -22521,8 +22521,7 @@ reproduces both spectra and the small-prime sieve.
 In degree 25243 the pentanomial with taps \(1330,2660,23913\) passes all
 five prime-index tests. PARI/GP verified the largest
 \href{https://factordb.com/cert/1100000000885738310}{7551-digit prime}.
-Both degrees 25243 and 28771 require five terms by the trinomial
-exclusion in Section~\ref{sec:mers-project-orders}.
+In degree 25933 the pentanomial with taps \(4453,8906,21480\) passes all four tests, including the one for the \href{https://factordb.com/cert/1100000000886495500}{7740-digit prime} certified by PARI/GP. All three degrees require five terms by the trinomial exclusion in Section~\ref{sec:mers-project-orders}.
 
 \clearpage
 \section{Prime bases for which every odd power requires five terms}
