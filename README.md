@@ -10,6 +10,10 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **If a primitive binary polynomial of degree greater than one has at most five terms, the positive exponents of its translate $f(X+1)$ have gcd 1, 3 or 5.** When the gcd exceeds one, the translate is a trinomial and just three explicit families are possible. The values 3 and 5 occur in degrees 6 and 20. Through degree 262,145 the only further unresolved order among these families is in degree 4,098. [Proof and families](results.pdf#page=339) · [Verifier](scripts/check_cubic_components.py) · [Lean identities](GF2Sparse/CubicComponents.lean)
+
+- **Exactly four irreducible trinomials or pentanomials have the form $G(X^3+X)$ or $G(X^3+X^2)$.** They are all primitive, in degrees 3, 3, 9 and 12. Including every cubic substitution adds exactly two primitive examples through degree 4,097, in degrees 6 and 66. In degree 4,098 there is just one possible cubic substitution witness, and its full order is open. [Classification](results.pdf#page=337) · [All cubic substitutions](results.pdf#page=340)
+
 - **For almost every product of a fixed number of distinct odd primes, every sparse irreducible root order has a prime connecting any chosen partition of the degree factors.** For a partition $n=st$ with $s,t>1$, this prime divides neither $2^s-1$ nor $2^t-1$. Through 70,000 the property holds in exactly 20,201 of the 21,436 odd squarefree composite degrees. The other 1,235 have explicit sparse counterexamples to this order property. [Proof and exact counts](results.pdf#page=335) · [Witnesses](data/squarefree-order-prime-exceptions.csv) · [Lean dilation criterion](GF2Sparse/OrderPrimePartitions.lean)
 
 - **For a density-one set of semiprime degrees $n$, every sparse irreducible root has a prime divisor $\ell$ of its order with $\operatorname{ord}_{\ell}(2)=n$.** Among the 14,424,896 degrees $pq\le10^8$ with distinct odd primes $p<q$, precisely 221 allow an exception. They are exactly the pairs with $q\mid2^p-1$, and each has an explicit irreducible trinomial or pentanomial demonstrating the exception. [Density proof and exact count](results.pdf#page=333) · [221 witnesses](data/semiprime-full-degree-prime-exceptions.csv) · [Verifier](scripts/check_semiprime_order_primes.py)
@@ -1023,6 +1027,12 @@ The same binary verifies the 1,235 sparse witnesses through 70,000. The Python d
 
 ~~~sh
 python3 scripts/check_order_prime_partitions.py --ntl /tmp/gf2-order-exceptions
+~~~
+
+To exhaust the binary-digit graphs for the two cubic substitutions and to check the translated trinomial families through degree 262,145, run
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_cubic_components.py
 ~~~
 
 To reproduce the order projections and subfield certificates, run
