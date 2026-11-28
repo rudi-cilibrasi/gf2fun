@@ -10,6 +10,10 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In every prime degree $n\ge13$, an irreducible binary polynomial with at most five terms has root order greater than $256n+1$.** The smallest order across these degrees is 8,191, attained by $X^{13}+X^5+X^2+X+1$. When $2^n-1=sP$ with $P$ prime and $s\le256n+1$, the full power of $P$ in the group order divides every such root order. [Proof and small-degree exceptions](results.pdf#page=319) · [Reproduce the sieve and factor counts](scripts/check_sparse_root_orders.py)
+
+- **In odd degree above one, the cube of a sparse irreducible root can be conjugate to the root or its inverse in exactly one family.** The exceptions are $X^{3d}+X^d+1$ and their reciprocals for $d=7^a$, $a\ge0$. In each case the cube is conjugate to the inverse. This gives an arithmetic exclusion for subgroups of any size and rules out order 12,189,337 in degree 26,731. [Proof](results.pdf#page=320) · [Cubing verifier](scripts/check_cubing_chains.py)
+
 - **If the exponents lie in two short arithmetic progressions of the same step, the root order has a quadratic lower bound in the degree.** For an irreducible $X^n+X^{n-a}+X^{2a}+X^a+1$ with $\gcd(a,n)=1$, the order is at least $5n^2/16$. In degrees 28,759 and 28,771 this already excludes the subgroup of order 226,160,777 and 104,726,441, respectively. [Proof for general progressions](results.pdf#page=318) · [Support verifier](scripts/check_exponent_spans.py) · [Lean proof for common exponent divisors](GF2Sparse/SparseOrderBounds.lean)
 
 - **In every degree $n=7q^b$ with $q>7$ prime and $b\ge1$, three exponents among seven equally spaced positions force a full-degree prime power in the root order of an irreducible pentanomial.** This means that $h$ divides the root order and $n$ is the first positive integer with $2^n\equiv1\pmod h$. One can take $h$ prime unless $q=127$. When $\Phi_n(2)$ is prime, checking the two norms in degrees $n/7$ and $n/q$ settles primitivity. [Proof and sharp example](results.pdf#page=316) · [Finite verifier](scripts/check_seven_position_orders.py)
@@ -955,6 +959,13 @@ To reproduce the six prime-degree weight distributions, compile the enumerator w
 ~~~sh
 c++ -std=c++17 -O3 -fopenmp scripts/cyclotomic_weight_census.cpp -lntl -lgmp -o /tmp/gf2-cyclotomic-weights
 uv run --no-project --with python-flint==0.9.0 python scripts/check_cyclotomic_weights.py --census /tmp/gf2-cyclotomic-weights
+~~~
+
+The prime-degree order classification uses the same executable. The signed cubing test also checks the three excluded orders above one million.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_sparse_root_orders.py --census /tmp/gf2-cyclotomic-weights
+uv run --no-project --with python-flint==0.9.0 python scripts/check_cubing_chains.py --signed-orders
 ~~~
 
 To reproduce the order projections and subfield certificates, run

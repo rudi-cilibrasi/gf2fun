@@ -69,6 +69,25 @@ def small_runs(n):
     return histogram
 
 
+def check_signed_orders():
+    for a in range(4):
+        step = 7**a
+        for tap in (step, 2 * step):
+            s = (0, tap, 3 * step)
+            f = polynomial(s)
+            order = 7 * step
+            if (not f.is_irreducible() or X.pow_mod(order, f) != 1 or X.pow_mod(step, f) == 1
+                    or cube_support(s) != reciprocal(s)):
+                raise ArithmeticError(f"signed cube exception failed at {s}")
+    examples = [(3121, 1123561, 2917, -1), (3359, 6719, 104, 1),
+                (26591, 7498663, 260, -1), (26731, 12189337, 21556, -1)]
+    for n, p, j, sign in examples:
+        if (not fmpz(n).is_prime() or not fmpz(p).is_prime() or pow(2, n, p) != 1
+                or pow(2, j, p) != (sign * 3) % p):
+            raise ArithmeticError(f"signed Frobenius congruence failed for degree {n} and order {p}")
+        print(f"Degree {n}, excluded prime order {p}, 2^{j} equals {sign * 3} modulo {p}.")
+
+
 def audit():
     candidates = {s for s in classify() if three_sparse(s)}
     for shape, residues in TEMPLATES:
@@ -88,6 +107,8 @@ def audit():
     primitive_sources = {s for s in irreducibles if primitive(polynomial(s), s[-1])}
     if len(irreducibles) != 18 or Counter(s[-1] for s in primitive_sources) != {5: 4, 7: 4, 11: 4}:
         raise ArithmeticError("the irreducible or primitive census changed")
+    if any(cube_support(s) in (s, reciprocal(s)) for s in irreducibles):
+        raise ArithmeticError("a normalized pentanomial has a signed Frobenius cube")
     for s in primitive_sources:
         first, second = cube_support(s), cube_support(cube_support(s))
         f = polynomial(s)
@@ -119,6 +140,7 @@ def audit():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--list", action="store_true", help="show all primitive sources and their two cube images")
+    parser.add_argument("--signed-orders", action="store_true", help="check the dilated exceptions and excluded subgroups")
     args = parser.parse_args()
     candidates, primitive_sources = audit()
     print(f"{len(candidates)} normalized odd-degree pentanomials have sparse third and ninth powers.")
@@ -127,6 +149,8 @@ if __name__ == "__main__":
     print("Four consecutive sparse iterates are impossible for odd primitive degrees above 11.")
     print("Degree 23 attains three, with successive weights 3, 5, 5, 7.")
     print("For odd degrees at least seven the sharp bound is four, attained only in degrees seven and eleven.")
+    if args.signed_orders:
+        check_signed_orders()
     if args.list:
         for s in sorted(primitive_sources, key=lambda t: (t[-1], t)):
             print(*s, "->", *cube_support(s), "->", *cube_support(cube_support(s)))
