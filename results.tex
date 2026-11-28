@@ -27733,4 +27733,124 @@ full multiplicity. The factorization and field powers replay with
 \nolinkurl{scripts/check_mers_project_orders.py}, using the table above
 and \texttt{--degree 42991}.
 
+\clearpage
+\section{Constant-length descriptions for sparse roots of linear order}
+\label{sec:constant-order-descriptions}
+Fix a weight $w\ge3$ and a constant $C$. Among irreducible binary
+polynomials of weight $w$ and degree $n$ whose root order is at most
+$Cn$, every support can be specified by a bounded number of bits
+given $n$. The bound is independent of $n$. Indeed write $f=F(X^g)$
+using the exponent gcd, and let $N=n/g$. The order of a root of $F$
+is $R/g$ when $R$ is the order for $f$, by
+Section~\ref{sec:two-row-order}. The lattice packing proof of
+Corollary~\ref{cor:pentanomial-packing} gives
+$(R/g)^{w-2}\ge w(N/2)^{w-1}$. Hence
+\[
+                   N\le 2^{w-1}C^{w-2}/w .
+\]
+A decoder enumerates the bounded-degree bases, takes the indexed base
+of degree $N\mid n$, and multiplies all its exponents by $n/N$.
+For pentanomials the cutoff is $16C^3/5$. This bounds descriptions
+for roots of at most linear order. An imprimitive root can have
+exponentially larger order.
+
+\paragraph{Using a linear dependence when four columns can be dependent.}
+Let $\ell,t,m,d,K$ be as in Section~\ref{sec:sparse-four-column-descent},
+with $1<d\ne\ell$. Write $z=\alpha\beta$ with $\alpha$ of order
+$\ell$, $\beta\in K^\times$. Put $s=t/d$, $E=\mathbb F_{2^s}$ and
+$H=\ell(2^s-1)$. Suppose every three distinct powers of $\alpha$ are
+independent over $E$ and every five span dimension at least four.
+Then every sparse exception is a dilation of a base of degree
+\[
+                             N\le H^2 .
+\]
+For $\ell=13$, $d=4$ this gives $N\le8281$, including the case
+where four columns are dependent. For $\ell=41$, $d=4,5$ it gives
+$N\le1615441,378225$, respectively.
+
+\begin{proof}
+The ranks persist over $K$ by linear disjointness. Group the support
+by exponent modulo $\ell$. Its nonzero relation uses four or five
+occupied residues. In either case their rank is precisely one less
+than their number. At least three residues each contain a single
+exponent. The normalized kernel vector lies over $E$, so for their
+exponents $a<b<c$ the ratios $\beta^{b-a}$ and $\beta^{c-a}$ lie in
+$E^\times$. Write $k$ for the order of $\beta$ modulo $E^\times$.
+Since $K=\mathbb F_2(\beta^\ell)$ and $\beta^k\in E$, we have
+$k\ge[K:E]=n/t$. Put $u=\gcd(b-a,c-a)$, $j=(c-a)/u$. Then
+$k\mid u$, $g\mid u$, $2\le j\le\min(t,\lfloor n/k\rfloor)$
+and $R=\ell\operatorname{ord}(\beta)\le Hk\le Hn/j$.
+The normalized support contains three positions of common step $u/g$
+and width $j$. Section~\ref{sec:two-row-order} gives
+$N^3\le2j(R/g)^2$, whence $jN\le2H^2$.
+
+The relative index survives normalization. Put
+$L=\mathbb F_2(z)$, $B=\mathbb F_2(z^g)$ and $K_0=\mathbb F_2(z^{g\ell})$.
+Here $[L:B]=g$ and $[K:K_0]\le g$. Since $\ell\nmid g$, B\'ezout
+gives $L=BK$. Thus $[L:K]\le[B:K_0]$, while
+$g[B:K_0]=[L:K][K:K_0]\le g[L:K]$. Equality follows.
+The same argument applies to any irreducible dilation coprime to $\ell$.
+\end{proof}
+
+\clearpage
+\subsection*{Exactly one reciprocal pair for the fourth-degree drop at 13}
+For every $n>1$, let $z$ be a root of an irreducible binary polynomial
+of degree $n$ and weight at most five. Then
+$[\mathbb F_2(z):\mathbb F_2(z^{13})]=4$ precisely for
+\[
+  (X^{12}+X^{10}+X^9+X+1)\big|_{X\mapsto X^{7^j}}
+   \quad\text{and its reciprocal},\qquad j\ge0.
+\]
+The degree is $12\cdot7^j$, the root order is $91\cdot7^j$, and the
+degree after taking the 13th power is $3\cdot7^j$. Given the degree, one
+bit selects the oriented support. With reciprocals identified, the
+degree alone specifies it.
+
+\begin{proof}
+We have $t=12$, $d=4$, $s=3$. Translating the first column to zero,
+all 66 triples over $\mathbb F_8$ are independent. Of the 220
+four-column sets, 16 have rank three. All 495 five-column sets have
+rank four. Thus the preceding degree bound applies even to the
+dependent four-column sets.
+
+It suffices to classify normalized bases. Write $o=\operatorname{ord}(\beta)$,
+so $13\nmid o$, $R=13o$, $m=\ord_o(2)$, $n=4m$ and $\gcd(m,12)=3$.
+Here $k=o/\gcd(o,7)$ and $2k\le n$. Enumerate the odd integers
+$o\le7\cdot8281/2$. Keep $n\le8281$ and retain $o$ only if some
+$2\le j\le\min(12,\lfloor n/k\rfloor)$ satisfies $n^3\le2jR^2$.
+If a prime $p\mid R$ gives $\ord_{R/p}(2)=n/p$ with $p\mid n$, then
+the minimal polynomial is $\operatorname{minpoly}(z^p)(X^p)$,
+contrary to normalization. Exactly twelve possibilities remain.
+\[
+\begin{array}{c|rrrrrr}
+ n&12&132&276&420&996&1140\\
+ R&91&2093&4277&6461&15197&17381\\
+ p&--&23&47&71&167&191\\\hline
+ n&1428&1572&1860&2148&2292&3036\\
+ R&21749&23933&28301&32669&34853&98371\\
+ p&239&263&311&359&383&23
+\end{array}
+\]
+Each displayed $p>21$ is $3\bmod4$, and $(p-1)/2$ divides
+$n/\ord_{R/p}(2)$. The Frobenius conjugates in that prime component
+contain all quadratic-residue exponents. The square-root bound
+$w^2-w+1\ge p$ from Section~\ref{sec:safe-prime-powers} excludes
+weight at most five. Independently, splitting all twelve cyclotomic
+polynomials over $\mathbb F_2$ gives 150 irreducible factors and the
+same two sparse factors, both of order 91.
+
+Every prime dividing $g$ divides 91 by the irreducible dilation
+criterion, and $13\nmid g$. Hence $g=7^j$. Conversely each
+$7^j$th root of a base root has order $13\cdot7^{j+1}$.
+Since $\ord_{7^{j+1}}(2)=3\cdot7^j$, its degree is
+$\operatorname{lcm}(12,3\cdot7^j)=12\cdot7^j$, proving
+irreducibility and the stated drop.
+\end{proof}
+The rank and twelve-order checks are in
+\nolinkurl{scripts/check_sparse_circuit_orders.py}. Its optional
+\texttt{--ntl} argument takes the compiled
+\nolinkurl{scripts/cyclotomic_weight_census.cpp} for the full factor census.
+Lean checks the degree-bound arithmetic and the orders of the dilations
+in \nolinkurl{GF2Sparse/CircuitOrderBounds.lean}.
+
 \end{document}
