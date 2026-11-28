@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In degree 1229 more than 97% of all 1,200-bit power-trace records each occur for over 100,000 primitive polynomials.** All six binary projective images of each root are primitive. Among 1,180-bit records, fewer than one in 524,288 can have at most $2^{37}$ representatives. Given the trace locations, every such exception has a 1,161-bit rank. The proof works in large degrees for almost all records of up to $n-(2+\varepsilon)\log_2 n$ bits. A degree-1229 pentanomial's three taps take only 29 bits to specify, so its record can still lie in the exceptional set. [Proof and incompressibility argument](results.pdf#page=357) · [Verifier](scripts/check_trace_incompressibility.py)
+
 - **In degree 1229 every prescription of 598 bits of initial power-trace data is realized by more than $2^{618}$ primitive polynomials.** The traces can be prescribed at any binary closed points, including zero and infinity. For every counted root $r$, both $1+r$ and $r/(1+r)$ are primitive too. Yet two pentanomials agree on the first 1,364 inverse and 1,058 positive power traces despite differing at the 36,871 order test. In all sufficiently large degrees the theorem permits nearly half the degree in prescribed bits. [Proof](results.pdf#page=353) · [Sharp sparse comparisons](results.pdf#page=356) · [Verifier](scripts/check_prescribed_root_traces.py)
 
 - **In every sufficiently large degree, at least $2^{n/2}$ primitive polynomials have at most $\log_2 n+O(\sqrt{\log n\,\log\log n})$ odd-degree terms.** All those terms lie in the last $2\log_2 n+O(1)$ odd positions. In even degree any block of that length works. In degree 1229 more than $2^{617}$ primitive polynomials have at most eleven odd-degree terms, all between exponents 1197 and 1229. The inverse roots have their first 1196 power traces zero. [All-degree proof](results.pdf#page=344) · [Degree 1229](results.pdf#page=346) · [Verifier](scripts/check_sparse_odd_coefficients.py) · [Lean arithmetic](GF2Sparse/OddCoefficientBounds.lean)
@@ -1060,6 +1062,12 @@ To compare the 22 known order-test failures against the 639,144 surviving degree
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_prescribed_root_traces.py --census
+~~~
+
+The 1,180-bit and 1,200-bit exceptional fractions and a complete two-ended trace histogram in a small field can be checked with
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_trace_incompressibility.py
 ~~~
 
 To replay the elliptic function counts in degrees 262,146 and $2^{84}+2$, run

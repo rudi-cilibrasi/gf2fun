@@ -24836,4 +24836,135 @@ the finite counting bound and the closed-point trace identity in three
 small extension fields. \nolinkurl{GF2Sparse/OddCoefficientBounds.lean}
 checks the determinant identity and both finite inequalities.
 
+\clearpage
+\section{Incompressible records of primitive-root traces}
+\label{sec:incompressible-traces}
+Fix the binary closed points, their representatives, binary bases and the
+numbers of initial odd moments as in Section~\ref{sec:prescribed-root-traces}.
+These choices give a map \(A:U\to\mathbb F_2^g\), where \(U\) omits
+zero, one and all finite poles from \(\mathbb F_{2^n}\). A record is the
+\(g\)-bit value of this map. Call a polynomial a representative of a record
+if a root has that record and all six binary projective images of the root
+are primitive. Every conjugate has the same record.
+\begin{theorem}\label{thm:typical-trace-record}
+For every fixed \(\epsilon>0\) and
+\(g\le n-(2+\epsilon)\log_2 n\), a fraction \(1-o(1)\) of all
+\(2^g\) records each have \(\gg 2^{n-g}/(nT^3)\) distinct
+representatives, uniformly in the choice of locations. Here
+\(T=\log\log n\,\log\log\log n\) uses natural logarithms.
+In degree \(1229\) we have the following explicit bounds.
+\[
+\begin{array}{r|r|r}
+g&\text{fraction of exceptional records below}&
+      \text{representatives for each other record above}\\\hline
+1200&3/100&100000\\
+1180&2^{-19}&2^{37}
+\end{array}
+\]
+\end{theorem}
+For the second row a decoder given the degree and the trace locations
+can describe every record with at most \(2^{37}\) representatives
+by its rank in fewer than \(2^{1161}\) possibilities. It enumerates
+the field, tests orders, forms the records and orders the exceptions
+lexicographically. Thus each exception has a fixed-length code of
+1161 bits, or conditional plain Kolmogorov complexity at most
+\(1161+O(1)\) for a fixed universal machine. The enumeration only
+requires computability. This is the incompressibility argument of
+Section~\ref{sec:sparse-parameter-codes} applied directly to the
+observable trace data.
+
+There is an upper limit to the number of bits covered. There are at
+most \((2^n-1)/n\) primitive polynomials of degree \(n\), since each
+has \(n\) distinct nonzero roots. Thus when \(g\ge n-\log_2 n+h\),
+at most a fraction \(2^{-h}\) of records even have a representative.
+For a pentanomial of degree 1229, on the other hand, the three taps
+have only \(\binom{1228}{3}=307880476\) possibilities. Given the
+locations, a 29-bit rank computes every trace of any irreducible
+pentanomial. Even a tap triple incompressible within this sparse
+family therefore gives a short description in the space of
+1180-bit records. To deduce a five-term theorem one needs a bound
+on exceptions within the sparse family.
+
+\clearpage
+\subsection*{The variance and the cost of omitted prime tests}
+Put \(q=2^n\), \(m=2^g\). For real weights \(w\) on \(U\) write
+\[
+ B_a=\sum_{A(z)=a}w(z),\qquad
+ \widehat w(s)=\sum_{z\in U}w(z)(-1)^{s\cdot A(z)},\qquad
+ \bar B=\widehat w(0)/m .
+\]
+Walsh orthogonality gives the centered identity
+\[
+          \sum_a (B_a-\bar B)^2
+                 =\frac1m\sum_{s\ne0}|\widehat w(s)|^2.
+\]
+If every nonzero coefficient has magnitude at most \(H\), the
+fraction of records with \(B_a<\bar B-\eta q/m\) is at most
+\(mH^2/(\eta^2q^2)\). If \(D\) further field elements must be
+discarded, at most a fraction \(D/(\delta q)\) of records lose
+more than \(\delta q/m\) elements. This separates the Fourier
+cost of testing primes from the total size of the subgroups they remove.
+
+For the explicit rows choose a set \(P\) of prime divisors of \(q-1\).
+Use weight one minus the sum, for each \(p\in P\), of the three
+failure indicators at \(z,z+1,z/(z+1)\). Each map is injective
+on \(U\) and at most \((q-1)/p\) elements can map into the
+index-\(p\) subgroup. Set
+\[
+ d_0=(g+2)/q+3\sum_{p\in P}p^{-1},\qquad
+ d_1=3\sum_{p\mid q-1,\ p\notin P,\ p\ {\rm prime}}p^{-1}.
+\]
+Then \(\bar B\ge(1-d_0)q/m\) and the omitted primes remove at most
+\(d_1q\) elements. Each subgroup indicator is an average of
+multiplicative characters. The mixed character bound of
+Section~\ref{sec:prescribed-root-traces} gives
+\(H=(1+3|P|)(2g+1)\sqrt q\). Consequently, outside a fraction at most
+\[
+   \frac{2^{g-n}(1+3|P|)^2(2g+1)^2}{\eta^2}+\frac{d_1}{\delta},
+\]
+there are at least \((1-d_0-\eta-\delta)2^{n-g}/n\) representatives.
+The weights give a pointwise lower bound for passing the retained tests,
+even when several fail. Division by \(n\) counts Frobenius orbits.
+
+For 1200 bits take \(P=\varnothing\), \(\eta=2/3\), \(\delta=1/12\).
+For 1180 bits take \(P=\{36871,46703\}\), \(\eta=5/8\), \(\delta=1/16\).
+Theorem~\ref{thm:1229-cofactor-bound} gives \(d_1<3/20000\) and
+\(d_1<10^{-15}\), respectively, and \(d_0<1/5000\) in both cases.
+\nolinkurl{scripts/check_trace_incompressibility.py} checks the bounds
+with rational arithmetic and exhausts an eight-bit trace map in degree
+ten. Lean checks the finite inequalities in
+\nolinkurl{GF2Sparse/OddCoefficientBounds.lean}.
+
+\clearpage
+\subsection*{Almost all records up to the logarithmic gap}
+Use the cutoff \(Z=\exp(cT)\) and the least odd \(b\ge100\log\log n\)
+from Section~\ref{sec:prescribed-root-traces}, with \(c\) sufficiently
+large. For the primes at most \(Z\) dividing \(q-1\), let \(w\)
+be the lower Bonferroni polynomial for avoiding their three-line
+failure sets, truncated at \(b\). On \(U\) this is bounded above by
+the indicator of passing all the small primes. In the two exponent
+coordinates of \(z,z+1\), its constant Fourier coefficient is
+\(\gg T^{-3}\). Its total absolute Fourier mass is
+\(\exp(O(b\log(5Z)))=n^{o(1)}\), since a single three-line indicator
+has mass at most five. Both estimates follow from the small-prime
+sieve in that section.
+
+For \(s=0\) the nonconstant multiplicative twists each contribute
+at most \((2g+1)\sqrt q\), so \(\sum_U w\gg q/T^3\) for \(g\le n\).
+For \(s\ne0\) the additive twist has an odd pole and every term
+is bounded by the same character estimate. Hence one may take
+\(H=(2g+1)n^{o(1)}\sqrt q\). Choose \(\eta=c_1/T^3\) and
+\(\delta=c_1/T^3\) with a sufficiently small absolute \(c_1>0\).
+The centered second moment excludes at most a fraction
+\(2^{g-n}n^{2+o(1)}\) of records, which is \(o(1)\) in the stated range.
+The omitted primes together exclude at most
+\[
+       3q\sum_{p\mid q-1,\ p>Z,\ p\ {\rm prime}}\frac1p=o(q/T^3)
+\]
+elements by the order-of-two estimate in the same sieve. Thus only
+an additional \(o(1)\) fraction of records can lose more than
+\(\delta q/m\) elements. Every remaining record retains
+\(\gg q/(mT^3)\) roots passing all six tests. This proves
+Theorem~\ref{thm:typical-trace-record}.
+
 \end{document}
