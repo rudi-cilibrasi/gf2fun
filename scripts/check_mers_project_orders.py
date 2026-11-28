@@ -108,36 +108,43 @@ def minimum_weight(n, row, gp):
 
 def verify(n, row, proven, args):
     taps = row["taps"]
-    if (len(taps) not in (1, 3) or taps != sorted(set(taps)) or
-            not all(type(t) is int and 0 < t < n for t in taps)):
-        raise ValueError(f"invalid sparse polynomial in degree {n}")
+    supports = [taps, *row.get("additional_taps", [])]
+    for support in supports:
+        if (len(support) not in (1, 3) or support != sorted(set(support)) or
+                not all(type(t) is int and 0 < t < n for t in support)):
+            raise ValueError(f"invalid sparse polynomial in degree {n}")
+    if len({tuple(support) for support in supports}) != len(supports):
+        raise ValueError(f"repeated sparse polynomial in degree {n}")
     factors = row["order_factors"]
     if (not factors or not all(type(p) is int and p > 1 for p in factors)
             or factors != sorted(factors) or prod(factors) != (1 << n) - 1):
         raise ValueError(f"incomplete field order in degree {n}")
-    f = modulus(n, taps)
+    if not args.powers_only:
+        needed = set(factors) - proven
+        if args.defer_largest:
+            needed.discard(factors[-1])
+        for index, proof in row["primo_certificates"].items():
+            i = int(index)
+            if not 0 <= i < len(factors) or str(i) != index:
+                raise ValueError(f"invalid certificate reference in degree {n}")
+            p = factors[i]
+            if p in needed:
+                prove_with_certificate(p, proof, args.gp, args.fetch_to)
+                proven.add(p)
+                needed.remove(p)
+        for p in needed:
+            if not fmpz(p).is_prime():
+                raise ValueError(f"composite order factor in degree {n}")
+            proven.add(p)
+    for support in supports:
+        verify_primitive_modulus(modulus(n, support), factors)
+    if len(supports) > 1:
+        print(f"Degree {n}, all {len(supports)} listed sparse supports passed the full power "
+              f"and the {len(set(factors))} factor-index powers.", flush=True)
     if args.powers_only:
-        verify_primitive_modulus(f, factors)
         print(f"Degree {n}, factor product, full power and {len(set(factors))} "
               "factor-index powers verified. Primality checks skipped.", flush=True)
         return
-    needed = set(factors) - proven
-    if args.defer_largest:
-        needed.discard(factors[-1])
-    for index, proof in row["primo_certificates"].items():
-        i = int(index)
-        if not 0 <= i < len(factors) or str(i) != index:
-            raise ValueError(f"invalid certificate reference in degree {n}")
-        p = factors[i]
-        if p in needed:
-            prove_with_certificate(p, proof, args.gp, args.fetch_to)
-            proven.add(p)
-            needed.remove(p)
-    for p in needed:
-        if not fmpz(p).is_prime():
-            raise ValueError(f"composite order factor in degree {n}")
-        proven.add(p)
-    verify_primitive_modulus(f, factors)
     if args.defer_largest:
         print(f"Degree {n}, all polynomial powers and the smaller primes verified. "
               f"Full order follows if the largest listed factor "
