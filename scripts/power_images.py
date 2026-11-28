@@ -22,11 +22,11 @@ def root_multipliers(m):
 
 
 @cache
-def norm_pattern(m, residues):
-    """Monomial multiplicities with nonzero coefficients in the root-of-unity product."""
+def norm_pattern(m, residues, omit_identity=False):
+    """Nonzero monomials in the root-of-unity product, optionally omitting the untwisted factor."""
     multiples = root_multipliers(m)
     coefficients = {(0,)*len(residues): 1}
-    for j in range(m):
+    for j in range(int(omit_identity), m):
         result = {}
         for counts, coefficient in coefficients.items():
             for i, exponent in enumerate(residues):
@@ -34,7 +34,7 @@ def norm_pattern(m, residues):
                 term = multiples[j*exponent % m][coefficient]
                 result[next_counts] = result.get(next_counts, 0) ^ term
         coefficients = {k: v for k, v in result.items() if v}
-    if any(c != 1 or sum(k*e for k, e in zip(counts, residues)) % m
+    if any(c != 1 or (not omit_identity and sum(k*e for k, e in zip(counts, residues)) % m)
            for counts, c in coefficients.items()):
         raise ArithmeticError("the norm failed descent to the base field")
     return tuple(coefficients)

@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **The seventh power of a sparse irreducible root has degree $n/\gcd(7,g)$, with two exceptions up to reciprocation.** Here $g$ is the gcd of the polynomial's exponents. The exceptions have degrees 3 and 6 and root orders 7 and 21. As a consequence, for every prime $q>3$ and every sparse irreducible of degree $3q$, its root order contains a prime that first divides $2^d-1$ at $d=3q$. The two exceptions to this prime-divisor conclusion are $X^{21}+X^7+1$ and its reciprocal, both of root order 49. [Proof and trace calculation](results.pdf#page=327) · [Verifier](scripts/check_seventh_power_degree.py) · [Lean trace identities](GF2Sparse/SeventhPowerDegree.lean)
+
 - **In degree 7 and every prime degree $n\ge13$, the eight powers $z^{\pm1},z^{\pm3},z^{\pm5},z^{\pm7}$ of any sparse irreducible root have distinct degree-$n$ minimal polynomials.** In all odd degrees greater than one, only four families have any collision. Their normalized degrees are 3, 5, 9 and 11. Among the first six powers the only exceptions are the two irreducible cubics with $X$ replaced by $X^{7^i}$. For example, $3\equiv5\cdot2^{5309}$ modulo 3,118,439 rules out that root order in degree 6,067. [Odd-degree theorem and exhaustive calculation](results.pdf#page=324) · [Signed exceptions](data/sparse-power-orbit-exceptions.csv) · [Independent prime-degree argument](results.pdf#page=323)
 
 - **In every degree, the third and fifth powers of a sparse irreducible root can be conjugate up to inversion in exactly three families, counting reciprocals.** Their base degrees and root orders are $(3,7)$, $(8,17)$ and $(12,91)$. The last family includes the irreducible $X^{1092}+X^{910}+X^{819}+X^{91}+1$, of root order $8281$. [Polynomials, exponents and proof](results.pdf#page=326) · [Verifier](scripts/check_power_orbit_collisions.py)
@@ -980,6 +982,12 @@ The following checks all signed orbit collisions between powers 1, 3, 5 and 7 fo
 ~~~sh
 c++ -std=c++17 -O3 scripts/power_orbit_collisions.cpp -o /tmp/gf2-power-orbit-collisions
 uv run --no-project --with python-flint==0.9.0 python scripts/check_power_orbit_collisions.py --solver /tmp/gf2-power-orbit-collisions --through 40
+~~~
+
+The same executable checks the seventh-power degree theorem. The Python verifier also tests every sparse irreducible up to reciprocity through degree 64 by direct Frobenius powering.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_seventh_power_degree.py --solver /tmp/gf2-power-orbit-collisions
 ~~~
 
 To reproduce the order projections and subfield certificates, run

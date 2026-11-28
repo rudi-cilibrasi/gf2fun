@@ -71,6 +71,7 @@ import GF2Sparse.ShiftWeight
 import GF2Sparse.SternPowers
 import GF2Sparse.Seroussi1229
 import GF2Sparse.SeventhImage
+import GF2Sparse.SeventhPowerDegree
 import GF2Sparse.ShortProducts
 import GF2Sparse.SubfieldProducts
 import GF2Sparse.ScalarOrderBound
