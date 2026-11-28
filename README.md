@@ -10,7 +10,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **More than 35.756% of degrees admit no primitive trinomial.** Even irreducible trinomials are impossible in more than 34.101% of all degrees and 47.742% of prime degrees, measured by lower asymptotic density. A five-term witness is necessary wherever a primitive trinomial is impossible. The calculation combines Swan's theorem with exact counts of small-field factors. [Proof](results.pdf#page=311) · [Density verifier](scripts/check_trinomial_density.py) · [Lean proof for dilations](GF2Sparse/Dilation.lean)
+- **More than 35.756% of degrees admit no primitive trinomial.** Even irreducible trinomials are impossible in more than 34.101% of all degrees and 47.742% of prime degrees, measured by lower asymptotic density. A five-term witness is necessary wherever a primitive trinomial is impossible. For more than 30.219% of primes $p$, every degree $p,p^3,p^5,\ldots$ has no irreducible trinomial. [Density proof](results.pdf#page=311) · [All odd powers of one prime](results.pdf#page=315) · [Density verifier](scripts/check_trinomial_density.py) · [Lean proof for dilations](GF2Sparse/Dilation.lean)
 
 - **In degrees 28,759 and 28,771, every irreducible polynomial with fewer than 14,105 terms has a prime greater than $2^{44}$ in its root order.** Both thresholds are exact. Four polynomials attain 14,105 terms in the first degree and two in the second while their roots have only smaller order primes. [Proof](results.pdf#page=314) · [Weight distributions](data/cyclotomic-weight-spectra.json) · [Verifier](scripts/check_cyclotomic_weights.py)
 
@@ -717,7 +717,7 @@ A pull request can include the generated table and the corresponding interval th
 
 ## Verification
 
-To reproduce the density bounds, run `python3 scripts/check_trinomial_density.py` with the Python standard library. It counts residue classes using fields through degree 25. Add `--through 18` for a shorter calculation that already excludes primitive trinomials from more than 35.1% of all degrees.
+To reproduce the density bounds, run `python3 scripts/check_trinomial_density.py` with the Python standard library. It counts residue classes using fields through degree 25. Add `--through 18` for a shorter calculation that already excludes primitive trinomials from more than 35.1% of all degrees. Use `--prime-powers` to reproduce the bound for all odd powers of the same prime with fields through degree 16.
 
 To replay the Mers Project witnesses, install PARI/GP and run the command below. Add `--degree 3987` to check one row. Each witness lists the interior exponents in increasing order. The constant and leading coefficients are one. [Mers Project factor table](https://mers.sourceforge.io/factoredM.txt) · [Seroussi's irreducible polynomial table](https://shiftleft.com/mirrors/www.hpl.hp.com/techreports/98/HPL-98-135.pdf)
 

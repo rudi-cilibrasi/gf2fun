@@ -98,11 +98,16 @@ def sum_over_residues(tables, base):
     return prod(v[0] for _, v in tables)
 
 
-def sieve_densities(through):
+def field_periods(through):
     # These fields contain every binary field of degree at most 'through', up to isomorphism.
     degrees = range(max(2, through // 2 + 1), through + 1)
     periods = [(1 << d) - 1 for d in degrees]
     base = lcm(*(gcd(a, b) for a, b in combinations(periods, 2)))
+    return degrees, periods, base
+
+
+def sieve_densities(through):
+    degrees, periods, base = field_periods(through)
     moduli = field_polynomials()
     all_tables, unit_tables = [], []
     all_count, unit_count = base, totient(base)
@@ -122,6 +127,34 @@ def sieve_densities(through):
     all_fraction = Fraction(sum_over_residues(all_tables, base), all_count)
     prime_fraction = Fraction(sum_over_residues(unit_tables, base), unit_count)
     return Fraction(1, 8) + (1 - all_fraction) / 4, (1 - prime_fraction) / 2
+
+
+def odd_prime_power_density(through):
+    """Lower relative density of primes p excluding irreducible trinomials in p, p^3, p^5, ... ."""
+    degrees, periods, base = field_periods(through)
+    moduli = field_polynomials()
+    tables = []
+    unit_count = totient(base)
+    for d, period in zip(degrees, periods):
+        root_free = surviving_residues(d, moduli[d])
+        inconclusive = bytearray(period)
+        for residue in range(1, period):
+            if gcd(residue, period) != 1:
+                continue
+            step = residue * residue % period
+            power = residue
+            # Multiplication by step cycles through all the odd powers of this unit.
+            while not root_free[power]:
+                power = power * step % period
+                if power == residue:
+                    break
+            inconclusive[residue] = root_free[power]
+        common = gcd(period, base)
+        tables.append((common, [inconclusive[a::common].count(1) for a in range(common)]))
+        unit_count *= totient(period) // totient(common)
+
+    # Half the odd prime classes modulo eight are 3 or 5. Every odd power stays in that class.
+    return (1 - Fraction(sum_over_residues(tables, base), unit_count)) / 2
 
 
 def dilation_bound():
@@ -158,16 +191,26 @@ def dilation_bound():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--through", type=int, default=25, metavar="D",
-                        help="sieve for roots in all binary fields of degrees up to D (2 to 25)")
+    parser.add_argument("--through", type=int, metavar="D",
+                        help="sieve in binary fields through degree D (2 to 25, default 25 or 16 with --prime-powers)")
+    parser.add_argument("--prime-powers", action="store_true",
+                        help="require every odd power of the same prime to exclude irreducible trinomials")
     args = parser.parse_args()
-    if not 2 <= args.through <= 25:
+    through = args.through if args.through is not None else (16 if args.prime_powers else 25)
+    if not 2 <= through <= 25:
         parser.error("choose a maximum field degree between 2 and 25")
-    primitive, prime_degrees = sieve_densities(args.through)
+    if args.prime_powers:
+        density = odd_prime_power_density(through)
+        if through == 16 and density != Fraction(3524801, 11664000):
+            raise ArithmeticError("the odd-power count differs from the stated fraction")
+        print(f"Primes p with no irreducible trinomial in any degree p^a for odd a, "
+              f"lower relative density at least {density} ({float(density):.10%}).")
+        return
+    primitive, prime_degrees = sieve_densities(through)
     loss, count, upper = dilation_bound()
-    if args.through == 25 and not (primitive > Fraction(35756, 100000) and
-                                   prime_degrees > Fraction(47742, 100000) and
-                                   primitive - loss > Fraction(34101, 100000)):
+    if through == 25 and not (primitive > Fraction(35756, 100000) and
+                              prime_degrees > Fraction(47742, 100000) and
+                              primitive - loss > Fraction(34101, 100000)):
         raise ArithmeticError("the computed fractions fall short of the stated density bounds")
     print(f"No primitive trinomial, lower density at least {primitive} ({float(primitive):.10%}).")
     print(f"No irreducible trinomial among prime degrees, lower relative density at least "

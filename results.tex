@@ -22506,4 +22506,58 @@ each \(P\). The \(2^{44}\) bound above is independent of either
 large integer primality check. \nolinkurl{scripts/check_cyclotomic_weights.py}
 reproduces the two spectra and the progression sieve.
 
+\clearpage
+\section{Prime bases for which every odd power requires five terms}
+\label{sec:odd-prime-power-density}
+\begin{theorem}
+The primes \(p\) for which there is no irreducible binary trinomial
+in any degree \(p,p^3,p^5,\ldots\) have lower relative density at least
+\[
+             \frac{3524801}{11664000}>0.30219.
+\]
+Consequently a primitive witness for the five-term conjecture in each
+of these degrees must be a pentanomial.
+\end{theorem}
+\begin{proof}
+Consider primes \(p>16\) congruent to three or five modulo eight.
+Every positive odd power \(n=p^a\) has the same residue modulo eight.
+By the prime-power obstruction in Section~\ref{sec:trinomial-density}
+the only possible irreducible trinomial, up to reciprocation, is
+\(T_n=X^n+X^2+1\).
+
+For \(9\le j\le16\) write \(M_j=2^j-1\), and let \(H_j\) be the set
+of residues \(v\bmod M_j\) for which some \(y\in\mathbb F_{2^j}^*\)
+satisfies \(y^v+y^2+1=0\). Discard the finitely many primes that
+divide one of the periods. A unit \(u\bmod M_j\) certifies every odd
+power at once if
+\[
+                   u\langle u^2\rangle\subseteq H_j .
+\]
+Indeed the coset is precisely the list of all odd powers of \(u\).
+For every prime \(p\equiv u\bmod M_j\) each \(T_{p^a}\) then has a
+factor of degree at most \(j<p^a\). The root may depend on \(a\).
+
+Calculate \(H_j\) by the field congruences of
+Section~\ref{sec:trinomial-density}. Starting at each unit \(u\),
+multiply repeatedly by \(u^2\) modulo \(M_j\) until the residue
+returns to \(u\) or leaves \(H_j\). The resulting counts are
+\[
+\begin{array}{c|rrrrrrrr}
+ j&9&10&11&12&13&14&15&16\\ \hline
+ \varphi(M_j)&432&600&1936&1728&8190&10584&27000&32768\\
+ \#\{u:u\langle u^2\rangle\subseteq H_j\}
+     &74&301&0&1020&0&5292&5102&16384 .
+\end{array}
+\]
+Take the union of these conditions on units modulo
+\(M=\mathrm{lcm}_{j=9}^{16}M_j\). The Chinese remainder count of
+Section~\ref{sec:trinomial-density}, with common modulus \(L=3255\),
+gives the fraction \(3524801/5832000\). The modulus \(M\) is odd and
+two of the four prime classes modulo eight are eligible.
+The prime number theorem in arithmetic progressions therefore gives
+half this fraction as a lower bound for the relative density.
+\end{proof}
+\nolinkurl{scripts/check_trinomial_density.py} with the option
+\texttt{--prime-powers} reproduces the fraction using integer arithmetic.
+
 \end{document}
