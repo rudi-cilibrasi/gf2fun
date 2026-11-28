@@ -98,7 +98,7 @@ def verify_trinomial_divisor_cover(n, masks):
 
 
 def minimum_weight(n, row, gp):
-    if len(row["taps"]) == 1:
+    if any(len(support) == 1 for support in [row["taps"], *row.get("additional_taps", [])]):
         return 3
     if "primitive_trinomial_tap" in row:
         tap = row["primitive_trinomial_tap"]
