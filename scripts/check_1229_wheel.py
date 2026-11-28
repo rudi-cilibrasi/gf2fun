@@ -56,23 +56,29 @@ def wheel_product(start, doublings, method, *, cofactor=COFACTOR, step=STEP,
     return int(result)
 
 
-def verify_chunks(record, *, cofactor, step, wheel, seed_degree, start, doublings, end_bound):
+def verify_chunks(record, *, cofactor, step, wheel, seed_degree, start, doublings, end_bound,
+                  archived_only=False):
     """Check the adjacent Lagrange products against the combined Newton residue."""
     length = wheel*seed_degree*4**doublings
     count, remainder = divmod(end_bound-1-step*start, step*length)
     if remainder or count < 1:
         raise ValueError("the requested interval is not a whole number of wheel products")
     chunks = record.get("chunks", [])
-    if "chunks" in record and len(chunks) != count:
+    if (archived_only or "chunks" in record) and len(chunks) != count:
         raise ValueError("incorrect number of archived wheel products")
     product = 1
     for index in range(count):
         if chunks and (chunks[index]["start"] != start or chunks[index]["doublings"] != doublings):
             raise ValueError("gap or wrong length in the wheel certificate")
-        residue = wheel_product(start, doublings, "lagrange", cofactor=cofactor, step=step,
-                                wheel=wheel, seed_degree=seed_degree)
-        if chunks and residue != chunks[index]["residue"]:
-            raise ValueError(f"incorrect wheel product after index {start}")
+        if archived_only:
+            residue = chunks[index]["residue"]
+            if type(residue) is not int or not 0 <= residue < cofactor:
+                raise ValueError(f"invalid residue after index {start}")
+        else:
+            residue = wheel_product(start, doublings, "lagrange", cofactor=cofactor, step=step,
+                                    wheel=wheel, seed_degree=seed_degree)
+            if chunks and residue != chunks[index]["residue"]:
+                raise ValueError(f"incorrect wheel product after index {start}")
         product = product*residue % cofactor
         start += length
     bound = 1+step*start
@@ -88,7 +94,7 @@ def verify_extension():
                          doublings=12, end_bound=EXTENDED_BOUND)
 
 
-def verify_continuation():
+def verify_continuation(*, archived_only=False):
     """Recompute each subsequent Newton product as four independent Lagrange products."""
     record = json.loads(CONTINUATION.read_text())
     start = (EXTENDED_BOUND-1)//STEP
@@ -98,7 +104,8 @@ def verify_continuation():
     for panel in panels:
         end = start + interval_length(12)
         verify_chunks(panel, cofactor=COFACTOR, step=STEP, wheel=WHEEL,
-                      seed_degree=SEED_DEGREE, start=start, doublings=11, end_bound=1+STEP*end)
+                      seed_degree=SEED_DEGREE, start=start, doublings=11, end_bound=1+STEP*end,
+                      archived_only=archived_only)
         start = end
     bound = 1 + STEP*start
     if bound != record["end_bound"]:
@@ -112,6 +119,8 @@ if __name__ == "__main__":
     action.add_argument("--start", type=int, help="number of progression indices preceding the interval")
     action.add_argument("--continuation-only", action="store_true",
                         help="replay the products after the established 818085338814611457 bound")
+    action.add_argument("--check-archive", action="store_true",
+                        help="compare the stored continuation residues, interval endpoints and gcds")
     parser.add_argument("--doublings", type=int, default=10, help="number of polynomial doublings")
     parser.add_argument("--method", choices=("newton", "lagrange"), default="newton")
     parser.add_argument("--threads", type=int, default=1, help="FLINT internal thread count")
@@ -120,7 +129,10 @@ if __name__ == "__main__":
         parser.error("expected nonnegative indices and a positive thread count")
     from flint import ctx
     ctx.threads = args.threads
-    if args.start is None:
+    if args.check_archive:
+        bound = verify_continuation(archived_only=True)
+        print(f"The stored Lagrange residues match every Newton residue and gcd through {bound}.")
+    elif args.start is None:
         if not args.continuation_only:
             from batch_degree_1229 import verify_published
             verify_published()
