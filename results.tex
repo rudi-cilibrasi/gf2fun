@@ -27116,4 +27116,101 @@ the factorization and direct field checks. \nolinkurl{GF2Sparse/SafePrimePowers.
 proves the order-33 factor identity and the order multiplication for
 iterated roots.
 
+\clearpage
+\section{Six independent subgroup elements at two factors of \(2^{1229}-1\)}
+\label{sec:1229-six-independent}
+Let \(p=36871\) or \(46703\) and let \(U\) be the subgroup of order \(p\)
+in \(\mathbb F_{2^{1229}}^\times\). Every six distinct elements of \(U\)
+are linearly independent over \(\F\). The \(\binom p3\) sums of three
+distinct elements therefore take 8353493944355 different values in
+the first case and 16976774808951 in the second.
+
+\begin{theorem}
+For either prime \(p\), let \(z\) be a root of any irreducible binary
+polynomial \(f\) of degree \(n>1\), weight at most seven and exponent
+gcd \(g\). Then
+\[
+                         \deg_{\F}(z^p)=n/\gcd(p,g).
+\]
+\end{theorem}
+\begin{proof}
+Use the field decomposition of Section~\ref{sec:safe-prime-powers}.
+If \(p\mid g\), the index is \(p\). Otherwise a degree drop would give
+\(z=\alpha\beta\), with \(\alpha\) of order \(p\) and
+\(\beta\in K=\mathbb F_2(z^p)\).
+Both primes have binary order 1229, which is prime. Thus the index
+would be 1229 and \(K\) would have degree coprime to 1229 over \(\F\).
+The six-column independence above persists after extending scalars to
+\(K\). Grouping the terms of \(f(\alpha\beta)=0\) by exponent modulo
+\(p\) gives nonzero coefficients on the occupied residues. Hence
+seven distinct residues are necessary. Their relation has a
+one-dimensional kernel obtained by scalar extension from \(\F\).
+The sole nonzero binary relation has all seven coefficients one.
+The constant term normalizes the scalar, so \(\beta^e=1\) for every
+support exponent \(e\), giving \(\beta^g=1\).
+Now \(z^g\) has order \(p\), and writing \(f=F(X^g)\) exhibits its
+minimal polynomial \(F\) of weight seven. But the minimum polynomial
+weights at these two orders are 605 and 579, respectively, as checked
+alongside the independence calculation. This excludes the drop.
+\end{proof}
+
+\paragraph{Pairs and triples.}
+Work modulo \(X^{1229}+X^{15}+X^6+X^2+1\), an irreducible polynomial.
+Write \(\alpha=X^{(2^{1229}-1)/p}\), checked to have exact order \(p\).
+Nonzero sums \(s,t\) differ by a factor in \(U\) precisely when
+\(s^p=t^p\). Each pair of subgroup elements is a scalar translate of
+\(\{1,\alpha^d\}\) with \(1\le d\le(p-1)/2\).
+The values \((1+\alpha^d)^p\) are distinct and none equals one.
+Since a nonzero pair sum has trivial stabilizer under scalar
+multiplication, this excludes all zero sums of one through four distinct
+elements. For triples the verifier tests that no sum is zero and that
+its \(p\)-th power is neither one nor a value from the pair table.
+This also excludes five distinct elements summing to zero.
+
+\clearpage
+\paragraph{Distinguishing all triples.}
+On exponent triples the maps \(x\mapsto 2^j x+t\bmod p\) account
+for Frobenius and multiplication by \(U\). Their group has order
+\(1229p\), coprime to six. The stabilizer of a triple acts faithfully
+on its three entries, since an affine map fixing two points is the
+identity. Thus the stabilizer is trivial. Choose one positive \(d\)
+from each orbit of nonzero differences under doubling and negation.
+For every such \(d\), enumerate \(\{0,d,e\}\) with \(e\ne0,d\).
+Each triple orbit occurs exactly three times. Indeed any of its three
+pairs can be sent to \(\{0,d\}\) in exactly one way, since
+\(-1\notin\langle2\rangle\bmod p\). The table gives the complete counts.
+\[
+\begin{array}{r|r|r|r|r}
+p &\text{pair classes}&\text{directions }d&
+  \text{normalized triples}&\text{triple orbits}\\\hline
+36871&18435&15&553035&184345\\
+46703&23351&19&887319&295773
+\end{array}
+\]
+
+For a triple sum \(s\), put \(v=s^p\). In the stated power basis let
+\(c_i\) be the constant coefficient of \(v^{2^i}\), for \(0\le i<1229\).
+Read the 1229 bits cyclically and take the largest unsigned integer
+represented by any window of 64 successive bits, first bit most
+significant. This integer is unchanged by translating or doubling
+the triple. The verifier checks that every observed value occurs
+exactly three times among the normalized triples. Each value therefore
+identifies one triple orbit. The check uses exact equality of the
+integer keys and requires no assumption about their distribution.
+
+If two triples have equal sum, they now lie in one orbit. Equality
+would take the form \(s=\alpha^t s^{2^j}\), so \(v=v^{2^j}\).
+For \(0<j<1229\) this forces \(v\in\F\), and both zero and one were
+excluded. For \(j=0\) it forces \(t=0\bmod p\). Thus the triples
+coincide. In particular no six distinct elements sum to zero.
+
+\nolinkurl{scripts/check_1229_prime_power_codes.cpp} checks the field
+model, the pair and triple counts and the minimum weights at both
+orders using NTL. For each chosen \(d\) it verifies that the computed
+degree-1229 minimal polynomial vanishes at \(\alpha^d\).
+Negating \(d\) gives the reciprocal polynomial of the same weight.
+
+The table \nolinkurl{data/degree-1229-small-subgroup-weights.csv}
+also records both minima.
+
 \end{document}
