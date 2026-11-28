@@ -1,5 +1,6 @@
-// Weights of all binary irreducible factors of Phi_s for a prime s.
+// Weights of binary cyclotomic factors. The ordinary census takes a prime s.
 // Usage: cyclotomic_weight_census [--prefix-bound | --check-factors] degree s interior_tap [...]
+// With --sparse-factors, read (degree, odd order) pairs and split Phi_order directly.
 #include <NTL/GF2XFactoring.h>
 #include <NTL/ZZ.h>
 #include <algorithm>
@@ -27,10 +28,10 @@ static std::vector<long> prime_factors(long value) {
     return factors;
 }
 
-static bool has_order(long element, long order, long prime) {
-    if (NTL::PowerMod(element, order, prime) != 1) return false;
+static bool has_order(long element, long order, long modulus) {
+    if (NTL::PowerMod(element, order, modulus) != 1) return false;
     for (long p : prime_factors(order))
-        if (NTL::PowerMod(element, order / p, prime) == 1) return false;
+        if (NTL::PowerMod(element, order / p, modulus) == 1) return false;
     return true;
 }
 
@@ -236,9 +237,68 @@ static void census(long n, long s, const GF2X& field, bool prefix_only, bool ind
     std::cout << "}\n";
 }
 
+static GF2X unity_polynomial(long order) {
+    GF2X f;
+    NTL::SetCoeff(f, 0);
+    NTL::SetCoeff(f, order);
+    return f;
+}
+
+static void sparse_factors(long n, long order) {
+    if (n < 2 || n >= order || order % 2 == 0 || order >= NTL_SP_BOUND ||
+        !has_order(2, n, order))
+        throw std::invalid_argument("incorrect binary degree or odd root order");
+    GF2X cyclo = unity_polynomial(order);
+    for (long p : prime_factors(order))
+        cyclo /= NTL::GCD(cyclo, unity_polynomial(order / p));
+
+    const long count = deg(cyclo) / n;
+    std::vector<GF2X> factors{cyclo};
+    std::vector<bool> seen(order);
+    for (long a = 1; a < order && static_cast<long>(factors.size()) < count; ++a) {
+        if (seen[a]) continue;
+        // The sum over a doubling orbit takes values zero or one at every order-th root.
+        GF2X splitter;
+        long exponent = a;
+        do {
+            seen[exponent] = true;
+            NTL::SetCoeff(splitter, exponent);
+            exponent = NTL::AddMod(exponent, exponent, order);
+        } while (exponent != a);
+        const size_t remaining = factors.size();
+        for (size_t i = 0; i < remaining; ++i) {
+            if (deg(factors[i]) == n) continue;
+            GF2X part = NTL::GCD(factors[i], splitter);
+            if (deg(part) == 0 || deg(part) == deg(factors[i])) continue;
+            factors[i] /= part;
+            factors.push_back(std::move(part));
+        }
+    }
+    if (static_cast<long>(factors.size()) != count || product_tree(factors) != cyclo)
+        throw std::runtime_error("incomplete cyclotomic factorization");
+    std::map<long, long> weights;
+    for (const auto& f : factors) {
+        if (deg(f) != n) throw std::runtime_error("incorrect degree in cyclotomic split");
+        ++weights[NTL::weight(f)];
+    }
+    std::cout << "{\"degree\":" << n << ",\"order\":" << order << ",\"weights\":";
+    print_histogram(weights);
+    std::cout << "}\n";
+}
+
 int main(int argc, char** argv) {
     try {
         const std::string option = argc > 1 ? argv[1] : "";
+        if (option == "--sparse-factors") {
+            if (argc != 2) throw std::invalid_argument("pass degree and order pairs on stdin");
+            long n, order;
+            while (std::cin >> n) {
+                if (!(std::cin >> order)) throw std::invalid_argument("missing order");
+                sparse_factors(n, order);
+            }
+            if (!std::cin.eof()) throw std::invalid_argument("invalid degree in input");
+            return 0;
+        }
         const bool prefix_only = option == "--prefix-bound";
         const bool individual = option == "--check-factors";
         const int first = prefix_only || individual ? 2 : 1;

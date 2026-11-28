@@ -22810,4 +22810,139 @@ The verifier \nolinkurl{scripts/check_exponent_spans.py} checks all
 three shape bounds against the actual orders of all 2051 normalized
 irreducible pentanomials through degree 24.
 
+\clearpage
+\section{Excluding small root orders in every prime degree}
+\label{sec:small-prime-degree-orders}
+Let \(n\ge13\) be prime. Every irreducible binary polynomial of degree
+\(n\) with at most five terms has root order greater than \(256n+1\).
+The following table exhausts the lower prime degrees for orders
+\(R\le256n+1\). It counts polynomials and their reciprocals separately.
+\[
+\begin{array}{c|rrrrrr}
+(n,R)&(2,3)&(3,7)&(5,31)&(7,127)&(11,89)&(11,2047)\\\hline
+\text{trinomials}&1&2&2&4&0&2\\
+\text{pentanomials}&0&0&4&10&2&44
+\end{array}
+\]
+For instance the reciprocal pair of order 89 has interior exponents
+\((1,6,7)\) and \((4,5,10)\). Consequently if \(n\ge13\) is prime and
+\(2^n-1=sP\) with \(s\le256n+1\) and \(P\) prime, the full
+\(P\)-part is forced for every irreducible trinomial and pentanomial.
+
+
+\paragraph{A trace test that uses only small integers.}
+Let \(\ell=kn+1\) be prime with \(\ord_\ell(2)=n\) odd, and let
+\(H=\langle2\rangle\bmod\ell\). For each coset of \(H\), take the
+odd representatives in \([1,(n-1)/2]\). If every coset is represented
+and the gcd of the representatives in each coset is one, no root of
+order \(\ell\) has a binary minimal polynomial of weight at most five.
+
+Indeed at least one end of such a polynomial contains at most one
+interior term in the first \(L=(n-1)/2\) positions next to the
+endpoint. Choose a root \(z\) of the polynomial or its reciprocal
+so its reversed minimal polynomial \(G\) has this property at zero.
+Write \(S_j=\operatorname{Tr}(z^j)\). The logarithmic derivative
+\(ZG'(Z)/G(Z)=\sum_{j\ge1}S_jZ^j\) determines the first \(L\) traces.
+They are all zero if the tap is absent or even. For an odd tap \(a\)
+they are one exactly at the multiples of \(a\).
+On the other hand \(S_j\) is a single bit for each coset of \(H\).
+These \(k\) bits sum to one, since their orbit sums run through every
+nonidentity \(\ell\)-th root of unity once. The all-zero and all-one
+cases are both impossible since \(k\) is even. For \(a>1\), a coset
+with bit one would have all its representatives divisible by \(a\),
+contradicting its gcd. For an absent or even tap every represented coset would have bit zero, and for \(a=1\) each would have bit one. This proves the test.
+
+\paragraph{The finite calculation.}
+In prime degree an interior tap forces exponent gcd one. Corollary~\ref{cor:pentanomial-packing} gives \(16R^3\ge5n^4\)
+for five terms. The same inequality for trinomials follows from
+\(4R\ge3n^2\), by the two-coordinate case of that packing proof.
+Every prime divisor of \(2^n-1\) in odd prime degree is \(1\bmod 2n\).
+Thus a prime order under consideration has \(\ell=kn+1\) with
+\(k=2,4,\ldots,256\), and the packing inequality gives
+\(n<16(k+1)^3/5\). A composite order is at least \((2n+1)^2\), hence
+requires \(n\le63\). Direct divisibility yields the sole composite
+case \(n=11, R=2047\).
+
+The sieve finds 55087 prime orders in odd prime degrees. The trace test excludes 54976 and leaves 111 for factorization, the largest being 2405633. Raising a representative to its \(n\)-th power labels its coset since the kernel is \(H\).
+The remaining factors are computed directly from \(X^R-1\) over
+\(\mathbb F_2\). Remove the roots of each \(X^{R/p}-1\) for primes
+\(p\mid R\) by successive gcds. The surviving polynomial is
+\(\Phi_R(X)\bmod2\), since \(R\) is odd. Sums of monomials over
+doubling orbits modulo \(R\) take values zero or one on its roots
+and split it by further gcds. The verifier checks the product and
+degree of every final factor. Each has degree \(\ord_R(2)=n\), which
+proves irreducibility. Direct enumeration of all three- and five-term
+supports in degrees \(2,3,5,7,11\) independently verifies the positive
+counts. The full sieve is \nolinkurl{scripts/check_sparse_root_orders.py}.
+
+
+The smallest order in any prime degree at least thirteen is
+8191, attained by \(X^{13}+X^5+X^2+X+1\). For \(n\ge37\) the linear
+bound already exceeds 8191. For \(n=13,17,19,23,29,31\), direct division
+finds no divisor of \(2^n-1\) strictly between \(256n+1\) and 8191.
+
+\clearpage
+\section{When the cube of a sparse root is a conjugate up to inversion}
+\label{sec:signed-cubing-order}
+Let \(f\) be irreducible over \(\F\) of odd degree \(n>1\) with at most
+five terms. Write \(z\) for a root and \(R\) for its multiplicative order.
+Then \(z^3\) is a conjugate of \(z\) or \(z^{-1}\) if and only if
+\[
+ n=3\cdot7^a,\qquad
+ f=X^{3\cdot7^a}+X^{7^a}+1
+ \quad\text{or its reciprocal},\qquad a\ge0.
+\]
+In these exceptions \(R=7^{a+1}\) and the cube is conjugate to the
+inverse. In every other case the four elements \(z,z^{-1},z^3,z^{-3}\)
+have disjoint Frobenius orbits of length \(n\).
+
+\paragraph{The normalized support.}
+Suppose first that the exponents have gcd one. Cubing preserves the
+order and degree of every root in an odd degree field because
+\(3\nmid2^n-1\). If \(z^3\) is conjugate to \(z\) or its inverse,
+then \(z^9\) is conjugate to \(z\). All three minimal polynomials
+therefore have at most five terms. For a pentanomial, the support
+calculation in the proof of Theorem~\ref{thm:cubing-chains} lists
+all 18 normalized irreducibles with this property, in degrees 5, 7, 9
+and 11. Direct substitution into the cube formula gives a polynomial
+distinct from both the source and its reciprocal in all 18 cases.
+
+For a trinomial, all distinct residues modulo three would give a cube
+root of unity as a root. Three equal residues contradict normalization.
+For the congruent pair write its exponents as \(t,t+3u\), with \(u>0\),
+and write \(b\) for the third exponent. The cube polynomial has terms
+at \(t,t+u,t+2u,t+3u,b\) before cancellation, by the identity in
+Theorem~\ref{thm:progression}. To have three terms again requires
+\(b=t+u\) or \(t+2u\). The exponent gcd then forces \(u=1\) and the
+degree is three. This proves the normalized assertion.
+
+\paragraph{Restoring the common divisor.}
+Write \(f=F(X^d)\) with \(F\) normalized. The same conjugacy holds
+after taking \(d\)-th powers, hence for the root \(z^d\) of \(F\).
+A linear \(F=X+1\) would give a reducible \(f\) for \(d>1\).
+Thus \(F\) is one of the two cubics above and its root order is seven.
+Every prime dividing \(d\) divides that order by the irreducible
+dilation criterion, so \(d=7^a\). Conversely every root of either
+indicated dilation has order \(7^{a+1}\). Since \(2^3-1=7\), lifting
+the exponent gives \(\ord_{7^{a+1}}(2)=3\cdot7^a\), which proves
+irreducibility. The odd-order subgroup generated by two has index two
+in the units modulo \(7^{a+1}\). It contains \(-3\), a square modulo
+seven and all its powers, while \(3\) is a nonsquare modulo seven.
+Finally \(-1\) lies outside every odd-order doubling subgroup, giving
+the stated disjointness in all the other cases.
+
+\paragraph{An exclusion with no size cutoff.}
+For every nonexceptional polynomial above, \(R\) cannot divide any
+\(D\mid2^n-1\) satisfying \(2^j\equiv\pm3\pmod D\) for some \(j\).
+Such divisibility would put its cube in one of the two forbidden
+orbits. For an odd prime power \(D\) with \(\ord_D(2)=n\) odd, this
+congruence is equivalent to \(3^{2n}\equiv1\pmod D\), since its unit
+group is cyclic and \(\langle2,-1\rangle\) has order \(2n\).
+For example the primes \(1123561,7498663,12189337\) are excluded in
+degrees \(3121,26591,26731\) respectively. The powers of
+two with exponents \(2917,260,21556\) equal \(-3\) modulo those primes.
+At degree 3359, \(2^{104}\equiv3\pmod{6719}\). The complementary
+1008-digit prime therefore divides every sparse irreducible root order
+there. See \nolinkurl{scripts/check_cubing_chains.py}, option \texttt{--signed-orders}.
+
 \end{document}
