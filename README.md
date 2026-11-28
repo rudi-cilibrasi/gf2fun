@@ -10,7 +10,9 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **In every prime degree $n\ge5$, a root $z$ of a binary irreducible with at most five terms gives six distinct minimal polynomials.** The roots are $z,z^{-1},z^3,z^{-3},z^5,z^{-5}$, each of degree $n$. For example, order 3,118,439 is impossible in degree 6,067 because $3\equiv5\cdot2^{5309}$ modulo that prime. [Proof and subgroup tests](results.pdf#page=323) · [Arithmetic verifier](scripts/check_sparse_power_orbits.py)
+- **In degree 7 and every prime degree $n\ge13$, the eight powers $z^{\pm1},z^{\pm3},z^{\pm5},z^{\pm7}$ of any sparse irreducible root have distinct degree-$n$ minimal polynomials.** In all odd degrees greater than one, only four families have any collision. Their normalized degrees are 3, 5, 9 and 11. Among the first six powers the only exceptions are the two irreducible cubics with $X$ replaced by $X^{7^i}$. For example, $3\equiv5\cdot2^{5309}$ modulo 3,118,439 rules out that root order in degree 6,067. [Odd-degree theorem and exhaustive calculation](results.pdf#page=324) · [Signed exceptions](data/sparse-power-orbit-exceptions.csv) · [Independent prime-degree argument](results.pdf#page=323)
+
+- **In every degree, the third and fifth powers of a sparse irreducible root can be conjugate up to inversion in exactly three families, counting reciprocals.** Their base degrees and root orders are $(3,7)$, $(8,17)$ and $(12,91)$. The last family includes the irreducible $X^{1092}+X^{910}+X^{819}+X^{91}+1$, of root order $8281$. [Polynomials, exponents and proof](results.pdf#page=326) · [Verifier](scripts/check_power_orbit_collisions.py)
 
 - **For any number of terms, two different odd powers of a sparse root can be conjugate only up to an explicit degree.** Let $w$ be the weight, $g$ the exponent gcd and $L=\operatorname{lcm}(a,b)$ for distinct positive odd $a,b$. If $z^a$ is conjugate to $z^b$, the normalized degree $n/g$ is at most $L^{w-2}$. For conjugacy to $z^{-b}$ the bound is $(2L)^{w-2}$. [Proof](results.pdf#page=321) · [Lean proof of the order implications](GF2Sparse/PowerOrbitBounds.lean)
 
@@ -971,6 +973,13 @@ The prime-degree order classification uses the same executable. The signed cubin
 uv run --no-project --with python-flint==0.9.0 python scripts/check_sparse_root_orders.py --census /tmp/gf2-cyclotomic-weights
 uv run --no-project --with python-flint==0.9.0 python scripts/check_cubing_chains.py --signed-orders
 uv run --no-project --with python-flint==0.9.0 python scripts/check_sparse_power_orbits.py
+~~~
+
+The following checks all signed orbit collisions between powers 1, 3, 5 and 7 for normalized trinomials and pentanomials in arbitrary degree. It also checks every normalized irreducible through degree 40 by an independent order calculation. Add `--pair 3 5` to select just the third and fifth powers.
+
+~~~sh
+c++ -std=c++17 -O3 scripts/power_orbit_collisions.cpp -o /tmp/gf2-power-orbit-collisions
+uv run --no-project --with python-flint==0.9.0 python scripts/check_power_orbit_collisions.py --solver /tmp/gf2-power-orbit-collisions --through 40
 ~~~
 
 To reproduce the order projections and subfield certificates, run
