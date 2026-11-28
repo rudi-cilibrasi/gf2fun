@@ -27888,4 +27888,110 @@ The \texttt{--sieve} option in
 census. Its output is also checked against the unsieved search on small
 degrees.
 
+\clearpage
+\section{Consecutive subgroup elements and the 41st power}
+\label{sec:forty-first-power}
+Let $z$ be a root of a binary irreducible of degree $n>1$ and weight
+at most five. Then $d=[\mathbb F_2(z):\mathbb F_2(z^{41})]$ lies in
+$\{1,2,4,41\}$. The case $d=41$ is equivalent to divisibility of
+the exponent gcd by 41. The case $d=4$ occurs exactly for
+\[
+ (X^{20}+X^8+X^7+X+1)\big|_{X\mapsto X^{31^j}}
+      \quad\text{and its reciprocal},\qquad j\ge0.
+\]
+The two polynomials have degree $20\cdot31^j$, root order
+$1271\cdot31^j$ and 41st-power degree $5\cdot31^j$.
+Thus one bit specifies any oriented index-four exception given its degree.
+There are no index-five exceptions in any degree.
+
+\paragraph{A stronger bound for one repeated exponent residue.}
+Use the notation and rank hypotheses of
+Section~\ref{sec:constant-order-descriptions}. Normalize the exponent
+gcd to one, which preserves $d$. Put $h=2^s-1$,
+$k=\operatorname{ord}(\beta E^\times)$ and
+$\delta=[K:E]=n/t$. If all five residues occur then $n=t$ by uniqueness
+of the relation. Otherwise there are three singleton exponents $a,b,c$
+and a double residue with exponents $P,Q$. The normalized relation gives
+\[
+ \beta^{b-a},\ \beta^{c-a},\ \lambda=(\beta^{P-a}+\beta^{Q-a})\in E^\times.
+\]
+Consequently $u=\beta^{P-a}/\lambda$ and
+$1+u=\beta^{Q-a}/\lambda$ are both in $T=\langle\beta,E^\times\rangle$
+of order $L=hk$. All $\beta^{e-a}$ are in $E(u)$ for the support
+exponents $e$. Their differences from $a$ have gcd one, since the
+support is normalized and contains zero. Hence $E(u)=K$.
+
+For a nonzero relation $u^A(1+u)^B=1$ with signed exponents, clearing
+denominators gives a nonzero polynomial over $\mathbb F_2$. Its two
+monomials in $X$ and $1+X$ have different factorizations.
+Its degree is at most
+$\max(|A|,|B|,|A+B|)$, which must therefore be at least $\delta$.
+The relation lattice has index $|\langle u,1+u\rangle|\le L$ in
+$\mathbb Z^2$. The unit ball for this maximum is the area-three hexagon
+$|A|,|B|,|A+B|\le1$. Its open dilates of radius $\delta/2$ have
+disjoint interiors around the lattice points. This proves
+\[
+                 3\delta^2\le4hk,\qquad
+                 3n\le 2ht^2,
+\]
+where the second bound uses $2k\le n$ from the three singleton positions.
+
+There is also a direct exclusion over $\mathbb F_2$. Both $u$ and
+$1+u$ having order dividing $L$ forces $u$ to be a root of
+\[
+          G_L=\gcd(X^L+1,(X+1)^L+1).
+\]
+Its roots lie in $K$ because $L\mid |K^\times|$. For each prime
+$p\mid\delta$, remove the roots in $\mathbb F_{2^{m/p}}$ by dividing
+by the gcd with $X^{2^{m/p}}-X$. These are exactly the maximal proper
+subfields of $K$ containing $E$. If the remaining polynomial is one,
+no required $u$ can generate $K$ over $E$.
+
+\clearpage
+\subsection*{Fourteen orders settle the 41st-power classification}
+Here $t=\ord_{41}(2)=20$. For $d=10,20$ every five columns are
+independent over $\mathbb F_4$ or its prime subfield, which excludes both
+indices. The only remaining nontrivial divisors of 20 are $2,4,5$.
+For $d=4,5$ the three- and five-column rank bounds were verified in
+Section~\ref{sec:constant-order-descriptions}. The preceding hexagon
+bound limits normalized degree to 8266 and 4000, respectively.
+
+Write $o=\operatorname{ord}(\beta)$, $m=\ord_o(2)$, $n=dm$, $r=41o$,
+and $k=o/\gcd(o,h)$. Enumerate odd $o\le h n_{\max}/2$ coprime to 41
+with $\gcd(m,20)=s$ and $n\le n_{\max}$. Use the packing checks on
+the triple, exclude forced dilations and use the quadratic-residue
+bound as in Section~\ref{sec:constant-order-descriptions}. For
+$n>20$ impose $3(n/20)^2\le4hk$ and apply the $G_{hk}$ test. Before
+the gcd test 17 orders survive at index four and 155 at index five.
+After it the complete lists are
+\[
+\begin{array}{c|l|r}
+ d &\text{remaining orders}&\text{binary irreducible factors}\\\hline
+ 4&1271,8897,92783&660\\
+ 5&205,615,697,1435,2091,3485,4305,10455,12915,14965,44895&600 .
+\end{array}
+\]
+The factors of $\Phi_r$ all have degree $\ord_r(2)=n$. Splitting them
+over $\mathbb F_2$ leaves just two of weight at most five across the
+entire table. They have order $1271=31\cdot41$, degree 20 and supports
+$(0,1,7,8,20)$ and $(0,12,13,19,20)$. At the other two orders in
+the index-four row the minimum weights are 17 and 53. Across the
+index-five row the smallest weight is seven, attained at order 615.
+
+Every prime of the dilation factor must divide the base order, and
+$41$ cannot divide that factor in the index-four case. Thus it is
+$31^j$. Conversely the lifted order is $41\cdot31^{j+1}$, with binary
+degree $\operatorname{lcm}(20,5\cdot31^j)=20\cdot31^j$, since
+$2^5-1=31$. This verifies both irreducibility and the degree drop for
+all $j$.
+
+The interval, rank, gcd and factor checks are in
+\nolinkurl{scripts/check_forty_first_power.py}. Passing the compiled
+\nolinkurl{scripts/cyclotomic_weight_census.cpp} as \texttt{--ntl}
+uses the NTL factor census. The default independently generates each subgroup
+in a FLINT field of degree at most 180 and recovers its minimal polynomials
+from binary linear dependence.
+\nolinkurl{GF2Sparse/CircuitOrderBounds.lean} checks the final
+degree-bound arithmetic and the two root orders under dilation.
+
 \end{document}
