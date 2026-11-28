@@ -206,7 +206,8 @@
     ],
     "primo_certificates": {
       "1": "1100000000013064772"
-    }
+    },
+    "primitive_trinomial_tap": 8526
   },
   "28771": {
     "taps": [
@@ -236,7 +237,8 @@
     ],
     "primo_certificates": {
       "2": "1100000000013065391"
-    }
+    },
+    "primitive_trinomial_tap": 1879
   },
   "32531": {
     "taps": [
