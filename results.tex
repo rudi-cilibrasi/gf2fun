@@ -23285,4 +23285,115 @@ respectively. Their two periods have gcd three, so the Chinese
 remainder theorem gives one exponent at their product. The opposite
 sign already fails modulo seven.
 
+\clearpage
+\section{The exact degree of the seventh power of a sparse root}
+\label{sec:seventh-power-degree}
+Let \(f\) be an irreducible binary polynomial of degree \(n>1\)
+with at most five terms. Write \(g\) for the gcd of its exponents
+and \(z\) for a root. Then
+\[
+    [\mathbb F_2(z^7):\mathbb F_2]=\frac{n}{\gcd(7,g)}
+\]
+with just two exceptions up to reciprocity. For \(X^3+X+1\) the
+degree is one, and for \(X^6+X^4+X^2+X+1\) it is two. Their root
+orders are seven and twenty-one, respectively.
+
+Consequently no degree-\(3m\) sparse irreducible root belongs to
+\(\mathbb F_8^\times\mathbb F_{2^m}^\times\) for any \(m>2\)
+coprime to three. Such membership would place \(z^7\) in degree
+dividing \(m\), whereas neither \(3m\) nor \(3m/7\) divides \(m\).
+In particular, for every prime \(q>3\), the order of every sparse
+irreducible root of degree \(3q\) has a prime-power divisor of binary
+multiplicative degree \(3q\). Otherwise all its prime powers would
+divide \(7\) or \(2^q-1\), placing \(z\) in the excluded product.
+The divisor can be taken prime unless \(q=7\). Indeed, if
+\(\ord_{\ell^a}(2)=3q\) but \(\ord_\ell(2)<3q\), their quotient is
+a power of \(\ell\). The prime \(\ell=3\) has even binary order,
+leaving \(\ell=q\) with \(\ord_q(2)=3\), hence \(q=7\).
+In degree 21, \(2^{21}-1=7^2\cdot127\cdot337\). The only sparse
+irreducibles whose orders omit 337 are \(X^{21}+X^7+1\) and its
+reciprocal, of order 49. The verifier below checks all trinomials
+and pentanomials in that degree.
+
+\paragraph{When the degree can drop.}
+Put \(K=\mathbb F_2(z^7)\) and \(m=[K:\F]\). If \(K\) contains the
+seventh roots of unity, adjoining \(z\) splits \(T^7-z^7\).
+The Galois group injects into \(\mu_7\) by \(\sigma\mapsto\sigma(z)/z\).
+A nontrivial extension has degree seven, forcing
+\(f(X)=\operatorname{minpoly}(z^7)(X^7)\) by equality of degrees.
+Conversely, if \(7\mid g\), write \(f=G(X^7)\). Irreducibility makes
+\(G\) the minimal polynomial of \(z^7\), of degree \(n/7\).
+
+If \(K\) omits \(\mu_7\), then \(3\nmid m\). The seventh-power map
+permutes \(K^\times\), so \(z=\alpha\beta\) with \(\beta\in K^\times\)
+and \(\alpha^7=1\). A degree drop requires \(\alpha\ne1\).
+Then \(\F(\beta)=K\), and \(n=3m\). Write \(f=F(X^g)\) with \(F\)
+normalized, and suppose \(7\nmid g\). The same decomposition for
+\(z^g=\alpha^g\beta^g\) retains a nonidentity seventh root. The trace
+calculation on the next page leaves just the cubic and sextic above
+for \(F\), up to reciprocity. Every prime dividing \(g\) must divide
+the root order of \(F\), as in Section~\ref{sec:eight-sparse-power-orbits}.
+In the sextic case a root of order 21 is a cube in the cyclic group
+of order 63. Thus \(F(X^3)\) has a root of degree at most six and is
+reducible, ruling out \(3\mid g\). In both cases \(7\nmid g\) now
+forces \(g=1\). Directly taking seventh powers at orders 7 and 21
+gives the two exceptional degrees.
+
+\clearpage
+\paragraph{A vanishing residue class of power sums.}
+Take \(F\) of exponent gcd one and a root \(\alpha\beta\) as above.
+In each fiber of seventh powering, the three conjugates have the
+form \(\gamma a,\gamma a^2,\gamma a^4\) with \(a\in\mu_7\setminus\{1\}\).
+The possible \(a\)'s in the different fibers are binary conjugates.
+One of the two triples of nonidentity seventh roots has sum zero.
+Indeed \(a^3+a+1=0\) gives \(a+a^2+a^4=0\), and \(a^3+a^2+1=0\)
+gives \(a^3+a^5+a^6=0\). These cubics exhaust the six roots.
+Consequently for at least one \(r\in\{1,6\}\) all power sums of the
+inverse roots in degrees \(k\equiv r\bmod7\) vanish. Frobenius gives
+the same vanishing in residues \(2r,4r\). Equivalently, the sum of the
+\(r\)-th powers in each fiber is zero. This last equivalence follows
+by the Vandermonde matrix on the distinct seventh powers, taking
+consecutive exponents \(r+7j\) starting at \(j=0\).
+
+The series of the inverse-root power sums is \(XF'(X)/F(X)\).
+Multiply by \(\prod_{\omega^7=1} F(\omega X)\), a polynomial in
+\(X^7\) with constant term one. The condition is exactly that
+\[
+               XF'(X)\prod_{\substack{\omega^7=1\\\omega\ne1}}
+                    F(\omega X)
+\]
+has no term with exponent \(r\bmod7\). Its formal monomial
+coefficients depend only on the residues of the support modulo 14.
+Parity selects the terms of the derivative, and residues modulo
+seven determine each twist. Record the monomial labels in the
+desired class and apply the hyperplane elimination of
+Section~\ref{sec:eight-sparse-power-orbits} to their sum. Scaling the
+residue profile by a unit permutes the two nonzero doubling orbits.
+Reciprocation exchanges inverse and forward roots, and the equivalent
+fiber sums vanish in the opposite residue. These operations therefore
+preserve the union of the two tests.
+
+The 1332 profile and residue choices give no identity in dimension
+two or higher with distinct source points. The 18 normalized
+supports on lines give the nine representatives below up to reciprocity.
+For the reducible cases the last column gives a proper factor.
+\[
+\begin{array}{r|l|l@{\qquad}r|l|l}
+n&\text{interior exponents}&\text{factor or root order}&
+n&\text{interior exponents}&\text{factor or root order}\\\hline
+3&1&\ord(z)=7&6&1,2,4&\ord(z)=21\\
+7&1,2,4&X^2+X+1&8&1,3,6&X^2+X+1\\
+11&2,7,8&X^2+X+1&16&2,7,13&X^2+X+1\\
+19&4,7,14&X^2+X+1&21&2,14,17&X^3+X^2+1\\
+25&4,13,14&X^2+X+1&&&
+\end{array}
+\]
+The matrix norm and the direct power series agree on this list.
+Direct Frobenius tests check the degree formula on every one of
+the 24106 irreducible reciprocal classes through degree 64, including
+all common exponent divisors. The degree drops in 16 classes.
+See \nolinkurl{scripts/check_seventh_power_degree.py}. The Lean
+module \nolinkurl{GF2Sparse/SeventhPowerDegree.lean} proves the
+full-drop substitution criterion and the two cubic trace identities.
+
 \end{document}

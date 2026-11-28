@@ -50,6 +50,22 @@ def product_labels(labels, power, modulus, sign):
         yield tuple(point)
 
 
+def matching_supports(source, backend):
+    source.seek(0)
+    completed = subprocess.run([backend], stdin=source, text=True, stdout=subprocess.PIPE, check=True)
+    signed = set()
+    for line in completed.stdout.splitlines():
+        sign, *exponents = map(int, line.split())
+        support = tuple(exponents)
+        if (sign not in (1, -1) or len(support) not in (3, 5) or support[0] != 0
+                or tuple(sorted(set(support))) != support or gcd(*support) != 1):
+            raise ArithmeticError(f"invalid support from the elimination: {line}")
+        signed.add((sign, support))
+    if any((sign, reciprocal(s)) not in signed for sign, s in signed):
+        raise ArithmeticError("a reciprocal is missing from the list")
+    return signed
+
+
 def solve(a, b, backend):
     modulus = lcm(a, b)
     count = 0
@@ -65,22 +81,12 @@ def solve(a, b, backend):
                     for p in surviving:
                         print(*p, file=source)
                     count += 1
-        source.seek(0)
-        completed = subprocess.run([backend], stdin=source, text=True, stdout=subprocess.PIPE, check=True)
-    signed = set()
-    for line in completed.stdout.splitlines():
-        sign, *exponents = map(int, line.split())
-        support = tuple(exponents)
-        if (sign not in (1, -1) or len(support) not in (3, 5) or support[0] != 0
-                or tuple(sorted(set(support))) != support or gcd(*support) != 1):
-            raise ArithmeticError(f"invalid support from the elimination: {line}")
+        signed = matching_supports(source, backend)
+    for sign, support in signed:
         first = power_characteristic(support, a) if a > 1 else support
         second = power_characteristic(support, b)
         if first != (second if sign == 1 else reciprocal(second)):
-            raise ArithmeticError(f"characteristic-polynomial mismatch for {a}, {b}, {line}")
-        signed.add((sign, support))
-    if any((sign, reciprocal(s)) not in signed for sign, s in signed):
-        raise ArithmeticError("a reciprocal is missing from the list")
+            raise ArithmeticError(f"characteristic-polynomial mismatch for {a}, {b}, {support}")
     return count, signed
 
 
