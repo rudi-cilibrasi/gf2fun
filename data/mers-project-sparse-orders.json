@@ -22,6 +22,9 @@
     ],
     "primo_certificates": {
       "14": "1100000000026605617"
+    },
+    "trinomial_indices_in_dilation_bound": {
+      "464": 7
     }
   },
   "3681": {
@@ -41,6 +44,9 @@
     ],
     "primo_certificates": {
       "8": "1100000000026654126"
+    },
+    "trinomial_indices_in_dilation_bound": {
+      "1309": 7
     }
   },
   "3689": {
@@ -204,6 +210,10 @@
     ],
     "primo_certificates": {
       "33": "1100000000457978133"
+    },
+    "trinomial_indices_in_dilation_bound": {
+      "1799": 1,
+      "2149": 1
     }
   },
   "4709": {
@@ -285,7 +295,11 @@
     "dilated_trinomial_taps": [
       91,
       931
-    ]
+    ],
+    "trinomial_indices_in_dilation_bound": {
+      "91": 1,
+      "931": 1
+    }
   },
   "4875": {
     "taps": [

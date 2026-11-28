@@ -22131,10 +22131,10 @@ exponents and the 105 prime-index tests across these 18 pentanomials.
 11813,12451,12569,14209,14263,14561,14621,14834,14971 .
 \end{gathered}
 \]
-For example, in degrees 10007, 14209 and 14971 the interior exponents
-are respectively \((921,1842,9086)\), \((83,166,14126)\) and
-\((511,1022,14460)\). Each support contains two exponents summing to
-the degree.
+For example, the degree-10007 witness has taps \(921,1842,9086\).
+The taps in degrees 14209 and 14971 are \((83,166,14126)\) and
+\((511,1022,14460)\), respectively. Each support contains two
+exponents summing to the degree.
 
 In degree 10169 the two prime divisors of the field order are
 \[
@@ -22165,13 +22165,47 @@ the recorded proper divisors of \(X^n+X^2+1\) have degrees
 \(7,11,2,4,2,37,2\), respectively. Thus among all 63 rows through
 14971 the minimum primitive weight is three in 30 and five in 33.
 
-The separate table \nolinkurl{data/mers-project-large-orders.json}
-also gives a fully verified witness in degree \(17698=2\cdot8849\).
-Its three taps are \(783,1566,16915\). The field order has eight
-distinct prime divisors. The largest two have 2593 and 2637 decimal
-digits. PARI/GP verified both archived chains and FLINT checked the
-full group power and all eight prime-index powers. External chains
-are identified by their FactorDB certificate numbers so each row can
-be replayed independently.
+\paragraph{Complete trinomial counts in the 63 degrees.}
+Among 253231 reciprocal classes, exactly 96 are irreducible and
+90 are primitive. The six exceptions have the following root orders.
+\[
+\begin{array}{r|l|l}
+n&\text{interior taps}&\text{root order}\\\hline
+3537&464&(2^{3537}-1)/7\\
+3681&1309&(2^{3681}-1)/7\\
+4641&1799,2149&7(2^{663}-1)\\
+4809&91,931&7(2^{687}-1)
+\end{array}
+\]
+For even \(n\), even taps give squares. For an odd tap \(k\ne n/2\),
+Swan excludes \(nk/2\equiv0,1\pmod4\). For odd \(n\), use the even
+tap \(k\) in the reciprocal pair. It must divide \(2n\) exactly when
+\(n\equiv3,5\pmod8\). NTL tests each remaining trinomial.
+The full tap lists appear in \nolinkurl{data/mers-project-trinomial-census.csv}.
+For each exception the verifier checks the proposed order and the
+power at every prime index in it.
+
+\paragraph{Degrees 17683 and 17698.}
+The larger table gives a fully verified pentanomial in degree
+17683 with taps \(2170,4340,15513\). Of the three prime divisors of
+the field order, the largest has 5274 decimal digits. The degree
+is prime and congruent to three modulo eight. The exceptional
+trinomial \(X^{17683}+X^2+1\) is divisible by \(X^2+X+1\), since
+\(17683\equiv1\pmod3\). Hence the minimum primitive weight is five.
+
+In degree \(17698=2\cdot8849\), the pentanomial with taps
+\(783,1566,16915\) is primitive. The field order has eight distinct
+prime divisors. The largest two have 2593 and 2637 decimal digits.
+The only irreducible trinomials up to reciprocation have taps 511
+and 4827, and both are primitive. Together with the first 63 degrees
+this gives 98 irreducible pairs and 92 primitive pairs among 270921
+classes. In the combined set of 65 degrees, 31 have minimum weight
+three and 34 have minimum weight five. FLINT independently verified
+irreducibility and the order classification for all 98 reported taps.
+
+PARI/GP verifies the large prime chains and FLINT checks the full
+group powers and each prime-index power. The external chains are
+identified in \nolinkurl{data/mers-project-large-orders.json}
+by their FactorDB certificate numbers.
 
 \end{document}

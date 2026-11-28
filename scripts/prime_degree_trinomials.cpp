@@ -8,6 +8,18 @@
 #include <string>
 #include <vector>
 
+bool passes_parity_test(long degree, long tap) {
+    // Swan's parity conditions, with the square case and the middle tap handled directly.
+    if (degree % 2 == 0) {
+        if (tap % 2 == 0) return false;
+        const long residue = ((degree / 2) % 4) * (tap % 4) % 4;
+        return tap == degree / 2 || residue >= 2;
+    }
+    const long even_tap = tap % 2 == 0 ? tap : degree - tap;
+    const bool divides_twice_degree = degree % (even_tap / 2) == 0;
+    return divides_twice_degree == (degree % 8 == 3 || degree % 8 == 5);
+}
+
 int main() {
     try {
         std::cout << "degree,irreducible_taps,primitive_taps\n";
@@ -28,15 +40,19 @@ int main() {
 
             std::vector<long> irreducible, primitive;
             for (long tap = 1; tap <= degree / 2; ++tap) {
+                if (!passes_parity_test(degree, tap)) continue;
                 NTL::GF2X polynomial;
                 for (long exponent : {0L, tap, degree}) NTL::SetCoeff(polynomial, exponent);
                 if (!NTL::IterIrredTest(polynomial)) continue;
                 irreducible.push_back(tap);
                 NTL::GF2XModulus modulus(polynomial);
                 bool full_order = true;
-                for (const auto& prime : factors)
-                    if (NTL::IsOne(NTL::PowerXMod(order / prime, modulus)))
+                for (const auto& prime : factors) {
+                    if (NTL::IsOne(NTL::PowerXMod(order / prime, modulus))) {
                         full_order = false;
+                        break;
+                    }
+                }
                 if (full_order) primitive.push_back(tap);
             }
             std::cout << degree;

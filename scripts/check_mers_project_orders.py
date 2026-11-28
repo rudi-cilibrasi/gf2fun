@@ -1,6 +1,7 @@
 """Prove the exact root orders of the sparse witnesses in the Mers Project table."""
 
 import argparse
+import csv
 import gzip
 import json
 import shutil
@@ -13,6 +14,7 @@ from pathlib import Path
 
 from flint import fmpz
 
+from check_composite_orders import check_trinomials
 from check_factor_base import modulus, polynomial
 from check_primo_certificate import check_primo
 from check_product_range import prime_index_powers, verify_primitive_modulus
@@ -57,6 +59,21 @@ def prove_with_certificate(p, proof, gp, cache):
         path.replace(cached)
 
 
+def verify_trinomial_order(n, tap, index, factors):
+    d = gcd(n, tap)
+    bound = d * ((1 << (n // d)) - 1)
+    if type(index) is not int or not 1 <= index <= bound:
+        raise ValueError(f"invalid index in the dilation bound in degree {n}")
+    order, remainder = divmod(bound, index)
+    if remainder or ((1 << n) - 1) % order:
+        raise ValueError(f"invalid proposed trinomial order in degree {n}")
+    x = polynomial(2)
+    f = modulus(n, [tap])
+    primes = sorted({p for p in factors if order % p == 0})
+    if x.pow_mod(order, f) != 1 or any(z == 1 for _, z in prime_index_powers(x, order, primes, f)):
+        raise ValueError(f"incorrect trinomial order in degree {n} at tap {tap}")
+
+
 def minimum_weight(n, row, gp):
     if len(row["taps"]) == 1:
         return 3
@@ -83,15 +100,8 @@ def minimum_weight(n, row, gp):
         if (result.stderr.strip() or json.loads(result.stdout) != taps or
                 any(gcd(n, k) == 1 for k in taps)):
             raise ValueError(f"trinomial census disagreement in degree {n}")
-        x = polynomial(2)
         for k in taps:
-            d = gcd(n, k)
-            order = d * ((1 << (n // d)) - 1)
-            primes = sorted({p for p in row["order_factors"] if order % p == 0})
-            f = modulus(n, [k])
-            if (((1 << n) - 1) % order or x.pow_mod(order, f) != 1 or
-                    any(z == 1 for _, z in prime_index_powers(x, order, primes, f))):
-                raise ValueError(f"incorrect dilated trinomial order in degree {n} at tap {k}")
+            verify_trinomial_order(n, k, 1, row["order_factors"])
         return 5
     return None
 
@@ -139,16 +149,38 @@ def main():
                         help="download external PRIMO certificates and cache verified chains here")
     parser.add_argument("--powers-only", action="store_true",
                         help="check the factor product and polynomial powers only, omitting primality proofs")
+    parser.add_argument("--trinomial-census", metavar="NTL_PROGRAM",
+                        help="also replay the archived trinomial lists with prime_degree_trinomials.cpp")
     args = parser.parse_args()
     if hasattr(sys, "set_int_max_str_digits"):
         sys.set_int_max_str_digits(0)
     rows = json.loads(args.table.read_text())
     selected = args.degree or sorted(map(int, rows))
+    if args.trinomial_census:
+        census = {}
+        with (DATA / "mers-project-trinomial-census.csv").open() as source:
+            for row in csv.DictReader(source):
+                census[int(row["degree"])] = {
+                    "irreducible_taps": list(map(int, row["irreducible_taps"].split())),
+                    "primitive_taps": list(map(int, row["primitive_taps"].split())),
+                }
     proven = set()
     for n in selected:
         if str(n) not in rows:
             parser.error(f"degree {n} is absent from the table")
+        if args.trinomial_census and n not in census:
+            parser.error(f"degree {n} is absent from the trinomial census")
         verify(n, rows[str(n)], proven, args)
+        if args.trinomial_census:
+            check_trinomials(n, census[n], rows[str(n)]["order_factors"], args.trinomial_census)
+            indices = rows[str(n)].get("trinomial_indices_in_dilation_bound", {})
+            exceptions = set(census[n]["irreducible_taps"]) - set(census[n]["primitive_taps"])
+            if set(map(int, indices)) != exceptions:
+                raise ValueError(f"incomplete list of imprimitive trinomial orders in degree {n}")
+            for tap, index in indices.items():
+                verify_trinomial_order(n, int(tap), index, rows[str(n)]["order_factors"])
+            detail = "replayed with the supplied factors" if args.powers_only else "verified"
+            print(f"Degree {n}, both archived trinomial lists {detail}.", flush=True)
 
 
 if __name__ == "__main__":

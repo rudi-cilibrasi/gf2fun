@@ -10,9 +10,9 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
-- **In 63 additional degrees from 3,537 through 14,971, the minimum primitive weight is known.** Thirty admit primitive trinomials and the other 33 require pentanomials. At degree 4,809 the only irreducible trinomial taps up to reciprocation are 91 and 931. Their roots have order $7(2^{687}-1)$. A primitive pentanomial has interior exponents 746, 1,119 and 3,690. [Witnesses and factorizations](data/mers-project-sparse-orders.json) · [Verifier](scripts/check_mers_project_orders.py) · [Proof](results.pdf#page=307)
+- **In 65 additional degrees from 3,537 through 17,698, the minimum primitive weight is known.** Thirty-one admit primitive trinomials and the other 34 require pentanomials. In degree 17,683 a primitive pentanomial has interior exponents 2,170, 4,340 and 15,513. In degree 17,698 both $X^{17698}+X^{511}+1$ and the pentanomial with interior exponents 783, 1,566 and 16,915 are primitive. [First 63 witnesses](data/mers-project-sparse-orders.json) · [Two larger witnesses and further candidates](data/mers-project-large-orders.json) · [Proof](results.pdf#page=307)
 
-- **A primitive pentanomial in degree 17,698 has interior exponents 783, 1,566 and 16,915.** PARI/GP verified the prime certificates and FLINT checked all eight prime-index powers. [Degree 17,698 and larger candidates](data/mers-project-large-orders.json) · [Proof](results.pdf#page=308)
+- **Of 270,921 trinomial reciprocal classes in these 65 degrees, 98 are irreducible and 92 are primitive.** In degree 4,809 the only irreducible taps are 91 and 931. Their roots have order $7(2^{687}-1)$. A primitive pentanomial has interior exponents 746, 1,119 and 3,690. [Complete tap lists](data/mers-project-trinomial-census.csv) · [Exact orders of all six exceptions](results.pdf#page=308)
 
 - **In degrees 1,331, 3,993 and 6,655, 21 pentanomial pairs have root index one or greater than 182,931,247,071,233.** Three examples have interior exponents $(1,2,289)$, $(1,2,83)$ and $(1,2,1719)$, respectively. The first two primitivity checks reduce to the same 250-digit composite order in degree 1,331. The third also has a 1,427-digit composite to resolve. All 665 trinomial pairs in degree 1,331 are reducible, so a witness there requires five terms. [Order bounds and remaining tests](results.pdf#page=306) · [Polynomials and factors](data/degree-1331-order-projections.json) · [Verifier](scripts/check_1331_order_projections.py)
 
@@ -230,6 +230,8 @@ The large-degree table gives candidate pentanomials, the complete proposed facto
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py \
   --table data/mers-project-large-orders.json --degree 17698 --fetch-to /tmp/gf2fun-prime-proofs
 ```
+
+Degrees 41,681 and 53,381 are further targets for a sparse polynomial search. Each field order has three explicit smaller factors and one large cofactor in the Mers Project tables. The reconstruction command in Verification accepts `--degrees 41681 53381`. FactorDB supplies PRIMO chains for the respective 12,495-digit and 16,008-digit cofactors. [Degree 41,681 cofactor certificate](https://factordb.com/cert/1100000000776586446) · [Degree 53,381 cofactor certificate](https://factordb.com/cert/1100000000888500230)
 
 The degree-1229 elliptic pentanomial with interior taps $(136,683,819)$ and its reciprocal share one order. Seven projected logarithms of relative degrees $2,6,13,15,15,16,17$ determine it. The smallest input is the degree-eight binary mask `0x15f`. The other six can be expanded into smaller factors. The combined task then has 4,404 logarithms, all of relative degree at most 15. The checker exports the targets and coefficients. Add `--logs answers.csv` with columns `mask,exponent` to verify any subset. A complete set gives the exact index, and index one proves both pentanomials primitive. [Seven inputs](data/degree-1229-elliptic-split-seven.json) · [Proof](results.pdf#page=187)
 
@@ -709,6 +711,14 @@ To replay the Mers Project witnesses, install PARI/GP and run the command below.
 
 ```bash
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py
+```
+
+To repeat the trinomial enumeration and verify the exact orders of the six exceptions, compile the NTL backend and pass its path to the verifier. Add `--degree 3537` to select the degree with four primitive pairs and one pair of index seven. For the final two census rows, use the larger table with `--degree 17683 --degree 17698` and `--fetch-to` as in the contributor instructions. [Trinomial census](data/mers-project-trinomial-census.csv)
+
+```bash
+c++ -std=c++17 -O3 scripts/prime_degree_trinomials.cpp -lntl -lgmp -o /tmp/gf2fun-trinomials
+uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py \
+  --trinomial-census /tmp/gf2fun-trinomials
 ```
 
 To find more candidate field orders, download the two Mers Project files and choose specific degrees or an interval. The command below reconstructs the factors in degrees 4,952 and 5,689. The search checks probable primality. The witness verifier above checks primality proofs and polynomial orders. For a missing subfield, `--supplement` accepts an existing factor table and also uses its factorizations in extension degrees. [Archive format](https://mers.sourceforge.io/mersfmt.txt) · [Factor reconstruction](scripts/mers_project_factor_candidates.py)
