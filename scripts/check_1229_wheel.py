@@ -58,16 +58,23 @@ def wheel_product(start, doublings, method, *, cofactor=COFACTOR, step=STEP,
 
 def verify_chunks(record, *, cofactor, step, wheel, seed_degree, start, doublings, end_bound):
     """Check the adjacent Lagrange products against the combined Newton residue."""
+    length = wheel*seed_degree*4**doublings
+    count, remainder = divmod(end_bound-1-step*start, step*length)
+    if remainder or count < 1:
+        raise ValueError("the requested interval is not a whole number of wheel products")
+    chunks = record.get("chunks", [])
+    if "chunks" in record and len(chunks) != count:
+        raise ValueError("incorrect number of archived wheel products")
     product = 1
-    for row in record["chunks"]:
-        if row["start"] != start or row["doublings"] != doublings:
+    for index in range(count):
+        if chunks and (chunks[index]["start"] != start or chunks[index]["doublings"] != doublings):
             raise ValueError("gap or wrong length in the wheel certificate")
         residue = wheel_product(start, doublings, "lagrange", cofactor=cofactor, step=step,
                                 wheel=wheel, seed_degree=seed_degree)
-        if residue != row["residue"]:
+        if chunks and residue != chunks[index]["residue"]:
             raise ValueError(f"incorrect wheel product after index {start}")
         product = product*residue % cofactor
-        start += wheel*seed_degree*4**doublings
+        start += length
     bound = 1+step*start
     if bound != end_bound or product != record["combined"] or gcd(product, cofactor) != 1:
         raise ValueError("the combined product or the end of the interval failed")
@@ -89,8 +96,6 @@ def verify_continuation():
     if not panels:
         raise ValueError("empty wheel continuation")
     for panel in panels:
-        if len(panel["chunks"]) != 4:
-            raise ValueError("a Newton product must span four Lagrange products")
         end = start + interval_length(12)
         verify_chunks(panel, cofactor=COFACTOR, step=STEP, wheel=WHEEL,
                       seed_degree=SEED_DEGREE, start=start, doublings=11, end_bound=1+STEP*end)
