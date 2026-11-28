@@ -85,6 +85,7 @@ import GF2Sparse.SafePrimePowers
 import GF2Sparse.ResiduePrime
 import GF2Sparse.ScalarOrderBound
 import GF2Sparse.SignedDegreeChoices
+import GF2Sparse.SignedPencilProducts
 import GF2Sparse.SignedTriples
 import GF2Sparse.SparseOrderBounds
 import GF2Sparse.SparseRootModels

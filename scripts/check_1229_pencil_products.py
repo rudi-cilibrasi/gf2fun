@@ -76,7 +76,7 @@ def known_cancellations(f, roots):
         per_prime.append(hits)
     if per_prime != [8, 6, 0, 0] or pencil_labels != {(-1, 0): 13, (1, 472): 1}:
         raise ArithmeticError(f"unexpected pencil cancellations: {pencil_labels}, {per_prime}")
-    if set(anchor_labels) != {(-1, 764), (-1, 1201)}:
+    if anchor_labels != {(-1, 764): 2, (-1, 1201): 2}:
         raise ArithmeticError(f"unexpected cancellations with the generator: {anchor_labels}")
     common = 2*N - CAPACITY*comb(len(roots), 2) - len(pencil_labels)
     anchored = 2*N - CAPACITY*len(roots) - len(anchor_labels)
