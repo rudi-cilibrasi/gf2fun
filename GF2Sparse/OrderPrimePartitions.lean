@@ -63,4 +63,42 @@ theorem prime_dvd_base_order_of_expand {f : BinaryPoly} (hf : Irreducible f)
   exact (hℓ.dvd_mul.mp h).elim (·.trans hd)
     (·.trans (orderOf_dvd_of_pow_eq_one (root_pow_field_order hf hc)))
 
+/-- The part of a polynomial whose exponents are congruent to `r` modulo `q`. -/
+noncomputable def exponentResiduePart (f : BinaryPoly) (q r : ℕ) : BinaryPoly :=
+  ofFinsupp (f.toFinsupp.filter fun i => i % q = r)
+
+@[simp] theorem coeff_exponentResiduePart (f : BinaryPoly) (q r i : ℕ) :
+    (exponentResiduePart f q r).coeff i = if i % q = r then f.coeff i else 0 := by
+  cases f
+  rfl
+
+/-- If the top exponent is a multiple of `q` and all other residue parts vanish
+at the universal root, the entire polynomial is a substitution by `X^q`. -/
+theorem expand_contract_of_residue_parts_vanish {f : BinaryPoly} {q : ℕ} (hq : 0 < q)
+    (hf : 0 < f.natDegree) (hd : q ∣ f.natDegree)
+    (hv : ∀ r, 0 < r → r < q → AdjoinRoot.mk f (exponentResiduePart f q r) = 0) :
+    expand (ZMod 2) q (contract q f) = f := by
+  ext j
+  rw [coeff_expand hq, coeff_contract hq.ne']
+  split_ifs with hj
+  · rw [Nat.div_mul_cancel hj]
+  · have hr : j % q ≠ 0 := fun h => hj (Nat.dvd_of_mod_eq_zero h)
+    let g := exponentResiduePart f q (j % q)
+    have hg : g.natDegree ≤ f.natDegree - 1 := by
+      apply natDegree_le_iff_coeff_eq_zero.mpr
+      intro i hi
+      change (exponentResiduePart f q (j % q)).coeff i = 0
+      rw [coeff_exponentResiduePart]
+      by_cases heq : i = f.natDegree
+      · rw [heq, Nat.mod_eq_zero_of_dvd hd, if_neg hr.symm]
+      · simp [coeff_eq_zero_of_natDegree_lt (show f.natDegree < i by omega)]
+    have hg₀ : g = 0 := by
+      by_contra hn
+      have hle := natDegree_le_of_dvd (AdjoinRoot.mk_eq_zero.mp
+        (hv _ (Nat.pos_of_ne_zero hr) (Nat.mod_lt j hq))) hn
+      change f.natDegree ≤ g.natDegree at hle
+      omega
+    simpa [g, coeff_exponentResiduePart] using
+      (congrArg (fun h : BinaryPoly => h.coeff j) hg₀).symm
+
 end GF2Sparse
