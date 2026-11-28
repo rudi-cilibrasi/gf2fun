@@ -97,9 +97,14 @@ def check_primo(path, candidate, gp):
         n = q
     if not steps or n >= 2**64 or not fmpz(n).is_prime():
         raise ValueError("invalid terminal prime in PRIMO certificate")
-    encoded = json.dumps(steps, separators=(",", ":"))
-    program = GP_CHECK + f"print(vecmin(parapply(checkstep,{encoded})));\n"
-    result = subprocess.run([gp, "-qf", "-s", "96M"], input=program,
-                            text=True, capture_output=True, check=True)
-    if result.stdout.splitlines() != ["1"] or result.stderr.strip():
-        raise ValueError(f"PARI rejected the PRIMO certificate. {result.stderr[:300]}")
+    # The 16,008-digit certificate exceeds GP's parser stack as a single vector.
+    # The chain links and terminal prime above bind the independent step checks.
+    for first in range(0, len(steps), 64):
+        batch = steps[first:first+64]
+        encoded = json.dumps(batch, separators=(",", ":"))
+        program = GP_CHECK + f"print(vecmin(parapply(checkstep,{encoded})));\n"
+        result = subprocess.run([gp, "-qf", "-s", "96M"], input=program,
+                                text=True, capture_output=True, check=True)
+        if result.stdout.splitlines() != ["1"] or result.stderr.strip():
+            raise ValueError(f"PARI rejected PRIMO steps {first+1} to {first+len(batch)}. "
+                             f"{result.stderr[:300]}")
