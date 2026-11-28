@@ -74,6 +74,29 @@ def verify_trinomial_order(n, tap, index, factors):
         raise ValueError(f"incorrect trinomial order in degree {n} at tap {tap}")
 
 
+def verify_trinomial_divisor_cover(n, masks):
+    """Each divisor excludes every tap k for which X^k = X^n+1 in its quotient."""
+    missing = set(range(1, n//2 + 1))
+    x = polynomial(2)
+    for digits in masks:
+        mask = int(digits, 16)
+        degree = mask.bit_length() - 1
+        if not 0 < degree < n or not mask & 1:
+            raise ValueError(f"invalid trinomial divisor in degree {n}")
+        residue = x.pow_mod(n, polynomial(mask)) + 1
+        target = sum(int(c) << i for i, c in enumerate(residue.coeffs()))
+        leading = 1 << degree
+        value = 1
+        for tap in range(1, n//2 + 1):
+            value <<= 1
+            if value & leading:
+                value ^= mask
+            if value == target:
+                missing.discard(tap)
+    if missing:
+        raise ValueError(f"degree-{n} trinomial at tap {min(missing)} has no supplied divisor")
+
+
 def minimum_weight(n, row, gp):
     if len(row["taps"]) == 1:
         return 3
@@ -84,6 +107,9 @@ def minimum_weight(n, row, gp):
         verify_primitive_modulus(modulus(n, [tap]), row["order_factors"])
         return 3
     if n % 8 == 0:
+        return 5
+    if "trinomial_divisor_cover" in row:
+        verify_trinomial_divisor_cover(n, row["trinomial_divisor_cover"])
         return 5
     if "trinomial_divisor_hex" in row:
         divisor = polynomial(int(row["trinomial_divisor_hex"], 16))
@@ -96,8 +122,7 @@ def minimum_weight(n, row, gp):
         # Compare all reciprocal representatives with an independent PARI census.
         command = (f"n={n};t=Mod(1,2)*x;f=t^n+1;v=List();"
                    "for(k=1,n\\2,if(polisirreducible(f+t^k),listput(v,k)));print(Vec(v));\n")
-        result = subprocess.run([gp, "-qf", "-s", "128M"], input=command, text=True,
-                                capture_output=True, check=True)
+        result = subprocess.run([gp, "-qf"], input=command, text=True, capture_output=True, check=True)
         if (result.stderr.strip() or json.loads(result.stdout) != taps or
                 any(gcd(n, k) == 1 for k in taps)):
             raise ValueError(f"trinomial census disagreement in degree {n}")

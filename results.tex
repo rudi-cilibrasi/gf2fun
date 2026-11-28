@@ -27431,11 +27431,14 @@ tap 2 up to reciprocation among trinomials with coprime exponents.
 At tap 2 the respective divisors are
 \(X^4+X+1,\ X^2+X+1,\ X^4+X+1\). Exponents with a common divisor
 \(d>1\) give root order at most \(d(2^{n/d}-1)\) for an irreducible
-trinomial. In degree 15359, checking the 7679 possible taps through
-reciprocity gives no irreducible trinomial. The PARI computation
-checks irreducibility at every tap. An independent NTL enumeration
-using \nolinkurl{scripts/prime_degree_trinomials.cpp} gives the same
-empty list.
+trinomial. In degree 15359 the table supplies 1358 binary polynomial
+divisors, of degrees at most 4153. For each divisor \(g\) the checker
+computes the target \(X^{15359}+1\bmod g\). Starting at one, it
+multiplies by \(X\bmod g\) to obtain each successive \(X^k\bmod g\).
+A match with the target proves \(g\mid X^{15359}+X^k+1\).
+Together the divisors cover all 7679 possible taps through reciprocity.
+An independent NTL irreducibility census using
+\nolinkurl{scripts/prime_degree_trinomials.cpp} also returns an empty list.
 
 The offline table for
 \nolinkurl{scripts/check_mers_project_orders.py} is
