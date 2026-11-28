@@ -24055,4 +24055,41 @@ base trinomial has a proper factor with binary mask \(\mathtt{7},\mathtt{7},
 \mathtt{1162300f},\mathtt{d}\) in hexadecimal, respectively.
 Lean verifies the translation identities and the seven full-order examples.
 
+\clearpage
+\section{All irreducible trinomials in the 83 Mers Project degrees}
+\label{sec:complete-mers-trinomial-supports}
+Among the 530119 trinomials \(X^n+X^k+1\) with \(1\le k\le\lfloor n/2\rfloor\)
+in the 83 degrees of the two Mers Project tables, precisely 136 are
+irreducible. These are reciprocal classes. Of these, 124 are proven
+primitive and eight have proven smaller orders. All four remaining
+classes are in degree 41521.
+
+\[
+\begin{array}{l|r|r|l}
+\text{degrees}&\text{classes tested}&\text{irreducible}&\text{taps in the last three degrees}\\\hline
+\text{first 80 certified rows}&475226&132&\\
+32531&16265&0&\varnothing\\
+35737&17868&0&\varnothing\\
+41521&20760&4&1866,2034,4102,13716\\\hline
+\text{all 83}&530119&136&
+\end{array}
+\]
+Swan's parity criterion excludes the impossible taps. NTL's deterministic
+irreducibility test decides each remaining one. In degree 32531 the
+divisor argument in Section~\ref{sec:mers-project-orders} also excludes
+every trinomial. In degree 35737 both orientations of every trinomial
+are reducible. Consequently any primitive witness of weight at most five
+in either of those degrees must have five terms.
+
+The four degree-41521 trinomials pass the full group power and all
+four factor-index powers for the supplied factor list. The list multiplies
+to \(2^{41521}-1\). The primality of its 12459-digit largest entry would
+establish full order for all four pairs, as well as for the pentanomial in
+Section~\ref{sec:mers-project-orders}. The irreducible lists above are
+independent of that integer certificate. The original 80 rows are in
+\nolinkurl{data/mers-project-trinomial-census.csv}. The three additional lists
+are in \nolinkurl{data/mers-project-trinomial-census-supplement.csv}.
+The \texttt{--irreducible-only} mode of
+\nolinkurl{scripts/prime_degree_trinomials.cpp} takes degrees as its only input.
+
 \end{document}
