@@ -12,6 +12,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 - **More than 35.756% of degrees admit no primitive trinomial.** Even irreducible trinomials are impossible in more than 34.101% of all degrees and 47.742% of prime degrees, measured by lower asymptotic density. A five-term witness is necessary wherever a primitive trinomial is impossible. The calculation combines Swan's theorem with exact counts of small-field factors. [Proof](results.pdf#page=311) · [Density verifier](scripts/check_trinomial_density.py) · [Lean proof for dilations](GF2Sparse/Dilation.lean)
 
+- **In degrees 28,759 and 28,771, every irreducible polynomial with fewer than 14,105 terms has a prime greater than $2^{44}$ in its root order.** Both thresholds are exact. Four polynomials attain 14,105 terms in the first degree and two in the second while their roots have only smaller order primes. [Proof](results.pdf#page=314) · [Weight distributions](data/cyclotomic-weight-spectra.json) · [Verifier](scripts/check_cyclotomic_weights.py)
+
 - **A primitive pentanomial in degree 33,511 is $X^{33511}+X^{32291}+X^{2440}+X^{1220}+1$.** Its root has order $2^{33511}-1$. We verified all 27 prime-index powers and the primality of every factor, including a 9,124-digit prime. The two primitive trinomials up to reciprocity have taps 1,318 and 1,920. All integer certificates are stored in the repository. [Proof](results.pdf#page=310) · [Order factorization](data/mers-project-large-orders.json) · [Primality certificates](data/mers-project-primality)
 
 - **The census gives the minimum primitive weight in 69 degrees from 3,537 through 33,511.** Thirty-five admit primitive trinomials and the other 34 require pentanomials. In degree 17,683 a primitive pentanomial has interior exponents 2,170, 4,340 and 15,513. In degree 17,698 both $X^{17698}+X^{511}+1$ and the pentanomial with interior exponents 783, 1,566 and 16,915 are primitive. [First 63 witnesses](data/mers-project-sparse-orders.json) · [Larger witnesses and further candidates](data/mers-project-large-orders.json) · [Proof](results.pdf#page=307)
@@ -944,7 +946,7 @@ lake build GF2Sparse.ScalarOrderBound
 lake env leanchecker GF2Sparse.ScalarOrderBound
 ~~~
 
-To reproduce the four prime-degree weight distributions, compile the enumerator with NTL and run the verifier with PARI/GP available. Add `--degree 17029` to check that degree alone.
+To reproduce the six prime-degree weight distributions, compile the enumerator with NTL and run the verifier with PARI/GP available. Add `--degree 28771` to check that spectrum and the prime-divisor bound through $2^{44}$. The degree-28,759 and degree-28,771 checks use only the small order primes and the polynomial data.
 
 ~~~sh
 c++ -std=c++17 -O3 -fopenmp scripts/cyclotomic_weight_census.cpp -lntl -lgmp -o /tmp/gf2-cyclotomic-weights

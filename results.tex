@@ -22449,4 +22449,57 @@ primitive trinomials and 34 require five terms. The complete table has
 112 irreducible and 104 primitive pairs in 318659 reciprocal classes.
 The other six imprimitive orders are given in Section~\ref{sec:mers-project-orders}.
 
+\clearpage
+\section{A prime above forty-four bits in every low-weight root order in two degrees}
+\label{sec:two-large-order-spectra}
+Let \(n=28759\) or \(28771\). Every degree-\(n\) binary irreducible
+of weight below 14105 has a root whose order is divisible by a prime
+greater than \(2^{44}=17592186044416\). In particular this holds for
+every irreducible trinomial and pentanomial in either degree.
+The cutoff 14105 is sharp in both degrees.
+
+\begin{proof}
+Let \(s=226160777\) for \(n=28759\) and \(s=104726441\) for \(n=28771\).
+These are primes of binary multiplicative degree \(n\). In each case
+\(s\) occurs to exponent one in \(M=2^n-1\). We first enumerate the
+binary irreducibles whose roots have order \(s\). The number of
+Frobenius orbits is \((s-1)/n\). For each orbit the trace recurrence
+of Section~\ref{sec:complete-spectrum-17029} gives its minimal polynomial.
+The verifier checks that the monic polynomials returned have degree
+\(n\), are distinct and divide \(X^s+1\). Since the linear factor
+\(X+1\) is the only other factor, the count certifies completeness.
+The translate column gives the minimum for \(f(X+1)\) as \(f\)
+ranges over the same set.
+\[
+\begin{array}{r|r|r|r|r|r}
+ n&\text{orbits}&\text{minimum weight}&\text{at minimum}&
+ \text{maximum weight}&\text{translate minimum}\\\hline
+ 28759&7864&14105&4&14661&14037\\
+ 28771&3640&14105&2&14665&14073
+\end{array}
+\]
+The full weight distributions are in
+\nolinkurl{data/cyclotomic-weight-spectra.json}. In both degrees the
+translated list is disjoint from the original. Reciprocation preserves
+weight and permutes the original factors, so the minimum across the
+six binary fractional linear images is the reported translate minimum.
+
+It remains to check small primes in \(M\). Both degrees \(n\) are odd
+primes. Every prime \(q\mid M\) has \(\ord_q(2)=n\), so \(q=1+2nk\).
+The odd order also makes 2 a quadratic residue modulo \(q\), giving
+\(q\equiv1,7\pmod8\). Sieve the indices through
+\(\lfloor(2^{44}-1)/(2n)\rfloor\) by these residue classes and by
+small prime divisors of \(1+2nk\). Testing \(2^n\bmod(1+2nk)\) leaves
+\(s\) as the only prime divisor up to the bound in each degree.
+Thus a nonidentity root with all its order primes at most \(2^{44}\)
+has order \(s\), and the table gives its least possible weight.
+\end{proof}
+
+Write \(P=M/s\). If \(P\) is prime, every irreducible below the cutoff
+has \(P\) in its root order, and a single further test \(r^P\ne1\)
+certifies primitivity. The large-degree table gives a certificate for
+each \(P\). The \(2^{44}\) bound above is independent of either
+large integer primality check. \nolinkurl{scripts/check_cyclotomic_weights.py}
+reproduces the two spectra and the progression sieve.
+
 \end{document}
