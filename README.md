@@ -12,6 +12,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 - **For a density-one set of semiprime degrees $n$, every sparse irreducible root has a prime divisor $\ell$ of its order with $\operatorname{ord}_{\ell}(2)=n$.** Among the 14,424,896 degrees $pq\le10^8$ with distinct odd primes $p<q$, precisely 221 allow an exception. They are exactly the pairs with $q\mid2^p-1$, and each has an explicit irreducible trinomial or pentanomial demonstrating the exception. [Density proof and exact count](results.pdf#page=333) · [221 witnesses](data/semiprime-full-degree-prime-exceptions.csv) · [Verifier](scripts/check_semiprime_order_primes.py)
 
+- **Across every degree $3q$ and $5q$ with $q$ prime and larger than the first factor, exactly four reciprocal pairs miss a full-degree prime in the root order.** One pair in degree 21 has order 49. Three pairs in degree 155 have order 961. In degree 253 all 23 exceptions have order 47,081. [Classification and proof](results.pdf#page=334) · [Exhaustive verifier](scripts/check_semiprime_order_exceptions.cpp)
+
 - **No sparse irreducible of odd degree can have a root from two proper subfields of coprime degrees if the smaller degree is at most 1,000.** This covers every odd degree through one million. For distinct odd primes $p<q$, the root order in degree $pq$ contains a prime power of binary multiplicative degree $pq$ whenever $p\le10{,}000$ or $pq>(p+1)^3$. The second condition has no upper bound on $p$. One example has degree 1,002,402,160,679, where a prime divisor of full binary degree is forced. [Degree bound](results.pdf#page=329) · [Finite cases and example](results.pdf#page=331) · [Lean square identity](GF2Sparse/SubfieldSquare.lean)
 
 - **The 31st power of a sparse irreducible root has degree $n/\gcd(31,g)$ outside two explicit families.** The exceptions are the degree-five irreducibles and four degree-ten pentanomials with $X$ replaced by $X^{3^i}$. In each exception the degree falls to $n/5$. [Proof and polynomials](results.pdf#page=332) · [Verifier](scripts/check_subfield_square.py)
@@ -1324,6 +1326,15 @@ uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/make_
 
 The degree-44497 Lean build used about 30 GiB of peak memory on the development machine. To regenerate the certificate and replay it in the kernel, run
 
+```
+
+The NTL enumeration lists every exceptional reciprocal pair in the first three exceptional degrees. Optional OpenMP threads divide the search by the first tap.
+
+```sh
+c++ -O3 -std=c++17 -fopenmp scripts/check_semiprime_order_exceptions.cpp -lntl -lgmp -o /tmp/gf2-order-exceptions
+/tmp/gf2-order-exceptions 3 7
+/tmp/gf2-order-exceptions 5 31
+/tmp/gf2-order-exceptions 11 23
 ```sh
 python3 scripts/make_packed_mersenne.py --trinomial 44497 8575 --block 256 > /tmp/gf2-44497.lean &&
   cmp /tmp/gf2-44497.lean GF2Sparse/PackedMersenne44497.lean &&
