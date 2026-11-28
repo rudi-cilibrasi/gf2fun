@@ -48,6 +48,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 - **The census gives the minimum primitive weight in 80 degrees from 3,537 through 41,263.** Forty-one admit primitive trinomials and 39 require pentanomials. In degree 28,759 the two primitive trinomial taps up to reciprocity are 8,526 and 13,192. A primitive pentanomial there has interior exponents 468, 936 and 28,291. Five terms are necessary in degree 28,381, where the pentanomial with interior exponents 5,690, 11,380 and 22,691 is primitive. In degree 41,263 the three primitive trinomial taps up to reciprocity are 3,505, 8,787 and 13,968. A primitive pentanomial there has interior exponents 3,313, 6,626 and 37,950. These include degrees 25,243, 25,933 and 28,771, with interior exponents $(1330,2660,23913)$, $(4453,8906,21480)$ and $(407,814,28364)$, respectively. In degree 35,339 a primitive pentanomial is $X^{35339}+X^{33821}+X^{3036}+X^{1518}+1$. In degree 17,683 a primitive pentanomial has interior exponents 2,170, 4,340 and 15,513. In degree 17,698 both $X^{17698}+X^{511}+1$ and the pentanomial with interior exponents 783, 1,566 and 16,915 are primitive. [First 63 witnesses](data/mers-project-sparse-orders.json) · [Larger witnesses and further candidates](data/mers-project-large-orders.json) · [Proof](results.pdf#page=307)
 
+- **All 530,119 trinomial reciprocal classes in the 83 selected Mers Project degrees have been checked for irreducibility.** Exactly 136 are irreducible. Of those, 124 pairs are certified primitive and eight have smaller order. The four outstanding pairs are in degree 41,521. Degrees 32,531 and 35,737 admit no irreducible trinomial. [Census](data/mers-project-trinomial-census.csv) · [Additional three degrees](data/mers-project-trinomial-census-supplement.csv) · [Proof](results.pdf#page=341)
+
 - **Of 475,226 trinomial reciprocal classes in these 80 degrees, 132 are irreducible and 124 are primitive.** In degree 29,473 the five primitive trinomial taps up to reciprocity are 1,879, 1,953, 5,404, 7,459 and 14,563. A primitive pentanomial there has interior exponents 5,476, 10,952 and 23,997. Degree 26,903 has one primitive pair with tap 7,044. In degree 4,809 the only irreducible taps are 91 and 931. Their roots have order $7(2^{687}-1)$. A primitive pentanomial has interior exponents 746, 1,119 and 3,690. [Complete tap lists](data/mers-project-trinomial-census.csv) · [Six smaller-degree exceptions](results.pdf#page=308) · [Two degree-33,511 exceptions](results.pdf#page=313)
 
 - **In degrees 1,331, 3,993 and 6,655, 21 pentanomial pairs have root index one or greater than 182,931,247,071,233.** Three examples have interior exponents $(1,2,289)$, $(1,2,83)$ and $(1,2,1719)$, respectively. The first two primitivity checks reduce to the same 250-digit composite order in degree 1,331. The third also has a 1,427-digit composite to resolve. All 665 trinomial pairs in degree 1,331 are reducible, so a witness there requires five terms. [Order bounds and remaining tests](results.pdf#page=306) · [Polynomials and factors](data/degree-1331-order-projections.json) · [Verifier](scripts/check_1331_order_projections.py)
@@ -762,6 +764,12 @@ c++ -std=c++17 -O3 scripts/prime_degree_trinomials.cpp -lntl -lgmp -o /tmp/gf2fu
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py \
   --trinomial-census /tmp/gf2fun-trinomials
 ```
+
+The irreducibility census can also be replayed without supplying any integer factors. For the three supplementary rows, the following command compares every reported tap with the archive.
+
+~~~sh
+printf '%s\n' 32531 35737 41521 | /tmp/gf2fun-trinomials --irreducible-only | diff -u data/mers-project-trinomial-census-supplement.csv -
+~~~
 
 To find more candidate field orders, download the two Mers Project files and choose specific degrees or an interval. The command below reconstructs the factors in degrees 4,952 and 5,689. The search checks probable primality. The witness verifier above checks primality proofs and polynomial orders. For a missing subfield, `--supplement` accepts an existing factor table and also uses its factorizations in extension degrees. [Archive format](https://mers.sourceforge.io/mersfmt.txt) · [Factor reconstruction](scripts/mers_project_factor_candidates.py)
 
