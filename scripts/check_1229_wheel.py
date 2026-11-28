@@ -8,7 +8,7 @@ from pathlib import Path
 from flint import fmpz, fmpz_mod_poly_ctx
 
 from batch_degree_1229 import PUBLISHED_BOUND, extend_samples
-from check_degree_1229 import COFACTOR, KNOWN, N
+from check_degree_1229 import COFACTOR, KNOWN, N, PRIMES
 
 
 WHEEL = 4*3*5*7*11
@@ -16,6 +16,7 @@ STEP = 2*N
 SEED_DEGREE = 960
 EXTENDED_BOUND = 818085338814611457
 DATA = Path(__file__).resolve().parents[1] / "data" / "degree-1229-wheel-products.json"
+CONTINUATION = DATA.with_name("degree-1229-wheel-continuation.json")
 
 
 def wheel_offsets(start, step=STEP, wheel=WHEEL):
@@ -80,9 +81,32 @@ def verify_extension():
                          doublings=12, end_bound=EXTENDED_BOUND)
 
 
+def verify_continuation():
+    """Recompute each subsequent Newton product as four independent Lagrange products."""
+    record = json.loads(CONTINUATION.read_text())
+    start = (EXTENDED_BOUND-1)//STEP
+    panels = record["panels"]
+    if not panels:
+        raise ValueError("empty wheel continuation")
+    for panel in panels:
+        if len(panel["chunks"]) != 4:
+            raise ValueError("a Newton product must span four Lagrange products")
+        end = start + interval_length(12)
+        verify_chunks(panel, cofactor=COFACTOR, step=STEP, wheel=WHEEL,
+                      seed_degree=SEED_DEGREE, start=start, doublings=11, end_bound=1+STEP*end)
+        start = end
+    bound = 1 + STEP*start
+    if bound != record["end_bound"]:
+        raise ValueError("incorrect final wheel bound")
+    return bound
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--start", type=int, help="number of progression indices preceding the interval")
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument("--start", type=int, help="number of progression indices preceding the interval")
+    action.add_argument("--continuation-only", action="store_true",
+                        help="replay the products after the established 818085338814611457 bound")
     parser.add_argument("--doublings", type=int, default=10, help="number of polynomial doublings")
     parser.add_argument("--method", choices=("newton", "lagrange"), default="newton")
     parser.add_argument("--threads", type=int, default=1, help="FLINT internal thread count")
@@ -92,10 +116,16 @@ if __name__ == "__main__":
     from flint import ctx
     ctx.threads = args.threads
     if args.start is None:
-        from batch_degree_1229 import verify_published
-        verify_published()
-        bound = verify_extension()
-        print(f"Every cofactor prime exceeds {bound}. Root order exceeds 2^{(KNOWN*bound).bit_length()-1}.")
+        if not args.continuation_only:
+            from batch_degree_1229 import verify_published
+            verify_published()
+            verify_extension()
+        bound = verify_continuation()
+        all_orders = (KNOWN//PRIMES[1]*bound).bit_length()-1
+        passing_orders = (KNOWN*bound).bit_length()-1
+        print(f"Every cofactor prime exceeds {bound}. All 639166 irreducible pentanomial "
+              f"root orders exceed 2^{all_orders}, and the 639144 passing all four known "
+              f"tests have order exceeding 2^{passing_orders}.")
     else:
         residue = wheel_product(args.start, args.doublings, args.method)
         end = args.start+interval_length(args.doublings)

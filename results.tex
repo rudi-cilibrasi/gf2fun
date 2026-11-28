@@ -25075,4 +25075,51 @@ every irreducible in degrees five, six and seven, including more than
 \(n\) prescribed bits. \nolinkurl{GF2Sparse/OddCoefficientBounds.lean}
 checks the determinant identity and the inverse formula at a root.
 
+\clearpage
+\section{All prime factors of the degree-1229 cofactor exceed \(2^{60}\)}
+\label{sec:1229-wheel-continuation}
+Let \(C=(2^{1229}-1)/K\) be the cofactor in
+Theorem~\ref{thm:1229-cofactor-bound}. Every prime dividing \(C\)
+exceeds
+\[
+                  B_1=1183886414924742657>2^{60}.
+\]
+In particular every prime factor still unaccounted for has at least
+61 binary digits. Every one of the 639166 irreducible degree-1229
+pentanomials has root order exceeding \(2^{331}\), and each of the
+639144 passing the four known prime tests has order exceeding \(2^{346}\).
+
+The preceding wheel certificate ended at progression index
+\(s_0=332825605701632\). Use the same period \(W=4620\), 960 admissible
+offsets in each period and candidates \(1+2458j\). A Newton product
+with twelve doublings covers
+\[
+             L=W\cdot960\cdot4^{12}=74410308403200
+\]
+indices. Take the two consecutive products starting immediately after
+\(s_0\) and \(s_0+L\). For each, four separate Lagrange calculations
+with eleven doublings give residues whose product modulo \(C\)
+equals the Newton residue. Both residues have gcd one with \(C\).
+The last index is \(s_0+2L=481646222508032\), and
+\(B_1=1+2458(s_0+2L)\). This covers every possible prime divisor
+between the previous endpoint and \(B_1\). All ten residues appear in
+\nolinkurl{data/degree-1229-wheel-continuation.json}.
+The \texttt{--continuation-only} option of
+\nolinkurl{scripts/check_1229_wheel.py} replays the eight smaller
+products from the preceding certified endpoint.
+
+For the order bounds, Theorem~\ref{thm:1229-all-orders} gives every
+irreducible pentanomial at least one cofactor prime in its root order.
+Every such order is divisible by at least three known primes, whose
+product is at least \(K/46703\). The survivors of all four tests have
+order divisible by \(K\). Multiplying each lower bound by \(B_1\)
+gives the stated powers of two. For a uniformly drawn nonzero element
+conditioned on passing the four tests, the probability of missing any
+remaining prime factor is at most
+\[
+                 \frac{15}{B_1+1}<1.27\cdot10^{-17}.
+\]
+This probability uses uniform sampling in the cyclic cofactor group.
+The observed pentanomial supports have their own distribution.
+
 \end{document}
