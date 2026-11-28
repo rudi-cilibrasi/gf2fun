@@ -209,6 +209,8 @@ def check_counts():
         raise ArithmeticError("incorrect set of exceptional degrees through 1280")
     expected = {(21, 49): 1, (155, 961): 3, (253, 47081): 23, (889, 16129): 7,
                 (979, 7921): 1, (979, 182183): 23, (1081, 394264529): 148}
+    direct_degrees = {21, 155, 253, 889, 979}
+    predicted = []
     counts = Counter()
     for p, primes in parameters.items():
         group = 2**p - 1
@@ -227,10 +229,24 @@ def check_counts():
                 for q in primes:
                     if x.pow_mod(group//q, f) != 1:
                         counts[p*q, q*order] += 1
+                        if p*q in direct_degrees:
+                            predicted.append((p*q, tuple(q*j for j in taps), q*order))
                         if (p, q) in ((7, 127), (11, 23)):
                             check_second_level(p, q, taps, order)
     if counts != expected:
         raise ArithmeticError(f"incorrect small-degree dilation census {counts}")
+    with (DATA / "semiprime-direct-exceptions.csv").open(newline="") as source:
+        archive = [(int(row["degree"]), tuple(map(int, row["taps"].split())), int(row["root_order"]))
+                   for row in csv.DictReader(source)]
+    if archive != sorted(predicted):
+        raise ArithmeticError("the direct NTL census disagrees with the predicted exceptional supports")
+    for n, taps, order in archive:
+        f = modulus(n, taps)
+        if (not irreducible(f) or x.pow_mod(order, f) != 1 or
+                any(x.pow_mod(order//int(r), f) == 1 for r, _ in fmpz(order).factor())):
+            raise ArithmeticError(f"incorrect expanded polynomial or order at degree {n}, taps {taps}")
+    print(f"The {len(archive)} exceptional pairs from five direct NTL enumerations agree "
+          "with the base-field prediction and have the recorded orders in the expanded fields.")
     with gzip.open(DATA / "degree-1229-irreducible-supports.csv.gz", "rt", newline="") as source:
         masks = Counter(int(row["missing_mask"]) for row in csv.DictReader(source))
     large = [2*sum(count for mask, count in masks.items() if not mask & bit) for bit in (1, 2)]
