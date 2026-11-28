@@ -26997,4 +26997,122 @@ order tests for all 240 members with 1,200 polynomial modular powers.
 \nolinkurl{GF2Sparse/SubgroupCover.lean} proves the packing upper
 bound and the class-size inequalities for the joint code.
 
+\clearpage
+\section{Safe-prime powers and a one-bit description of exceptional pentanomials}
+\label{sec:safe-prime-powers}
+Let \(f\) be an irreducible binary polynomial of degree \(n>1\), weight
+at most five and exponent gcd \(g\). For a root \(z\), put
+\(m=\deg_{\F}(z^\ell)\) and \(d=n/m\).
+
+\begin{theorem}
+If \(\ell=2q+1\ge23\) and both \(\ell\) and \(q\) are prime, then \(q\nmid d\).
+For \(\ell\equiv7\bmod8\) this determines the degree exactly:
+\[
+                       \deg_{\F}(z^\ell)=n/\gcd(\ell,g).
+\]
+This holds in every degree for the 23rd, 47th and 167th powers, for
+example. For \(\ell\equiv3\bmod8\) the only other possible index is two.
+\end{theorem}
+\begin{proof}
+Write \(K=\mathbb F_2(z^\ell)\). If \(K\) contains the \(\ell\)-th
+roots of unity, the Galois group of \(K(z)/K\) embeds into
+\(\mu_\ell\) by \(\sigma\mapsto\sigma(z)/z\), so \(d=1\) or \(\ell\).
+The latter occurs exactly when \(\ell\mid g\). Indeed equality of
+degrees gives \(f(X)=\operatorname{minpoly}(z^\ell)(X^\ell)\).
+Conversely, if \(\ell\mid g\), writing \(f=G(X^\ell)\) makes \(G\)
+irreducible of degree \(n/\ell\) with root \(z^\ell\).
+
+Otherwise the \(\ell\)-th power map permutes \(K^\times\). Write
+\(z=\alpha\beta\) with \(\beta\in K\) and \(\alpha^\ell=1\).
+For \(d>1\), \(\alpha\) has order \(\ell\), and
+\(d=[K(\alpha):K]=\ord_\ell(2^m)\).
+Group the terms of \(f(\alpha\beta)=0\) by exponent residue \(b\bmod\ell\).
+The coefficient of \(\alpha^b\) is the sum of \(\beta^e\) over that
+residue. If all exponents had one residue, the constant term would
+force \(\ell\mid g\), hence \(d=\ell\), contradicting \(d\mid\ell-1\).
+Every occupied residue has nonzero coefficient. Otherwise a proper
+nonempty subsum would vanish at \(z\), and either it or its complement
+would have degree less than \(n\), contradicting minimality.
+
+These coefficients give a nonzero length-\(\ell\) word over \(K\) of
+weight \(w\le5\). Its polynomial vanishes at every
+\(\alpha^a\) for \(a\in\langle2^m\rangle\bmod\ell\), by Frobenius.
+If \(q\mid d\), this subgroup contains all quadratic residues. The word
+therefore belongs to the quadratic-residue code with those defining
+zeros, extending the coefficient field if necessary. Since
+\(\ell\equiv3\bmod4\), the strengthened square-root bound gives
+\(w^2-w+1\ge\ell\). But \(5^2-5+1=21\).
+See van Lint and MacWilliams,
+\href{https://pure.tue.nl/ws/files/2414072/593491.pdf}
+{\emph{Generalized quadratic residue codes}, Theorem~2(ii)}.
+Thus \(d\mid2q\) leaves only \(1,2\). If \(\ell\equiv7\bmod8\),
+2 is a square modulo \(\ell\), so \(\ord_\ell(2^m)\) is odd.
+\end{proof}
+For 23 the verifier also gives a direct check of the distance. Modulo
+each degree-eleven factor of \(\Phi_{23}\), no subset of one through six
+of \(1,T,\ldots,T^{22}\) sums to zero, and exactly 253 seven-element
+subsets do. In the putative index-eleven case \(11\nmid m\), so the
+independence of any five columns persists over \(K\).
+
+\clearpage
+\subsection*{The two exceptional supports at \(\ell=11\)}
+For every degree \(n\), exactly the following sparse irreducibles have
+\(5\mid [\mathbb F_2(z):\mathbb F_2(z^{11})]\):
+\[
+ \begin{split}
+  &(X^{10}+X^9+X^5+X+1)\big|_{X\mapsto X^{3^j}},\\
+  &(X^{10}+X^7+X^5+X^3+1)\big|_{X\mapsto X^{3^j}},
+                       \qquad j\ge0 .
+ \end{split}
+\]
+Both have degree \(10\cdot3^j\), root order \(33\cdot3^j\) and
+index exactly five. Given the degree, one bit identifies the support.
+In degree ten these are exactly the sparse irreducibles failing the
+prime-index test for 31, since \((2^{10}-1)/31=33=11(2^2-1)\).
+Of the 38 irreducible pentanomials in that degree, 22 pass the tests
+for 3 and 11, counting reciprocals separately. Removing the two decoded
+exceptions proves that the other twenty are primitive.
+
+Indeed \(d\) divisible by five forces \(d=5\) or 10 in the preceding
+field decomposition. In the latter case \(\Phi_{11}=1+T+\cdots+T^{10}\)
+is the minimal polynomial of \(\alpha\) over \(K\). No nonzero
+polynomial of degree at most ten and weight at most five vanishes at
+\(\alpha\). This excludes \(d=10\).
+
+For \(d=5\) one has \(\gcd(10,m)=2\) and \(K\cap\mathbb F_{2^{10}}=\mathbb F_4\).
+Every four distinct powers \(\alpha^b\), \(0\le b<11\), are linearly
+independent over \(\mathbb F_4\). This finite check uses
+\(\mathbb F_2[T]/\Phi_{11}\) with
+\(u=T+T^3+T^4+T^5+T^9\), where \(u^2+u+1=0\).
+For each of the 330 four-element supports, summing its columns with
+coefficients in \(\{0,1,u,1+u\}\) gives 256 distinct values. Of the
+462 five-element supports, 55 span dimension four and 407 span dimension
+five. Changing the primitive eleventh root permutes the columns.
+These ranks persist over \(K\), since the two finite extensions of
+\(\mathbb F_4\) have coprime degrees \(5\) and \(m/2\).
+
+Thus all five residues occur separately and the relation is unique up
+to scale. Its constant coefficient is one, so its coefficients
+\(\beta^e\) belong to \(\mathbb F_4\): the one-dimensional kernel over
+\(K\) is spanned by a relation over \(\mathbb F_4\).
+B\'ezout gives \(\beta^g\in\mathbb F_4^\times\).
+Consequently \(z^g\) has order dividing \(33\) and divisible by \(11\).
+Writing \(f=F(X^g)\), the sparse polynomial \(F\) is the minimal
+polynomial of \(z^g\). Factoring \(X^{33}-1\) gives just the two
+displayed degree-ten bases at orders divisible by eleven, both of order
+33, and the weight-eleven factor \(\Phi_{11}\).
+
+Every prime dividing \(g\) must divide 33. Otherwise that prime's power
+map permutes the subgroup of order 33, giving \(F(X^p)\) a root
+of degree at most ten for a prime \(p\mid g\), contrary to irreducibility.
+Also \(11\nmid g\), so \(g=3^j\). Conversely every \(3^j\)-th root of
+an element of order 33 has order \(11\cdot3^{j+1}\), whose binary order
+is \(\operatorname{lcm}(10,2\cdot3^j)=10\cdot3^j\).
+This proves irreducibility of both dilations and gives
+\(\deg_{\F}(z^{11})=2\cdot3^j\).
+\nolinkurl{scripts/check_safe_prime_powers.py} replays the column counts,
+the factorization and direct field checks. \nolinkurl{GF2Sparse/SafePrimePowers.lean}
+proves the order-33 factor identity and the order multiplication for
+iterated roots.
+
 \end{document}
