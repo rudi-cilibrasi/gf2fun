@@ -81,6 +81,7 @@ import GF2Sparse.ShortProducts
 import GF2Sparse.SubfieldProducts
 import GF2Sparse.SubfieldSquare
 import GF2Sparse.SafePrimePowers
+import GF2Sparse.ResiduePrime
 import GF2Sparse.ScalarOrderBound
 import GF2Sparse.SignedDegreeChoices
 import GF2Sparse.SignedTriples
