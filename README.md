@@ -1056,13 +1056,15 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_subfield_squ
 uv run --no-project --with python-flint==0.9.0 python scripts/check_semiprime_order_primes.py
 ~~~
 
-The NTL enumeration lists every exceptional reciprocal pair in the first three exceptional degrees.
+The NTL enumeration lists every reciprocal pair of sparse irreducibles whose root order lacks a prime of full binary degree. Five completed enumerations give 58 exceptional pairs. In degree 979 it checked all 489 trinomial and 77,714,488 pentanomial reciprocal pairs and found exactly 24 exceptions. One has root order 7,921 and the other 23 have order 182,183. [Interior taps and orders](data/semiprime-direct-exceptions.csv)
 
 ~~~sh
 c++ -O3 -std=c++17 -fopenmp scripts/check_semiprime_order_exceptions.cpp -lntl -lgmp -o /tmp/gf2-order-exceptions
 /tmp/gf2-order-exceptions 3 7
 /tmp/gf2-order-exceptions 5 31
 /tmp/gf2-order-exceptions 11 23
+/tmp/gf2-order-exceptions 7 127
+/tmp/gf2-order-exceptions 11 89
 ~~~
 
 The following calculation checks all characteristics for the thirteen smaller primes in the two-prime degree theorem and lists the eight residual tap patterns modulo 31.
@@ -1083,7 +1085,7 @@ The simultaneous substitution theorem has an independent check in degrees 22,517
 uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_multiprime_supports.py
 ~~~
 
-The five-row determinant calculation proves the substitution criterion for every prime $q\ge37$. The same command checks the six exceptional semiprime degrees through 1,280, the two towers from the degree-1,229 census, all 30 exceptional reciprocal pairs at levels 5,819 and 112,903, and the trinomial tap rule through 384. The NTL enumerator above accepts `7 127` to recover the seven degree-889 pairs by direct enumeration.
+The five-row determinant calculation proves the substitution criterion for every prime $q\ge37$. The same command checks the six exceptional semiprime degrees through 1,280, the two towers from the degree-1,229 census, all 30 exceptional reciprocal pairs at levels 5,819 and 112,903, and the trinomial tap rule through 384. It also compares all 58 archived pairs with the base-field prediction and checks their orders in the expanded fields.
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_kummer_sparse_orders.py
