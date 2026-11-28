@@ -25517,6 +25517,7 @@ irreducibility. The calculations are in
 
 \clearpage
 \subsection*{Descent when the subfields intersect}
+\label{sec:intersecting-kummer-descent}
 Write \(A_j=\mathbb F_{2^{pq^j}}\) and \(B_j=\mathbb F_{2^{q^j}}\).
 A single determinant argument will be used at several levels.
 Let \(A,B\) be finite binary subfields, \(D=A\cap B\), with
@@ -25766,5 +25767,147 @@ full support census with the eleven-entry list, recomputes all four
 field powers on each listed failure and checks the coding arithmetic.
 \nolinkurl{GF2Sparse/SubgroupCover.lean} proves the union bound for
 injective codes of different capacities and the fourteen-bit corollary.
+
+\clearpage
+\section{A single support code for simultaneous prime substitutions}
+\label{sec:multiprime-support-code}
+In every degree \(1229m\), where \(m>1\) is any product of positive
+powers of the four known primes of \(2^{1229}-1\), the following
+exceptional set has a 20-bit index. Take the irreducible pentanomials
+whose root order has no prime \(\ell\) for which \(\ord_\ell(2)\)
+is divisible by both 1229 and some prime of \(m\).
+Their exact number, counting reciprocal orientations separately, is
+\[
+          639166-10\,\mathbf 1_{36871\mid m}
+                -12\,\mathbf 1_{46703\mid m}.
+\]
+For example \(m=36871\cdot46703\) gives degree \(2116321178677\),
+with 639144 exceptions. Their three taps are obtained by multiplying
+the taps of the 639144 surviving degree-1229 pentanomials by \(m\).
+An unrestricted tap rank in this degree takes 121 bits. Taking \(m\)
+equal to the product of all four known primes gives the same
+639144 exceptions, with an unrestricted rank of 888 bits.
+The code length stays fixed as any of the four powers increases.
+
+\begin{theorem}\label{thm:multiprime-support-code}
+Let \(7\le p\le10000\) be an odd prime and \(m>1\) an integer
+all of whose prime divisors divide \(M_p=2^p-1\).
+Suppose each such divisor \(q\) is at least 37 or
+\((p,q)=(11,23)\).
+Let \(f\) be an irreducible binary trinomial or pentanomial of
+degree \(pm\). The following are equivalent.
+\begin{enumerate}
+\item No prime \(\ell\) in the root order has both
+\(p\mid\ord_\ell(2)\) and \(\gcd(m,\ord_\ell(2))>1\).
+\item \(f(X)=G(X^m)\) for a degree-\(p\) polynomial \(G\).
+\end{enumerate}
+The admissible bases are exactly the sparse irreducibles whose root
+\(u\) passes \(u^{M_p/q}\ne1\) for every prime \(q\mid m\).
+Each resulting root has order \(m\,\ord(u)\).
+\end{theorem}
+This includes every multiplier supported on primes of \(M_p\) for
+\(19\le p\le10000\), since each has order \(p\) for 2 and is
+\(1\bmod 2p\). In particular take \(p=1229\) and \(m=M_p\),
+without factoring \(m\). There is a bijection between the primitive
+degree-1229 pentanomials and \emph{all} the irreducible pentanomials
+in degree \(1229M_p\) without the specified prime. The unrestricted
+tap rank there takes 3716 bits. Determining whether this particular
+exceptional set is nonempty is equivalent to the open base case.
+
+\clearpage
+\subsection*{Removing a prime from the multiplier}
+Write \(E_t=\mathbb F_{2^{pt}}\), \(B_t=\mathbb F_{2^t}\).
+For each prime \(q\mid m\), \(\ord_q(2)=p\), so \(q>p\),
+\(m\equiv1\pmod p\), and \(q\nmid M_m\). Also \(p\nmid M_m\):
+\(\ord_p(2)>1\) divides \(p-1\), which is coprime to \(m\).
+The two integers \(M_p,M_m\) are coprime.
+
+Let \(z\) have order \(R\) and satisfy the absence condition.
+Each prime of \(R\) has binary degree dividing \(m\) or equal
+to \(p\), so divides \(M_m M_p\). Lifting the exponent at primes
+of \(M_p\) adds their valuation in \(m\). The valuations at primes
+of \(M_m\) stay fixed. Thus \(R\mid (mM_p)M_m\), and the two displayed factors are coprime. Write \(z=yb\) with
+\(\ord(y)\mid mM_p\) and \(b\in B_m^\times\).
+
+First suppose \(y\in E_1\). A root in
+\(E_1^\times B_m^\times\) of degree \(pm\) requires components of
+degrees \(p,m\). Its exponent gcd is one. If all exponents were
+multiples of \(p\), we would have \(z^p\in B_m\), and hence
+\(y^p\in E_1\cap B_m=\F\), impossible for the nonidentity \(y\).
+If all were multiples of a prime \(q\mid m\), then \(z^q\in E_{m/q}\)
+would give \(b^q\in B_{m/q}\). The \(q\)-power map is invertible
+on \(B_m^\times\), forcing \(b\in B_{m/q}\). Every common prime
+of the exponents would divide the top exponent \(pm\), so this
+exhausts the possibilities. Sections~\ref{sec:scalar-all-parities}
+and~\ref{sec:scalar-independent-bound} exclude this normalized
+product. The smaller degree is the prime \(p\); the scalar-order
+bound for a composite partner and the prime census leave only
+\(p=3,5\) through 10000. The trinomial case is already excluded
+by the two-subfield test of Section~\ref{sec:trinomial-subfield-pairs}.
+
+If \(y\notin E_1\), let
+\[
+ d=\prod_{q\mid m,\ q\ {\rm prime}}
+       q^{\max(0,v_q(\ord(y))-v_q(M_p))}.
+\]
+Here \(1<d\mid m\). For a prime \(q\mid d\), lifting at all the
+primes of \(\ord(y)\) gives \(y\in E_d\), \(y\notin E_{d/q}\) and
+\(y^q\in E_{d/q}\). Thus \([E_{d/q}(y):E_{d/q}]=q\).
+Apply the intersecting-subfield descent on
+page~\pageref{sec:intersecting-kummer-descent}
+with \(A=E_{d/q}\), \(B=B_m\). Their intersection is \(B_{d/q}\),
+with \([A:B_{d/q}]=p\), and \(|B_m|=2^m\equiv2\pmod q\).
+The five-row determinant therefore forces \(f(X)=G_1(X^q)\),
+also for the verified step choices at \((11,23)\).
+The root \(z^q\) of \(G_1\) has degree \(pm/q\) and inherits the
+absence condition for \(m/q\). Induction contracts the entire
+multiplier. At \(m/q=1\) the base polynomial is already reached.
+
+\clearpage
+\subsection*{The base test, the decoder and a finite check}
+For the converse, the index-\(q\) test on \(u\) asks that
+\(v_q(\ord(u))=v_q(M_p)\). After an irreducible substitution
+by \(t\), the new root order is \(t\,\ord(u)\), and lifting gives
+\[
+       v_q(2^{pt}-1)=v_q(M_p)+v_q(t)\qquad(q\mid M_p).
+\]
+The base tests therefore stay valid as successive prime factors
+of \(m\) are applied in any order. Conversely an irreducible
+substitution by \(m\) requires the substitution by each
+\(q\mid m\) to be irreducible, so the base passes all its tests.
+Every prime of the resulting order \(m\,\ord(u)\) divides \(M_p\)
+and has binary degree \(p\). This proves the converse and the
+order assertion. The Lean theorem
+\texttt{irreducible\_expand\_iff\_base\_index\_tests} proves the
+simultaneous base tests for any binary degree and any positive
+odd multiplier supported on its field-order primes.
+The full-field-order test also follows from
+Theorem~\ref{thm:dilation}, independently of the sparsity assumption.
+
+Given \(p,m\), a decoder enumerates the degree-\(p\) irreducible tap
+triples that pass the tests for the primes dividing \(m\). It takes
+the entry at the supplied rank and multiplies its three taps by \(m\).
+For \(p=1229\) the base census has five reciprocal pairs failing
+at 36871 and six at 46703. These eleven pairs are disjoint, and
+the other two known primes exclude none. This gives the displayed
+formula for all fifteen nonempty choices of known primes.
+The proof bounds the actual cardinality, so there is no machine
+constant in the stated 20-bit index. At \(m=M_p\), the same
+decoder works in principle by integer factorization. Its list size
+in that case is the unknown number of primitive base pentanomials.
+
+For a smaller instance take \(p=11\) and \(M_{11}=23\cdot89=2047\).
+There are two irreducible trinomials and 46 irreducible pentanomials
+of degree eleven. Both trinomials and 44 pentanomials are primitive.
+The other two pentanomials have root order 89. At \(m=23\cdot89\)
+and at \(m=23^2\cdot89\) the exceptional list thus consists of two
+trinomials and 44 pentanomials in each degree. Their orders are
+\(2047m\). The verifier computes the powers in the expanded quotient
+rings of degrees 22517 and 517891. For each successful expansion
+it checks \(X^{2047m}=1\) and a coprimality test at each of 23 and 89,
+so every root has order \(2047m\). Integer powering verifies that
+this order has the full binary degree. For the two other bases,
+an annihilating exponent in each quotient gives a proper subfield
+period. See \nolinkurl{scripts/check_multiprime_supports.py}.
 
 \end{document}
