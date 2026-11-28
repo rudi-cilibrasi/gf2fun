@@ -75,6 +75,7 @@ import GF2Sparse.SubfieldProducts
 import GF2Sparse.ScalarOrderBound
 import GF2Sparse.SignedDegreeChoices
 import GF2Sparse.SignedTriples
+import GF2Sparse.SparseOrderBounds
 import GF2Sparse.SparseRootModels
 import GF2Sparse.TranslatedInterval
 import GF2Sparse.TripleObstruction

@@ -22736,4 +22736,78 @@ prime-power conclusion and allows a full-degree prime whenever
 \(q\nmid 2^7-1\). The finite enumeration and all trace certificates
 are reproduced by \nolinkurl{scripts/check_seven_position_orders.py}.
 
+\clearpage
+\section{Quadratic order bounds for two arithmetic progressions}
+\label{sec:two-row-order}
+Let \(f\) be an irreducible binary polynomial of degree \(n>1\) with
+exponent gcd one. Write \(R\) for the order of a root. Suppose its
+support is contained in two arithmetic progressions with the same
+positive step. Count the widths \(j,d\) in steps between the first and
+last occupied positions of each progression, allowing a singleton of
+width zero. Put \(m=\max(j,d)>0\) and \(l=\min(j,d)\). Then
+\[
+                         4m^2 R\ \ge\ (3m-l)n^2.
+\]
+The bound allows any number of terms in the progressions.
+
+To see this, translate the first left endpoint to zero. Write the row
+endpoints as \(0,ju,v-du,v\), where \(u\) is the step. The exponent
+differences have gcd one, so \(\gcd(u,v)=1\). Form the lattice
+\(R\mathbb Z^2+\mathbb Z(u,v)\), of index \(R\), and give a vector
+\((x,y)\) the spread of \(0,jx,y-dx,y\), its largest entry minus its
+smallest. The endpoints determine the spread even when both rows have
+interior terms. For a lattice vector congruent to \(a(u,v)\) modulo
+\(R\), its spread bounds the circular span of the entire support
+multiplied by \(a\). Theorem~\ref{thm:sparse-extension-span} makes that
+span at least \(n\) for \(a\ne0\bmod R\). Nonzero vectors of
+\(R\mathbb Z^2\) have spread at least \(R\ge n\).
+
+For \(x\ge0\), the unit ball has
+\(0\le x\le1/m\) and \((j+d)x-1\le y\le1\).
+The ball is centrally symmetric, so its area is
+\(2\int_0^{1/m}(2-(j+d)x)\,dx=(3m-l)/m^2\). Open balls of radius
+\(n/2\) around the lattice points have disjoint interiors.
+Comparing their area with the lattice index proves the bound.
+
+\paragraph{A primitivity test for a frequently occurring tap pattern.}
+Take an irreducible \(X^n+X^{n-a}+X^{2a}+X^a+1\) with distinct exponents
+and \(\gcd(a,n)=1\). The widths are two and one, giving \(R\ge5n^2/16\).
+Suppose \(2^n-1=sP\), where \(P\) is prime and \(s<5n^2/16\).
+Then the full \(P\)-part of the group order divides \(R\), since every
+divisor missing that part divides \(s\). When \(s\) is also prime,
+one test \(r^P\ne1\) suffices for primitivity.
+In degrees 28759 and 28771 the lower bounds rounded up are
+258462526 and 258678263, exceeding the respective small factors
+226160777 and 104726441. This excludes the small subgroup in both
+degrees by integer arithmetic. Section~\ref{sec:two-large-order-spectra}
+gives the stronger cutoff applying to all supports in these degrees.
+
+\paragraph{Three exponents in a progression or four in a parallelogram.}
+For a pentanomial with three exponents \(t,t+iu,t+ju\),
+\(0<i<j\), the corresponding bound is \(2jR^2\ge n^3\).
+Translate by \(t\) and take the three coordinates to be the step
+and the positions of the other two exponents. The lattice now has
+index \(R^2\). The spread of \(0,ix,jx,y,z\) equals that of
+\(0,jx,y,z\), with unit ball of volume \(4/j\) by the cube
+decomposition in Corollary~\ref{cor:pentanomial-packing}.
+Packing the balls of radius \(n/2\) gives the result.
+
+If four exponents are a translate of \(0,u,v,u+v\), then
+\(3R^2\ge n^3\). In the three coordinates the spread of
+\(0,x,y,x+y\) is \(|x|+|y|\). On \(|x|+|y|\le1\) the fifth
+entry can range over an interval of length \(2-|x|-|y|\).
+The integral over this diamond is \(8/3\), giving the claim by the
+same packing argument. In both reductions a common divisor of the
+three coordinates would divide every exponent difference.
+
+For a general support with exponent gcd \(g\), write \(f=F(X^g)\).
+Apply the bounds to the normalized polynomial \(F\), of degree \(n/g\)
+and root order \(R/g\). Every \(g\)-th root of a root of \(F\) is a
+conjugate in the order-\(R\) group, so their ratios give \(g\mid R\).
+Here \(g\) is odd by separability. Lean proves the exact order under
+irreducible dilation in \nolinkurl{GF2Sparse/SparseOrderBounds.lean}.
+The verifier \nolinkurl{scripts/check_exponent_spans.py} checks all
+three shape bounds against the actual orders of all 2051 normalized
+irreducible pentanomials through degree 24.
+
 \end{document}
