@@ -25184,4 +25184,280 @@ one integer being prime. Its primality would prove that five is the
 minimum weight in degree 53381. The chain is available offline in
 \nolinkurl{data/mers-project-primality/1100000000888500230.cert.gz}.
 
+\clearpage
+\section{Which sparse roots can miss a full-degree prime in semiprime degree?}
+\label{sec:sparse-kummer-orders}
+Write \(M_j=2^j-1\). Call a prime \(\ell\) in the order of a root of
+degree \(n\) a \emph{full-degree prime} if \(\ord_\ell(2)=n\).
+Let \(A=\mathbb F_{2^p}\), \(B=\mathbb F_{2^q}\) in
+\(\mathbb F_{2^{pq}}\).
+\begin{theorem}\label{thm:sparse-semiprime-primes}
+Let \(p<q\) be distinct odd primes and \(f\) an irreducible binary
+trinomial or pentanomial of degree \(pq\), with root \(z\).
+The order of \(z\) misses a full-degree prime exactly when at least
+one of the following holds.
+\begin{enumerate}
+\item \(z\in A^\times B^\times\).
+\item \(f(X)=G(X^q)\) for a binary polynomial \(G\) of degree \(p\).
+\end{enumerate}
+In the second case \(q\mid M_p\), \(G\) is irreducible, and \(z\)
+has order \(q\) times the order of a root of \(G\).
+If \(p\le10000\) or \(pq>(p+1)^3\), the second case gives the complete
+list of exceptions.
+\end{theorem}
+
+Indeed, in the absence of a full-degree prime every prime divisor
+of the order \(R\) divides \(M_pM_q\). These factors are coprime.
+For \(\ell\mid M_p\) lifting gives
+\(v_\ell(M_{pq})=v_\ell(M_p)+v_\ell(q)\);
+for \(\ell\mid M_q\) the valuation stays fixed. To see the latter,
+\(p\mid M_q\) would give \(\ord_p(2)=q>p-1\). Hence \(R\mid qM_pM_q\)
+and \(z^q\in A^\times B^\times\) by cyclicity.
+If \(q\nmid M_p\), already \(R\mid M_pM_q\).
+For \(q\ge37\) the next lemma covers the remaining case.
+For \(q<37\), the only possibilities with \(q\mid M_p\) are
+\((3,7),(5,31),(11,23)\). Their complete polynomial lists in
+Section~\ref{sec:semiprime-individual-exceptions} consist of
+\(q\)-fold substitutions.
+
+Conversely, an element of \(A^\times B^\times\) has order dividing
+\(M_pM_q\). In the substitution case \(G\) is irreducible,
+\(z^q\) has degree \(p\), and \(z\notin A\). Thus \(q\mid R\) and
+\(R=q\,\ord(z^q)\). Also \(q\mid M_{pq}\) implies \(q\mid M_p\),
+since \(\ord_q(2)\) divides both \(pq\) and \(q-1\).
+Every prime of \(R\) therefore divides \(M_p\).
+Section~\ref{sec:subfield-square-census} excludes the first case
+in the two stated ranges. The roots giving irreducible substitutions
+are exactly the degree-\(p\) roots \(a\) with \(a^{M_p/q}\ne1\)
+when \(q\mid M_p\), by the prime-index criterion of
+Section~\ref{sec:semiprime-individual-exceptions} and
+\nolinkurl{GF2Sparse/OrderPrimePartitions.lean}.
+The theorem controls one required component of primitivity.
+Full order also requires the other prime powers dividing \(M_{pq}\).
+
+\clearpage
+\subsection*{Descent from the product of two subfields}
+\begin{lemma}\label{lem:sparse-kummer-descent}
+Let \(q\ge37\) be prime and \(\gcd(s,q)=1\). In \(E=\mathbb F_{2^{sq}}\)
+put \(A=\mathbb F_{2^s}\), \(B=\mathbb F_{2^q}\).
+Suppose \(z\) has degree \(sq\) and its binary minimal polynomial
+\(f\) has at most five terms. If \(z^q\in A^\times B^\times\) and
+\(z\notin A^\times B^\times\), then \(z^q\in A\) and \(f(X)=G(X^q)\).
+\end{lemma}
+\begin{proof}
+Write \(z^q=ab_0\) with \(a\in A^\times,\ b_0\in B^\times\).
+Since \(2^q-1\equiv1\bmod q\), choose \(b\in B^\times\) with
+\(b^q=b_0\). Set \(y=z/b\), so \(y^q=a\) and \(y\notin A\).
+The degree \([A(y):A]=q\) is prime, and
+\(1,y,\ldots,y^{q-1}\) form an \(A\)-basis of \(E\).
+If \(q\nmid M_s\), then \(q\nmid M_{sq}\) as
+\(\ord_q(2)\mid q-1\). Taking the unique \(q\)-th root of \(a\)
+would give \(y\in A\). Thus \(q\mid M_s\) and \(s\ge6\).
+
+Group the exponents \(e=r+qj\) of \(f\) by \(r\bmod q\).
+In each nonempty class choose an \(\F\)-basis of the span of its
+\(a^j\) in \(A\). There are at most five basis elements across all
+classes, and at most four classes since \(0,sq\) have the same
+residue. Suppose there are at least two classes. Extend the bases
+within their classes to five elements in total, possible since
+\(s\ge6\). Denote the basis elements by \(u_{rh}\).
+The five columns \(y^r u_{rh}\) are independent over \(B\).
+To prove this, form the square matrix with entries
+\[
+                     (y^r u_{rh})^{2^{qi}},\qquad 0\le i\le4.
+\]
+A determinant term assigns each row \(i\) to a residue \(r_i\).
+Its power of \(y\) is \(S=\sum_i 2^{qi}r_i\), with
+\(S\equiv\sum_i2^i r_i\bmod q\). The finite lemma on the next page
+provides an assignment isolated modulo \(q\) with each class in
+consecutive rows. After summing permutations within that assignment,
+its contribution is \(y^S\) times the product of the corresponding
+Moore determinants in \(A\). Each is nonzero. Indeed the \(u_{rh}\)
+in a single class are independent over \(B\) by linear disjointness
+of \(A,B\) over \(\F\). A dependence of the \(m\) consecutive rows,
+after undoing the initial Frobenius, would give a nonzero
+\(B\)-linearized polynomial of degree at most \(|B|^{m-1}\)
+vanishing on their \(B\)-span of size \(|B|^m\).
+The isolated coefficient of the basis vector \(y^{S\bmod q}\)
+cannot cancel. Thus the determinant is nonzero.
+
+In \(f(yb)=0\) the coefficients \(b^e\) of \(y^r a^j\) all lie in
+\(B\). Independence makes the sum in each residue class zero.
+Any class other than zero would give a nonzero binary polynomial
+of degree less than \(sq\) vanishing at \(z\). Hence every exponent
+is divisible by \(q\). The contracted polynomial has degree \(s\)
+and is irreducible, so its root \(z^q\) lies in \(A\).
+\end{proof}
+
+\clearpage
+\subsection*{Five rows and an exact finite calculation}
+For every prime \(q\ge37\), take two to four distinct residues
+\(r_j\bmod q\) with positive multiplicities summing to five.
+Among the distinct assignments of the five row weights \(1,2,4,8,16\)
+to these labels, there is one with each label in consecutive rows
+whose weighted sum occurs exactly once modulo \(q\). Here two
+assignments differ when a row changes label.
+The following finite calculation proves the assertion for all primes.
+
+Translate the first label to zero and put the other \(d\le3\)
+residues into a vector \(v\). For each consecutive-block assignment
+\(c\), record the vector of row-weight sums in the \(d\) groups.
+Subtract the vectors of all other assignments to get a set
+\(H_c\) of integer collision normals. These differences are nonzero
+by uniqueness of binary subset sums. A collision occurs precisely
+when \(h\cdot v=0\) for some \(h\in H_c\).
+Zero coordinates and equal pairs of coordinates are forbidden.
+Work in projective space since scaling preserves collisions.
+
+First do the following calculation over the rationals. Normalize
+each normal to primitive integer coordinates, recording all prime
+divisors of its removed content. For \(d=1\) test the point \(1\).
+For \(d=2,3\), any failure lies on a hyperplane of the first
+assignment. Omit forbidden hyperplanes. For \(d=2\) a normal
+\((a,b)\) gives just the projective point \((-b,a)\).
+For \(d=3\), on each first line choose a block assignment whose list
+does not contain that line. Every possible failure on it must meet
+one of the lines of this second list. Their cross products give
+all intersection points. Record prime divisors of their contents
+before making the coordinates primitive. Omit forbidden points.
+For every remaining point the verifier finds a block assignment
+with all dot products nonzero. Record all prime divisors of those
+dot products as well.
+
+Outside the recorded primes the same intersections and witnesses
+reduce modulo \(q\). The recorded contents guarantee that no first
+and second line used for an intersection coalesce. A rational
+forbidden point or line remains forbidden after reduction.
+For each recorded prime \(q\ge37\), repeat the whole projective
+calculation over \(\mathbb F_q\), discarding a block assignment if
+one of its raw normals becomes zero. Every remaining point has
+a witness. The counts of primes passed to this last step are
+\[
+\begin{array}{c|rrrrr}
+ \text{multiplicities}&(4,1)&(3,2)&(3,1,1)&(2,2,1)&(2,1,1,1)\\\hline
+ \text{primes rechecked}&0&0&8&28&336
+\end{array}
+\]
+All normals, projective points and tests are generated from the five
+weights by \nolinkurl{scripts/check_kummer_sparse_orders.py}.
+At \(q=31\) the consecutive-row assertion can fail, for example at
+residues \(0,1,12\) with multiplicities \(3,1,1\).
+The Lean theorem \texttt{expand\_contract\_of\_residue\_parts\_vanish}
+checks the algebraic descent once the nonzero residue parts vanish.
+
+\clearpage
+\subsection*{Exact exception counts and an incompressibility argument}
+Through degree 1280 there are six products of distinct odd primes
+\(p<q\) with \(q\mid M_p\). The theorem and degree-\(p\) power
+tests give every exception to having a full-degree prime.
+Counts in this table identify each polynomial with its reciprocal.
+\[
+\begin{array}{r|r|r|r}
+ pq & q & \ord(z)&\text{exceptional pairs}\\\hline
+ 21&7&49&1\\
+ 155&31&961&3\\
+ 253&23&47081&23\\
+ 889&127&16129&7\\
+ 979&89&7921&1\\
+ 979&89&182183&23\\
+ 1081&47&394264529&148
+\end{array}
+\]
+As an independent test, direct NTL enumeration at degree 889
+checks 444 trinomial and 58,155,268 pentanomial reciprocal pairs.
+The seven exceptional interior supports, divided by 127, are
+\((1),(3),(1,2,3),(1,2,5),(1,3,5),(1,3,6),(2,3,4)\).
+At degree 1081 the two degree-23 irreducible base pairs of order
+178481 fail the index-47 test and hence give no exceptions.
+
+Now take \(p=1229\). All degree-1229 trinomials are reducible.
+Of the 319583 irreducible pentanomial pairs in its support census,
+five fail the \(36871\) test and six fail the \(46703\) test.
+The substitution is injective and commutes with reciprocation.
+Counting the two orientations separately gives
+\[
+\begin{array}{r|r|r|r}
+ q& pq &\text{exceptional pentanomials}&
+       \lceil\log_2\binom{pq-1}{3}\rceil\\\hline
+ 36871&45314459&639156&74\\
+ 46703&57397987&639154&75
+\end{array}
+\]
+There are no exceptional trinomials in either degree. The counts
+use only the two individual base-prime tests. They hold independently
+of whether any degree-1229 pentanomial is primitive.
+
+Here the incompressibility argument applies directly to sparse
+supports. Given \(p,q\) in either range of
+Theorem~\ref{thm:sparse-semiprime-primes}, let \(D\) be the number
+of exceptional oriented pentanomials. If \(D>0\), enumerate the
+irreducible degree-\(p\) pentanomials passing the index-\(q\) test,
+in lexicographic tap order, and multiply all three taps of the
+specified entry by \(q\). A fixed-length rank uses
+\(\lceil\log_2 D\rceil\) bits. Thus every exception has conditional
+plain Kolmogorov complexity at most \(\lceil\log_2 D\rceil+O(1)\)
+given \(p,q\). This is the enumeration argument of
+\href{https://ir.cwi.nl/pub/1907/1907D.pdf}{Buhrman, Jiang, Li and
+Vit\'anyi}. In the two displayed degrees the rank is exactly
+20 bits long, a saving of 54 or 55 bits against unrestricted
+tap triples. The comparison is with all three-tap supports.
+Proving primitive existence by this method would require a bound
+on the union of all prime-index failures among the irreducible
+sparse supports in each degree.
+
+\clearpage
+\subsection*{A bound at arbitrary weight and a consequence for composite degrees}
+The determinant gives an elementary bound at any weight \(w\ge3\).
+Use the notation of Lemma~\ref{lem:sparse-kummer-descent} with an
+arbitrary prime \(q\) coprime to \(s\). Suppose the degree-\(sq\)
+minimal polynomial of \(z\) has \(w\) terms, \(z^q\in A^\times B^\times\),
+\(z\notin A^\times B^\times\), and some exponent is not divisible
+by \(q\). Then
+\[
+ L_w=\sum_{i=0}^{\lfloor w/2\rfloor-1}(2^{w-1-i}-2^i),
+ \qquad q\le(2L_w)^{w-2}<2^{w^2}.
+\]
+In particular \(w>\sqrt{\log_2 q}\). At \(w=5\) the elementary
+bound is \(q\le42^3=74088\). The five-row calculation improves
+this to \(q\le31\).
+
+For \(q=2\) taking square roots preserves both subfields.
+For odd \(q\) the same field argument forces \(q\mid M_s\), so if \(s<w\)
+the inequality follows at once. Otherwise extend the within-class
+bases to \(w\) columns. With \(t\) occupied classes, \(2\le t\le w-1\).
+Translate one residue to zero. For each of the \(q\) possible
+multipliers, take the remaining \(t-1\) residues in \([0,q)\).
+Split each coordinate into \(H=2L_w\) equal intervals. If
+\(q>H^{w-2}\), two multipliers lie in the same box. Taking their
+difference gives a nonzero scalar for which all residues have signed
+representatives of absolute value less than \(q/H\). Their total
+span is less than \(q/L_w\). Translation and nonzero scaling preserve
+collisions between assignments.
+
+Assign the increasing weights \(1,2,\ldots,2^{w-1}\) to increasing
+residues, respecting multiplicities. This gives consecutive blocks
+and is the unique maximum over distinct label assignments, by strict
+improvement at every inversion. The minimum reverses the assignment.
+Pairing the largest and smallest row weights bounds the
+maximum minus the minimum by \(L_w\) times the span. It is less
+than \(q\), so the maximum stays isolated modulo \(q\).
+The Moore determinant proof forces every exponent to be divisible
+by \(q\), a contradiction.
+
+For a second application, let \(q\ge37\) be the largest prime
+factor of \(n=sq\), with \(s>1\) and \(q\nmid s\). For an irreducible
+binary trinomial or pentanomial of degree \(n\), its root order
+lacks a prime \(\ell\) satisfying
+\[
+              q\mid\ord_\ell(2),\qquad \gcd(s,\ord_\ell(2))>1
+\]
+exactly when the root lies in \(A^\times B^\times\)
+or the polynomial is \(G(X^q)\). Indeed, absence of such a prime
+puts every order prime in \(M_sM_q\). Every prime factor of \(s\)
+is smaller than \(q\), so none divides \(M_q\). Lifting at the primes
+of \(M_s\) and \(M_q\) again gives \(R\mid qM_sM_q\).
+Now apply Lemma~\ref{lem:sparse-kummer-descent}. In the reverse
+direction the root orders in the two cases have all their primes
+in \(M_sM_q\), by the same calculation as for semiprimes.
+
 \end{document}
