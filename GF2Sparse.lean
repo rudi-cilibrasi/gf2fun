@@ -74,6 +74,7 @@ import GF2Sparse.SeventhImage
 import GF2Sparse.SeventhPowerDegree
 import GF2Sparse.ShortProducts
 import GF2Sparse.SubfieldProducts
+import GF2Sparse.SubfieldSquare
 import GF2Sparse.ScalarOrderBound
 import GF2Sparse.SignedDegreeChoices
 import GF2Sparse.SignedTriples
