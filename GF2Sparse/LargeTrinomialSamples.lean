@@ -29,6 +29,12 @@ theorem primitive_74207281_of_trinomial (h : Primitive (trinomial 74207281 99996
   primitive_sample_at_origin (k := 4) ⟨37103640, by decide⟩ (by decide) (by decide)
     (by decide) (by decide) h
 
+/-- The ninth power of a primitive root with degree 48617 and tap 4275. -/
+theorem primitive_48617_of_trinomial (h : Primitive (trinomial 48617 4275)) :
+    Primitive ((X : BinaryPoly)^48617 + (X^4275 + X^3800 + X^475 + 1)) :=
+  primitive_sample_at_origin (k := 3) ⟨24308, by decide⟩ (by decide) (by decide)
+    (by decide) (by decide) h
+
 /-- Sampling a block whose two nonconstant trinomial exponents differ by
 a multiple of the sampling power. -/
 theorem primitive_sample_at_shift {n t u v w k : ℕ} (ht : 0 < t) (hu : 0 < u)

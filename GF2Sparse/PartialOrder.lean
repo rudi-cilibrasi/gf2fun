@@ -114,4 +114,22 @@ theorem prime_step_dvd_iff {u M L q : ℕ} (hM : 0 < M) (hq : q.Prime)
       simpa [hk, h, Nat.mul_comm] using Nat.lcm_dvd hdiv hL
     · exact fun hdiv => hu.trans hdiv
 
+/-- If the order already contains the third of three coprime factors of the
+ambient order, full order is equivalent to full order on the two projections. -/
+theorem orderOf_eq_iff_two_projections {G : Type*} [Monoid G] {z : G} {a b c : ℕ}
+    (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) (hab : a.Coprime b) (habc : (a*b).Coprime c)
+    (hz : orderOf z ∣ a*b*c) (hcz : c ∣ orderOf z) :
+    orderOf z = a*b*c ↔ orderOf (z^(b*c)) = a ∧ orderOf (z^(a*c)) = b := by
+  have project {d m : ℕ} (hm : 0 < m) (h : orderOf z = d*m) : orderOf (z^m) = d := by
+    have hd : m ∣ orderOf z := h ▸ dvd_mul_left m d
+    rw [orderOf_pow_of_dvd hm.ne' hd, h, Nat.mul_div_cancel _ hm]
+  constructor
+  · intro h
+    exact ⟨project (Nat.mul_pos hb hc) (h.trans (by ring)),
+      project (Nat.mul_pos ha hc) (h.trans (by ring))⟩
+  · rintro ⟨h₁, h₂⟩
+    have da : a ∣ orderOf z := h₁ ▸ orderOf_pow_dvd (x := z) (b*c)
+    have db : b ∣ orderOf z := h₂ ▸ orderOf_pow_dvd (x := z) (a*c)
+    exact Nat.dvd_antisymm hz (habc.mul_dvd_of_dvd_of_dvd (hab.mul_dvd_of_dvd_of_dvd da db) hcz)
+
 end GF2Sparse
