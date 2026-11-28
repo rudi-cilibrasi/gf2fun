@@ -16,6 +16,7 @@ from flint import fmpz
 
 from check_composite_orders import check_trinomials
 from check_factor_base import modulus, polynomial
+from check_large_trinomial_samples import samples
 from check_primo_certificate import check_primo
 from check_product_range import prime_index_powers, verify_primitive_modulus
 
@@ -164,6 +165,18 @@ def verify(n, row, proven, args):
             proven.add(p)
     for support in supports:
         verify_primitive_modulus(modulus(n, support), factors)
+    if "trinomial_five_term_powers" in row:
+        seeds = sorted(s[0] for s in supports if len(s) == 1)
+        images = samples(n, seeds)
+        powers = {str(t): [] for t in seeds}
+        for _, a, b, c, seed, exponent, reciprocal in images:
+            if [a, b, c] in supports or [n-c, n-b, n-a] in supports:
+                raise ValueError(f"power image repeats an archived degree-{n} pentanomial")
+            if not reciprocal:
+                powers[str(seed)].append(exponent)
+        if {t: sorted(es) for t, es in powers.items()} != row["trinomial_five_term_powers"]:
+            raise ValueError(f"incorrect five-term trinomial powers in degree {n}")
+        print(f"Degree {n}, verified {len(images)} distinct additional five-term power images.", flush=True)
     if len(supports) > 1:
         print(f"Degree {n}, all {len(supports)} listed sparse supports passed the full power "
               f"and the {len(set(factors))} factor-index powers.", flush=True)
