@@ -26457,4 +26457,119 @@ In particular, with the degree and template supplied to any fixed
 decoder, some such primitive polynomial needs at least 658 bits
 of description because only \(2^{658}-1\) shorter binary strings exist.
 
+\clearpage
+\section{Two descriptions give 301 terms in degree 1229}
+\label{sec:joint-301}
+\begin{theorem}
+More than \(2^{655}\) distinct primitive binary polynomials of degree
+1229 have at most 301 terms. More generally, given any monic
+constant-one template, more than \(2^{655}\) primitive polynomials
+differ in at most 300 positions and agree with one of its ends in
+516 interior positions. For each prescribed end separately the
+count exceeds \(17\cdot2^{650}\). For even-weight templates the
+distance is at most 299.
+\end{theorem}
+Use the signed-weight argument of Section~\ref{sec:1229-signed-weight}
+with cutoff 303, \(d=516\), 18 signed bits at each end of the free
+block, and \(u=160\) central bits. Use the new 13 frequencies in
+\nolinkurl{scripts/check_1229_signed_weight.py} and truncate the
+central weight at 86. Write \(N=2^{1229}-1\), \(s=U_0\),
+\(\mu=s/2^{516}\), \(D=516U_1/(2s)\), and \(S=1+\lfloor\sqrt N\rfloor\)
+as before. The simplified score \(W(303-2-I-J-86)\) is at most
+\(215W\) on every failed prime-index subgroup. The four known primes
+and Section~\ref{sec:1229-fourteen} give at most 18 order primes
+with reciprocal sum below \(1/20000\). The resulting field error
+is at most \(SM\) times
+\[
+   E=1032(61+258+18\cdot215)+\sum_{i=1}^{18}(1032+i)2^{(i-1)/2}.
+\]
+The principal term after subtracting failed subgroups is at least
+\(N\mu(D-61-215/20000)\).
+
+Use the parity and Selberg square at level \(z=230\) for the
+remaining positive tail. Let \(F\) be a character's squarefree
+nonlinear modulus, \(f=\deg F\), with \(a\) distinct factors.
+In addition to the two earlier bounds, the absolute local Fourier
+coefficient before the parity factor is at most
+\[
+             192\cdot2^{a+2z-2f}.
+\]
+To see this, consider squarefree sieve divisors \(D_1,D_2\) of
+degree at most \(z\) with \(F\mid[D_1,D_2]\). Write
+\(r=\deg D_1+\deg D_2-f\), so \(0\le r\le 2z-f\).
+Multiply the absolute upper bound for each term by
+\(2^{2z-f}2^{-r}\), which is at least one, then drop the degree
+cutoffs. For a prime of norm \(Q\) put \(v=Q/(Q-1)\).
+A required factor in \(F\) contributes at most
+\(Q^{-1}(2v+v^2/Q)\). An optional factor contributes at most
+\(1+2v/Q^2+v^2/Q^3\). These follow by placing the prime in either
+or both divisors and charging each degree beyond \(f\) to \(r\).
+
+For the required factors extract \(2^a/2^f\). The logarithm of the
+remaining product is at most \(2\sum_{P\mid F}|P|^{-1}\), using
+\(\log v\le1/(Q-1)\), \(v\le4/3\) and \(Q\ge4\). The sum of
+reciprocal norms is at most \(\sum_{k=2}^{8}1/k+461/(9\cdot512)<2\).
+The logarithm of the optional product is at most
+\(\sum_{k\ge2}((8/3)2^{-k}+(16/9)4^{-k})/k\le20/27<1\).
+Thus the combined factor after extracting \(2^a/2^f\) is below
+\(e^5<192\), proving the estimate.
+
+\clearpage
+\subsection*{Counting the middle and central words together}
+For \(f\le 2z\) use the least of the three bounds
+\[
+ L_f=\min\big(4/(z+3),\;5z^3\,3^{a_f}2^{-f},\;
+                         192\cdot2^{a_f+2z-2f}\big),
+\]
+where \(a_f\) is the largest number of different nonlinear
+irreducibles fitting in degree \(f\). Degrees two through eight
+suffice to compute every \(a_f\) used here. The full recurrence
+degree is \(m=f\) or \(f+1\), and the parity factor contributes
+\(1/2\). Group \(19\le m\le461\) in intervals \([l,h]\) of at most
+four integers as before. Write \(w\) for the middle character
+weight and \(v\) for its central character weight. A contributing
+character vanishes on both runs of 18 signed bits. Set
+\[
+ T_v=2^{-160}\sum_{j>86}(j-86)K_j(v;160).
+\]
+We have \(w\ge\lfloor516/h\rfloor\), \(v\ge\lfloor160/h\rfloor\)
+and \(w\le24\). The middle determining-block description of
+Section~\ref{sec:1229-signed-weight} gives a count \(V_w\), using
+18 for the adjacent zero run. A second description gives a bound
+on the number of characters with both weights fixed,
+\[
+       \binom{516}{w}\binom{160}{v}2^{\max(0,2h-712)}.
+\]
+Record both supports. With the two intervening or terminal runs of
+18 zeros they specify a contiguous word of length
+\(516+18+160+18=712\). When necessary append enough bits to reach
+\(2h\). The least-common-multiple recurrence argument recovers the
+entire sequence, so each description determines at most one character.
+
+For each middle weight and memory interval, the sum of \(|T_v|\)
+over the contributing characters is therefore at most
+\[
+ \min\left\{V_w\max_v |T_v|,\quad
+   \binom{516}{w}2^{\max(0,2h-712)}\sum_v\binom{160}{v}|T_v|\right\},
+\]
+with both extrema and sums over the allowed central weights. Multiply
+by \(U_w/s\) and half the largest applicable \(L_f\) in the interval,
+then sum and add the constant contribution \(2T_0/(z+3)\). The
+normalized positive tail is at most \(5089/10^6\). In particular the
+signed primitive-root score satisfies
+\[
+ Z\ge N\mu(D-61-215/20000)-SM E
+              -1229\cdot2^{1228}\mu\,(5089/10^6)>(26/100)N\mu.
+\]
+For the ordinary count apply Section~\ref{sec:capped-303} with cap
+\(H=\lfloor5M/2^{32}\rfloor\). For each parity the excess above
+this cap, summed over all supports with per-root positive score
+\(W_i(301-i-k)_+\), is strictly less than
+\((26/100)N\mu/1229-17\cdot2^{650}H\). This proves the one-end
+count. Its reciprocal gives the other end, with at most \(2^{196}\)
+polynomials in common. The finite tail, score and excess inequalities
+are checked in \nolinkurl{GF2Sparse/SignedWeight1229.lean}. A positive
+score requires distance below 301, and the even-template distance
+is odd. This proves the theorem.
+
 \end{document}
