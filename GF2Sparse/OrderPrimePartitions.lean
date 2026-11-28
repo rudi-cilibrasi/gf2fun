@@ -1,4 +1,5 @@
 import GF2Sparse.SparseOrderBounds
+import Mathlib.NumberTheory.Multiplicity
 
 /-! Prime-index tests for sparse witnesses whose root-order primes come from a proper subfield. -/
 
@@ -100,5 +101,78 @@ theorem expand_contract_of_residue_parts_vanish {f : BinaryPoly} {q : ℕ} (hq :
       omega
     simpa [g, coeff_exponentResiduePart] using
       (congrArg (fun h : BinaryPoly => h.coeff j) hg₀).symm
+
+private theorem not_dvd_index_iff_factorization {q R N : ℕ} (hq : q.Prime)
+    (hN : 0 < N) (hR : R ∣ N) (hd : q ∣ N) :
+    (¬ R ∣ N / q) ↔ R.factorization q = N.factorization q := by
+  have hRpos := Nat.pos_of_dvd_of_pos hR hN
+  obtain ⟨k, hk⟩ := hR
+  have hk₀ : k ≠ 0 := by rintro rfl; simp [hk] at hN
+  rw [Nat.dvd_div_iff_mul_dvd hd, hk, Nat.mul_comm q R,
+    Nat.mul_dvd_mul_iff_left hRpos, Nat.factorization_mul hRpos.ne' hk₀, Finsupp.add_apply]
+  constructor
+  · intro h
+    simp [Nat.factorization_eq_zero_of_not_dvd h]
+  · intro h
+    have hz : k.factorization q = 0 := by omega
+    exact ((Nat.factorization_eq_zero_iff k q).mp hz |>.resolve_left (not_not_intro hq)).resolve_right hk₀
+
+/-- An odd prime dividing a binary field order gains exactly one power
+at every level of the tower of extensions of degree that prime. -/
+theorem factorization_mersenne_prime_extension {q n : ℕ} (hq : q.Prime) (ho : Odd q)
+    (hn : 0 < n) (hd : q ∣ 2 ^ n - 1) (a : ℕ) :
+    (2 ^ (n * q^a) - 1).factorization q = (2^n - 1).factorization q + a := by
+  letI : Fact q.Prime := ⟨hq⟩
+  have h₂ : ¬q ∣ 2 := by
+    intro h
+    rcases (Nat.dvd_prime Nat.prime_two).mp h with h | h
+    · exact hq.ne_one h
+    · exact (by decide : ¬ Odd (2 : ℕ)) (h ▸ ho)
+  have hval := padicValNat.pow_sub_pow ho (Nat.one_lt_two_pow hn.ne') hd
+    (fun h => h₂ (hq.dvd_of_dvd_pow h)) (pow_ne_zero a hq.ne_zero)
+  rw [← Nat.factorization_def (q^a) hq, hq.factorization_pow] at hval
+  simpa [pow_mul, Nat.factorization_def _ hq] using hval
+
+/-- One base-field power test decides irreducibility at every positive
+height in the tower of odd-prime monomial substitutions. -/
+theorem irreducible_prime_power_expand_iff_index_test {f : BinaryPoly} (hf : Irreducible f)
+    (hc : f.coeff 0 = 1) {q : ℕ} (hq : q.Prime) (ho : Odd q)
+    (hd : q ∣ 2 ^ f.natDegree - 1) (a : ℕ) :
+    Irreducible (expand (ZMod 2) (q^(a+1)) f) ↔
+      AdjoinRoot.root f ^ ((2 ^ f.natDegree - 1) / q) ≠ 1 := by
+  constructor
+  · intro h
+    rw [pow_succ, expand_mul] at h
+    exact (irreducible_prime_expand_iff_index_test hf hc hq hd).mp
+      (of_irreducible_expand (pow_ne_zero _ hq.ne_zero) h)
+  · intro h
+    have hN := Nat.sub_pos_of_lt (Nat.one_lt_two_pow hf.natDegree_pos.ne')
+    have hR := orderOf_dvd_of_pow_eq_one (root_pow_field_order hf hc)
+    have hRpos := Nat.pos_of_dvd_of_pos hR hN
+    have hv := (not_dvd_index_iff_factorization hq hN hR hd).mp
+      (fun hdiv => h (orderOf_dvd_iff_pow_eq_one.mp hdiv))
+    suffices all : ∀ j : ℕ, Irreducible (expand (ZMod 2) (q^j) f) from all (a+1)
+    intro j
+    induction j with
+    | zero => simpa using hf
+    | succ j ih =>
+      rw [pow_succ', expand_mul]
+      let g := expand (ZMod 2) (q^j) f
+      have hdeg : g.natDegree = f.natDegree * q^j := natDegree_expand _ _
+      have hdg : q ∣ 2 ^ g.natDegree - 1 := by
+        rw [hdeg]
+        exact hd.trans (Nat.pow_sub_one_dvd_pow_sub_one 2 (Nat.dvd_mul_right _ _))
+      have hcg : g.coeff 0 = 1 := by simp [g, coeff_expand (pow_pos hq.pos j), hc]
+      apply (irreducible_prime_expand_iff_index_test ih hcg hq hdg).mpr
+      change ¬AdjoinRoot.root g ^ ((2 ^ g.natDegree - 1) / q) = 1
+      rw [← orderOf_dvd_iff_pow_eq_one]
+      apply (not_dvd_index_iff_factorization hq (Nat.sub_pos_of_lt
+        (Nat.one_lt_two_pow ih.natDegree_pos.ne')) (orderOf_dvd_of_pow_eq_one
+        (root_pow_field_order ih hcg)) hdg).mpr
+      change (orderOf (AdjoinRoot.root g)).factorization q = (2^g.natDegree-1).factorization q
+      rw [hdeg, factorization_mersenne_prime_extension hq ho hf.natDegree_pos hd,
+        root_order_irreducible_dilation hf (pow_pos hq.pos j) ih,
+        Nat.factorization_mul (pow_ne_zero _ hq.ne_zero) hRpos.ne',
+        Finsupp.add_apply, hq.factorization_pow, Finsupp.single_eq_same, hv, Nat.add_comm]
 
 end GF2Sparse

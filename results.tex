@@ -25460,4 +25460,252 @@ Now apply Lemma~\ref{lem:sparse-kummer-descent}. In the reverse
 direction the root orders in the two cases have all their primes
 in \(M_sM_q\), by the same calculation as for semiprimes.
 
+\clearpage
+\section{A fixed description of exceptional sparse supports in two infinite towers}
+\label{sec:prime-tower-tap-codes}
+Let \(p<q\) be distinct odd primes, \(a\ge1\) and \(n=pq^a\).
+Ask whether an irreducible binary trinomial or pentanomial of degree
+\(n\) has a prime \(\ell\) in its root order for which
+\(pq\mid\ord_\ell(2)\). At \(a=1\) this asks for a full-degree prime.
+At higher levels such a prime can have any binary degree
+\(pq,pq^2,\ldots,pq^a\).
+
+\begin{theorem}\label{thm:tower-mixed-primes}
+Assume \(q\ge37\), or \((p,q)=(11,23)\), or \(q\nmid M_p\).
+If \(p\le10000\) or \(n>(p+1)^3\), the polynomials with no such
+prime are exactly the irreducible substitutions \(G(X^{q^a})\)
+from degree \(p\). They exist precisely for the sparse irreducible
+bases \(G\) with \(q\mid M_p\) whose root \(u\) satisfies
+\(u^{M_p/q}\ne1\). Each substitution has root order \(q^a\ord(u)\).
+Without either size condition an exception can also have its root in
+\(\mathbb F_{2^p}^{\times}\mathbb F_{2^{q^a}}^{\times}\).
+\end{theorem}
+
+A consequence is that the exact number of exceptions at the first
+level stays constant throughout the tower. For \(p=1229\) every
+exception is a pentanomial. Here the last three columns count
+the bits in a fixed-length index for an unrestricted three-tap
+support at level \(a\).
+\[
+\begin{array}{r|r|r|rrr}
+q&\text{exceptions at each level}&\text{index bits}&a=1&a=2&a=3\\\hline
+36871&639156&20&74&120&165\\
+46703&639154&20&75&122&168
+\end{array}
+\]
+Given \(p,q,a\), the same decoder ranks the admissible degree-\(p\)
+bases and multiplies their taps by \(q^a\). Its 20-bit input length
+therefore stays fixed as \(\log_2\binom{pq^a-1}{3}\) grows.
+For example in degree \(2680658186861=1229\cdot46703^2\) this
+saves 102 bits. Each irreducible pentanomial outside that exact list
+has an order prime whose binary degree is \(1229\cdot46703\)
+or \(1229\cdot46703^2\).
+
+Two smaller towers permit direct checks in the expanded ring.
+In degree \(5819=11\cdot23^2\) all 23 exceptional reciprocal pairs
+have root order \(1082863\). In \(112903=7\cdot127^2\) all seven
+have order \(2048383\). For every displayed pair the verifier takes
+its predicted order \(R\), checks \(X^R=1\bmod f\), and verifies
+\(\gcd(f,X^{R/\ell}-1)=1\) for each prime \(\ell\mid R\).
+Every root then has order \(R\), and \(\ord_R(2)=\deg f\) proves
+irreducibility. The calculations are in
+\nolinkurl{scripts/check_kummer_sparse_orders.py}.
+
+\clearpage
+\subsection*{Descent when the subfields intersect}
+Write \(A_j=\mathbb F_{2^{pq^j}}\) and \(B_j=\mathbb F_{2^{q^j}}\).
+A single determinant argument will be used at several levels.
+Let \(A,B\) be finite binary subfields, \(D=A\cap B\), with
+\([A:D]\ge3\). Suppose \(y^q\in A\), \([A(y):A]=q\) and
+\(b\in B^\times\). When \(|B|\equiv2\bmod q\) and \(q\ge37\),
+a binary minimal polynomial of \(z=yb\) of weight at most five
+and degree divisible by \(q\) has the form \(G(X^q)\).
+
+To see this, repeat the proof of Lemma~\ref{lem:sparse-kummer-descent}
+with bases of the powers of \(y^q\) over \(D\). Coordinates in \(D\)
+are valid coefficients over \(B\). The fields \(A,B\) are linearly
+disjoint over \(D\), so these bases stay independent over \(B\).
+With at least two occupied classes their total capacity is at least
+\(2[A:D]\ge6\), enough to extend to five columns. The determinant
+lies in \(A(y)\). Its powers of \(y\) are independent across the
+\(q\) residue classes exactly as before. Each other residue part would
+be a polynomial of smaller degree vanishing at \(z\).
+
+For \(p=11,q=23\) in the tower the same conclusion holds. Work in
+\(A_a\) over \(B_a\), of relative degree eleven. In the five-row
+test permit row indices \(0,t,2t,3t,4t\) for \(t=1,2,3\), giving
+weights \(1,2^t,\ldots,2^{4t}\bmod23\). After setting the first
+two distinct residues to 0 and 1, all remaining tuples are exhausted
+over \(\mathbb F_{23}\). For multiplicities \((2,2,1)\) two tuples
+survive \(t=1\) and none survive \(t=2\). For \((2,1,1,1)\) the
+three survivor counts are \(60,6,0\). All other multiplicities
+already pass \(t=1\). Each within-block Moore determinant is nonzero.
+the subfield of size \(|B_a|^t\) is linearly disjoint from \(A_a\)
+over \(B_a\) since \(\gcd(t,11)=1\).
+Thus independent columns over \(B_a\) stay independent over this
+larger scalar field, where the indicated rows are consecutive.
+
+Suppose \(z^{q^a}\in A_0^\times B_a^\times\) and \(z\) is outside
+that product. Taking a \(q^a\)-th root of the second factor in \(B_a\)
+gives \(z=yb\) with \(y^{q^a}\in A_0\) and \(b\in B_a^\times\).
+Here \(q\nmid |B_a^\times|\). Necessarily \(q\mid M_p\), since
+otherwise raising to \(q^a\) is invertible in the whole field.
+There is a least \(h\ge1\) with \(y\in A_h\). All prime powers of
+\(\ord(y)\) away from \(q\) divide \(M_p\), and lifting gives
+\(v_q(M_{pq^j})=v_q(M_p)+j\). Consequently
+\[
+ v_q(\ord(y))=v_q(M_p)+h,\qquad y^q\in A_{h-1},\qquad
+ [A_{h-1}(y):A_{h-1}]=q .
+\]
+Take \(A=A_{h-1},B=B_a,D=B_{h-1}\). Their relative dimension
+\([A:D]=p\) suffices. Since \(q^a\equiv1\bmod(q-1)\),
+\(|B_a|\equiv2\bmod q\). The preceding descent gives \(f=G_1(X^q)\).
+
+\clearpage
+\subsection*{Why the entire prime power divides the taps}
+The contracted polynomial \(G_1\) is irreducible of degree
+\(pq^{a-1}\). Thus \(z^q\in A_{a-1}\). Since \(y^q\in A_{a-1}\),
+also \(b^q\in B_a\cap A_{a-1}=B_{a-1}\), and \(b\in B_{a-1}\)
+by invertibility of the \(q\)-th power map. If \(h<a\), both
+\(y,b\) would already belong to \(A_{a-1}\), contradicting the degree
+of \(z\). Hence \(h=a\). For \(a>1\) the \(q\)-valuation of
+\(\ord(z^q)\) is \(v_q(M_p)+a-1\), exceeding the valuation allowed
+in \(A_0^\times B_{a-1}^\times\). Its \(q^{a-1}\)-th power
+lies in this product, by the decomposition \(z^q=y^q b^q\).
+Induction forces \(G_1=G(X^{q^{a-1}})\). At \(a=1\) the first
+contraction already suffices.
+
+For the order assertion of Theorem~\ref{thm:tower-mixed-primes},
+if no prime has binary degree divisible by both \(p,q\), all order
+primes divide \(M_pM_{q^a}\). These two numbers are coprime.
+The prime \(p\) cannot divide \(M_{q^a}\), since \(\ord_p(2)\mid p-1<q\).
+Lifting at primes of the two factors therefore gives
+\(\ord(z)\mid q^a M_pM_{q^a}\), so \(z^{q^a}\in A_0^\times B_a^\times\).
+If \(q\nmid M_p\), the ordinary product already contains \(z\).
+The preceding descent applies otherwise. For a base root \(u\) of
+order \(T\), the first substitution is irreducible precisely when
+\(T\) carries the entire \(q\)-part of \(M_p\). Each successful
+substitution multiplies the root order by \(q\). Lifting adds one
+to the field-order valuation, so the index test succeeds again.
+Conversely an irreducible higher substitution requires the first
+one to be irreducible. This proves the order and the asserted
+description of every irreducible substitution. Lean checks the
+all-level equivalence in
+\texttt{irreducible\_prime\_power\_expand\_iff\_index\_test}.
+
+It remains to exclude the ordinary product in the two numerical ranges.
+A root \(z=u v\) there has components of degrees \(p,q^a\).
+An irreducible in this product has exponent gcd one. Indeed \(p\)
+cannot divide this gcd, since an irreducible \(p\)-fold substitution
+would require \(p\mid M_n\). The order \(\ord_p(2)>1\) divides
+\(p-1\), and \(\gcd(p-1,pq^a)=1\). If \(q\) divided the exponent
+gcd, then \(z^q\in A_{a-1}\), forcing \(v^q\), and hence \(v\), into
+\(B_{a-1}\). Now Section~\ref{sec:scalar-independent-bound} excludes
+the normalized product for \(7\le p\le10000\), and
+Section~\ref{sec:subfield-square-census} covers \(p=3,5\).
+Theorem~\ref{thm:subfield-square} gives \(n\le(p+1)^3\) in every
+remaining ordinary product since \(p\) is coprime to \(2M_p\).
+Both converse cases have all order primes in \(M_pM_{q^a}\).
+
+\clearpage
+\subsection*{A single tap decides a full-degree prime test for trinomials}
+\label{sec:two-prime-trinomial-tap}
+Let \(n=p^i q^j\) for distinct odd primes \(p<q\) and \(i,j\ge1\).
+For every irreducible binary trinomial \(X^n+X^k+1\), some prime
+\(\ell\) of its root order satisfies \(\ord_\ell(2)=n\) if and only
+if \(q\nmid k\). There is no size or congruence restriction on the
+two primes. For the pure prime-power degrees \(n=p^i\), every
+degree-\(n\) nonzero element has a full-degree prime.
+
+Here is the arithmetic behind the test. Put \(A=\mathbb F_{2^{n/q}}\),
+\(B=\mathbb F_{2^{n/p}}\), \(D=A\cap B\), and
+\(L=\operatorname{lcm}(|A^\times|,|B^\times|)\). In the absence
+of a full-degree prime every prime in the order \(R\) divides \(L\),
+since every proper divisor of \(n\) divides \(n/p\) or \(n/q\).
+For primes in \(|A^\times|\) lifting to degree \(n\) can add one
+power of \(q\). For primes in \(|B^\times|\) the valuation stays
+fixed, as \(p\nmid M_n\). Hence \(R\mid qL\).
+If \(R\mid L\), the root is in \(A^\times B^\times\). The exact
+trinomial test of Section~\ref{sec:trinomial-subfield-pairs}
+requires \(\gcd(k,pq,|D^\times|)>1\), which forces \(q\mid k\).
+
+Otherwise \(q\mid |A^\times|\) and \(q\nmid |B^\times|\).
+Consequently \(\ord_q(2)=p^i\) and \(H=|B|\bmod q\) has order
+\(p\). As \(z^q\in A^\times B^\times\), write \(z=yb\) with
+\(b\in B^\times,y^q\in A,[A(y):A]=q\). If \(q\nmid k\), the
+three exponents occupy two residue classes, with at most two
+columns in the zero class and one in the other. Extend the
+zero class to two columns over \(D\) if necessary. The three
+row weights \(1,H,H^2\) are distinct since \(p\ge3\).
+Assign the singleton to the last row. Its weighted sum differs
+from either alternative, and the other block occupies consecutive
+rows. The proof on page~\pageref{lem:sparse-kummer-descent} gives
+a nonvanishing determinant, contradicting the alleged relation.
+In the converse direction \(q\mid k\) gives a \(q\)-fold substitution.
+Its root order is \(q\) times an order dividing \(M_{n/q}\), and the
+irreducible substitution requires \(q\mid M_{n/q}\). Every prime
+of \(R\) then already divides \(M_{n/q}\). For \(n=p^i\), all
+smaller-degree primes lie in \(M_{n/p}\) and none equals \(p\).
+Their valuations stay fixed in the larger field. An order containing
+only those primes would put the element in the proper subfield.
+
+For an independent finite test, strip from \(M_n\) every prime that
+divides \(M_{n/p}M_{n/q}\) by repeated gcds. Powering by the product
+of the removed factors checks the tap rule without computing any
+multiplicative degrees and without using the valuation argument.
+Through degree 384 this checks all 150 irreducible reciprocal pairs
+in odd two-prime degrees, with six exceptions to the presence of a
+full-degree prime.
+
+\clearpage
+\subsection*{When a pentanomial in a two-prime degree must be a substitution}
+For the same \(p^i q^j,A,B,L\), an irreducible binary pentanomial
+whose root order lacks a full-degree prime has \(z\in A^\times B^\times\)
+or \(f(X)=G(X^q)\) whenever at least one of these conditions holds.
+\[
+ \ord_q(2)\ne p^i,\qquad p\ge53,\qquad
+ i=1\ \hbox{and}\ (q\ge37\ \hbox{or}\ (p,q)=(11,23)).
+\]
+Either conclusion implies the stated absence. In particular an
+irreducible with three consecutive exponents has a full-degree
+prime in each of these ranges. Consecutive exponents exclude the
+substitution and Section~\ref{sec:three-progression-scalar} excludes
+the maximal-subfield product for the progression of step one.
+
+The calculation on the preceding page shows that outside the ordinary
+product only \(\ord_q(2)=p^i\) needs consideration. Again \(z=yb\),
+where \(y^q\in A\), \([A(y):A]=q\), \(b\in B^\times\). For \(i=1\)
+the five-row descent applies over \(D\) with the previously verified
+row choices. For \(p\ge53\), \(H=|B|\bmod q\) generates a subgroup
+\(U\subset\mathbb F_q^\times\) of order \(p\). After extending the
+within-class bases, arrange the five columns into the same two to
+four blocks. Give each block of size \(m\) its own starting weight
+\(x_c\in U\) and use \(x_c,x_cH,\ldots,x_cH^{m-1}\).
+These are consecutive Frobenius rows in the block. For any alternative
+assignment \(\pi\), its collision with the target is a linear form
+in the starting weights with coefficient
+\[
+              \sum_{h=0}^{m-1} H^h(r_c-r_{\pi(c,h)})
+\]
+at block \(c\). Each form is nonzero. If a singleton changes its
+coefficient is nonzero. If all singletons stay fixed, the only
+layouts permitting further changes are \((3,2)\) and \((2,2,1)\).
+In an affected size-two block the coefficient is a nonzero residue
+difference times \(1,H\), or \(1+H\). All three are nonzero.
+
+Every nonzero linear form vanishes on at most a \(1/p\) fraction
+of \(U^t\), where \(t\) is the number of blocks. Except at
+\((2,1,1,1)\) there are at most 29 alternatives, so some tuple
+avoids them all. In the last layout reserve a singleton until the
+end. There are eleven alternatives keeping that singleton fixed,
+and one can avoid all eleven using the other variables.
+The 48 alternatives that move it each forbid at most one value of
+its starting weight. Since \(p>48\) an admissible value exists.
+The target is now isolated. Starting row indices may be chosen as
+discrete logarithms of the weights to base \(H\). A repeated row
+across blocks would allow a collision by a transposition, and all
+rows within a block are distinct. The Moore determinant descends
+the support as before. This argument requires no enumeration at
+individual primes.
+
 \end{document}

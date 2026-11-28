@@ -48,13 +48,13 @@ def cross(a, b):
 
 
 @cache
-def collision_forms(sizes):
+def collision_forms(sizes, weights=(1, 2, 4, 8, 16)):
     """One set of collision hyperplanes for each consecutive-block row assignment."""
     labels = tuple(i for i, size in enumerate(sizes) for _ in range(size))
 
     def sums(assignment):
         # Translation permits residue zero for the first group.
-        return tuple(sum(1 << row for row, label in enumerate(assignment) if label == group)
+        return tuple(sum(weights[row] for row, label in enumerate(assignment) if label == group)
                      for group in range(1, len(sizes)))
 
     assignments = set(permutations(labels))
@@ -136,6 +136,68 @@ def check_isolation():
         print(f"Multiplicities {sizes}: {len(remaining)} primes at least 37 "
               f"from the rational calculation, all verified.", flush=True)
 
+    # In a degree-eleven extension the steps 1, 2 and 3 all generate Frobenius.
+    for sizes in MULTIPLICITIES:
+        # Translation and scaling set the first two labelled residues to 0 and 1.
+        points = [(1, *tail) for tail in permutations(range(2, 23), len(sizes)-2)]
+        for step in (1, 2, 3):
+            weights = tuple(2**(step*i) for i in range(5))
+            charts = collision_forms(sizes, weights)
+            points = [point for point in points
+                      if not any(all(dot(h, point) % 23 for h in chart) for chart in charts)]
+        if points:
+            raise ArithmeticError(f"unresolved degree-eleven residues modulo 23: {points[0]}")
+    print("Steps 1, 2 and 3 cover every residue pattern modulo 23 at relative degree 11.")
+
+
+def check_second_level(p, q, taps, base_order):
+    """Prove every root of the expanded polynomial has the asserted order and degree."""
+    from flint import fmpz, nmod_poly
+
+    degree = p*q**2
+    order = base_order*q**2
+    if pow(2, degree, order) != 1 or any(pow(2, degree//d, order) == 1 for d in (p, q)):
+        raise ArithmeticError(f"incorrect binary degree for order {order}")
+    coefficients = [0]*(degree+1)
+    for exponent in (0, *taps, p):
+        coefficients[exponent*q**2] = 1
+    f = nmod_poly(coefficients, 2)
+    x = nmod_poly([0, 1], 2)
+    if x.pow_mod(order, f) != 1:
+        raise ArithmeticError(f"incorrect full power for {taps} in degree {degree}")
+    for prime, _ in fmpz(order).factor():
+        if (x.pow_mod(order//int(prime), f)-1).gcd(f) != 1:
+            raise ArithmeticError(f"a root fails the {prime} test in degree {degree}")
+
+
+def check_trinomial_orders(limit):
+    """Recover the proper-degree part of each field order independently by gcd."""
+    from check_factor_base import irreducible, modulus, polynomial
+
+    x = polynomial(2)
+    tested = exceptions = 0
+    for n in range(3, limit+1, 2):
+        factors = sorted(prime_divisors(n))
+        if len(factors) != 2:
+            continue
+        p, q = factors
+        proper = (2**(n//p)-1)*(2**(n//q)-1)
+        remaining = 2**n-1
+        while (part := gcd(remaining, proper)) > 1:
+            remaining //= part
+        exponent = (2**n-1)//remaining
+        for k in range(1, n//2+1):
+            f = modulus(n, (k,))
+            if not irreducible(f):
+                continue
+            missing = x.pow_mod(exponent, f) == 1
+            if missing != (k % q == 0):
+                raise ArithmeticError(f"wrong full-degree prime test for n={n}, k={k}")
+            tested += 1
+            exceptions += missing
+    print(f"Through {limit}, {tested} irreducible trinomial pairs in odd two-prime degrees "
+          f"give exactly {exceptions} exceptions to the full-degree prime test.")
+
 
 def check_counts():
     import csv
@@ -169,6 +231,8 @@ def check_counts():
                 for q in primes:
                     if x.pow_mod(group//q, f) != 1:
                         counts[p*q, q*order] += 1
+                        if (p, q) in ((7, 127), (11, 23)):
+                            check_second_level(p, q, taps, order)
     if counts != expected:
         raise ArithmeticError(f"incorrect small-degree dilation census {counts}")
     with gzip.open(DATA / "degree-1229-irreducible-supports.csv.gz", "rt", newline="") as source:
@@ -176,15 +240,18 @@ def check_counts():
     large = [2*sum(count for mask, count in masks.items() if not mask & bit) for bit in (1, 2)]
     if masks != {0: 319572, 1: 5, 2: 6} or large != [639156, 639154]:
         raise ArithmeticError(f"incorrect degree-1229 dilation counts {large}")
-    for q, count, bits in zip((36871, 46703), large, (74, 75)):
+    for q, count, bits in zip((36871, 46703), large, ((74, 120, 165), (75, 122, 168))):
         if not fmpz(q).is_prime() or pow(2, 1229, q) != 1:
             raise ArithmeticError(f"{q} must be a prime divisor of the base field order")
-        if (count-1).bit_length() != 20 or (comb(1229*q-1, 3)-1).bit_length() != bits:
+        sizes = tuple((comb(1229*q**j-1, 3)-1).bit_length() for j in (1, 2, 3))
+        if (count-1).bit_length() != 20 or sizes != bits:
             raise ArithmeticError("incorrect fixed-length support codes")
-    print("Small reciprocal-pair counts and orders verified. "
-          f"The two degree-1229 dilations have {large[0]} and {large[1]} exceptions.")
+    print("Small reciprocal-pair counts and orders verified, including all lifted polynomials "
+          "in degrees 5819 and 112903. "
+          f"The two towers over degree 1229 have {large[0]} and {large[1]} exceptions per level.")
 
 
 if __name__ == "__main__":
     check_isolation()
     check_counts()
+    check_trinomial_orders(384)
