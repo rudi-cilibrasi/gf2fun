@@ -22046,7 +22046,7 @@ gives 21 distinct pentanomial pairs with the stated index bound.
 \clearpage
 \section{Sparse primitive polynomials from the Mers Project tables}
 \label{sec:mers-project-orders}
-The following table gives additional polynomials of order exactly
+The following table gives polynomials of order exactly
 \(2^n-1\). A tuple lists the interior exponents of the monic binary
 polynomial with constant term one. The last column gives the number
 of distinct prime divisors of the field order.
@@ -22253,16 +22253,25 @@ PARI/GP verified the 895-step \href{https://factordb.com/cert/110000000085256858
 The factor list multiplies to \(M\). In the quotient by \(f\),
 FLINT verified \(X^M=1\) and \(X^{M/p}\ne1\) for each of the 27
 primes \(p\). NTL independently tested irreducibility and the 27
-prime-index powers. This certifies a five-term witness in a 66th
-degree in this section.
+prime-index powers.
 
-\paragraph{Seventeen candidates with one outstanding prime proof each.}
-For 17 further pentanomials in \nolinkurl{data/mers-project-large-orders.json},
+The pentanomial with taps \(2977,5954,19350\) in degree 22327 and the
+unique primitive trinomial pair there, with tap 2445, were already proved
+in Section~\ref{sec:semiprime-22327}. Its archived 6616-digit prime
+certificate completes the same row in the large-degree table. The combined
+tables certify 67 degrees. Of these, 66 have a known minimum weight,
+three in 32 degrees and five in 34. Their census has 99 irreducible
+pairs and 93 primitive pairs in 282084 classes. The cases 10967, 11581,
+14263 and 14971 also occur in Sections~\ref{sec:semiprime-norm-witnesses}
+and~\ref{sec:scalar-pair-census}.
+
+\paragraph{Sixteen candidates with one outstanding prime proof each.}
+For 16 further pentanomials in \nolinkurl{data/mers-project-large-orders.json},
 write \(2^n-1=AP\), where \(P\) is the largest listed factor.
 In every case \(\gcd(A,P)=1\) and the complete prime factorization
-of \(A\) is verified. NTL tested irreducibility and the 70 factor-index
+of \(A\) is verified. NTL tested irreducibility and the 65 factor-index
 powers across these rows. FLINT independently verified each full group
-power and all 70 factor-index powers. Write \(r=X\bmod f\). For each prime \(p\mid A\),
+power and all 65 factor-index powers. Write \(r=X\bmod f\). For each prime \(p\mid A\),
 the test \(r^{(2^n-1)/p}\ne1\) forces the full power of \(p\)
 in \(2^n-1\) to divide the root order. The test \(r^A\ne1\) then gives
 \(\operatorname{ord}(r)=Ad\) for a divisor \(d>1\) of \(P\).
@@ -22271,7 +22280,7 @@ A primality proof for \(P\) would give \(d=P\).
 The largest degree is 41521, with interior exponents \(6931,13862,34590\)
 and four listed factors. Its remaining integer certificate is for a
 12459-digit factor. The smallest remaining factor has 5701 digits in
-degree 19121. Each of the 17 certificates can be checked
+degree 19121. Each of the 16 certificates can be checked
 independently of the other degrees.
 
 \end{document}
