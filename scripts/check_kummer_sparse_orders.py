@@ -47,26 +47,22 @@ def cross(a, b):
     return (a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0])
 
 
+def row_charts(sizes, weights):
+    """For each consecutive-block assignment, compare with each different labelled assignment."""
+    labels = tuple(i for i, size in enumerate(sizes) for _ in range(size))
+    # Translation sets the first residue to zero, so its coordinate can be omitted.
+    sums = {way: tuple(sum(weights[row] for row, label in enumerate(way) if label == group)
+                       for group in range(1, len(sizes)))
+            for way in sorted(set(permutations(labels)))}
+    for order in permutations(range(len(sizes))):
+        target = tuple(i for i in order for _ in range(sizes[i]))
+        yield [tuple(a-b for a, b in zip(sums[target], vector))
+               for way, vector in sums.items() if way != target]
+
+
 @cache
 def collision_forms(sizes, weights=(1, 2, 4, 8, 16)):
-    """One set of collision hyperplanes for each consecutive-block row assignment."""
-    labels = tuple(i for i, size in enumerate(sizes) for _ in range(size))
-
-    def sums(assignment):
-        # Translation permits residue zero for the first group.
-        return tuple(sum(weights[row] for row, label in enumerate(assignment) if label == group)
-                     for group in range(1, len(sizes)))
-
-    assignments = set(permutations(labels))
-    all_sums = sorted({sums(way) for way in assignments})
-    if len(all_sums) != len(assignments):
-        raise ArithmeticError("distinct assignments must have distinct binary subset sums")
-    charts = []
-    for order in permutations(range(len(sizes))):
-        target = sums(tuple(i for i in order for _ in range(sizes[i])))
-        charts.append([tuple(a-b for a, b in zip(target, other))
-                       for other in all_sums if other != target])
-    return charts
+    return list(row_charts(sizes, weights))
 
 
 def equal_residue_hyperplanes(dimension, prime):
