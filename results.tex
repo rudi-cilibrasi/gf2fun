@@ -22204,9 +22204,9 @@ three and 34 have minimum weight five. FLINT independently verified
 irreducibility and the order classification for all 98 reported taps.
 
 PARI/GP verifies the large prime chains and FLINT checks the full
-group powers and each prime-index power. The external chains are
-identified in \nolinkurl{data/mers-project-large-orders.json}
-by their FactorDB certificate numbers.
+group powers and each prime-index power. The chains are archived under
+their FactorDB certificate numbers, which appear in
+\nolinkurl{data/mers-project-large-orders.json}.
 
 \clearpage
 \paragraph{Six higher degrees with no irreducible trinomial.}
@@ -22236,5 +22236,24 @@ for \(Y\) in \(Y^{281}+Y^2+1\), which has the divisor
 \(Y^8+Y^7+Y^5+Y^3+1\). For exponent 562, substitute \(X^{281}\)
 in \(Y^{101}+Y^2+1\), which has the divisor \(Y^3+Y^2+1\).
 This exhausts all reciprocal classes in the six degrees.
+
+\paragraph{A primitive pentanomial of degree 33511.}
+For \(n=33511=23\cdot31\cdot47\), the polynomial
+\[
+ f(X)=X^{33511}+X^{32291}+X^{2440}+X^{1220}+1
+\]
+has a root of order \(M=2^{33511}-1\). There are 27 distinct primes
+in \(M\), with 47 occurring twice. The largest prime has 9124 decimal
+digits and can be written succinctly as
+\[
+ P=\frac{\Phi_{33511}(2)}{14007599\cdot426863119} .
+\]
+PARI/GP verified the 895-step \href{https://factordb.com/cert/1100000000852568581}
+{PRIMO certificate for \(P\)}. FLINT proved the other 26 primes.
+The factor list multiplies to \(M\). In the quotient by \(f\),
+FLINT verified \(X^M=1\) and \(X^{M/p}\ne1\) for each of the 27
+primes \(p\). NTL independently tested irreducibility and the 27
+prime-index powers. This certifies a five-term witness in a 66th
+degree in this section.
 
 \end{document}

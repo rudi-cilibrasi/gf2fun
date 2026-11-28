@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **A primitive pentanomial in degree 33,511 is $X^{33511}+X^{32291}+X^{2440}+X^{1220}+1$.** Its root has order $2^{33511}-1$. We verified all 27 prime-index powers and the primality of every factor, including a 9,124-digit prime. The certificates for this degree and the 65 cases below are stored in the repository. [Proof](results.pdf#page=310) · [Order factorization](data/mers-project-large-orders.json) · [Primality certificates](data/mers-project-primality)
+
 - **In 65 additional degrees from 3,537 through 17,698, the minimum primitive weight is known.** Thirty-one admit primitive trinomials and the other 34 require pentanomials. In degree 17,683 a primitive pentanomial has interior exponents 2,170, 4,340 and 15,513. In degree 17,698 both $X^{17698}+X^{511}+1$ and the pentanomial with interior exponents 783, 1,566 and 16,915 are primitive. [First 63 witnesses](data/mers-project-sparse-orders.json) · [Two larger witnesses and further candidates](data/mers-project-large-orders.json) · [Proof](results.pdf#page=307)
 
 - **Of 270,921 trinomial reciprocal classes in these 65 degrees, 98 are irreducible and 92 are primitive.** In degree 4,809 the only irreducible taps are 91 and 931. Their roots have order $7(2^{687}-1)$. A primitive pentanomial has interior exponents 746, 1,119 and 3,690. [Complete tap lists](data/mers-project-trinomial-census.csv) · [Exact orders of all six exceptions](results.pdf#page=308)
@@ -224,13 +226,13 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
-The large-degree table gives candidate pentanomials, the complete proposed factor list for each field order, and identifiers for the external primality certificates. NTL tested irreducibility and each listed factor-index power during the search. To check one row independently, choose a degree and run the command below. It verifies the integer certificates with PARI/GP and the polynomial powers with FLINT. The cache retains a downloaded chain after it passes verification. To check just the factor product and polynomial powers, use `--powers-only`. [Large-degree table](data/mers-project-large-orders.json) · [Verifier](scripts/check_mers_project_orders.py)
+The large-degree table gives pentanomials, the proposed factor lists for their field orders, and the primality certificate identifiers. NTL tested irreducibility and each listed factor-index power during the search. The proofs for degrees 17,683, 17,698 and 33,511 can be replayed offline. To check a further candidate independently, choose its degree and run the command below. It verifies the integer certificates with PARI/GP and the polynomial powers with FLINT. The cache retains a downloaded chain after it passes verification. To check just the factor product and polynomial powers, use `--powers-only`. [Large-degree table](data/mers-project-large-orders.json) · [Verifier](scripts/check_mers_project_orders.py)
 
 In degrees 25,243, 25,933, 28,381, 28,771, 32,531 and 35,339, every trinomial is reducible. A primitive witness of weight at most five in any of these degrees must therefore have five terms. The proof uses Swan's theorem and explicit divisors of degree at most eight before substitution. [Proof](results.pdf#page=310)
 
 ```bash
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py \
-  --table data/mers-project-large-orders.json --degree 17698 --fetch-to /tmp/gf2fun-prime-proofs
+  --table data/mers-project-large-orders.json --degree 41263 --fetch-to /tmp/gf2fun-prime-proofs
 ```
 
 Degrees 41,681 and 53,381 are further targets for a sparse polynomial search. Each field order has three explicit smaller factors and one large cofactor in the Mers Project tables. The reconstruction command in Verification accepts `--degrees 41681 53381`. FactorDB supplies PRIMO chains for the respective 12,495-digit and 16,008-digit cofactors. [Degree 41,681 cofactor certificate](https://factordb.com/cert/1100000000776586446) · [Degree 53,381 cofactor certificate](https://factordb.com/cert/1100000000888500230)
@@ -715,7 +717,7 @@ To replay the Mers Project witnesses, install PARI/GP and run the command below.
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py
 ```
 
-To repeat the trinomial enumeration and verify the exact orders of the six exceptions, compile the NTL backend and pass its path to the verifier. Add `--degree 3537` to select the degree with four primitive pairs and one pair of index seven. For the final two census rows, use the larger table with `--degree 17683 --degree 17698` and `--fetch-to` as in the contributor instructions. [Trinomial census](data/mers-project-trinomial-census.csv)
+To repeat the trinomial enumeration and verify the exact orders of the six exceptions, compile the NTL backend and pass its path to the verifier. Add `--degree 3537` to select the degree with four primitive pairs and one pair of index seven. For the final two census rows, use `--table data/mers-project-large-orders.json --degree 17683 --degree 17698`. [Trinomial census](data/mers-project-trinomial-census.csv)
 
 ```bash
 c++ -std=c++17 -O3 scripts/prime_degree_trinomials.cpp -lntl -lgmp -o /tmp/gf2fun-trinomials
