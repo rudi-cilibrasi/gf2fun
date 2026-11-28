@@ -24630,4 +24630,210 @@ irreducible root order is 25, and its index has 5-adic valuation
 \nolinkurl{GF2Sparse/EllipticPentanomial.lean} checks the finite integer
 primitive-root conditions and the inequality on heights of differences.
 
+\clearpage
+\section{Prescribed local power traces of primitive roots}
+\label{sec:prescribed-root-traces}
+Fix \(q=2^n\) and \(z\in\mathbb F_q\). At a finite binary closed point,
+choose a root \(\beta\) of its irreducible polynomial, of degree \(d\).
+Write
+\[
+ M_{\beta,j}(z)=\sum_{i=0}^{n-1}(\beta-z^{2^i})^{-j}
+      \in\mathbb F_{2^d},\qquad
+ M_{\infty,j}(z)=\operatorname{Tr}_{\mathbb F_q/\mathbb F_2}(z^j).
+\]
+Exclude poles. Squaring gives \(M_{\beta,2j}=M_{\beta,j}^2\), and
+replacing \(\beta\) by a conjugate conjugates the answer. At each chosen
+point assign arbitrary values for \(j=1,3,\ldots,2e_\beta-1\).
+The total number of assigned bits is \(g=\sum_\beta e_\beta d_\beta\),
+counting each closed point once and giving infinity degree one.
+
+\begin{theorem}\label{thm:prescribed-root-traces}
+Put \(L=\log\log n\), \(T=L\log L\), using natural logarithms.
+There is an absolute \(C\) such that for sufficiently large \(n\), if
+\[
+                2^{n/2-g}\ge C n^2 T^3/\log n,
+\]
+every assignment is realized by roots of
+\(\gg 2^{n-g}/(nT^3)\) distinct degree-\(n\) binary polynomials.
+All six of \(z,z+1,1/z,1/(z+1),z/(z+1),(z+1)/z\) are primitive.
+In particular one may assign
+\(n/2-2\log_2 n+\log_2\log n-O(\log\log\log n)\) bits.
+In degree 1229, every assignment of at most 598 bits has more than
+\(2^{618}\) such polynomial representatives.
+\end{theorem}
+
+For a sparse template \(f\), the assignment may be read directly from
+\(f'/f\) at the finite points and from the reciprocal polynomial at
+infinity. In particular take a monic binary \(D\) of degree \(g\),
+using its prime divisors as points and their multiplicities as the
+\(e_\beta\). Choosing zero at every point gives primitive polynomials
+\[
+                F=A^2+X(DE)^2,\qquad
+                \deg E\le \lfloor(n-1)/2\rfloor-g.
+\]
+Indeed \(F'/F\) has Taylor coefficients \(M_{\beta,j}\) at orders
+\(j-1\) by its partial fractions. Vanishing through order \(2e_\beta-1\)
+is equivalent to \(D^2\mid F'\). More generally, for any template
+coprime to \(D\), prescribing its values forces \(D^2\mid F'f+Ff'\).
+The divisor can be chosen before the primitive element is found.
+
+\clearpage
+\subsection*{The character sum for an arbitrary trace assignment}
+Take \(U\) to be the affine line with zero, one and all finite poles
+removed. Its number \(u\) of rational points over \(\mathbb F_q\)
+is at least \(q-g-2\). For each selected odd index at a degree-\(d\)
+point the trace pairing with a coefficient \(c\in\mathbb F_{2^d}\)
+gives the rational function
+\[
+        R_{\beta,j,c}(Z)=
+        \sum_{h=0}^{d-1}\frac{c^{2^h}}{(Z-\beta^{2^h})^j}
+                    \in\mathbb F_2(Z).
+\]
+Expanding both field traces and cycling the conjugates gives
+\(\operatorname{Tr}_{q/2}R_{\beta,j,c}(z)
+  =\operatorname{Tr}_{2^d/2}(cM_{\beta,j}(z))\).
+At infinity use \(cZ^j\), \(c\in\mathbb F_2\).
+Orthogonality expresses the assignment indicator as an average of
+\(2^g\) additive characters of sums \(R\) of these functions,
+with signs determined by the target values. Every nonzero choice has
+a pole of odd order, taking the greatest active \(j\) at any active
+point. In particular the corresponding Artin--Schreier character
+is geometrically nontrivial.
+
+Twist also by multiplicative characters \(\chi_0(z)\chi_1(z+1)\).
+Each nonprincipal sum on \(U\) has absolute value at most
+\((2g+1)\sqrt q\). To see the constant, the Kummer factors are tame
+and independent at zero and one when \(R=0\). At a pole of \(R\)
+the wild conductor is its odd pole order, at most \(2e_\beta-1\).
+The genus-zero Euler characteristic formula bounds the first compactly
+supported cohomology dimension by the number of geometric punctures
+minus two plus the sum of the wild conductors. There are the finite
+places in the assignment and at most three other punctures, including
+infinity. Summing with geometric multiplicities gives at most \(2g+1\),
+also when infinity itself is active. The trace formula and the
+Riemann hypothesis for curves give the estimate. See
+\href{https://arxiv.org/pdf/1303.3650\#page=11}{L.~Fu and D.~Wan,
+\emph{A Class of Incomplete Character Sums}, Section~4}, and the pole
+calculation in
+\href{https://www.epfl.ch/labs/tan/wp-content/uploads/2018/10/Algebraic-Twists-of-Modular-Forms-and-Hecke-Orbits.pdf}
+{E.~Fouvry, E.~Kowalski and P.~Michel, Proposition~10.1}.
+
+Set \(N=q-1\). For \(p\mid N\) write the exponents of \(z,z+1\) modulo
+\(p\) relative to a generator as \((i,j)\). Failure of any of the six
+tests is the union of \(i=0,j=0,i=j\). Its mean over the exponent
+plane is \(b_p=3/p-2/p^2\). Its normalized Fourier coefficients have
+absolute sum at most five, by adding the three line indicators and
+subtracting twice the point indicator at the origin. For distinct
+primes the means multiply, by the Chinese remainder theorem on the
+two exponent coordinates. The character bound controls the discrepancy
+on actual field elements.
+
+\clearpage
+\subsection*{A uniform sieve for the six orders}
+Write \(Z=\exp(A L\log L)\) with a sufficiently large absolute \(A\).
+For \(p\mid N\), group primes by \(d=\ord_p(2)\mid n\).
+At a fixed \(d\) there are at most \(d\) such primes, and their
+reciprocals sum to at most \((1+\log d)/d\), since they are distinct
+integers \(1+jd\). The contribution from \(p>Z\) of orders
+\(d\le Z^{1/3}\) is \(O(Z^{-1/3})\).
+For the other orders put \(\eta=1/L\). We have
+\[
+ \sum_{d\mid n}d^{-1+\eta}
+ \le\prod_{p\mid n}(1-p^{-1+\eta})^{-1}=L^{O(1)}.
+\]
+Indeed for \(p\le\log n\) one has \(p^\eta\le e\) and Mertens'
+reciprocal-prime sum is \(O(\log L)\). For larger \(p\) there are at
+most \(\log n/L\) prime divisors, each contributing at most
+\(e/\log n\) to the sum of \(p^{-1+\eta}\).
+Using \(1+\log d\ll L d^{\eta/2}\), the tail over the other orders
+is \(\ll L^{O(1)} Z^{-1/(6L)}\). Choosing \(A\) large gives
+\(\sum_{p\mid N,p>Z}1/p=o(T^{-3})\).
+
+For the primes through \(Z\), Mertens' product estimate gives
+\[
+ \prod(1-b_p)=\prod(1-1/p)(1-2/p)\gg(\log Z)^{-3}\gg T^{-3}.
+\]
+All primes considered are odd, and the product of
+\((1-2/p)/(1-1/p)^2\) over odd primes is positive.
+Use lower Bonferroni inclusion-exclusion through the least odd
+\(b\ge100L\). Its constant differs from the product by
+\(o(T^{-3})\), by the exponential series tail with
+\(\sum b_p\le3\log\log Z+O(1)\).
+There are at most \(Z^b\) distinct products of at most \(b\) primes
+in this range. The absolute Fourier mass for each is at most \(5^b\),
+so the total character-sum error is \(n^{1+o(1)}\sqrt q\).
+Finally subtract the three lines separately for each remaining prime.
+Their main terms total \(o(u/(2^g T^3))\). There are
+\(O(n/\log n)\) primes dividing \(N\), since the product of \(k\)
+distinct primes exceeds \(k!\). Thus the additional error is
+\(O(n^2\sqrt q/\log n)\). The stated hypothesis leaves
+\(\gg u/(2^g T^3)\) roots. Each primitive element has degree \(n\)
+and the local conditions are invariant under squaring, so division
+by \(n\) gives the polynomial count.
+
+For \(n=1229\), Theorem~\ref{thm:1229-cofactor-bound} and the four
+known primes give \(\omega(N)\le19\) and \(\sum_{p\mid N}1/p<1/20000\).
+A union bound on all 57 lines gives at least
+\[
+ \frac{19997(q-g-2)}{20000\cdot2^g}
+          -58(2g+1)(1+\lfloor\sqrt q\rfloor)
+\]
+roots. At \(g=598\) this exceeds \(1229\cdot2^{618}\). Taking zero
+at the origin and \(g=596\) leaves the highest 19 odd positions free,
+including the compulsory leading term. To require at most twelve odd
+terms remove at most \(2^{614}(3/310)\sum_{j=12}^{18}\binom{18}j\)
+irreducibles by the fixed-odd-part sieve in
+Theorem~\ref{thm:logarithmic-odd-terms}. More than \(2^{619}\)
+polynomials remain with all six images primitive.
+
+\clearpage
+\subsection*{How closely two degree-1229 pentanomials agree}
+For any two distinct monic binary irreducibles of degree \(n>1\),
+write \(f=A^2+XB^2,\ h=C^2+XE^2\) and put \(W=AE+BC\).
+Then
+\[
+             \frac{f'}f+\frac{h'}h=\frac{W^2}{fh}.
+\]
+The determinant \(W\) is nonzero. Otherwise \(f\mid f'h\) would
+contradict irreducibility and separability. If \(v_\beta(W)=v\)
+at a finite point away from the roots, the first \(2v\) successive
+moments agree and the next differs. At infinity use
+\(v_\infty=n-1-\deg W\), by reversing both degree-\(n\) polynomials.
+Indeed the determinant for the reversed pair is \(X^{n-1}W(1/X)\),
+as follows by reversing the even and odd parts.
+
+In degree 1229 compare all 22 irreducible pentanomials that fail a
+known prime test with all 639144 that pass the four known tests.
+The table gives the exact maxima over the resulting 14061168 pairs.
+A triple denotes the interior taps. Each unit in the maximum column
+represents two consecutive equal traces at the indicated point.
+\[
+\begin{array}{l|r|l|l}
+ \text{quantity}&\text{maximum}&\text{failed taps}&\text{passing taps}\\\hline
+ v_0&862&(855,870,1152)&(855,1144,1226)\\
+ \min(v_0,v_\infty)&574&(34,36,152)&(38,152,1149)\\
+ v_0+v_\infty&1211&(162,170,604)&(136,138,604)\\
+ \min(v_0,v_1,v_\infty)&129&(290,307,964)&(34,307,452)\\
+ v_0+v_1+v_\infty&1212&(162,170,604)&(136,138,604)
+\end{array}
+\]
+For the last pair \(W=X^{682}(X^{17}+X^{13}+X+1)\). Roots of the two
+pentanomials therefore agree in their first 1364 inverse power traces and their
+first 1058 positive power traces. Nevertheless, the first polynomial
+fails the index-36871 test and the second passes every known test.
+This supplies two actual five-term inputs with 2422 equal consecutive
+trace values across the two ends and provably different orders.
+The order of the passing example is still open.
+
+The computation forms each sparse determinant by shifts and exclusive
+or. Its lowest and highest bits give the two endpoint valuations.
+At one the coefficient of \(T^j\) in \(W(1+T)\) is given by Lucas's
+rule. Equivalently, writing \(W=L+X^{2^s}H\) with
+\(\deg L,\deg H<2^s\), the valuation is that of \(L+H\) if it is
+nonzero, and otherwise is \(2^s+v_1(H)\).
+\nolinkurl{scripts/check_prescribed_root_traces.py} replays the census,
+the finite counting bound and the closed-point trace identity in three
+small extension fields. \nolinkurl{GF2Sparse/OddCoefficientBounds.lean}
+checks the determinant identity and both finite inequalities.
+
 \end{document}
