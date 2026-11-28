@@ -77,6 +77,45 @@ def tail_bound(d, observed, free, frequency, level, start):
     return weighted / (2 << free)
 
 
+def capped_count(group, mean, peak):
+    """Convert the signed score to an ordinary count by bounding the excess above a cap."""
+    d = FIXED
+    free = N-1-2*d
+    threshold = 21*peak//2**35
+    # A prefix of length k includes free weights 0 through k-1 of the given parity.
+    prefixes = []
+    for parity in (0, 1):
+        count = moment = 0
+        prefix = [(count, moment)]
+        for k in range(free+1):
+            if k % 2 == parity:
+                ways = comb(free, k)
+                count += ways
+                moment += k*ways
+            prefix.append((count, moment))
+        prefixes.append(prefix)
+
+    excess = [0, 0]
+    for i in range(CUTOFF-2):
+        row = krawtchouk_row(d, i, len(FREQUENCY)-1)
+        weight = sum(g*k for g, k in zip(FREQUENCY, row, strict=True))**2
+        if weight == 0:
+            continue
+        limit = min(free+1, max(0, CUTOFF-2-i-threshold//weight))
+        for parity in (0, 1):
+            ways, moment = prefixes[(parity-i) % 2][limit]
+            extra = weight*((CUTOFF-2-i)*ways-moment) - threshold*ways
+            excess[parity] += comb(d, i)*extra
+
+    score = Fraction(91, 100)*group*mean/N
+    lower = min((score-extra)/threshold for extra in excess)
+    if lower <= 9*2**654 or 2*lower-2**free <= 2**658:
+        raise ArithmeticError("the capped score did not give the claimed multiplicity")
+    print("More than 9 times 2^654 primitive polynomials realize each prescribed end, "
+          "and more than 2^658 realize at least one end.")
+    return lower
+
+
 def signed_count():
     n, d, t = N, FIXED, OBSERVED
     group = 2**n - 1
@@ -109,6 +148,7 @@ def signed_count():
     print(f"The normalized signed score exceeds {floor(1000*score/(group*mean))}/1000.")
     print(f"More than 2^{count.bit_length()-1} distinct primitive polynomials have at most "
           f"{CUTOFF-2} terms.")
+    capped_count(group, mean, peak)
     return count
 
 
