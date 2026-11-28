@@ -1,5 +1,6 @@
 import GF2Sparse.AdditiveOrbit
 import GF2Sparse.OrderBound
+import GF2Sparse.PolynomialSupport
 
 /-! Ore's binary linearized associate divided by X. Replacing every support
 index i by 2^i-1 preserves weight and turns primitivity into irreducibility. -/
@@ -63,14 +64,6 @@ theorem oreLift_degree {p : BinaryPoly} (hp : p ≠ 0) :
   rw [oreLift_support] at hm
   obtain ⟨i, hi, rfl⟩ := Finset.mem_map.1 hm
   exact (not_lt_of_ge (oreIndex_strict.monotone (le_natDegree_of_mem_supp _ hi))) hk
-
-private theorem aeval_binary_support {A : Type*} [Semiring A] [Algebra (ZMod 2) A]
-    (p : BinaryPoly) (x : A) : aeval x p = ∑ i ∈ p.support, x^i := by
-  rw [aeval_def, eval₂_eq_sum, sum_def]
-  apply Finset.sum_congr rfl
-  intro i hi
-  have h : ∀ a : ZMod 2, a ≠ 0 → a = 1 := by decide
-  rw [h _ (mem_support_iff.1 hi), map_one, one_mul]
 
 /-- Evaluation at Frobenius is ordinary evaluation of the linearized polynomial. -/
 theorem oreLift_frobenius {K : Type*} [Field K] [Algebra (ZMod 2) K] (p : BinaryPoly) (z : K) :

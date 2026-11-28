@@ -11,9 +11,12 @@ variable {K : Type*} [Field K]
 
 def pairDegree (p b : K[X]) : ℕ := max p.natDegree b.natDegree
 
-private theorem same_ratio_of_small_degree {f ρ p b A B : K[X]}
+/-- Modular representations agree as rational functions when both cross products
+have degree below the modulus. The numerator and denominator may have different sizes. -/
+theorem same_ratio_of_cross_degrees {f ρ p b A B : K[X]}
     (hp : f ∣ p - ρ * b) (hA : f ∣ A - ρ * B)
-    (small : pairDegree p b + pairDegree A B < f.natDegree) : p * B = b * A := by
+    (hpB : p.natDegree + B.natDegree < f.natDegree)
+    (hbA : b.natDegree + A.natDegree < f.natDegree) : p * B = b * A := by
   have hd : f ∣ p * B - b * A := by
     obtain ⟨u, hu⟩ := hp
     obtain ⟨v, hv⟩ := hA
@@ -21,12 +24,28 @@ private theorem same_ratio_of_small_degree {f ρ p b A B : K[X]}
     calc
       p * B - b * A = (p - ρ * b) * B - b * (A - ρ * B) := by ring
       _ = f * (u * B - b * v) := by rw [hu, hv]; ring
-  have bound : (p * B - b * A).natDegree ≤ pairDegree p b + pairDegree A B :=
-    (natDegree_sub_le _ _).trans (max_le
-      (natDegree_mul_le_of_le (le_max_left _ _) (le_max_right _ _))
-      (natDegree_mul_le_of_le (le_max_right _ _) (le_max_left _ _)))
+  have bound : (p * B - b * A).natDegree < f.natDegree :=
+    (natDegree_sub_le _ _).trans_lt (max_lt
+      ((natDegree_mul_le).trans_lt hpB) ((natDegree_mul_le).trans_lt hbA))
   by_contra h
-  exact (not_lt_of_ge (natDegree_le_of_dvd hd (sub_ne_zero.mpr h))) (bound.trans_lt small)
+  exact (not_lt_of_ge (natDegree_le_of_dvd hd (sub_ne_zero.mpr h))) bound
+
+/-- At the first Euclidean numerator of degree at most the proposed numerator's degree,
+the preceding remainder's degree determines the denominator degree. Any fraction of
+total degree below the modulus must agree with this convergent. -/
+theorem same_ratio_at_degree_crossing {f ρ p b A B : K[X]} {previousDegree : ℕ}
+    (hp : f ∣ p - ρ * b) (hA : f ∣ A - ρ * B)
+    (hden : previousDegree + b.natDegree = f.natDegree)
+    (hcross : p.natDegree ≤ A.natDegree) (hprev : A.natDegree < previousDegree)
+    (htotal : A.natDegree + B.natDegree < f.natDegree) : p * B = b * A :=
+  same_ratio_of_cross_degrees hp hA (by omega) (by omega)
+
+private theorem same_ratio_of_small_degree {f ρ p b A B : K[X]}
+    (hp : f ∣ p - ρ * b) (hA : f ∣ A - ρ * B)
+    (small : pairDegree p b + pairDegree A B < f.natDegree) : p * B = b * A :=
+  same_ratio_of_cross_degrees hp hA
+    ((Nat.add_le_add (le_max_left _ _) (le_max_right _ _)).trans_lt small)
+    ((Nat.add_le_add (le_max_right _ _) (le_max_left _ _)).trans_lt small)
 
 /-- Two independent modular representations force every other representation with
 a nonzero denominator to have degree at least the modulus degree minus their maximum degree. -/

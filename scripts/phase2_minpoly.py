@@ -2,7 +2,8 @@
 using FLINT's subquadratic fmpz_mod_poly half-GCD (takes ~15 seconds for N=52488!).
 Also supports --selftest on a toy 200x200 matrix mod C to verify Phases 1, 2, 3 end-to-end!
 """
-import argparse, struct, time
+import argparse, gzip, struct, time
+from pathlib import Path
 from flint import fmpz, fmpz_mod_poly_ctx
 
 from math import prod
@@ -21,7 +22,18 @@ def write_u960(val):
     limbs = [(val >> (64 * i)) & ((1 << 64) - 1) for i in range(15)]
     return struct.pack("<15Q", *limbs)
 
-def half_gcd_minpoly(seq, C):
+def read_moments(raw):
+    if len(raw) < 8:
+        raise ValueError("missing scalar sequence header")
+    n, count = struct.unpack_from("<II", raw)
+    if not n or count != 2*n or len(raw) != 8+120*count:
+        raise ValueError("the sequence must supply exactly twice the matrix dimension in moments")
+    seq = [read_u960(raw, 8+120*i) for i in range(count)]
+    if any(v >= COFACTOR for v in seq):
+        raise ValueError("scalar moment outside the cofactor residue range")
+    return n, seq
+
+def half_gcd_minpoly(seq, C, certify_rank=False):
     """Compute minimal polynomial P(z) = sum_{j=0}^L p_j z^j (monic, p_L=1) of seq[0..2N-1] mod C
     using FLINT's fast subquadratic fmpz_mod_poly.minpoly() or half-GCD!
     Wait: check if fmpz_mod_poly has minpoly or use recursive Half-GCD (HGCD)!
@@ -124,13 +136,23 @@ def half_gcd_minpoly(seq, C):
     # P(z) = sum_{j=0}^L p_j z^j where p_{L-j} = v1[j] * inv0 mod C, so p_L = 1!
     p = [(int(v1[L - j]) * inv0) % C for j in range(L + 1)]
     assert p[L] == 1
+    if certify_rank:
+        if L != N or gcd(p[0], C) != 1:
+            raise ArithmeticError("the projected sequence does not certify an invertible square matrix")
+        det = u0*v1-u1*v0
+        if (det.degree() != 0 or gcd(int(det[0]), C) != 1
+                or a != u0*X2N+v0*S or b != u1*X2N+v1*S
+                or b.degree() >= N or v1*a-v0*b != det*X2N):
+            raise ArithmeticError("the complete Pade recurrence or coprimality certificate failed")
+        print(f"Verified the full length-{2*N} recurrence and its unit polynomial determinant.")
     return p
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--selftest", action="store_true")
-    ap.add_argument("--seq", type=str)
-    ap.add_argument("--out", type=str)
+    ap.add_argument("--seq", type=Path, help="binary or gzip-compressed scalar moments from phase one")
+    ap.add_argument("--out", type=Path, help="destination for the phase-three coefficients")
+    ap.add_argument("--certify-rank", action="store_true", help="check a full-rank Krylov certificate over the composite modulus")
     args = ap.parse_args()
 
     if args.selftest:
@@ -150,14 +172,17 @@ def main():
         assert p_rec == p_true
         return
 
+    if args.seq is None or args.out is None:
+        ap.error("--seq and --out are required for a matrix computation")
     t0 = time.time()
-    raw = open(args.seq, "rb").read()
-    N, seq_len = struct.unpack_from("<II", raw, 0)
+    with (gzip.open(args.seq, "rb") if args.seq.suffix == ".gz" else args.seq.open("rb")) as stream:
+        raw = stream.read()
+    N, seq = read_moments(raw)
+    seq_len = len(seq)
     print(f"Loaded sequence: N={N}, seq_len={seq_len}")
-    seq = [read_u960(raw, 8 + 120 * k) for k in range(seq_len)]
     print(f"Unpacked {len(seq)} 943-bit integers in {time.time()-t0:.2f}s. Running FLINT Half-GCD...")
     t1 = time.time()
-    p = half_gcd_minpoly(seq, COFACTOR)
+    p = half_gcd_minpoly(seq, COFACTOR, args.certify_rank)
     L = len(p) - 1
     print(f"Half-GCD DONE in {time.time()-t1:.2f}s! Minimal polynomial degree L = {L} / {N}")
 

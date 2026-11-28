@@ -1,0 +1,266 @@
+"""Check which powers of primitive trinomial roots have sparse minimal polynomials."""
+
+import argparse
+from collections import Counter
+from fractions import Fraction
+from functools import cache
+from itertools import combinations, permutations
+from math import comb, gcd, lcm
+
+from check_cubed_parity import X, polynomial
+from check_cubing_chains import primitive
+
+
+def power_support(support, m):
+    """Support from the equal-residue or midpoint formula for a primitive trinomial."""
+    for a, c in combinations(support, 2):
+        if (c-a) % m == 0:
+            b, = set(support) - {a, c}
+            step = (c-a)//m
+            block = {a+j*step for j in range(m+1) if comb(m, j) % 2}
+            return tuple(sorted(block ^ {b}))
+    for a, b, c in permutations(support):
+        if (a+c-2*b) % m == 0 and m in (5, 7):
+            t = (a+c-2*b)//m
+            counts = Counter((*support, b+t, b+(m//2)*t))
+            return tuple(sorted(e for e, count in counts.items() if count % 2))
+    raise ValueError("a primitive trinomial of degree above seven must match one of the formulas")
+
+
+def exceptional_degrees(points, original, equations):
+    """Solve every affine ordering of the support condition over the rationals."""
+    degrees = set()
+    for chosen in permutations(points, len(equations[0])):
+        parameters = set()
+        for row in equations:
+            a, b = (sum(c*p[i] for c, p in zip(row, chosen)) for i in range(2))
+            if a:
+                parameters.add(Fraction(-b, a))
+            elif b:
+                break
+        else:
+            if not parameters:
+                raise ArithmeticError("the condition holds identically for this ordering")
+            if len(parameters) != 1:
+                continue
+            s, = parameters
+            if len({a*s+b for a, b in points}) != 5:
+                continue
+            roots = sorted(a*s+b for a, b in original)
+            differences = [v-roots[0] for v in roots[1:]]
+            scale = lcm(*(v.denominator for v in differences))
+            tap, degree = (int(scale*v) for v in differences)
+            degrees.add(degree//gcd(tap, degree))
+    return degrees
+
+
+def check_patterns():
+    zero, one, two, three, four, five = ((0, i) for i in range(6))
+    s = (1, 0)
+    ap4 = [(1,-2,1,0), (0,1,-2,1)]
+    configurations = [
+        ([zero, one, four, five, s], [zero, five, s], ap4, set()),
+        ([zero, one, two, s, (-1,5)], [zero, s, (-1,5)], ap4, {7}),
+        ([zero, one, two, s, (-1,5)], [zero, s, (-1,5)], [(1,-1,-1,1)], {7}),
+        ([zero, one, three, s, (-1,7)], [zero, s, (-1,7)], [(1,-2,1)], {2,5,9,11,13}),
+        ([zero, one, three, s, (-1,7)], [zero, s, (-1,7)], [(1,-1,-1,1)], {5,9,11}),
+    ]
+    for points, source, equations, expected in configurations:
+        if exceptional_degrees(points, source, equations) != expected:
+            raise ArithmeticError("unexpected exceptional degrees for normalized supports")
+
+
+def check_degree(n):
+    sources = [(0, a, n) for a in range(1, n) if primitive(polynomial((0, a, n)), n)]
+    family = {3: set(), 5: set(), 7: set()}
+    for support in sources:
+        f = polynomial(support)
+        for m, outputs in family.items():
+            powers = power_support(support, m)
+            g = polynomial(powers)
+            if g.degree() != n or g.compose_mod(X**m, f) != 0 or not g.is_irreducible():
+                raise ArithmeticError("a power formula fails direct substitution or irreducibility")
+            if n > 7:
+                expected_weight = 9 if m == 7 and len({e % 7 for e in support}) == 2 else 5
+                if len(powers) != expected_weight:
+                    raise ArithmeticError("incorrect image weight")
+            if gcd(m, 2**n-1) == 1 and len(powers) == 5:
+                if powers in outputs or not primitive(g, n):
+                    raise ArithmeticError("repeated or imprimitive image within one family")
+                outputs.add(powers)
+    overlaps = [(a, b, f) for a, b in combinations(family, 2) for f in family[a] & family[b]]
+    if n == 7:
+        if sorted(overlaps) != [(3, 5, (0,1,2,3,7)), (3, 5, (0,4,5,6,7))]:
+            raise ArithmeticError("incorrect boundary examples")
+    elif overlaps:
+        raise ArithmeticError("overlap between the three families")
+    return len(sources), [len(outputs) for outputs in family.values()]
+
+
+def block_image(support, m):
+    for a, b in combinations(support, 2):
+        step, remainder = divmod(b-a, m)
+        if not remainder:
+            isolated, = set(support)-{a, b}
+            return tuple(sorted((a, a+step, b-step, b, isolated)))
+    return None
+
+
+def check_all_blocks(n):
+    sources = [(0, a, n) for a in range(1, n) if primitive(polynomial((0, a, n)), n)]
+    exponents = [3, 5, 7, *(2**k+1 for k in range(3, n.bit_length()) if 2**k+1 <= n)]
+    counts = Counter()
+    images = set()
+    for s in sources:
+        for m in exponents:
+            if gcd(2**n-1, m) != 1:
+                continue
+            t = power_support(s, m) if m <= 7 else block_image(s, m)
+            if t is None or len(t) != 5:
+                continue
+            g = polynomial(t)
+            if (len(set(t)) != 5 or t in images or not primitive(g, n)
+                    or g.compose_mod(X**m, polynomial(s)) != 0):
+                raise ArithmeticError(f"repeated or invalid power-{m} image at {s}")
+            images.add(t)
+            counts[m] += 1
+    return len(sources), dict(sorted(counts.items()))
+
+
+def short_power_support(support, exponent):
+    m = exponent // (exponent & -exponent)
+    if m == 1:
+        return support
+    residues = {e % m for e in support}
+    if len(residues) == 2 and (m-1).bit_count() == 1:
+        return block_image(support, m)
+    if m in (5, 7) and len(residues) == 3:
+        if any((a+c-2*b) % m == 0 for a, b, c in permutations(residues)):
+            return power_support(support, m)
+    return None
+
+
+def check_short_powers(n):
+    from power_images import power_characteristic
+
+    sources = [(0, a, n) for a in range(1, n) if primitive(polynomial((0, a, n)), n)]
+    images = set()
+    for support in sources:
+        for exponent in range(1, n+1):
+            actual = power_characteristic(support, exponent)
+            predicted = short_power_support(support, exponent)
+            if (actual if len(actual) <= 5 else None) != predicted:
+                raise ArithmeticError(f"incorrect power-{exponent} prediction at {support}: {actual}")
+            if len(actual) == 5 and gcd(exponent, 2**n-1) == 1:
+                images.add(actual)
+    if n > 11 and n % 2:
+        _, counts = check_all_blocks(n)
+        if len(images) != sum(counts.values()):
+            raise ArithmeticError("the exact count disagrees with the characteristic polynomials")
+    return len(sources), len(images)
+
+
+@cache
+def trace_support(m):
+    """Support of the binary polynomial taking u(u+1) to u^m+(u+1)^m."""
+    if m < 2:
+        return frozenset({0} if m else {})
+    k = m//2
+    if not m % 2:
+        return frozenset(2*i for i in trace_support(k))
+    return frozenset(2*i for i in trace_support(k+1)) | frozenset(2*i+1 for i in trace_support(k))
+
+
+def midpoint_support(n, a, m):
+    for tap, reflected in ((a, False), (n-a, True)):
+        if (n+tap) % m == 0:
+            h = (n+tap)//m
+            image = {n, tap} ^ {h*j for j in trace_support(m)}
+        elif n > 2*tap and (n-2*tap) % m == 0:
+            h = (n-2*tap)//m
+            image = {0, n} | {tap+h*j for j in trace_support(m)}
+        else:
+            continue
+        return tuple(sorted(n-i if reflected else i for i in image))
+    return None
+
+
+def check_midpoint_powers(limit):
+    from power_images import power_characteristic
+
+    # Children of a consecutive Stern pair. The sum increases at every edge.
+    indices = {1}
+    todo = [(1, 1, 1)]
+    while todo:
+        k, left, right = todo.pop()
+        if left+right <= 5:
+            indices.add(2*k+1)
+            todo.extend(((2*k, left, left+right), (2*k+1, left+right, right)))
+    if indices != {1, 3, 5, 7, 9, 11, 13, 15, 17, 31}:
+        raise ArithmeticError("unexpected odd indices with trace weight at most five")
+    exceptions = []
+    for m in sorted(indices):
+        for a in range(1, (m+1)//2):
+            n = m-a
+            if n <= 7 or not primitive(polynomial((0, a, n)), n):
+                continue
+            image = power_characteristic((0, a, n), m)
+            if len(image) <= 5:
+                if gcd(2**n-1, m) != 1 or not primitive(polynomial(image), n):
+                    raise ArithmeticError("imprimitive exceptional image")
+                exceptions.append((n, a, m, image))
+    if exceptions != [(11, 2, 13, (0, 1, 5, 6, 11)), (28, 3, 31, (0, 1, 7, 15, 28))]:
+        raise ArithmeticError("incorrect sparse midpoint powers beyond the degree")
+    checked = 0
+    for n in range(2, limit+1):
+        for a in range(1, n):
+            if gcd(a, n) != 1:
+                continue
+            for m in range(3, 2*n, 2):
+                expected = midpoint_support(n, a, m)
+                if expected is None:
+                    continue
+                if expected != power_characteristic((0, a, n), m):
+                    raise ArithmeticError(f"incorrect midpoint formula at degree {n}, tap {a}, power {m}")
+                if m <= n and len(expected) != 2+len(trace_support(m)):
+                    raise ArithmeticError("unexpected overlap in the short midpoint formula")
+                checked += 1
+    return checked
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--blocks", type=int, metavar="DEGREE", help="verify all binary block powers in one odd degree above 11")
+    group.add_argument("--all-powers", type=int, metavar="DEGREE",
+                       help="compute every characteristic polynomial for exponents up to the degree")
+    group.add_argument("--midpoints", type=int, metavar="LIMIT",
+                       help="check every midpoint characteristic polynomial through this degree and the two long powers")
+    args = parser.parse_args()
+    if args.midpoints is not None:
+        if args.midpoints < 2:
+            parser.error("choose a degree limit of at least two")
+        checked = check_midpoint_powers(args.midpoints)
+        print(f"Verified {checked} midpoint characteristic polynomials and both primitive long-power exceptions.")
+        raise SystemExit
+    check_patterns()
+    if args.all_powers is not None:
+        n = args.all_powers
+        if n <= 7:
+            parser.error("--all-powers requires a degree above seven")
+        total, outputs = check_short_powers(n)
+        print(f"Degree {n}: {total} primitive trinomials, {n*total} powers checked, "
+              f"{outputs} distinct primitive pentanomials.")
+        raise SystemExit(0)
+    if args.blocks is not None:
+        if args.blocks <= 11 or args.blocks % 2 == 0:
+            parser.error("--blocks requires an odd degree above 11")
+        total, counts = check_all_blocks(args.blocks)
+        print(f"{total} primitive trinomials give {sum(counts.values())} different primitive pentanomials: {counts}.")
+        raise SystemExit(0)
+    if check_all_blocks(153) != (4, {3: 4, 5: 4, 9: 4, 17: 4}):
+        raise ArithmeticError("incorrect degree-153 block families")
+    for n in range(7, 18):
+        total, counts = check_degree(n)
+        print(f"Degree {n} has {total} primitive trinomials and "
+              f"{counts[0]}, {counts[1]}, {counts[2]} primitive five-term images for powers 3, 5, 7.")

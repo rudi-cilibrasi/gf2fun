@@ -1,0 +1,36 @@
+{
+  "3415": {
+    "exponents": [
+      0,
+      8,
+      27,
+      35,
+      3415
+    ],
+    "degree_primes": [
+      5,
+      683
+    ],
+    "norm_polynomials": {
+      "5": "0x3d",
+      "683": "0xc2f78f2e69b1c455fe0cedfd648c8011e20655fd6e7e6c63aaad840ebf689a98084abcc3b1200a621b11cf905d8cdb4fca8f317bb9cad42ff9ac92480ed71742cd3873fee9d9f087e0d7c6e72c4570983abd4cf77e3"
+    }
+  },
+  "9583": {
+    "exponents": [
+      0,
+      1521,
+      3042,
+      6541,
+      9583
+    ],
+    "degree_primes": [
+      7,
+      37
+    ],
+    "norm_polynomials": {
+      "1369": "0x28ce357807057c08ebe572cfdaa0f13cb9369e0998b9915c577798dd929b223210cd4a3c7afae4a0a577e7c83db2353828b6ba06ec7bb378f5d15db924fd6aea09fc6d1730d4e868b884bddbd06b1c9eadf0f89cf7186591f325bfef5e30ba1ec7e4eec8fffe2d2b9c5c33cacfa8f66d75e65938db140d2f717d4e3e1275e6b123fdc3b3bfa6333136135c8c91471d1c6066f435330ded8613d11f04e730f8e57f66bef9902151ce50e7869",
+      "259": "0xeedc73b8d15b5371b2869364953859fe536e011be13ecc0542e5a1331516b1951"
+    }
+  }
+}

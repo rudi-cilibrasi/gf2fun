@@ -127,4 +127,35 @@ theorem injective_conjugate_products_of_exponent_sums
       Finset.prod_pow_eq_pow_sum J (fun j => 2 ^ j) r] at h
   exact hs hI hJ (Nat.ModEq.of_dvd hp (hr.pow_eq_pow_iff_modEq.mp h))
 
+/-- Two selections of size at most k suffice to rule out a product of up to 2k elements. -/
+theorem prod_ne_one_of_half_products {ι : Type*} (x : ι → M)
+    {s : Finset ι} {k : ℕ} (hk : 0 < k) (hn : s.Nonempty) (hc : s.card ≤ 2*k)
+    (separate : ∀ a ⊆ s, ∀ b ⊆ s, a.Nonempty → a.card ≤ k → b.card ≤ k →
+      (∏ i ∈ a, x i) * (∏ i ∈ b, x i) ≠ 1) : ∏ i ∈ s, x i ≠ 1 := by
+  classical
+  obtain ⟨a, ha, hcard⟩ := Finset.exists_subset_card_eq (Nat.min_le_right k s.card)
+  have hpos := hn.card_pos
+  have hleft : a.Nonempty := Finset.card_pos.mp (by omega)
+  have hright : (s \ a).card ≤ k := by rw [Finset.card_sdiff_of_subset ha]; omega
+  have h := separate a ha (s \ a) Finset.sdiff_subset hleft (by omega) hright
+  rwa [mul_comm, Finset.prod_sdiff ha] at h
+
+/-- A lower second moment forces many values above a given threshold. -/
+theorem square_sum_le_of_threshold {ι : Type*} [Fintype ι] (v : ι → ℕ)
+    (lo hi : ℕ) (hle : lo ≤ hi) (hb : ∀ i, v i ≤ hi) :
+    (∑ i, v i ^ 2) ≤ Fintype.card ι * lo^2 +
+      (Finset.univ.filter (fun i => lo < v i)).card * (hi^2 - lo^2) := by
+  classical
+  calc
+    (∑ i, v i ^ 2) ≤ ∑ i, (lo^2 + if lo < v i then hi^2 - lo^2 else 0) := by
+      apply Finset.sum_le_sum
+      intro i _
+      by_cases h : lo < v i
+      · simp only [h, if_true]
+        have hsq := Nat.pow_le_pow_left hle 2
+        have hmax := Nat.pow_le_pow_left (hb i) 2
+        omega
+      · simpa only [h, if_false, Nat.add_zero] using Nat.pow_le_pow_left (Nat.le_of_not_gt h) 2
+    _ = _ := by simp [Finset.sum_add_distrib, Finset.sum_ite]
+
 end GF2Sparse

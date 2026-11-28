@@ -6,7 +6,6 @@ from math import gcd, prod
 from pathlib import Path
 
 from flint import fmpz, nmod_poly
-from make_witnesses import emit_modular_power, prime_certificates, remainder
 
 N, U, V = 1229, 27, 50
 PRIMES = (36871, 46703, 10543179280661916121033, 9536289355314392579996071515160583098298616686033085857)
@@ -16,6 +15,7 @@ COFACTOR, REMAINDER = divmod(GROUP, KNOWN)
 
 
 def check_trinomials():
+    from make_witnesses import remainder
     path = Path(__file__).resolve().parents[1] / "data" / "degree-1229-trinomial-factors.csv"
     checked = set()
     with path.open(newline="") as source:
@@ -65,6 +65,7 @@ def check(bound, taps=(U, V, U+V)):
 
 
 def emit():
+    from make_witnesses import emit_modular_power, prime_certificates
     print("import GF2Sparse.PartialOrder\nimport GF2Sparse.Table")
     print("\n/-! Partial order certificate for the first degree beyond the complete consecutive CSV. -/")
     print("\nnamespace GF2Sparse.Degree1229\n\nopen Polynomial")

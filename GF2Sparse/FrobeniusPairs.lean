@@ -1,5 +1,7 @@
 import GF2Sparse.CompositionNorm
 import GF2Sparse.Table
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.ReduceModChar
 
 /-! Five-term compositions from pairs of exponents on Frobenius orbits. -/
 
@@ -39,6 +41,33 @@ theorem frobenius_pair_composition (s a i b j : ℕ) :
     _ = (frobeniusChain s a i ^ (2 ^ s) + frobeniusChain s a i) +
         (frobeniusChain s b j ^ (2 ^ s) + frobeniusChain s b j) + 1 := by ac_rfl
     _ = _ := by rw [chain_boundary, chain_boundary]; ac_rfl
+
+/-- Four equally spaced terms with coefficients w,w,1,1 and one further
+monomial give a binary norm with at most five terms. Substitute z = X^b
+and u = X^a. -/
+theorem progression_quaternary_norm {R : Type*} [CommRing R] [CharP R 2]
+    (z u w : R) (hw : w ^ 2 = w + 1) :
+    ((1 + z) * (z ^ 2 + w) + u) * ((1 + z) * (z ^ 2 + (w + 1)) + u) =
+      1 + z ^ 6 + u ^ 2 + u + u * z := by
+  linear_combination (norm := (try ring_nf; reduce_mod_char!)) (1 + z) ^ 2 * hw
+
+/-- Every root of T^6 + T + 1 belongs to the field of 64 elements. -/
+theorem sixth_trinomial_frobenius {R : Type*} [CommRing R] [CharP R 2]
+    (y : R) (h : y ^ 6 = y + 1) : y ^ 64 = y := by
+  have h8 : y ^ 8 = y ^ 3 + y ^ 2 := by
+    rw [show (8 : ℕ) = 6 + 2 by decide, pow_add, h]
+    ring
+  have h16 : y ^ 16 = y ^ 4 + y + 1 := by
+    rw [show (16 : ℕ) = 8 * 2 by decide, pow_mul, h8, CharTwo.add_sq, ← pow_mul, ← pow_mul]
+    rw [show (3 * 2 : ℕ) = 6 by decide, h]
+    ring
+  have h32 : y ^ 32 = y ^ 3 + 1 := by
+    rw [show (32 : ℕ) = 16 * 2 by decide, pow_mul, h16, CharTwo.add_sq,
+      CharTwo.add_sq, ← pow_mul, show (4 * 2 : ℕ) = 8 by decide, h8]
+    ring_nf
+    reduce_mod_char!
+  rw [show (64 : ℕ) = 32 * 2 by decide, pow_mul, h32, CharTwo.add_sq, ← pow_mul,
+    show (3 * 2 : ℕ) = 6 by decide, h, one_pow, CharTwo.add_cancel_right]
 
 theorem frobeniusOuter_natDegree {s : ℕ} (hs : 0 < s) :
     (frobeniusOuter s).natDegree = 2 ^ s := by

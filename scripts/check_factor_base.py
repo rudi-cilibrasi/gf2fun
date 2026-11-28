@@ -54,10 +54,14 @@ def ratio_bound(n, counts):
     return sum(inverse[j] * prefix[a-j] * prefix[b-j] for j in range(a + 1))
 
 
-def moment_bound(counts, index_floor, length, offset=1):
+def moment_bound(counts, index_floor, length, offset=1, *, weights=None):
     """Exact rational lower bound for n-2 if the subgroup has index at least index_floor."""
     # The real weights are w[i] / sqrt(2) for odd i and w[i] for even i.
-    w = [(i + offset) * (length + offset - i) * (7 if i % 2 else 5) for i in range(length + 1)]
+    if weights is None:
+        weights = [(i + offset) * (length + offset - i) * (7 if i % 2 else 5) for i in range(length + 1)]
+    if len(weights) != length + 1 or min(weights) < 0 or not any(weights):
+        raise ValueError("invalid moment weights")
+    w = weights
     norm = sum(Fraction(v*v, 1 << (i % 2)) for i, v in enumerate(w))
     total = 0
     for k in range(1, length + 1):
@@ -70,8 +74,11 @@ def moment_bound(counts, index_floor, length, offset=1):
     return total / norm
 
 
-def verify_logs(paths, n, f):
-    x = polynomial(2)
+def verify_logs(paths, n, f, *, projection=1):
+    if projection < 1 or ((1 << n) - 1) % projection:
+        raise ValueError("projection must divide the group order")
+    order = ((1 << n) - 1) // projection
+    base = polynomial(2).pow_mod(projection, f)
     logs = {2: 1}
     for path in paths:
         seen = set()
@@ -81,7 +88,7 @@ def verify_logs(paths, n, f):
                 raise ValueError("expected the CSV columns mask,exponent")
             for row in reader:
                 mask, exponent = int(row["mask"]), int(row["exponent"])
-                if not 2 <= mask < 1 << n or not 0 <= exponent < (1 << n) - 1:
+                if not 2 <= mask < 1 << n or not 0 <= exponent < order:
                     raise ValueError(f"out-of-range polynomial or exponent in {path}")
                 if mask in seen or None in row:
                     raise ValueError(f"invalid or repeated row for mask {mask} in {path}")
@@ -89,27 +96,44 @@ def verify_logs(paths, n, f):
                 if logs.get(mask) == exponent:
                     continue
                 p = polynomial(mask)
-                if not irreducible(p) or x.pow_mod(exponent, f) != p:
+                if not irreducible(p) or base.pow_mod(exponent, f) != p.pow_mod(projection, f):
                     raise ValueError(f"unverified irreducible or logarithm for mask {mask}")
                 logs[mask] = exponent
     return logs
 
-def seroussi_relations(logs, f):
-    """Complete any single missing log in two low-degree relations for Seroussi's field."""
+def seroussi_identities(f):
+    """Rows (coefficients, exponent) represent products equal to r^exponent in Seroussi's field."""
+    from period_coordinate import mask_of
     x = polynomial(2)
     tail = x**15 + x**6 + x**2 + 1
-    left = (3, 7, 6031, 7741, 8191)
-    right = (47, 16197, 121583)
-    if (polynomial(3) * polynomial(32707) != tail
-            or prod(map(polynomial, left)) != x**39 + 1
-            or prod(map(polynomial, right)) != x**19 * tail + 1):
-        raise ArithmeticError("incorrect factorizations for the degree-1229 relations")
-    if not all(irreducible(polynomial(p)) for p in {*left, *right, 32707}):
-        raise ArithmeticError("a listed polynomial factor is reducible")
-    ratios = {p: 32 for p in left}
-    ratios.update({p: -1 for p in right})
-    relations = (({3: 1, 32707: 1}, 1229), (ratios, 0))
-    order = (1 << 1229) - 1
+    if x.pow_mod(1229, f) != tail:
+        raise ValueError("expected Seroussi's degree-1229 modulus")
+
+    def factors(value):
+        decomposition = value.factor()[1]
+        if prod(p**e for p, e in decomposition) != value or not all(irreducible(p) for p, _ in decomposition):
+            raise ArithmeticError("incorrect factorization for a sparse-root identity")
+        return {mask_of(p): e for p, e in decomposition}
+
+    rows = [(factors(tail), 1229)]
+    for m, q in ((39, 32), (151, 8), (19, 64), (613, 2)):
+        delta = m*q - 1229
+        shift = max(-delta, 0)
+        left = 1 + x**m
+        right = x**shift + x**max(delta, 0)*tail
+        if left.pow_mod(q, f) * x**shift % f != right % f:
+            raise ArithmeticError("invalid folded Frobenius identity")
+        terms = Counter({p: q*e for p, e in factors(left).items()})
+        terms.subtract(factors(right))
+        rows.append(({p: e for p, e in terms.items() if e}, -shift))
+    return rows
+
+
+def seroussi_relations(logs, f, *, projection=1):
+    """Complete single missing logarithms in the verified sparse-root identities."""
+    relations = seroussi_identities(f)
+    order = ((1 << 1229) - 1) // projection
+    base = polynomial(2).pow_mod(projection, f)
     added = 0
     while True:
         before = len(logs)
@@ -120,7 +144,7 @@ def seroussi_relations(logs, f):
             p = missing.pop()
             rest = sum(c * logs[q] for q, c in terms.items() if q != p)
             exponent = ((target - rest) * pow(terms[p], -1, order)) % order
-            if not irreducible(polynomial(p)) or x.pow_mod(exponent, f) != polynomial(p):
+            if base.pow_mod(exponent, f) != polynomial(p).pow_mod(projection, f):
                 raise ArithmeticError("the derived polynomial logarithm failed direct verification")
             logs[p] = exponent
             added += 1

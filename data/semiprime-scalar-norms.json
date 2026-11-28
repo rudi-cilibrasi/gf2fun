@@ -1,0 +1,534 @@
+{
+  "1727": {
+    "degree_primes": [
+      11,
+      157
+    ],
+    "subfield_factors": {
+      "11": [
+        23,
+        89
+      ],
+      "157": [
+        852133201,
+        60726444167,
+        1654058017289,
+        2134387368610417
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          245,
+          490,
+          1482,
+          1727
+        ],
+        "norm_polynomials": {
+          "11": "0xf0b",
+          "157": "0x2d2f33e601a038bd8e960bf86feb7c9066deaf47"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000004334841"
+  },
+  "1781": {
+    "degree_primes": [
+      13,
+      137
+    ],
+    "subfield_factors": {
+      "13": [
+        8191
+      ],
+      "137": [
+        32032215596496435569,
+        5439042183600204290159
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          378,
+          756,
+          1403,
+          1781
+        ],
+        "norm_polynomials": {
+          "13": "0x2f41",
+          "137": "0x364d635068b3c096526f240b6d79e12d821"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000001000721"
+  },
+  "2353": {
+    "degree_primes": [
+      13,
+      181
+    ],
+    "subfield_factors": {
+      "13": [
+        8191
+      ],
+      "181": [
+        43441,
+        1164193,
+        7648337,
+        7923871097285295625344647665764672671
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          43,
+          86,
+          2310,
+          2353
+        ],
+        "norm_polynomials": {
+          "13": "0x2659",
+          "181": "0x2b323e7edadd2d8e98b4564e61a5367fca12c1532e4e47"
+        }
+      },
+      {
+        "exponents": [
+          0,
+          328,
+          2353
+        ],
+        "norm_polynomials": {
+          "13": "0x240b",
+          "181": "0x31aa1ed69d914f66b55fb9e3cffc5cead9a2bfd7ec08e9"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [
+      328,
+      595,
+      837,
+      945
+    ],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000004591179"
+  },
+  "3817": {
+    "degree_primes": [
+      11,
+      347
+    ],
+    "subfield_factors": {
+      "11": [
+        23,
+        89
+      ],
+      "347": [
+        14143189112952632419639,
+        20270345302545987116040069442814496729341666112096057885992643120463337596490211193
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          300,
+          600,
+          3517,
+          3817
+        ],
+        "norm_polynomials": {
+          "11": "0xfcd",
+          "347": "0xbc0b67fa333be4d7b6bbb092985465ef1aac993099ef545d3cb1032320326ed5898d791ea9a94116ff3df2b"
+        }
+      },
+      {
+        "exponents": [
+          0,
+          252,
+          3817
+        ],
+        "norm_polynomials": {
+          "11": "0xd63",
+          "347": "0x80cc0f13de215b4a05964963b06176b5413b410f338454b440e58448eaf6484b701bf4b0f8191dbd79cc755"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [
+      252
+    ],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000002737566"
+  },
+  "5053": {
+    "degree_primes": [
+      31,
+      163
+    ],
+    "subfield_factors": {
+      "31": [
+        2147483647
+      ],
+      "163": [
+        150287,
+        704161,
+        110211473,
+        27669118297,
+        36230454570129675721
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          461,
+          922,
+          4592,
+          5053
+        ],
+        "norm_polynomials": {
+          "31": "0xa1e9e3db",
+          "163": "0xb1e743d648a8dbfcca9c898eae270c86841962495"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000001997225"
+  },
+  "8033": {
+    "degree_primes": [
+      29,
+      277
+    ],
+    "subfield_factors": {
+      "29": [
+        233,
+        1103,
+        2089
+      ],
+      "277": [
+        1121297,
+        31133636305610209482201109050392404721,
+        6955979459776540052280934851589652278783
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          432,
+          1296,
+          7601,
+          8033
+        ],
+        "norm_polynomials": {
+          "29": "0x33358e37",
+          "277": "0x28f3fd973b95cd511657d9d540b48b05c33d1fa6f55b6f7484dd0c31bf315d832c3353"
+        }
+      },
+      {
+        "exponents": [
+          0,
+          2240,
+          8033
+        ],
+        "norm_polynomials": {
+          "29": "0x2c63bba3",
+          "277": "0x313c50e6a478f022d9a65f11d0606ba303669b4a81a82c362578fcf9361fd37713d3b1"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [
+      2240,
+      2843
+    ],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000026657265"
+  },
+  "10967": {
+    "degree_primes": [
+      11,
+      997
+    ],
+    "subfield_factors": {
+      "11": [
+        23,
+        89
+      ],
+      "997": [
+        167560816514084819488737767976263150405095191554732902607,
+        7993430605360222292860936960123884061988016846627213757686887976005930025638602973712891518592878944687759622084106508783413855778177367022158878920741413700868182301410439178049533828082651513160945607018874830040978453228378816647358334681553
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          1017,
+          2034,
+          9950,
+          10967
+        ],
+        "norm_polynomials": {
+          "11": "0xf6d",
+          "997": "0x246dda684977f3351ea0410dee84e099d6a963c6add7a15f2b86bed78286651fd9bb952f917d4ec7697a20841ab67490c3fb53eb7a95a06704106e261470641212e60d914f6d42a35c5706d523e51560f8722f27ae5b9805f79eba351cb6c01c18253369d7a169f526f5b417a0dc892628d6286ef5a4154b59c1345929"
+        }
+      },
+      {
+        "exponents": [
+          0,
+          2081,
+          10967
+        ],
+        "norm_polynomials": {
+          "11": "0x87b",
+          "997": "0x39a926873b4f5bd0f06f4d740855ca3f5bc5a693dc85655d9f52f9ad77431c1776c644235073600b0ad5ea9e3780660f7502af234d20720cbd1dde191afd68701c19ab1ce38250a48b74c3216926684093cd72326ae9f0861ef8601e822382c2a11ce4bdc2e513efe0f7dfe255a992d712e0941da8a23f4e66dd1e2885"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [
+      2081,
+      4115
+    ],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000013111001",
+    "scalar_pair_counts": {
+      "2047": [
+        176,
+        43050,
+        11,
+        0,
+        0
+      ]
+    }
+  },
+  "11581": {
+    "degree_primes": [
+      37,
+      313
+    ],
+    "subfield_factors": {
+      "37": [
+        223,
+        616318177
+      ],
+      "313": [
+        10960009,
+        14787970697180273,
+        3857194764289141165278097,
+        26693012026551688286164949958620483258358551879
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          3637,
+          4307,
+          7944,
+          11581
+        ],
+        "norm_polynomials": {
+          "37": "0x3d1dbfd993",
+          "313": "0x3c449378378f278d927f7b4217357a7b8ccd905a7de92e01c48ccfad53cfac8c99a34fb83e9de4d"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000005002348"
+  },
+  "14263": {
+    "degree_primes": [
+      17,
+      839
+    ],
+    "subfield_factors": {
+      "17": [
+        131071
+      ],
+      "839": [
+        26849,
+        138561000316919,
+        377801626929390823,
+        113910681722635191781067775764311,
+        22896492725473729252775049721372386001517616720738640677702244640115992881686954509887884498034915413780013699315805090463370326763073567630359469495994773510181155342534075910698453209
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          5985,
+          14263
+        ],
+        "norm_polynomials": {
+          "17": "0x308c9",
+          "839": "0xa4a0da25ce29e2c52144a925eb03261b90e30afe21a7e65f89bda4745c889a4aa4283744ea1683f4bd0893e222b4e94ef4d399b1fa8835154f97016c9097d268e91d48e98c56ef88e09ae019c3d3060f6164dda3d3b190e01c4b1914495931c4c4068123dbf0f4ec03"
+        }
+      },
+      {
+        "exponents": [
+          0,
+          3444,
+          6888,
+          10819,
+          14263
+        ],
+        "norm_polynomials": {
+          "17": "0x36067",
+          "839": "0x8fe0f9a2fbc43f85651a896a95877c0982f2c3afa1b9df8cccf51e6a5d24a8e669b083e8380d8692aec99a56bfec12b54158a0006c90513d1d11199719a4922423ec2e45058f7c709873cc008b89ccfa0350cf572efdd043b80d947b0b109cc4a12a5fde2b72237659"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [
+      5985
+    ],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000005636398"
+  },
+  "14971": {
+    "degree_primes": [
+      11,
+      1361
+    ],
+    "subfield_factors": {
+      "11": [
+        23,
+        89
+      ],
+      "1361": [
+        8167,
+        3397057,
+        137450113,
+        30322542339673,
+        15459763525875943,
+        856450061281312036458486309832227737,
+        32873285025926364840643305530597380485679626234390464379309286213121965357497752171939217538969410104520501302259499042676235479157052818049113064861288582339409100571837476855270222829853270573823480609822541384804374987370220514193600014876355095318556413572897489128450586968151346352159836927504117379160589072375134507231
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          511,
+          1022,
+          14460,
+          14971
+        ],
+        "norm_polynomials": {
+          "11": "0xadf",
+          "1361": "0x2dae7ad66d0c4c44c725bbbc23d5366056341f9e0543518b6f901579eeafa9902058ca5fa33ddc7b2c4e8bb2016096adb7752ba77f7b26d8a3ce030aad06ab9ab0af4eebc188b84571f99f9d9678dd1c797fd702b01cf8ae73bc8bf1a69fd3397513f435bac94bb5845616ceb556c2f5d0436cfe507224584a0fa82f6438a0847eda06767965bd530af07994ca92b669c227ef9eb6e35c556aa5e5fc28e802b3d86acbb69c778878be10f"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000013139775",
+    "scalar_pair_counts": {
+      "2047": [
+        176,
+        120050,
+        16,
+        0,
+        0
+      ]
+    }
+  },
+  "22327": {
+    "degree_primes": [
+      83,
+      269
+    ],
+    "subfield_factors": {
+      "83": [
+        167,
+        57912614113275649087721
+      ],
+      "269": [
+        13822297,
+        68625988504811774259364670661552948915363901845035416371912463477873783063
+      ]
+    },
+    "witnesses": [
+      {
+        "exponents": [
+          0,
+          2445,
+          22327
+        ],
+        "norm_polynomials": {
+          "83": "0xa5f33dd1c80b3ce25ba25",
+          "269": "0x2f92c304e5bcc285e72824f0fde46fdc81de57171c92d1ca1f95dbe50a9952a24387"
+        }
+      },
+      {
+        "exponents": [
+          0,
+          815,
+          1630,
+          2445,
+          22327
+        ],
+        "norm_polynomials": {
+          "83": "0xb595103b17b95f54f5485",
+          "269": "0x36c8100a484849ae0be0cee1be0c48cc4b091a9d968c8986cc6ba4e74c7947f1b625"
+        }
+      },
+      {
+        "exponents": [
+          0,
+          2977,
+          5954,
+          19350,
+          22327
+        ],
+        "norm_polynomials": {
+          "83": "0x8b7721a1b720378a29571",
+          "269": "0x3fd0aea0158f220ee67a7595c4fdf33e701474677c5156b39fc9f8b83b34c1315fb7"
+        }
+      }
+    ],
+    "irreducible_trinomial_taps": [
+      2445
+    ],
+    "primality_certificate_source": "https://factordb.com/cert/1100000000006998360",
+    "short_power_images": {
+      "1": {
+        "exponents": [
+          0,
+          2445,
+          22327
+        ],
+        "count": 15
+      },
+      "3": {
+        "exponents": [
+          0,
+          815,
+          1630,
+          2445,
+          22327
+        ],
+        "count": 13
+      },
+      "5": {
+        "exponents": [
+          0,
+          489,
+          1956,
+          2445,
+          22327
+        ],
+        "count": 13
+      },
+      "7": {
+        "exponents": [
+          0,
+          2445,
+          4936,
+          9918,
+          22327
+        ],
+        "count": 12
+      }
+    }
+  }
+}

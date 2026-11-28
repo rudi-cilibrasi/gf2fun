@@ -1,10 +1,12 @@
 import GF2Sparse.Degree1229
 import GF2Sparse.PackedOrder
+import GF2Sparse.SeventhImage
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.ReduceModChar
 import Mathlib.Tactic.Ring
 
-/-! Two changes of coordinate for five-term binary equations of degree 1229. -/
+/-! Changes of coordinate for five-term binary equations of degree 1229. -/
 
 namespace GF2Sparse.SparseRootModels
 
@@ -56,6 +58,69 @@ theorem quadratic_frobenius (z : K) :
     (z^5)^1229 + (z^5)^922 + (z^5)^461 + (z^5)^256 + 1 =
       (z^256)^18*z^2 + ((z^256)^9 + (z^256)^24)*z + 1 + (z^256)^5 := by
   ring
+
+omit [CharP K 2] in
+/-- The five terms of the minimum-sum model have bidegree (15,3). -/
+theorem cubic_frobenius (z : K) :
+    (z^5)^1229 + (z^5)^822 + (z^5)^410 + (z^5)^3 + 1 =
+      z*(z^2048)^3 + z^14*(z^2048)^2 + z^2*(z^2048) + z^15 + 1 := by
+  ring
+
+omit [CharP K 2] in
+/-- A monomial shift of seven places the five terms in a box of bidegree (8,12). -/
+theorem balanced_frobenius (z : K) :
+    z^7*((z^5)^1229 + (z^5)^818 + (z^5)^614 + (z^5)^101 + 1) =
+      z^8*(z^512)^12 + z*(z^512)^8 + z^5*(z^512)^6 + z^512 + z^7 := by
+  ring
+
+/-- A rational parameter expresses the two powers on a pentanomial curve as a cubic
+and a quadratic ratio. -/
+theorem rational_cubic_coordinate {b t : K} (hd : t^2+t+1 ≠ 0)
+    (curve : b^2+(t^3+1)*b+t+1 = 0) :
+    let w := (b+t)/(t^2+t+1)
+    w^2*(w+1) = b ∧ t*w = w^2+w+1 := by
+  let w := (b+t)/(t^2+t+1)
+  change w^2*(w+1) = b ∧ t*w = w^2+w+1
+  have lin : (t^2+t+1)*w = b+t := by
+    dsimp only [w]
+    rw [mul_comm, div_mul_cancel₀ _ hd]
+  have quadratic : w^2+(t+1)*w+1 = 0 := by
+    apply (mul_eq_zero.mp ?_).resolve_right (pow_ne_zero 2 hd)
+    calc
+      _ * (t^2+t+1)^2 = ((t^2+t+1)*w)^2 + (t+1)*((t^2+t+1)*w)*(t^2+t+1) + (t^2+t+1)^2 := by ring
+      _ = 0 := by
+        rw [lin]
+        linear_combination (norm := (try ring_nf; reduce_mod_char!)) curve
+  constructor
+  · linear_combination (norm := (try ring_nf; reduce_mod_char!)) (w+t)*quadratic + lin
+  · linear_combination (norm := (try ring_nf; reduce_mod_char!)) -quadratic
+
+/-- The only quadratic factors needed in this sparse-root equation are the linear
+translate and the third cyclotomic polynomial. -/
+theorem sparse_quadratic_product {r : K}
+    (hf : r^1229 + r^1101 + r^4 + r^2 + 1 = 0) :
+    r^1101 * (1+r)^128 = (1+r+r^2)^2 := by
+  have hfrob : (1+r)^128 = 1+r^128 := by
+    simpa only [one_pow] using add_pow_expChar_pow (1 : K) r 2 7
+  rw [hfrob, CharTwo.add_sq, CharTwo.add_sq]
+  apply CharTwo.add_eq_zero.mp
+  linear_combination (norm := ring_nf) hf
+
+/-- Three products of translates obtained from one five-term equation. -/
+theorem translate_products {x y : K} (h : 1+x+y+x*y+x^2*y = 0) :
+    (1+x)*(1+y) = x^2*y ∧ (1+x)*(1+x*y) = y ∧
+      1+y = x^2*(1+x*y) ∧ y*(1+x^3) = (1+x)^2 := by
+  have h₁ : (1+x)*(1+y) = x^2*y := by
+    apply CharTwo.add_eq_zero.mp
+    linear_combination h
+  have h₂ : (1+x)*(1+x*y) = y := by
+    apply CharTwo.add_eq_zero.mp
+    linear_combination h
+  refine ⟨h₁, h₂, ?_, ?_⟩
+  · apply CharTwo.add_eq_zero.mp
+    linear_combination (norm := (try ring_nf; reduce_mod_char!)) (1+x)*h
+  · apply CharTwo.add_eq_zero.mp
+    linear_combination (norm := (try ring_nf; reduce_mod_char!)) (1+x)*h
 
 open Polynomial PackedSquare
 open GF2Sparse.Degree1229 (knownPart cofactor)
@@ -127,5 +192,71 @@ theorem frobenius_model_order :
       ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
         orderOf (AdjoinRoot.root (pentanomial 256 461 922)) = knownPart*t :=
   of_certified 256 461 922 6 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- Irreducibility and the four known prime projections for the second rational cubic model. -/
+theorem rational_cubic_order :
+    Irreducible (pentanomial 29 58 400) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 29 58 400)) = knownPart*t :=
+  of_certified 29 58 400 4 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- The sparse quadratic product passes all four known prime tests and the cofactor test. -/
+theorem quadratic_product_order :
+    Irreducible (pentanomial 2 4 1101) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 2 4 1101)) = knownPart*t :=
+  of_certified 2 4 1101 12 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- The three-translate model passes the same order tests. -/
+theorem translate_product_order :
+    Irreducible (pentanomial 310 609 919) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 310 609 919)) = knownPart*t :=
+  of_certified 310 609 919 6 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- The cubic model has all four known prime factors and a nontrivial cofactor part. -/
+theorem cubic_frobenius_order :
+    Irreducible (pentanomial 3 410 822) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 3 410 822)) = knownPart*t :=
+  of_certified 3 410 822 5 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- The (8,12) example also passes the four known prime and cofactor tests. -/
+theorem balanced_frobenius_order :
+    Irreducible (pentanomial 101 614 818) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 101 614 818)) = knownPart*t :=
+  of_certified 101 614 818 5 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- Partial order of the degree-1229 pentanomial whose seventh power is also sparse. -/
+theorem seventh_source_order :
+    Irreducible (pentanomial 166 249 332) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 166 249 332)) = knownPart*t :=
+  of_certified 166 249 332 3 (by decide) (by decide) (by decide) (by decide +kernel)
+
+/-- An identical multiplicative order for two distinct irreducible pentanomials. -/
+theorem seventh_pair_order :
+    Irreducible (pentanomial 332 726 1089) ∧
+      orderOf (AdjoinRoot.root (pentanomial 332 726 1089)) =
+        orderOf (AdjoinRoot.root (pentanomial 166 249 332)) := by
+  have hs : SeventhImage.source 1229 83 = pentanomial 166 249 332 := by
+    unfold SeventhImage.source SeventhImage.tail pentanomial
+    ring
+  have ht : SeventhImage.target 1229 83 363 = pentanomial 332 726 1089 := by
+    unfold SeventhImage.target pentanomial
+    ring
+  have hf : Irreducible (SeventhImage.source 1229 83) := hs ▸ seventh_source_order.1
+  rw [← hs, ← ht]
+  exact ⟨(SeventhImage.irreducible_target_iff (by decide) (by decide) (by decide +kernel)).2 hf,
+    SeventhImage.target_root_order (by decide) (by decide) (by decide +kernel) hf⟩
+
+/-- The unique reciprocal pair in the small elliptic Frobenius census passes all four
+known prime projections and has a nontrivial component in the remaining cofactor. -/
+theorem elliptic_model_order :
+    Irreducible (pentanomial 136 683 819) ∧
+      ∃ t : ℕ, 1 < t ∧ t ∣ cofactor ∧
+        orderOf (AdjoinRoot.root (pentanomial 136 683 819)) = knownPart*t :=
+  of_certified 136 683 819 5 (by decide) (by decide) (by decide) (by decide +kernel)
 
 end GF2Sparse.SparseRootModels
