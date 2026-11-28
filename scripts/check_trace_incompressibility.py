@@ -2,11 +2,12 @@
 
 import csv
 import gzip
+import json
 from collections import Counter
 from fractions import Fraction
 from math import comb, gcd
 
-from check_1229_wheel import EXTENDED_BOUND
+from check_1229_wheel import CONTINUATION, EXTENDED_BOUND, STEP, interval_length
 from check_degree_1229 import COFACTOR, GROUP, N, PRIMES
 from check_factor_base import DATA, modulus, polynomial
 
@@ -93,16 +94,23 @@ def check_sparse_failure_codes():
     survivors = counts[0]
     if (len(failures)-1).bit_length() != 4 or (survivors-1).bit_length() != 19:
         raise ArithmeticError("incorrect fixed-length ranks in the observed census")
-    if (EXTENDED_BOUND+1)**16 <= COFACTOR:
-        raise ArithmeticError("the cofactor could have more than fifteen prime divisors")
-    prime_limit = 15
+    record = json.loads(CONTINUATION.read_text())
+    panels = record["panels"]
+    bound = EXTENDED_BOUND + len(panels)*STEP*interval_length(12)
+    if (bound != record["end_bound"] or (bound+1)**15 <= COFACTOR or
+            any(gcd(panel["combined"], COFACTOR) != 1 for panel in panels)):
+        raise ArithmeticError("the archived wheel products do not give the fourteen-prime bound")
+    prime_limit = 14
     fourteen_bit_bound = survivors - prime_limit*2**14
     threshold = (survivors+prime_limit-1)//prime_limit
-    if fourteen_bit_bound != 73812 or threshold != 21305:
+    mixed_bound = survivors - 5*2**15 - (prime_limit-5)*2**14
+    if fourteen_bit_bound != 90196 or threshold != 22827 or mixed_bound != 8276:
         raise ArithmeticError("incorrect conditional count for the remaining primes")
     print("The eleven known failing reciprocal pairs have a 4-bit rank. "
           f"A 14-bit rank per remaining prime would force at least {fourteen_bit_bound} "
-          f"primitive reciprocal pairs. A counterexample needs a class of at least {threshold}.")
+          f"primitive reciprocal pairs. With five 15-bit ranks and nine 14-bit ranks, "
+          f"at least {mixed_bound} pairs would be primitive. A counterexample needs a "
+          f"class of at least {threshold}.")
 
 
 if __name__ == "__main__":

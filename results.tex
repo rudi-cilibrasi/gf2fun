@@ -26363,4 +26363,48 @@ There are \(2^{1228}\) monic polynomials with constant one. Thus
 The independent integer sums in \nolinkurl{GF2Sparse/SignedWeight1229.lean}
 verify the tail and the strict inequality.
 
+\clearpage
+\section{Fourteen possible failing primes in degree 1229}
+\label{sec:1229-fourteen}
+Let \(C=(2^{1229}-1)/K\) be the remaining cofactor after removing the
+four known primes. Every prime divisor of \(C\) exceeds
+\[
+              B=8\,317\,007\,399\,072\,301\,057.
+\]
+There are at most fourteen prime factors of \(C\), counted with
+multiplicity. Consequently, if degree 1229 is a counterexample to
+the five-term conjecture, a single prime must exclude at least
+22,827 of the 319,572 reciprocal pairs that passed the four known tests.
+
+Use the progression and wheel of Section~\ref{sec:1229-wheel-continuation}.
+Starting at \(s_0=332825605701632\), take 41 consecutive Newton
+products of length \(L=74410308403200\). Every product has gcd one
+with \(C\), and \(1+2458(s_0+41L)=B\). All 41 residues occur in
+\nolinkurl{data/degree-1229-wheel-continuation.json}.
+The checker reproduces each as four separate Lagrange products.
+Independent residues for the first 16 panels are also archived.
+The previous 40 panels reached \(B'=B-2458L\). Exact integer powers give
+\[
+                (B'+1)^{15}\le C<(B+1)^{15}.
+\]
+Fifteen prime factors each exceeding \(B\) would contradict this inequality.
+Theorem~\ref{thm:1229-all-orders} gives every irreducible pentanomial
+a cofactor prime in its root order. Across all 639,166 irreducibles,
+the root orders exceed \(KB/46703>2^{333}\). Across the 639,144
+survivors of all four tests they exceed \(KB>2^{349}\).
+
+To cover the surviving reciprocal pairs, assign each one to a prime
+whose order test it fails. Fourteen classes of size at most 22,826
+would cover at most \(14\cdot22826=319564\) pairs, eight short of
+the census. A uniform fourteen-bit code for each failure class would
+leave at least
+\[
+                  319572-14\cdot2^{14}=90196
+\]
+primitive reciprocal pairs. Even five fifteen-bit classes and nine
+fourteen-bit classes would leave at least 8276. The class-size
+condition is open. \nolinkurl{GF2Sparse/SubgroupCover.lean}
+proves the cover and uniform-code implications. The census and
+finite counts are checked by \nolinkurl{scripts/check_trace_incompressibility.py}.
+
 \end{document}

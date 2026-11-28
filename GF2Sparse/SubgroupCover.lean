@@ -52,14 +52,23 @@ theorem exists_common_multiplier [Fintype I] [Fintype P] [Fintype J]
   apply separate j k hjk (hit j)
   simpa [div_eq_mul_inv, mul_assoc] using (H _).div_mem (mem j) hk
 
-/-- If every surviving reciprocal pair fails a test, one of fifteen tests
-must fail for at least 21,305 pairs. Labels for unused primes may be empty. -/
-theorem degree1229_common_failure (hit : Fin 319572 → Fin 15) :
-    ∃ p, 21305 ≤ (Finset.univ.filter (fun i => hit i = p)).card := by
+private theorem large_failure_class {inputs labels limit : ℕ} (hit : Fin inputs → Fin labels)
+    (size : labels * limit < inputs) :
+    ∃ p, limit + 1 ≤ (Finset.univ.filter (fun i => hit i = p)).card := by
   obtain ⟨p, _, hp⟩ := Finset.exists_lt_card_fiber_of_mul_lt_card_of_maps_to
-    (s := Finset.univ) (t := Finset.univ) (f := hit) (n := 21304)
-    (fun _ _ => Finset.mem_univ _) (by simp)
+    (s := Finset.univ) (t := Finset.univ) (f := hit) (n := limit)
+    (fun _ _ => Finset.mem_univ _) (by simpa using size)
   exact ⟨p, hp⟩
+
+/-- A cover by fifteen tests must assign at least 21,305 surviving pairs to one test. -/
+theorem degree1229_common_failure (hit : Fin 319572 → Fin 15) :
+    ∃ p, 21305 ≤ (Finset.univ.filter (fun i => hit i = p)).card :=
+  large_failure_class (limit := 21304) hit (by decide)
+
+/-- The reduced cofactor budget raises the necessary class size to 22,827 pairs. -/
+theorem degree1229_fourteen_prime_cover (hit : Fin 319572 → Fin 14) :
+    ∃ p, 22827 ≤ (Finset.univ.filter (fun i => hit i = p)).card :=
+  large_failure_class (limit := 22826) hit (by decide)
 
 /-- An injective code for the supports failing each test bounds their union,
 even when a support can fail several tests and the code lengths differ. -/
@@ -74,17 +83,26 @@ theorem outside_card_of_failure_codes {I P : Type*} [Fintype I] [Fintype P] [Dec
   rw [Finset.card_sdiff_of_subset (Finset.subset_univ _), Finset.card_univ]
   omega
 
-/-- A fourteen-bit rank for each remaining prime would certify at least
-73,812 primitive reciprocal pairs among the degree-1229 survivors. -/
+private theorem degree1229_uniform_failure_codes {I : Type*} [Fintype I] [DecidableEq I]
+    {primes : ℕ} (size : Fintype.card I = 319572) (bad : Fin primes → Finset I)
+    (code : ∀ p, ↥(bad p) ↪ Fin (2^14)) :
+    319572 - primes * 2^14 ≤ (Finset.univ \ Finset.univ.biUnion bad).card := by
+  simpa only [size, Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
+    using outside_card_of_failure_codes bad (fun _ => 2^14) code
+
+/-- The earlier fifteen-prime budget gives 73,812 primitive pairs under the rank hypothesis. -/
 theorem degree1229_of_fourteen_bit_codes {I : Type*} [Fintype I] [DecidableEq I]
     (size : Fintype.card I = 319572) (bad : Fin 15 → Finset I)
     (code : ∀ p, ↥(bad p) ↪ Fin (2^14)) :
-    73812 ≤ (Finset.univ \ Finset.univ.biUnion bad).card := by
-  calc
-    73812 = Fintype.card I - ∑ _p : Fin 15, (2 : ℕ)^14 := by
-      rw [size, Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
-      decide +kernel
-    _ ≤ _ := outside_card_of_failure_codes bad (fun _ => 2^14) code
+    73812 ≤ (Finset.univ \ Finset.univ.biUnion bad).card :=
+  degree1229_uniform_failure_codes size bad code
+
+/-- A fourteen-bit rank at each of fourteen primes would give 90,196 primitive pairs. -/
+theorem degree1229_codes_at_fourteen_primes {I : Type*} [Fintype I] [DecidableEq I]
+    (size : Fintype.card I = 319572) (bad : Fin 14 → Finset I)
+    (code : ∀ p, ↥(bad p) ↪ Fin (2^14)) :
+    90196 ≤ (Finset.univ \ Finset.univ.biUnion bad).card :=
+  degree1229_uniform_failure_codes size bad code
 
 /-- A failed parameter can be encoded by a test and a root of its polynomial.
 The test fields may differ. Each parameter map must be injective on the given set. -/
