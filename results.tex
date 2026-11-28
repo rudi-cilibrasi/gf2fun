@@ -22264,23 +22264,18 @@ Sections~\ref{sec:semiprime-norm-witnesses} and~\ref{sec:scalar-pair-census}.
 The certificates for degrees 19121, 20521, 20887, 22193 and 35339 appear with
 the combined census in Section~\ref{sec:three-mers-trinomial-censuses}.
 
-\paragraph{Two candidates with one outstanding prime proof each.}
-For two further pentanomials in \nolinkurl{data/mers-project-large-orders.json},
-write \(2^n-1=AP\), where \(P\) is the largest listed factor.
-In every case \(\gcd(A,P)=1\) and the complete prime factorization
-of \(A\) is verified. NTL tested irreducibility and the 12 factor-index
-powers across these rows. FLINT independently verified each full group
-power and all 12 factor-index powers. Write \(r=X\bmod f\). For each prime \(p\mid A\),
-the test \(r^{(2^n-1)/p}\ne1\) forces the full power of \(p\)
-in \(2^n-1\) to divide the root order. The test \(r^A\ne1\) then gives
-\(\operatorname{ord}(r)=Ad\) for a divisor \(d>1\) of \(P\).
-A primality proof for \(P\) would give \(d=P\).
-
-The largest degree is 41521, with interior exponents \(6931,13862,34590\)
-and four listed factors. Its remaining integer certificate is for a
-12459-digit factor. The other remaining factor has 9927 digits in
-degree 35737. Each of the two certificates can be checked
-independently of the other degrees.
+\paragraph{The remaining candidate in degree 35737.}
+For the pentanomial with taps \(6883,14427,21310\) in
+\nolinkurl{data/mers-project-large-orders.json}, write
+\(2^{35737}-1=AP\), where \(P\) is the largest listed factor.
+Here \(\gcd(A,P)=1\) and the complete prime factorization of \(A\)
+is verified. NTL tested irreducibility and all eight factor-index
+powers. FLINT independently verified the full group power and the same
+eight powers. For \(r=X\bmod f\) and each prime \(p\mid A\), the test
+\(r^{(2^{35737}-1)/p}\ne1\) forces the full power of \(p\) in the
+group order to divide \(\ord(r)\). The test \(r^A\ne1\) then gives
+\(\ord(r)=Ad\) for a divisor \(d>1\) of \(P\). A primality proof for
+the 9927-digit integer \(P\) would establish full order.
 
 \clearpage
 \section{How often a five-term witness is necessary}
@@ -22469,9 +22464,9 @@ The degree-26903 pentanomial with taps \(1253,2506,25650\) and the trinomial wit
 
 In degree 29473 the five listed trinomials and the pentanomial with taps \(5476,10952,23997\) pass all three prime-index tests. PARI/GP verified the \href{https://factordb.com/cert/1100000000013065391}{981-step certificate for the 8835-digit prime}.
 
-Among the 81 degrees in the combined Mers Project census, 41 admit
-primitive trinomials and 40 require five terms. The complete table has
-132 irreducible and 124 primitive pairs in 491491 reciprocal classes.
+Among the 82 degrees in the combined Mers Project census with certified
+minima, 42 admit primitive trinomials and 40 require five terms. These
+512251 reciprocal classes contain 136 irreducible and 128 primitive pairs.
 The other six imprimitive orders are given in Section~\ref{sec:mers-project-orders}.
 
 \clearpage
@@ -24060,14 +24055,13 @@ Lean verifies the translation identities and the seven full-order examples.
 \label{sec:complete-mers-trinomial-supports}
 Among the 530119 trinomials \(X^n+X^k+1\) with \(1\le k\le\lfloor n/2\rfloor\)
 in the 83 degrees of the two Mers Project tables, precisely 136 are
-irreducible. These are reciprocal classes. Of these, 124 are proven
-primitive and eight have proven smaller orders. All four remaining
-classes are in degree 41521.
+irreducible. These are reciprocal classes. Exactly 128 are primitive
+and the other eight have proven smaller orders.
 
 \[
 \begin{array}{l|r|r|l}
 \text{degrees}&\text{classes tested}&\text{irreducible}&\text{taps in the last three degrees}\\\hline
-\text{other 80 certified rows}&475226&132&\\
+\text{80 earlier rows}&475226&132&\\
 32531&16265&0&\varnothing\\
 35737&17868&0&\varnothing\\
 41521&20760&4&1866,2034,4102,13716\\\hline
@@ -24081,14 +24075,11 @@ every trinomial. In degree 35737 both orientations of every trinomial
 are reducible. Consequently any primitive witness of weight at most five
 in either of those degrees must have five terms.
 
-The four degree-41521 trinomials pass the full group power and all
-four factor-index powers for the supplied factor list. The list multiplies
-to \(2^{41521}-1\). The primality of its 12459-digit largest entry would
-establish full order for all four pairs, as well as for the pentanomial in
-Section~\ref{sec:mers-project-orders}. The irreducible lists above are
-independent of that integer certificate. The 81 certified rows are in
-\nolinkurl{data/mers-project-trinomial-census.csv}. The other two lists
-are in \nolinkurl{data/mers-project-trinomial-census-supplement.csv}.
+The four degree-41521 trinomials pass all four prime-index powers.
+The integer proof in Section~\ref{sec:minimum-weight-41521} completes
+their order certificates. The 82 degrees with certified minimum weights
+are in \nolinkurl{data/mers-project-trinomial-census.csv}. The empty list for
+degree 35737 is in \nolinkurl{data/mers-project-trinomial-census-supplement.csv}.
 The \texttt{--irreducible-only} mode of
 \nolinkurl{scripts/prime_degree_trinomials.cpp} takes degrees as its only input.
 
@@ -24407,5 +24398,38 @@ Section~\ref{sec:mers-project-orders} rules it out. An exhaustive
 irreducibility test of the 16265 reciprocal classes gives the same
 empty list. Every irreducible binary polynomial of degree greater than
 one has odd weight and nonzero constant term. This proves minimality.
+
+\clearpage
+\section{Four primitive trinomial pairs and a pentanomial in degree 41521}
+\label{sec:minimum-weight-41521}
+Up to reciprocity, the complete list of primitive binary trinomials of
+degree \(41521\) is
+\[
+    X^{41521}+X^k+1,\qquad k\in\{1866,2034,4102,13716\}.
+\]
+The pentanomial \(X^{41521}+X^{34590}+X^{13862}+X^{6931}+1\)
+is also primitive. In particular, the minimum primitive weight is three.
+
+Put \(M=2^{41521}-1\). Its four prime factors, each with multiplicity one,
+are
+\[
+ a=2989513,\qquad b=249375127,\qquad c=55803711703045241786952239,
+ \qquad P=M/(abc).
+\]
+FLINT proved primality of \(a,b,c\). For the 12459-digit integer \(P\),
+PARI/GP verified the 1426-step
+\href{https://factordb.com/cert/1100000000217039941}{PRIMO certificate
+from 2012}. The chain is archived in
+\nolinkurl{data/mers-project-primality/1100000000217039941.cert.gz}.
+
+NTL checked irreducibility and the four prime-index powers for each
+of the five displayed polynomials. FLINT independently checked
+\(X^M=1\) and \(X^{M/p}\ne1\) modulo each polynomial, for every
+\(p\in\{a,b,c,P\}\). Thus every root has order \(M\).
+The independent irreducibility census of
+Section~\ref{sec:complete-mers-trinomial-supports} exhausts all 20760
+trinomial reciprocal classes in this degree. These four pairs complete
+the classification of all 136 irreducible trinomial pairs in the 83
+selected Mers Project degrees.
 
 \end{document}
