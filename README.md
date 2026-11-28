@@ -2,7 +2,7 @@
 
 Does every positive degree $n$ have a primitive polynomial over $\mathbb F_2$ with at most five terms? This is Conjecture 4.3.5 in the *Handbook of Finite Fields*. The all-degree question remains open here. A primitive polynomial is monic and irreducible, and the residue of $X$ has multiplicative order $2^n-1$. [Stephen D. Cohen, “Weights of primitive polynomials”](https://archive.ymsc.tsinghua.edu.cn/pacm_download/672/12637-dingjt-p2.pdf#page=133)
 
-**Degree 1229 is the first gap in this repository.** Every positive degree through 1228 has a verified witness. In degree 1229 all trinomials are reducible, and 639,144 of the 639,166 irreducible pentanomials pass the four known prime-index tests. A counterexample would require a single prime divisor of the remaining cofactor to exclude at least 21,305 surviving reciprocal pairs. One full-order pentanomial would settle the degree. [Census](data/degree-1229-pentanomial-census.csv) · [Subgroup bound](results.pdf#page=197)
+**Degree 1229 is the first gap in this repository.** Every positive degree through 1228 has a verified witness. In degree 1229 all trinomials are reducible, and 639,144 of the 639,166 irreducible pentanomials pass the four known prime-index tests. A counterexample would require a single prime divisor of the remaining cofactor to exclude at least 21,305 surviving reciprocal pairs. Every surviving root has order exceeding $2^{347}$. A 14-bit index for the pairs failing each remaining prime would prove at least 73,812 primitive pairs. The required bound for those remaining primes is open. [Census](data/degree-1229-pentanomial-census.csv) · [Subgroup bound](results.pdf#page=197) · [Divisor floor and code lengths](results.pdf#page=374)
 
 Every irreducible degree-1229 pentanomial passes the first ten tests involving products of conjugate roots. If any of the 639,144 survivors is nonprimitive, more than 270 billion subsets of at most 596 conjugates have product one. Its first failing subset must have size between 11 and 596. [Proof and counts](results.pdf#page=201) · [Reproduce the upper bound](scripts/check_1229_failure_ranks.py)
 
@@ -1426,7 +1426,7 @@ python3 scripts/make_packed_mersenne.py --trinomial 44497 8575 --block 256 > /tm
   env LEAN_NUM_THREADS=1 lake env leanchecker -v GF2Sparse.PackedMersenne44497
 ```
 
-The first command checks the degree-1229 field arithmetic. The second replays the divisor bound from the beginning. Add `--continuation-only` to replay the eight Lagrange products beyond the earlier endpoint of 818,085,338,814,611,457. They independently reproduce two Newton products, extending the bound past $2^{60}$. [Residues](data/degree-1229-wheel-continuation.json) · [Order bounds](results.pdf#page=362)
+The first command checks the degree-1229 field arithmetic. The second replays the divisor bound from the beginning. Add `--continuation-only` to replay the 36 Lagrange products beyond the earlier endpoint of 818,085,338,814,611,457. They independently reproduce nine Newton products and exclude every remaining prime divisor through 2,464,190,181,310,201,857. [Residues](data/degree-1229-wheel-continuation.json) · [Order bounds](results.pdf#page=374)
 
 ```sh
 uv run --no-project --with sympy --with python-flint==0.9.0 python scripts/check_degree_1229.py

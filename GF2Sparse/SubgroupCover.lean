@@ -61,6 +61,31 @@ theorem degree1229_common_failure (hit : Fin 319572 → Fin 15) :
     (fun _ _ => Finset.mem_univ _) (by simp)
   exact ⟨p, hp⟩
 
+/-- An injective code for the supports failing each test bounds their union,
+even when a support can fail several tests and the code lengths differ. -/
+theorem outside_card_of_failure_codes {I P : Type*} [Fintype I] [Fintype P] [DecidableEq I]
+    (bad : P → Finset I) (capacity : P → ℕ)
+    (code : ∀ p, ↥(bad p) ↪ Fin (capacity p)) :
+    Fintype.card I - ∑ p, capacity p ≤ (Finset.univ \ Finset.univ.biUnion bad).card := by
+  have hcard (p : P) : (bad p).card ≤ capacity p := by
+    simpa using Fintype.card_le_of_embedding (code p)
+  have h : (Finset.univ.biUnion bad).card ≤ ∑ p, capacity p :=
+    Finset.card_biUnion_le.trans (Finset.sum_le_sum fun p _ => hcard p)
+  rw [Finset.card_sdiff_of_subset (Finset.subset_univ _), Finset.card_univ]
+  omega
+
+/-- A fourteen-bit rank for each remaining prime would certify at least
+73,812 primitive reciprocal pairs among the degree-1229 survivors. -/
+theorem degree1229_of_fourteen_bit_codes {I : Type*} [Fintype I] [DecidableEq I]
+    (size : Fintype.card I = 319572) (bad : Fin 15 → Finset I)
+    (code : ∀ p, ↥(bad p) ↪ Fin (2^14)) :
+    73812 ≤ (Finset.univ \ Finset.univ.biUnion bad).card := by
+  calc
+    73812 = Fintype.card I - ∑ _p : Fin 15, (2 : ℕ)^14 := by
+      rw [size, Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
+      decide +kernel
+    _ ≤ _ := outside_card_of_failure_codes bad (fun _ => 2^14) code
+
 /-- A failed parameter can be encoded by a test and a root of its polynomial.
 The test fields may differ. Each parameter map must be injective on the given set. -/
 theorem card_polynomial_failures {I P : Type*} [Fintype P] {d : ℕ}
