@@ -26896,4 +26896,105 @@ the three large modular products. \nolinkurl{GF2Sparse/FailureRanks.lean}
 proves the finite threshold and Cauchy--Schwarz inequalities and checks
 the numerical bounds used in the last step.
 
+\clearpage
+\section{Joint descriptions of disjoint degree-1229 pentanomials}
+\label{sec:joint-tap-codes}
+Consider the 319,572 reciprocal classes of pentanomials surviving
+the four known order tests. A tap \(t\) has label \(\min(t,1229-t)\).
+Call two distinct classes disjoint if they share no tap label.
+Suppose every unordered disjoint pair of classes that fail at least
+one common prime has an injective fixed-length code of 31 bits, with
+the degree and a fixed decoder given. Then at least \textbf{33,784}
+surviving reciprocal classes are primitive. The decoder receives the
+pair's single joint index and needs no prime as auxiliary input.
+The existence of this code is open.
+
+To count pairs that share a label, let \(N_U\) count the survivors
+whose folded tap set contains \(U\). For \(d=1,2,3\), the sums
+\(\sum_{|U|=d}\binom{N_U}{2}\) in the census are respectively
+\[
+                   772030772,\qquad 2688440,\qquad 1333 .
+\]
+Two classes with \(k\) common labels contribute \(\binom{k}{d}\)
+to the \(d\)-th sum. Inclusion--exclusion gives exactly
+\(H=769343665\) pairs sharing any tap label out of
+\(\binom{319572}{2}=51062971806\) unordered pairs.
+
+Let \(b\) be the number of nonprimitive survivors. Assign each one to
+its least missing prime. There are at most 14 classes in this
+assignment by Section~\ref{sec:1229-fourteen}. Writing
+\(b=14q+r\), \(0\le r<14\), there are at least
+\[
+                 L(b)=14\binom{q}{2}+rq
+\]
+unordered pairs with the same assignment. Indeed moving a member
+from a larger class to a smaller class reduces the pair count when
+the two sizes differ by at least two. At least \(L(b)-H\) pairs
+are therefore disjoint and fail a common prime. If the degree were
+a counterexample, the latter count would be at least
+\[
+             L(319572)-H=3647206758-769343665=2877863093 .
+\]
+Some one of the at most 14 assigned primes would account for at
+least 205,561,650 such disjoint pairs. Overlaps between the full
+prime-failure sets do not lead to repeated pairs in the assignment.
+
+A 31-bit code has at most \(2^{31}\) joint indices, so
+\(L(b)\le H+2^{31}=2916827313\). The values of \(L\) at
+285,788 and 285,789 are 2,916,813,570 and 2,916,833,983.
+Monotonicity gives \(b\le285788\) and hence the claimed
+\(319572-285788=33784\) primitive classes. This gives a
+coding target inside the actual sparse family in the sense of
+Section~\ref{sec:sparse-parameter-codes}. It allows the individual
+primes to have failure classes of different sizes.
+Fixed-length capacity makes the finite numerical statement independent
+of the machine constant in plain Kolmogorov complexity.
+For comparison the two known nonempty failure classes consist of
+five and six pentanomials up to reciprocation. All
+\(\binom52+\binom62=25\) of their within-class pairs have disjoint
+taps, so disjointness by itself permits a common failure.
+
+\clearpage
+\subsection*{The largest family with mutually disjoint tap labels}
+Exactly 240 surviving reciprocal classes can be chosen with pairwise
+disjoint folded taps. The file
+\nolinkurl{data/degree-1229-disjoint-tap-packing.json} gives their
+three interior exponents. Together these 240 supports use every label
+from 1 to 614 exactly once across the family. A counterexample
+would force at least 18 members of this explicit family to fail
+one common prime. If every remaining prime excludes at most 17 of
+these particular members, at least two members are primitive. A four-bit
+injective index for the failures in this list, given the prime, would
+leave at least \(240-14\cdot16=16\) primitive reciprocal classes.
+
+For the upper bound let \(D\) consist of the 307 labels that are
+2 or 3 modulo 4. The complete survivor census has the following
+properties. Every support has at least one label in \(D\), and has
+either two or three distinct labels. There are 74 two-label
+survivors with exactly one label in \(D\). A list of 39 labels in the
+same certificate meets all 74 of these pairs. Disjoint supports
+of this type therefore number at most 39. The other 676 two-label
+survivors have both labels in \(D\).
+
+In a disjoint family let \(m\) count two-label supports with one
+label in \(D\), let \(d\) count two-label supports with both in
+\(D\), and let \(t\) count three-label supports. There are only
+614 labels altogether and only 307 in \(D\), so
+\[
+       m\le39,\qquad 2m+2d+3t\le614,\qquad m+2d+t\le307 .
+\]
+Adding these three inequalities gives \(4(m+d+t)\le960\).
+The explicit packing meets the upper bound using \(m=39\), \(d=67\),
+and \(t=134\). Pigeonholing its 240 members over fourteen primes
+now gives the asserted 18 mutually disjoint failures.
+
+\nolinkurl{scripts/check_1229_joint_codes.py} uses the archived list
+of irreducible supports, checks the 39-label cover and the 240 supplied
+members, and computes the three pair incidences by counting subsets of
+each folded tap set with the Python standard library. Its optional
+field replay independently checks irreducibility and the four known
+order tests for all 240 members with 1,200 polynomial modular powers.
+\nolinkurl{GF2Sparse/SubgroupCover.lean} proves the packing upper
+bound and the class-size inequalities for the joint code.
+
 \end{document}
