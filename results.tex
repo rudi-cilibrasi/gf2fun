@@ -27994,4 +27994,244 @@ from binary linear dependence.
 \nolinkurl{GF2Sparse/CircuitOrderBounds.lean} checks the final
 degree-bound arithmetic and the two root orders under dilation.
 
+\clearpage
+\section{Unit power traces distinguish the normalized root orbits}
+\label{sec:unit-power-traces}
+Let $r>1$ be odd, $U=(\mathbb Z/r)^\times$, $H=\langle2\rangle$
+and $n=|H|$. For a primitive $r$-th root $z$ in characteristic two
+consider the record indexed by $U/H$,
+\[
+             jH\longmapsto \operatorname{Tr}_{2^n/2}(z^j)
+                       =\sum_{h\in H}z^{jh}.
+\]
+The record uses only exponents coprime to the multiplicative order.
+Call a polynomial normalized if its positive exponents have gcd one.
+
+\begin{theorem}
+For normalized minimal polynomials, these records distinguish all
+$\varphi(r)/n$ Frobenius orbits of roots of order $r$. Each record
+is nonzero. If there is more than one orbit, each record takes both
+binary values. If the minimal polynomial has exponent gcd greater than
+one, the entire unit record is zero.
+\end{theorem}
+\begin{proof}
+Put $Q=\prod_{p^2\mid r}p$, taking each such prime once. Reduction
+from $U$ modulo $r/Q$ has kernel a product of cyclic groups of the
+distinct prime orders $p\mid Q$. If $H$ meets that kernel nontrivially,
+it contains an entire order-$p$ coordinate subgroup. This is exactly the
+kernel of reduction modulo $r/p$. Equivalently,
+$\ord_r(2)=p\,\ord_{r/p}(2)$. The minimal polynomial of $z^p$ then
+has degree $n/p$, so its substitution at $X^p$ is the minimal
+polynomial of $z$. Conversely if the latter is $G(X^p)$ for a prime
+$p$, irreducibility gives a degree drop by $p$. Necessarily $p^2\mid r$,
+since removing a single factor $p$ of multiplicity one has unit-group
+kernel of order $p-1$, and a power prime to $r$ preserves degree.
+In this case the sum over that order-$p$ subgroup at any unit exponent
+is a geometric sum of all $p$-th roots of unity and is zero.
+
+In the normalized case each coset $aH$ meets each residue modulo $r/Q$
+at most once. Consider either the indicator of one such coset or the
+difference of two distinct indicators. It has at most two nonzero
+entries in any one residue modulo $r/Q$. We show that its Fourier
+evaluations at the primitive $r$-th roots cannot all vanish.
+
+By the Chinese remainder theorem an evaluation at a unit index is a
+product character on the prime-power coordinates. All choices of unit
+evaluation indices in these coordinates occur independently. At any
+$p\parallel r$, all exponents in the support are units. The matrix
+$(\zeta_p^{ij})_{1\le i,j<p}$ is invertible in characteristic two.
+A polynomial with exponents $1,\ldots,p-1$ vanishing at the $p-1$
+nonidentity $p$-th roots would have to be a multiple of $\Phi_p$,
+and its constant term is zero. We may therefore separate the sums
+at each fixed exponent in this coordinate.
+
+For $p^a\parallel r$ with $a\ge2$, write the unit evaluation index
+as $b+pt$, $1\le b<p$, $0\le t<p^{a-1}$. For fixed $b$ the Fourier
+transform in $t$ is invertible, since $p$ is odd. It separates the
+exponents modulo $p^{a-1}$. Doing this in every coordinate has now
+fixed a residue modulo $r/Q$. Up to a common nonzero factor, its
+remaining monomials are $\prod_{p\mid Q}\zeta_p^{k_p b_p}$, where
+$k_p$ is the last digit of the exponent and $1\le b_p<p$.
+A single monomial never vanishes. Two distinct monomials cannot cancel
+for all choices: varying $b_p$ from one to two in a coordinate where
+their digits differ changes their ratio. This proves the assertion on
+Fourier evaluations, and hence nonvanishing and pairwise distinction of
+the records. Replacing $z$ by $z^a$ permutes the record indices by $a$,
+so a constant record with more than one orbit would contradict distinction.
+\end{proof}
+
+\clearpage
+\section{Two bits for pentanomials of order at most sixteen times the degree}
+\label{sec:order-sixteen}
+In any degree $n>1$ there are at most four reciprocal classes of
+irreducible pentanomials of root order $R\le16n$, and at most seven
+oriented polynomials. Both maxima occur in degree 42. Any single
+multiplicative subgroup of size at most $16n$ contains roots from
+at most three such classes, attained by the order-73 subgroup in
+degree nine. Thus the degree and two bits suffice to recover a
+low-order pentanomial up to reciprocal orientation.
+
+Write $f=F(X^g)$ with $F$ normalized of degree $m=n/g$ and order
+$r=R/g$ as in Section~\ref{sec:constant-order-descriptions}. For
+pentanomials we have $5m^4\le16r^3$. For trinomials the stronger
+$3m^2\le4r$ implies the same inequality. From $r\le16m$ we obtain
+$m\le13107$ and $r\le209715$. For each odd $r$ in this range compute
+$m=\ord_r(2)$. Exclude it if $m=p\,\ord_{r/p}(2)$ for any $p\mid r$.
+The order, packing and normalization conditions leave 4760 orders.
+
+If there is only one unit coset and the order is normalized, $r$ is
+prime. Indeed two different prime divisors give a noncyclic unit group
+by independent signs, and a repeated prime would give a dilation.
+The sole factor $\Phi_r$ has weight $r$, so keep only 3 and 5 here.
+Otherwise let $b=\lfloor(m-1)/2\rfloor$. One orientation of a support
+of weight three or five has at most one interior exponent through $b$,
+since the two end intervals are disjoint. The reciprocal logarithmic
+derivative (or Newton identities at that end) then gives a zero trace
+prefix if that tap is absent or even. With one odd tap $a$ the trace
+at odd $j\le b$ is one exactly when $a\mid j$. The inverse root can
+be used since its exponents permute the unit cosets. If the odd
+representatives $j\le b$ in \emph{every} unit coset have gcd one,
+this forces all unit traces equal. When $a>1$, a trace-one coset would
+have all its representatives divisible by $a$. When $a=1$ every observed
+trace is one. Section~\ref{sec:unit-power-traces} excludes both constant
+records.
+
+Exactly 206 orders survive, the largest 6959. Their binary cyclotomic
+polynomials split into 1705 irreducibles. Of these, 11 have weight
+three and 35 have weight five. The table gives the normalized interior
+taps up to reciprocation. Its last column gives the primes allowed in $g$.
+\[
+\begin{array}{r|r|l|l}
+ m&r&\text{interior taps, one per reciprocal class}&p\mid g\\\hline
+ 2&3&1&3\\
+ 3&7&1&7\\
+ 4&5&(1,2,3)&5\\
+ 4&15&1&3,5\\
+ 5&31&2,\ (1,2,3),\ (1,2,4)&31\\
+ 6&21&(1,2,4)&7\\
+ 6&63&1,\ (1,2,5),\ (1,3,4)&3,7\\
+ 8&17&(3,4,5)&17\\
+ 8&51&(1,3,4)&3,17\\
+ 8&85&(1,3,7)&5,17\\
+ 9&73&1,\ (1,2,4),\ (1,3,6),\ (2,5,6)&73\\
+ 10&33&(1,5,9),\ (3,5,7)&3,11\\
+ 10&93&(1,3,8),\ (2,4,5)&3,31\\
+ 11&89&(1,6,7)&89\\
+ 12&91&(1,9,10)&7,13\\
+ 14&129&(5,7,9)&3,43\\
+ 18&219&(1,2,10)&73
+\end{array}
+\]
+
+\clearpage
+\subsection*{Which prime-index subgroups can fail?}
+The admissible primes $p$ in a dilation are exactly those dividing
+$r$ and coprime to $(2^m-1)/r$. For any other $p$, a root of $F$
+already has a $p$-th root in the same field, which rules out $F(X^p)$.
+Conversely, if all primes of $g$ are admissible, a $g$-th root of an
+order-$r$ element has order $rg$. Its binary degree is a multiple
+$mk$ of $m$. For each $p\mid g$, lifting the exponent gives
+$v_p(2^{mk}-1)=v_p(r)+v_p(k)$, hence $g\mid k$. Since $F(X^g)$
+has degree $mg$, this proves irreducibility and the stated order.
+
+For a given $n$, take the rows with $m\mid n$ for which $g=n/m$
+uses only allowed primes and multiply all taps by $g$. To bound the
+number of active rows over \emph{all} degrees, replace $n$ by the lcm
+of their base degrees. Each dilation is then a divisor of its former
+value, so every such row is still active. This reduces the maximum to
+divisors of $27720$, the lcm of the base degrees. The same reduction
+preserves the ratio to $n$ of the lcm of their root orders, as all are
+scaled by the same integer. A selection fits in one subgroup of size at
+most $16n$ exactly when the lcm of its orders is at most $16n$.
+The finite comparisons give the stated maxima. Including trinomials
+gives at most five reciprocal classes and nine oriented polynomials
+per degree. In degree 42 the four pentanomial representatives have
+taps $(7,14,28)$, $(7,14,35)$, $(7,21,28)$ and $(15,21,27)$.
+Only the last is self-reciprocal.
+
+In particular, for \emph{every} $n\ge15$ and prime $p\mid 2^n-1$
+with $(2^n-1)/p\le16n$, every irreducible binary trinomial and
+pentanomial passes the index-$p$ order test. For $n>1$ the complete
+list of failures is below. The counts refer to reciprocal classes.
+\[
+\begin{array}{r|r|r|rr}
+ n & p & (2^n-1)/p & \text{trinomials}&\text{pentanomials}\\\hline
+4&3&5&0&1\\
+6&3&21&0&1\\
+6&7&9&1&0\\
+8&3&85&0&2\\
+8&5&51&0&2\\
+9&7&73&1&3\\
+10&11&93&0&2\\
+10&31&33&0&2\\
+11&23&89&0&1\\
+14&127&129&0&1
+\end{array}
+\]
+Indeed a prime degree permitting a failure must be a base degree, as
+all base degrees exceed one. In composite degree let $d$ be the
+largest proper divisor. Then $d^2\ge n$ and $2d\le n$. If $p$ does
+not divide $2^d-1$, this subfield order divides $(2^n-1)/p$. If
+$p\mid2^d-1$, the same quotient is at least $(2^n-1)/(2^d-1)>2^d$.
+Either way $2^d-1\le16n\le16d^2$, impossible for $d\ge11$ by
+induction. It suffices to test $n\le100$ using the classified supports.
+
+\nolinkurl{scripts/check_linear_order_classes.py} computes the order
+sieve and factors the remaining cyclotomic polynomials with FLINT.
+Its \texttt{--ntl} option replays the independent orbit splitting
+in \nolinkurl{scripts/cyclotomic_weight_census.cpp}. Both verify the
+explicit base polynomials. The \texttt{--degree} option decodes them.
+The order cutoff and the composite-degree cutoff are kernel-checked
+in \nolinkurl{GF2Sparse/CircuitOrderBounds.lean}.
+
+\clearpage
+\section{Reading a root order from the symmetries of its unit traces}
+\label{sec:unit-trace-conductor}
+Let a normalized irreducible binary polynomial have degree $n>1$
+and a root $z$ of order $r$. Write $M=2^n-1$ and $U_D=(\mathbb Z/D)^\times$
+for each $D\mid M$. On the known domain $U_M$ form the single-bit function
+$w_z(j)=\operatorname{Tr}_{2^n/2}(z^j)$. Then
+\[
+ \{a\in U_M:w_z(aj)=w_z(j)\text{ for every }j\in U_M\}
+    =\{a\in U_M:a\bmod r\in\langle2\rangle\},
+\]
+and this stabilizer has order $n\varphi(M)/\varphi(r)$.
+In particular $z$ is primitive exactly when the only symmetries are
+the $n$ Frobenius multipliers. If $n$ is odd then the function
+$w_z$ factors through $U_D$ exactly for the multiples $D$ of $r$.
+Thus the least such divisor of $M$ is the exact root order.
+
+Reduction $U_M\to U_r$ is onto by the Chinese remainder theorem.
+Equality of unit records for $z^a$ and $z$ therefore means they are
+conjugate, by Section~\ref{sec:unit-power-traces}. This gives the
+stabilizer and its size. Since $M$ is odd, every proper divisor $r$
+has $\varphi(r)<\varphi(M)$. For the last assertion suppose $r\nmid D$.
+Choose a prime $p$ whose exponent in $D$ is smaller than in $r$.
+The kernel of reduction modulo $D$ maps onto the kernel of reduction
+from $U_r$ modulo $\gcd(D,r)$, as one checks prime power by prime power.
+The image thus contains the full kernel from $U_r$ modulo $r/p$.
+If $p^2\mid r$ this kernel has order $p$ and normalization excludes it
+from $\langle2\rangle$. If $p\parallel r$ it has even order $p-1$,
+which cannot divide odd $n$. Hence the record does not descend to
+$U_D$. Conversely any $D$ divisible by $r$ supplies the record directly.
+
+\paragraph{Degree 1229.}
+Every irreducible pentanomial here is normalized since the degree is
+prime. A primitive root has exactly 1229 unit-trace symmetries.
+A survivor of the four known tests that misses a remaining prime $p$
+has at least
+\[
+    1229(p-1)\ \ge\ 10221602093459857999053
+\]
+symmetries. In fact the same subgroup works for \emph{every} root
+missing that $p$: use the preimage of $\langle2\rangle$ modulo $M/p$.
+The order of $2$ modulo $M/p$ is 1229, since the four known primes
+still divide it. The size of that preimage is $1229(p-1)$ for
+$p\parallel M$ and $1229p$ for $p^2\mid M$.
+Consequently a counterexample would force at least 22827 reciprocal
+pairs to have this common symmetry group, by
+Section~\ref{sec:1229-fourteen}. For a root passing the test its
+record cannot descend modulo $M/p$, by the odd-degree assertion.
+The size of a failure class for an unknown $p$ remains open.
+
 \end{document}

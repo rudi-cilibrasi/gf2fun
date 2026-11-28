@@ -122,6 +122,48 @@ def verified_bases():
     return found
 
 
+def check_unit_records(limit=255):
+    """Compare unit traces of every primitive-root orbit for small odd orders."""
+    checked = 0
+    for r in range(3, limit+1, 2):
+        n = binary_degree(r)
+        units = [j for j in range(1, r) if gcd(j, r) == 1]
+        phi = BINARY([int(c) % 2 for c in fmpz_poly.cyclotomic(r)])
+        _, factors = phi.factor()
+        records = set()
+        normalized = not any(n == p*binary_degree(r//p) for p in prime_divisors(r) if r % (p*p) == 0)
+        for f, multiplicity in factors:
+            exponents = [j for j, c in enumerate(f) if j and c]
+            if f.degree() != n or multiplicity != 1 or (gcd(*exponents) == 1) != normalized:
+                raise ArithmeticError(f"unexpected exponent gcd at order {r}")
+            # The coefficients at positive j are the traces of inverse-root powers.
+            trace = (X*f.derivative()*f.inverse_series_trunc(r)).truncate(r)
+            word = tuple(int(trace[j]) for j in units)
+            if normalized != any(word) or (normalized and word in records):
+                raise ArithmeticError(f"unit traces failed to separate the factors at {r}")
+            records.add(word)
+            checked += 1
+            if not normalized or n % 2 == 0:
+                continue
+            # Enlarge the order, including both new primes and repeated prime factors.
+            ambient = 15*r
+            for p in prime_divisors(ambient):
+                d = ambient//p
+                entries = {}
+                for j in range(1, ambient):
+                    if gcd(j, ambient) == 1:
+                        bit = int(trace[j % r])
+                        if entries.setdefault(j % d, bit) != bit:
+                            break
+                else:
+                    if d % r:
+                        raise ArithmeticError(f"odd-degree record descended below order {r}")
+                    continue
+                if d % r == 0:
+                    raise ArithmeticError(f"unit record did not descend to a multiple of {r}")
+    print(f"Checked unit traces on all {checked} Frobenius orbits of odd orders through {limit}.")
+
+
 def members(n):
     """Yield (root order, canonical taps) in a given degree without factoring that degree."""
     for r, (m, rows) in BASES.items():
@@ -203,5 +245,6 @@ if __name__ == "__main__":
         elif flint_census(cases) != supports:
             raise ArithmeticError("the FLINT sparse factors differ from the table")
         print("206 cyclotomic orders give 46 normalized sparse polynomials in 26 reciprocal classes.")
+        check_unit_records()
         check_maxima()
         check_prime_indices()
