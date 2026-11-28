@@ -10,6 +10,10 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In every prime degree $n\ge5$, a root $z$ of a binary irreducible with at most five terms gives six distinct minimal polynomials.** The roots are $z,z^{-1},z^3,z^{-3},z^5,z^{-5}$, each of degree $n$. For example, order 3,118,439 is impossible in degree 6,067 because $3\equiv5\cdot2^{5309}$ modulo that prime. [Proof and subgroup tests](results.pdf#page=323) · [Arithmetic verifier](scripts/check_sparse_power_orbits.py)
+
+- **For any number of terms, two different odd powers of a sparse root can be conjugate only up to an explicit degree.** Let $w$ be the weight, $g$ the exponent gcd and $L=\operatorname{lcm}(a,b)$ for distinct positive odd $a,b$. If $z^a$ is conjugate to $z^b$, the normalized degree $n/g$ is at most $L^{w-2}$. For conjugacy to $z^{-b}$ the bound is $(2L)^{w-2}$. [Proof](results.pdf#page=321) · [Lean proof of the order implications](GF2Sparse/PowerOrbitBounds.lean)
+
 - **In every prime degree $n\ge13$, an irreducible binary polynomial with at most five terms has root order greater than $256n+1$.** The smallest order across these degrees is 8,191, attained by $X^{13}+X^5+X^2+X+1$. When $2^n-1=sP$ with $P$ prime and $s\le256n+1$, the full power of $P$ in the group order divides every such root order. [Proof and small-degree exceptions](results.pdf#page=319) · [Reproduce the sieve and factor counts](scripts/check_sparse_root_orders.py)
 
 - **In odd degree above one, the cube of a sparse irreducible root can be conjugate to the root or its inverse in exactly one family.** The exceptions are $X^{3d}+X^d+1$ and their reciprocals for $d=7^a$, $a\ge0$. In each case the cube is conjugate to the inverse. This gives an arithmetic exclusion for subgroups of any size and rules out order 12,189,337 in degree 26,731. [Proof](results.pdf#page=320) · [Cubing verifier](scripts/check_cubing_chains.py)
@@ -966,6 +970,7 @@ The prime-degree order classification uses the same executable. The signed cubin
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_sparse_root_orders.py --census /tmp/gf2-cyclotomic-weights
 uv run --no-project --with python-flint==0.9.0 python scripts/check_cubing_chains.py --signed-orders
+uv run --no-project --with python-flint==0.9.0 python scripts/check_sparse_power_orbits.py
 ~~~
 
 To reproduce the order projections and subfield certificates, run

@@ -57,6 +57,7 @@ import GF2Sparse.PackedMersenne44497
 import GF2Sparse.PackedMersenneExamples
 import GF2Sparse.ParityExamples
 import GF2Sparse.PlaneOrder
+import GF2Sparse.PowerOrbitBounds
 import GF2Sparse.PrimeGrid
 import GF2Sparse.QuinticIsogeny
 import GF2Sparse.Progressions
