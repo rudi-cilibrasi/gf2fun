@@ -26407,4 +26407,54 @@ condition is open. \nolinkurl{GF2Sparse/SubgroupCover.lean}
 proves the cover and uniform-code implications. The census and
 finite counts are checked by \nolinkurl{scripts/check_trace_incompressibility.py}.
 
+\clearpage
+\section{More than \(2^{658}\) primitive polynomials with 303 terms or fewer}
+\label{sec:capped-303}
+Fix any monic binary template of degree 1229 with constant one.
+More than \(9\cdot2^{654}\) primitive polynomials agree in its first
+516 interior positions and differ in at most 302 places overall.
+The same bound holds for its last 516 interior positions. More than
+\(2^{658}\) distinct primitive polynomials satisfy at least one of
+these two conditions. For an even-weight template the distance is
+at most 301. Taking the template \(X^{1229}+1\) gives the term bound.
+
+Use the notation and signed score \(Z\) of Section~\ref{sec:1229-signed-weight}.
+The first arithmetic check there gives \(Z>(91/100)N\mu\).
+A primitive polynomial can contribute at most \(305M\) per root,
+but the score is far lower for most supports. To count the supports
+that could exceed a smaller cap, let \(i\) and \(k\) count differences
+in the middle 516 and remaining 196 bits, respectively. The positive
+score per root and its middle weight are
+\[
+ V_{ik}=W_i(303-i-k)_+,\qquad
+ W_i=\left(\sum_{j=0}^{12}g_j K_j(i;516)\right)^2.
+\]
+For all primitive polynomials the parity of \(i+k\) is fixed by the
+template, since a binary irreducible of degree greater than one has
+odd weight. For parity \(p\) and cap \(H=\lfloor21M/2^{35}\rfloor\) put
+\[
+ E_p=\sum_{i+k\equiv p\pmod2}\binom{516}{i}\binom{196}{k}(V_{ik}-H)_+.
+\]
+This sum includes every binary support in the prescribed coset.
+If \(L\) counts the distinct primitive polynomials of positive score,
+then \(Z/1229\le HL+E_p\). Counting each polynomial once, the
+contributions up to the cap sum to at most \(HL\), and their
+excesses sum to at most \(E_p\).
+For both parities the finite sums satisfy
+\[
+     E_p+9\cdot2^{654}H < \frac{91N\mu}{100\cdot1229}.
+\]
+Thus \(L>9\cdot2^{654}\). The integer check sums the binomial counts
+and their first moments over \(k<303-i-\lfloor H/W_i\rfloor\) for
+\(W_i>0\). It appears in \nolinkurl{GF2Sparse/SignedWeight1229.lean},
+with an exact Python replay in \nolinkurl{scripts/check_1229_signed_weight.py}.
+
+Reciprocation gives the same count at the other end. The intersection
+fixes 1032 interior positions and contains at most \(2^{196}\)
+polynomials. The union therefore has cardinality greater than
+\(2(9\cdot2^{654})-2^{196}>2^{658}\).
+In particular, with the degree and template supplied to any fixed
+decoder, some such primitive polynomial needs at least 658 bits
+of description because only \(2^{658}-1\) shorter binary strings exist.
+
 \end{document}

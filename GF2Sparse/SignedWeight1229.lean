@@ -83,4 +83,30 @@ theorem signedPrimitiveCountArithmetic :
     group*mass*(91/100) < score ∧ (2^619 : ℚ)*1229*305*peak < score := by
   decide +kernel
 
+private def freePrefix (parity : ℕ) : List (ℕ × ℕ) :=
+  ((List.range 197).foldl (fun (rev : List (ℕ × ℕ)) k =>
+    let last := rev.head!
+    let count := if k % 2 = parity then Nat.fast_choose 196 k else 0
+    (last.1 + count, last.2 + k * count) :: rev) [(0, 0)]).reverse
+
+private def clipThreshold : ℕ := 21 * peak / 2^35
+
+private def clippedExcess (parity : ℕ) : ℕ :=
+  let even := freePrefix 0
+  let odd := freePrefix 1
+  let threshold := clipThreshold
+  ((List.range 303).map fun i =>
+    let row := SelbergWeight.krawtchoukRow 516 i 12
+    let value := ((List.zipWith (fun (g : ℕ) (k : ℤ) => g*k) frequency row).sum).natAbs^2
+    if value = 0 then 0 else
+      let limit := min 197 (303-i-threshold/value)
+      let totals := (if i%2 = parity then even else odd).getD limit (0, 0)
+      Nat.fast_choose 516 i * (value*((303-i)*totals.1-totals.2)-threshold*totals.1)).sum
+
+/-- Capping the score gives over nine times 2^654 polynomials for either parity. -/
+theorem cappedMultiplicityArithmetic : 0 < clipThreshold ∧
+    (∀ p ∈ List.range 2, 100*2^516*1229*(clippedExcess p + 9*2^654*clipThreshold) <
+      91*(2^1229-1)*overlap 0) ∧ 2^658+2^196 < 2*(9*2^654) := by
+  decide +kernel
+
 end GF2Sparse.SignedWeight1229
