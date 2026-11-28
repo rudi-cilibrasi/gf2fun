@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **More than 35.756% of degrees admit no primitive trinomial.** Even irreducible trinomials are impossible in more than 34.101% of all degrees and 47.742% of prime degrees, measured by lower asymptotic density. A five-term witness is necessary wherever a primitive trinomial is impossible. The calculation combines Swan's theorem with exact counts of small-field factors. [Proof](results.pdf#page=311) · [Density verifier](scripts/check_trinomial_density.py) · [Lean proof for dilations](GF2Sparse/Dilation.lean)
+
 - **A primitive pentanomial in degree 33,511 is $X^{33511}+X^{32291}+X^{2440}+X^{1220}+1$.** Its root has order $2^{33511}-1$. We verified all 27 prime-index powers and the primality of every factor, including a 9,124-digit prime. The certificates for this degree and the 66 census cases below are stored in the repository. [Proof](results.pdf#page=310) · [Order factorization](data/mers-project-large-orders.json) · [Primality certificates](data/mers-project-primality)
 
 - **The census gives the minimum primitive weight in 66 degrees from 3,537 through 22,327.** Thirty-two admit primitive trinomials and the other 34 require pentanomials. In degree 17,683 a primitive pentanomial has interior exponents 2,170, 4,340 and 15,513. In degree 17,698 both $X^{17698}+X^{511}+1$ and the pentanomial with interior exponents 783, 1,566 and 16,915 are primitive. [First 63 witnesses](data/mers-project-sparse-orders.json) · [Larger witnesses and further candidates](data/mers-project-large-orders.json) · [Proof](results.pdf#page=307)
@@ -712,6 +714,8 @@ curl -fsSL https://raw.githubusercontent.com/postvakje/Reformatted-Cunningham-Pr
 A pull request can include the generated table and the corresponding interval theorem. Existing tables can be checked independently, so contributors can work on disjoint ranges. [Combining verified intervals](GF2Sparse/Coverage.lean)
 
 ## Verification
+
+To reproduce the density bounds, run `python3 scripts/check_trinomial_density.py` with the Python standard library. It counts residue classes using fields through degree 25. Add `--through 18` for a shorter calculation that already excludes primitive trinomials from more than 35.1% of all degrees.
 
 To replay the Mers Project witnesses, install PARI/GP and run the command below. Add `--degree 3987` to check one row. Each witness lists the interior exponents in increasing order. The constant and leading coefficients are one. [Mers Project factor table](https://mers.sourceforge.io/factoredM.txt) · [Seroussi's irreducible polynomial table](https://shiftleft.com/mirrors/www.hpl.hp.com/techreports/98/HPL-98-135.pdf)
 

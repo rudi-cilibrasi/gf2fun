@@ -22289,4 +22289,131 @@ and four listed factors. Its remaining integer certificate is for a
 degree 20521. Each of the 15 certificates can be checked
 independently of the other degrees.
 
+\clearpage
+\section{How often a five-term witness is necessary}
+\label{sec:trinomial-density}
+\begin{theorem}
+The set of positive degrees in which no binary primitive trinomial exists
+has lower natural density greater than \(0.35756\). The set in which no
+binary irreducible trinomial exists has lower natural density greater
+than \(0.34101\). Among prime degrees the latter set has lower relative
+density greater than \(0.47742\).
+\end{theorem}
+In particular, an all-degree construction with weight at most five would
+have to use five terms on more than \(35.75\%\) of the degrees in lower
+density. An irreducible of degree greater than one has a leading and a
+constant term, and evaluation at one forces its weight to be odd.
+
+\begin{proof}
+\href{https://msp.org/pjm/1962/12-3/pjm-v12-n3-p27-p.pdf}{Swan's parity theorem}
+excludes irreducible binary trinomials in degrees divisible by eight.
+For \(n\equiv3,5\pmod8\), orient a trinomial by reciprocation so its
+interior exponent is even. Swan requires this exponent to divide \(2n\),
+so the only possible irreducibles are
+\[
+ T_m(X^d),\qquad T_m(Y)=Y^m+Y^2+1,\qquad n=dm,\quad m>2 .
+\]
+If the dilation is irreducible, so is \(T_m\), and the \(d\)-th power of
+a root belongs to the field of degree \(m\). For \(d>1\) its root order is at most
+\(d(2^m-1)<2^n-1\). For prime \(n\) only \(d=1\) is possible.
+
+\paragraph{Excluding the candidate with exponent two.}
+Fix a cutoff \(B\) and take \(n>B\). A root of \(T_n\) in any binary
+field of degree at most \(B\) gives a proper factor. It suffices to test
+field degrees \(B/2<j\le B\), since each smaller positive degree divides
+some degree in this interval. Put \(M_j=2^j-1\). With a multiplicative
+generator \(g\) of the field, the possible roots are \(g^i\),
+\(1\le i<M_j\). The condition on \(n\) is the linear congruence
+\[
+ i n\equiv 2\log_g(1+g^i)\pmod{M_j}.
+\]
+Zero and one are never roots. Enumerating the powers of \(g\) gives all
+logarithms. Each soluble congruence covers one residue class modulo
+\(M_j/\gcd(i,M_j)\). Squaring the root gives the same class.
+
+Let \(S\) be the fraction of residues surviving all these exclusions
+modulo \(M=\mathrm{lcm}_j M_j\), and \(S^*\) the surviving fraction
+among the units modulo \(M\). The periods are odd. The fraction of degrees
+either divisible by eight, or congruent to three or five modulo eight
+with a detected root of \(T_n\), is therefore
+\[
+ D=\tfrac18+\tfrac14(1-S).
+\]
+Among primes the corresponding fraction is \(D^*=\tfrac12(1-S^*)\),
+by the \href{https://kskedlaya.org/ant/chap-primes-in-ap.html}{prime
+number theorem in arithmetic progressions} applied to the fixed modulus
+\(8M\). Thus \(D\) bounds the first lower density and \(D^*\) bounds
+the lower relative density for prime degrees.
+
+To compute both fractions with the overlapping periods, put
+\(L=\mathrm{lcm}_{i<j}\gcd(M_i,M_j)\) and \(g_j=\gcd(M_j,L)\).
+For each \(a\bmod L\), count the surviving classes modulo \(M_j\)
+congruent to \(a\bmod g_j\). Multiply these local counts and sum over
+\(a\). The Chinese remainder theorem counts every surviving class exactly
+once, since \(L\mid M\) and all the pairwise congruences hold.
+Restrict each local count to units for the prime-degree version.
+Dividing the totals by \(M\) and \(\varphi(M)\) gives the fractions
+used to compute the following bounds.
+\[
+\begin{array}{r|r|c|c}
+ B&L&D&D^*\\\hline
+ 12&105&0.33980826&0.45440871\\
+ 18&9765&0.35105695&0.46902202\\
+ 23&1240155&0.35608674&0.47550302\\
+ 25&21082635&0.35756060&0.47742317
+\end{array}
+\]
+The decimals are rounded down. The verifier calculates exact fractions.
+
+\paragraph{Bounding the degrees that allow an irreducible dilation.}
+Suppose \(T_m(X^d)\) is irreducible for \(d>1\) and choose a prime
+\(p\mid d\). The base \(T_m\) and \(T_m(X^p)\) are irreducible,
+since any factorization persists after substitution. If \(p\nmid2^m-1\),
+taking \(p\)-th powers is bijective in the base field's multiplicative
+group. A \(p\)-th root of a root of \(T_m\) would then give a root of
+\(T_m(X^p)\) in that field, contradicting its degree \(mp\).
+Consequently \(h=\ord_p(2)\) divides \(m\) and \(ph\mid n\).
+Both \(p\) and \(h>1\) are odd. Within \(n\equiv3,5\pmod8\), the
+upper density of these exceptional degrees is at most
+\[
+ E=\frac14\sum_{p\text{ odd prime},\ \ord_p(2)\text{ odd}}
+                      \frac{1}{p\,\ord_p(2)} .
+\]
+For each finite sum the factor \(1/4\) follows by coprimality with eight.
+For the rest, the number of multiples of \(ph\) through \(x\) is at most
+\(x/(ph)\), so convergence of the sum lets us pass to the limit.
+
+For \(p\le2^{20}\) and odd \(h<2^{14}\), exactly 3097 primes contribute.
+Rounding each summand upward to a multiple of \(10^{-12}\) gives a
+total of \(65315174737/10^{12}\). For the same range of \(h\) there
+are fewer than \(h/20\) further primes per \(h\) above \(2^{20}\),
+since their product divides \(2^h-1\). Their total contribution is
+at most \(2^{13}/(20\cdot2^{20})\).
+
+For fixed odd \(h\), each prime of order \(h\) is one modulo \(2h\).
+There are at most \(h\) such primes by the same product bound, so the
+sum of their \(1/(ph)\) is at most \(H_h/(2h^2)\), where \(H_h\)
+is the harmonic sum. If \(2^k\le h<2^{k+1}\), grouping its summands
+in dyadic blocks gives \(H_h\le k+1\). Summing over the odd \(h\)
+in these blocks for \(k\ge14\) adds at most
+\(\sum_{k\ge14}(k+1)/2^{k+2}=16/2^{15}\). Thus
+\[
+ E\le\frac{66194080987}{4\cdot10^{12}},\qquad D-E>0.34101
+\]
+at \(B=25\). Removing these possible dilations from the sieved set
+excludes every irreducible trinomial. This proves the three bounds.
+\end{proof}
+
+\paragraph{Prime-power degrees.}
+For \(n=p^a\equiv3,5\pmod8\), the only possible irreducible trinomial
+up to reciprocity is \(T_n\). A proper dilation would require
+\(p\mid2^{p^b}-1\) for some \(b<a\), whereas \(2^{p^b}\equiv2\pmod p\).
+In particular every trinomial is reducible at every odd power of every
+prime \(p\equiv13,19\pmod{24}\). The possible \(T_n\) has the divisor
+\(X^2+X+1\) because \(n\equiv1\pmod3\).
+\nolinkurl{GF2Sparse/Dilation.lean} proves the prime-order divisibility
+and the prime-power obstruction for general binary polynomial dilations.
+\nolinkurl{scripts/check_trinomial_density.py} reproduces the residue
+counts and the integer bounds on the order sum.
+
 \end{document}

@@ -249,4 +249,68 @@ theorem squarefree_expand_of_dvd {f : BinaryPoly} (hf : Irreducible f) (hc : f.c
   rw [map_one] at hs
   exact (hs.of_dvd he).squarefree
 
+/-- If f(X^d) is irreducible and d>1, its base root is not a d-th power in the base field. -/
+theorem root_ne_power_of_irreducible_expand {f : BinaryPoly} (hf : Irreducible f)
+    {d : ℕ} (hd : 1 < d) (hi : Irreducible (expand (ZMod 2) d f))
+    (y : AdjoinRoot f) : y ^ d ≠ AdjoinRoot.root f := by
+  letI : Fact (Irreducible f) := ⟨hf⟩
+  let e := (AdjoinRoot.powerBasisAux hf.ne_zero).equivFun.toEquiv
+  letI : Fintype (AdjoinRoot f) := Fintype.ofEquiv _ e.symm
+  intro hy
+  have hz : aeval y (expand (ZMod 2) d f) = 0 := by
+    rw [expand_aeval, hy, AdjoinRoot.aeval_eq, AdjoinRoot.mk_self]
+  have hfix := FiniteField.pow_card y
+  rw [card_adjoinRoot hf.ne_zero] at hfix
+  have hdiv := (degree_dvd_iff_frobenius hi hz f.natDegree).2 hfix
+  rw [natDegree_expand] at hdiv
+  exact (lt_mul_of_one_lt_right hf.natDegree_pos hd).not_ge (Nat.le_of_dvd hf.natDegree_pos hdiv)
+
+/-- Every prime of an irreducible dilation divides the multiplicative order of the base root. -/
+theorem prime_dvd_root_order_of_irreducible_expand {f : BinaryPoly} (hf : Irreducible f)
+    {d p : ℕ} (hd : 0 < d) (hp : p.Prime) (hpd : p ∣ d)
+    (hi : Irreducible (expand (ZMod 2) d f)) : p ∣ orderOf (AdjoinRoot.root f) := by
+  obtain ⟨s, hs⟩ := hpd
+  have hs0 : s ≠ 0 := by rintro rfl; simp [hs] at hd
+  rw [hs, Nat.mul_comm p s, expand_mul] at hi
+  have hprime := of_irreducible_expand hs0 hi
+  by_contra hn
+  obtain ⟨j, hj⟩ := exists_pow_eq_self_of_coprime (x := AdjoinRoot.root f) (hp.coprime_iff_not_dvd.mpr hn)
+  apply root_ne_power_of_irreducible_expand hf hp.one_lt hprime (AdjoinRoot.root f ^ j)
+  rwa [← pow_mul, Nat.mul_comm j p, pow_mul]
+
+/-- If a dilation is irreducible, its total degree is divisible by p times the binary
+multiplicative order of 2 modulo p for every prime p in the dilation exponent. -/
+theorem prime_mul_binary_order_dvd_expand_degree {f : BinaryPoly} (hf : Irreducible f)
+    (hc : f.coeff 0 = 1) {d p : ℕ} (hd : 0 < d) (hp : p.Prime) (hpd : p ∣ d)
+    (hi : Irreducible (expand (ZMod 2) d f)) :
+    p * orderOf (2 : ZMod p) ∣ d * f.natDegree := by
+  letI : Fact (Irreducible f) := ⟨hf⟩
+  let e := (AdjoinRoot.powerBasisAux hf.ne_zero).equivFun.toEquiv
+  letI : Fintype (AdjoinRoot f) := Fintype.ofEquiv _ e.symm
+  have hz : AdjoinRoot.root f ≠ 0 := by
+    intro heq
+    have hval := AdjoinRoot.mk_self (f := f)
+    rw [← AdjoinRoot.aeval_eq, heq, ← coeff_zero_eq_aeval_zero', hc, map_one] at hval
+    exact one_ne_zero hval
+  have hpow := FiniteField.pow_card_sub_one_eq_one _ hz
+  rw [card_adjoinRoot hf.ne_zero] at hpow
+  have hdiv := (prime_dvd_root_order_of_irreducible_expand hf hd hp hpd hi).trans
+    (orderOf_dvd_of_pow_eq_one hpow)
+  rw [← ZMod.natCast_eq_zero_iff, Nat.cast_sub (Nat.two_pow_pos _), Nat.cast_pow,
+    Nat.cast_ofNat, Nat.cast_one, sub_eq_zero, ← orderOf_dvd_iff_pow_eq_one] at hdiv
+  exact Nat.mul_dvd_mul hpd hdiv
+
+/-- A degree-p^a binary polynomial with constant one cannot have an irreducible p-fold dilation. -/
+theorem not_irreducible_expand_prime_power_degree {f : BinaryPoly} (hc : f.coeff 0 = 1)
+    {p a : ℕ} (hp : p.Prime) (hn : f.natDegree = p ^ a) :
+    ¬ Irreducible (expand (ZMod 2) p f) := by
+  letI : Fact p.Prime := ⟨hp⟩
+  intro hi
+  have hf := of_irreducible_expand hp.ne_zero hi
+  have h := Nat.dvd_of_mul_dvd_mul_left hp.pos
+    (prime_mul_binary_order_dvd_expand_degree hf hc hp.pos hp dvd_rfl hi)
+  rw [hn, orderOf_dvd_iff_pow_eq_one, ZMod.pow_card_pow] at h
+  exact one_ne_zero (add_left_cancel (a := (1 : ZMod p))
+    (show 1 + 1 = (1 : ZMod p) + 0 by simpa only [one_add_one_eq_two, add_zero] using h))
+
 end GF2Sparse
