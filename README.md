@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In degree 1229 every prescription of 598 bits of initial power-trace data is realized by more than $2^{618}$ primitive polynomials.** The traces can be prescribed at any binary closed points, including zero and infinity. For every counted root $r$, both $1+r$ and $r/(1+r)$ are primitive too. Yet two pentanomials agree on the first 1,364 inverse and 1,058 positive power traces despite differing at the 36,871 order test. In all sufficiently large degrees the theorem permits nearly half the degree in prescribed bits. [Proof](results.pdf#page=353) · [Sharp sparse comparisons](results.pdf#page=356) · [Verifier](scripts/check_prescribed_root_traces.py)
+
 - **In every sufficiently large degree, at least $2^{n/2}$ primitive polynomials have at most $\log_2 n+O(\sqrt{\log n\,\log\log n})$ odd-degree terms.** All those terms lie in the last $2\log_2 n+O(1)$ odd positions. In even degree any block of that length works. In degree 1229 more than $2^{617}$ primitive polynomials have at most eleven odd-degree terms, all between exponents 1197 and 1229. The inverse roots have their first 1196 power traces zero. [All-degree proof](results.pdf#page=344) · [Degree 1229](results.pdf#page=346) · [Verifier](scripts/check_sparse_odd_coefficients.py) · [Lean arithmetic](GF2Sparse/OddCoefficientBounds.lean)
 
 - **A quadratic family of 8,193 degree-1229 polynomials contains at least 8,163 primitive members.** Each unknown prime can exclude at most two parameter values. The only pentanomials in the tested interval are the two starting examples, whose orders remain open. A quadratic family with 31 five-term positions passing the four known tests at distinct residues modulo each cofactor prime would settle the degree. In degree 10 the same counting argument finds one primitive member among five pentanomials, and all four exclusions occur. [Incompressibility argument](results.pdf#page=342) · [Computed examples](results.pdf#page=343) · [Lean root count](GF2Sparse/SubgroupCover.lean)
@@ -1052,6 +1054,12 @@ To exhaust the binary-digit graphs for the two cubic substitutions and to check 
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_cubic_components.py
+~~~
+
+To compare the 22 known order-test failures against the 639,144 surviving degree-1,229 pentanomials and check the primitive trace count, run
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_prescribed_root_traces.py --census
 ~~~
 
 To replay the elliptic function counts in degrees 262,146 and $2^{84}+2$, run

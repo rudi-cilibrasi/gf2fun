@@ -31,4 +31,26 @@ theorem degree1229_eleven_odd_terms :
       310 * 19999 * ((2 : ℕ) ^ 1229 - 1) := by
   decide +kernel
 
+/-- The derivative cross-product factors as a square in characteristic two.
+Here a² + t b² and c² + t d² are the even-odd decompositions. -/
+theorem logarithmic_cross_square {K : Type*} [Field K] [CharP K 2]
+    (a b c d t : K) :
+    b^2 * (c^2 + t * d^2) + d^2 * (a^2 + t * b^2) = (a*d + b*c)^2 := by
+  ring_nf
+  reduce_mod_char!
+
+/-- Worst-case union bound for all six projective images, with 598 prescribed bits. -/
+theorem degree1229_prescribed_trace_count :
+    20000 * 2^598 * (58 * 1197 * (Nat.sqrt (2^1229) + 1) + 1229 * 2^618) <
+      19997 * ((2 : ℕ)^1229 - 600) := by
+  decide +kernel
+
+/-- Remove the irreducibles with more than twelve odd terms, at 596 prescribed bits. -/
+theorem degree1229_twelve_odd_projective :
+    let heavy := ((List.range 19).filter (12 ≤ ·)).map (Nat.fast_choose 18)
+    let error := 58 * 1193 * (Nat.sqrt (2^1229) + 1)
+    20000 * 2^596 * (310 * error + 1229 * (3 * 2^614 * heavy.sum + 310 * 2^619)) <
+      310 * 19997 * ((2 : ℕ)^1229 - 598) := by
+  decide +kernel
+
 end GF2Sparse.OddCoefficientBounds
