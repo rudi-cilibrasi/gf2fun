@@ -65,4 +65,30 @@ theorem order_41st_power_dilations {M : Type*} [Monoid M] (z : M) (j : ℕ)
   rw [orderOf_pow_of_dvd (by decide) hd, hz, show 1271 = 31*41 by decide,
     Nat.mul_right_comm, Nat.mul_div_cancel _ (by decide : 0 < 41), pow_succ']
 
+/-- The finite order range for the classification at sixteen times the degree. -/
+theorem order_sixteen_cutoff {n r : ℕ} (hn : 0 < n) (hpack : 5*n^4 ≤ 16*r^3)
+    (hr : r ≤ 16*n) : n ≤ 13107 ∧ r ≤ 209715 := by
+  have h := pentanomial_linear_order_bound hn hpack hr
+  norm_num at h
+  omega
+
+/-- A proper subfield of degree at least eleven is already too large
+for the prime-index exceptions when the ambient degree is at most its square. -/
+theorem subfield_size_gt_sixteen_square (d : ℕ) (hd : 11 ≤ d) :
+    16*d^2 + 1 < 2^d := by
+  induction d, hd using Nat.le_induction with
+  | base => decide
+  | succ k hk ih =>
+    rw [pow_succ 2 k]
+    nlinarith [Nat.mul_le_mul_left k hk]
+
+theorem order_sixteen_composite_cutoff {d n : ℕ} (hn : n ≤ d^2)
+    (hsmall : 2^d ≤ 16*n+1) : n ≤ 100 := by
+  by_cases hd : 11 ≤ d
+  · have h := subfield_size_gt_sixteen_square d hd
+    omega
+  · have hle : d ≤ 10 := by omega
+    have hpow : d^2 ≤ 10^2 := by gcongr
+    omega
+
 end GF2Sparse
