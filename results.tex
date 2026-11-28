@@ -24214,4 +24214,165 @@ checks every minimal polynomial by substitution. Lean verifies the
 finite bound on the union of root sets in
 \nolinkurl{GF2Sparse/SubgroupCover.lean}.
 
+\clearpage
+\section{Primitive polynomials with logarithmically many odd exponents}
+\label{sec:logarithmic-odd-terms}
+Write \(f(X)=A(X)^2+XB(X)^2\). Each term of \(B\) gives one odd
+exponent of \(f\). In odd degree, taking the reciprocal switches the
+parity of every exponent, so a five-term solution has an orientation
+with at most two odd exponents. We can bound the size and location of
+this part of a primitive polynomial in every sufficiently large degree.
+
+\begin{theorem}\label{thm:logarithmic-odd-terms}
+There is an absolute integer \(C\) with the following property.
+Set \(t=\lceil2\log_2 n\rceil+C\). For all sufficiently large \(n\)
+there are at least \(2^{n/2}\) distinct primitive binary polynomials
+of degree \(n\) with all odd exponents among the largest \(t\) odd
+positions through \(n\). In even degree one may instead choose
+any \(t\) consecutive odd positions. Each polynomial counted has at most
+\[
+        \log_2 n+O(\sqrt{\log n\,\log\log n})
+\]
+odd exponents and at most \(n/4+O(\sqrt{n\log n})\) terms in total.
+The implied constants are absolute.
+\end{theorem}
+
+\begin{proof}
+Use natural logarithms unless a base is indicated. Put \(q=2^n\),
+\(N=q-1\), \(g=\lceil n/2\rceil-t\), and \(X_0=N/2^g\).
+Let \(V\) be the indicator that all \(g\) excluded odd coefficients
+vanish. In \(U_k=(\F[T]/T^{k+1})^\times\) the squares are exactly
+the units whose odd coefficients vanish, since binary squaring doubles
+all exponents. Excluding the first \(a\) odd coefficients imposes this
+subgroup of index \(2^a\) at \(k=2a-1\), with \(U_0\) for \(a=0\).
+In even degree reversal preserves parity. If \(a\) odd positions are
+excluded below the interval and \(g-a\) above, use the product of the
+two square subgroups for \(f,f^*\).
+
+For \(h\mid N\) let \(H_h\) be the multiplicative subgroup of index
+\(h\) in \(\mathbb F_q^\times\). Writing \(P_z\) for the product of
+the binary Frobenius-conjugate linear factors as in
+Lemma~\ref{lem:weight-characters}, we have
+\begin{equation}
+ \left|\sum_{z\in H_h} V(P_z)-X_0/h\right|\le n\sqrt q .
+ \label{eq:odd-square-subgroup}
+\end{equation}
+Indeed each subgroup indicator is the average of its annihilating
+characters, with total absolute coefficient one. The principal pair
+contributes \(X_0/h\). Terms with only a nonprincipal multiplicative
+character sum to zero. For all other pairs the one-ended or two-ended
+character bound of Section~\ref{sec:two-ended-weight} applies, with
+the total of the two truncation degrees below \(n\).
+
+We record the sieve near this square-root bound. Put
+\(Z=\exp((\log n)^{2/3})\). Uniformly in \(n\),
+\[
+ \sum_{\substack{p\mid N,\ p>Z\\p\ {\rm prime}}}1/p=o(1/\log Z).
+\]
+To see this, group primes by \(d=\ord_p(2)\mid n\). For
+\(d\le Z^{1/3}\) there are at most \(d\) primes for each \(d\),
+since their product divides \(2^d-1\). Their contribution above \(Z\)
+is \(O(Z^{-1/3})\). For larger \(d\) the primes are distinct numbers
+\(1+jd\), so their entire reciprocal sum at that order is at most
+\((1+\log d)/d\). Also
+\[
+  \sum_{d\mid n}d^{-1/2}
+     \le\prod_{p\mid n}(1-p^{-1/2})^{-1}
+     \le\exp(O(\sqrt{\log n})).
+\]
+For the last bound sum \(p^{-1/2}\) up to \(\log n\), and use at
+most \(\log n/\log\log n\) prime divisors above that point. The
+large orders therefore contribute at most
+\((1+\log n)Z^{-1/6}\exp(O(\sqrt{\log n}))\), as required.
+
+For primes \(p\le Z\) dividing \(N\), Mertens' estimates give
+\(\prod(1-1/p)\gg1/\log Z\) and \(S=\sum1/p\le\log\log Z+O(1)\).
+Apply the lower Bonferroni bound for avoiding their subgroups, through
+the least odd \(b\ge100\log\log n\). The constant term differs from
+the product by at most \(\sum_{j>b}S^j/j!=o(1/\log Z)\). Every
+intersection has index the product of its primes. The products are
+distinct and at most \(Z^b=n^{o(1)}\), so all errors from
+\eqref{eq:odd-square-subgroup} total at most \(n^{1+o(1)}\sqrt q\).
+Finally remove the subgroups at primes above \(Z\). Their main terms
+sum to \(o(X_0/\log Z)\), and there are at most
+\(n\log2/\log Z\) such primes by their product. Their total error
+is \(O(n^2\sqrt q/\log Z)\). Since \(X_0\gg2^C n^2\sqrt q\),
+choosing a sufficiently large absolute \(C\) leaves
+\(\gg X_0/\log Z\) primitive roots, or \(\gg X_0/(n\log Z)\)
+distinct primitive polynomials.
+
+To bound the actual number of odd terms, fix \(B\) and put
+\(e=\lfloor(n-1)/2\rfloor\). There are \(2^e\) choices of \(A\).
+Its constant and any compulsory leading coefficient are fixed, and
+the \(e\) interior even-coefficient bits of \(f\) vary freely.
+For every monic squarefree \(D\) coprime to \(X\), of degree at most
+\(e\), precisely the fraction \(1/|D|\) give \(D\mid f\), where
+\(|D|=2^{\deg D}\). Indeed \(A\) runs uniformly over the residues,
+and squaring permutes the product of finite fields modulo \(D\).
+
+Take \(z=\lfloor e/2\rfloor\). In the Selberg square of
+Section~\ref{sec:selberg-weight} use all such \(D\) through degree
+\(z\), including those divisible by \(X+1\). Each pair has least
+common multiple of degree at most \(e\), so all its residue counts
+are exact. The resulting upper bound for the fraction irreducible
+at fixed \(B\) is \(1/G(z)\), with \(G(z)=\sum_D1/\phi(D)\).
+Since \(\phi(D)\le|D|\), one has \(G(z)\ge 1+z/3\).
+In fact the generating series for squarefree monic polynomials coprime
+to \(X\) is
+\[
+ \frac{1-2u^2}{(1-2u)(1+u)}
+ =1+\frac13\left(\frac{1}{1-2u}-\frac{1}{1+u}\right).
+\]
+Multiplying its degree-\(j\) coefficient by \(2^{-j}\) and summing
+through \(z\) gives the assertion.
+
+The full coefficient family has size \(2^{n-1-g}\asymp X_0\).
+Its free odd bits are independent fair bits, numbering \(t\) in
+even degree and \(t-1\) in odd degree, where the leading term is
+compulsory. The fraction with more than
+\(t/2+1+2\sqrt{t\log\log n}\) odd terms is \(O((\log n)^{-8})\)
+by Hoeffding's inequality. The uniform bound \(1/G(z)=O(1/n)\)
+on the irreducible fraction at each \(B\) makes their loss
+\(o(X_0/(n\log Z))\). Independently, among all polynomials the
+fraction with more than \(e/2+2\sqrt{n\log n}\) free even bits set
+is \(O(n^{-8})\). Removing these too leaves
+\(\gg X_0/(n\log Z)>2^{n/2}\) polynomials. Counting the endpoints
+gives the asserted total weight.
+\end{proof}
+
+\clearpage
+\paragraph{Consecutive power traces.}
+When the allowed odd positions are at the high end, let \(r\) be a
+root of a counted polynomial and put \(\alpha=r^{-1}\). The coefficient
+of \(T^{j-1}\) in \(f'(T)/f(T)\) is \(\operatorname{Tr}(\alpha^j)\),
+by summing the logarithmic derivatives of its linear factors.
+The derivative is divisible by \(T^{2g}\). Thus in every sufficiently
+large degree a primitive element has its first
+\(n-4\log_2 n-O(1)\) positive power traces all zero.
+
+\paragraph{Degree 1229.}
+Take \(t=17\), so \(g=598\) and the truncation degree is 1195.
+There are at most 19 prime divisors of \(N\). The sum of their
+reciprocals is below \(1/20000\), using the four known primes and
+Theorem~\ref{thm:1229-cofactor-bound}. With
+\(S=1+\lfloor\sqrt{2^{1229}}\rfloor\), a single union bound in
+\eqref{eq:odd-square-subgroup}, using its actual conductor bound
+\(1195S\), gives at least
+\[
+ \frac{1}{1229}\left(\frac{19999(2^{1229}-1)}{20000\cdot2^{598}}
+                              -20\cdot1195S\right)
+\]
+primitive polynomials. The leading odd term is compulsory, so
+\(\sum_{j=11}^{16}\binom{16}{j}=6885\) choices give more than eleven
+odd terms. With \(e=614,z=307\), removing at most
+\(6885\cdot2^{614}\cdot3/310\) irreducibles leaves strictly more
+than \(2^{617}\) primitive polynomials. Each has at most eleven odd
+terms, all at exponents \(1197,1199,\ldots,1229\), and the inverse
+roots have their first 1196 power traces zero. The finite arithmetic
+and the squarefree residue equivalence are verified in
+\nolinkurl{GF2Sparse/OddCoefficientBounds.lean}.
+\nolinkurl{scripts/check_sparse_odd_coefficients.py} also checks
+the residue counts and the inverse-root trace formula exhaustively
+in degrees nine through twelve.
+
 \end{document}

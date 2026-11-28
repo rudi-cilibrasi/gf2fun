@@ -37,6 +37,7 @@ import GF2Sparse.MersenneExamples
 import GF2Sparse.MiddleRank
 import GF2Sparse.NormCoverBounds
 import GF2Sparse.NormExamples
+import GF2Sparse.OddCoefficientBounds
 import GF2Sparse.NormQuotients
 import GF2Sparse.OreCircle2047
 import GF2Sparse.OreClassLogs2047
