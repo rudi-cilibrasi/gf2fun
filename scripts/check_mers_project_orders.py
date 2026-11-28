@@ -192,7 +192,13 @@ def main():
             for tap, index in indices.items():
                 verify_trinomial_order(n, int(tap), index, rows[str(n)]["order_factors"])
             detail = "replayed with the supplied factors" if args.powers_only or args.defer_largest else "verified"
-            print(f"Degree {n}, both archived trinomial lists {detail}.", flush=True)
+            message = f"Degree {n}, both archived trinomial lists {detail}."
+            if not (args.powers_only or args.defer_largest):
+                if not census[n]["primitive_taps"] and len(rows[str(n)]["taps"]) != 3:
+                    raise ValueError(f"certified trinomial missing from the census in degree {n}")
+                minimum = 3 if census[n]["primitive_taps"] else 5
+                message += f" Minimum primitive weight {minimum}."
+            print(message, flush=True)
 
 
 if __name__ == "__main__":
