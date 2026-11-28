@@ -8,7 +8,7 @@ Does every positive degree $n$ have a primitive polynomial over $\mathbb F_2$ wi
 
 **A nonprimitive degree-1229 survivor must have equal products of at most 206 conjugates on each side.** More than 2.6 quadrillion unordered pairs would give those equalities. The relations depend only on the missed prime, so a counterexample would force at least 22,827 surviving reciprocal pairs to share them. [Proof](results.pdf#page=391) · [Frequency certificate and checker](scripts/check_1229_collision_ranks.py)
 
-Every irreducible degree-1229 pentanomial passes the first ten tests involving products of conjugate roots. If any of the 639,144 survivors is nonprimitive, more than 270 billion subsets of at most 596 conjugates have product one. Its first failing subset must have size between 11 and 596. [Proof and counts](results.pdf#page=201) · [Reproduce the upper bound](scripts/check_1229_failure_ranks.py)
+**A nonprimitive degree-1229 survivor has more than 59 billion subsets of at most 587 conjugates whose product is one.** Every irreducible pentanomial in this degree passes the first ten subset sizes, so the smallest failing size lies between 11 and 587. The previous upper bound was 596. [Cubic moment proof](results.pdf#page=394) · [Frequency certificates and checker](scripts/check_1229_cubic_failure.py) · [Lower bound on subset size](results.pdf#page=201)
 
 The [research note](results.pdf) gives the proofs, examples, and references. Its [LaTeX source](results.tex) is included.
 
@@ -680,6 +680,7 @@ The upper bound on the first failing rank comes from counting the ones in binary
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_failure_ranks.py --all
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_collision_ranks.py --frequencies
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_cubic_failure.py --frequencies
 ~~~
 
 The checker verifies the frequency exclusions modulo each cofactor and evaluates the bounds in rational arithmetic. [Frequency products](data/exterior-failure-frequency-products.json) · [Lean moment and counting bounds](GF2Sparse/FailureRanks.lean)

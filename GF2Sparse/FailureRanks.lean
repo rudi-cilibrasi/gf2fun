@@ -102,4 +102,55 @@ theorem short_collision_arithmetic :
   dsimp only [spectralCheck]
   decide +kernel
 
+
+/-- Split a correlation at a threshold for the absolute value of its first argument. -/
+theorem correlation_le_threshold {ι : Type*} [Fintype ι] (s v : ι → ℝ)
+    {a b : ℝ} (ha : 0 ≤ a) (hb : ∀ i, |s i| ≤ b) :
+    ∑ i, s i*v i ≤ a*(∑ i, |v i|) +
+      b*∑ i ∈ Finset.univ.filter (fun i => a < |s i|), |v i| := by
+  classical
+  rw [Finset.mul_sum, Finset.mul_sum, Finset.sum_filter, ← Finset.sum_add_distrib]
+  apply Finset.sum_le_sum
+  intro i _
+  calc
+    s i*v i ≤ |s i| * |v i| := by
+      rw [← abs_mul]
+      exact le_abs_self _
+    _ ≤ _ := by
+      split_ifs with h
+      · exact le_add_of_nonneg_of_le (mul_nonneg ha (abs_nonneg _))
+          (mul_le_mul_of_nonneg_right (hb i) (abs_nonneg _))
+      · simpa only [add_zero] using mul_le_mul_of_nonneg_right (le_of_not_gt h) (abs_nonneg (v i))
+
+/-- Cauchy--Schwarz bounds the selected absolute values using the size of the selected set. -/
+theorem subset_sum_abs_sq {ι : Type*} [Fintype ι] (u : Finset ι) (v : ι → ℝ) :
+    (∑ i ∈ u, |v i|)^2 ≤ (u.card : ℝ)*(∑ i, v i^2) := by
+  have h := Finset.sum_mul_sq_le_sq_mul_sq u (fun _ => (1 : ℝ)) (fun i => |v i|)
+  simp only [one_mul, one_pow, Finset.sum_const, nsmul_eq_mul, mul_one, sq_abs] at h
+  exact h.trans (mul_le_mul_of_nonneg_left
+    (Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ u) (fun i _ _ => sq_nonneg (v i)))
+    (Nat.cast_nonneg _))
+
+/-- The cubic projection, its residual, and three population bounds rounded outwards. -/
+theorem cubic_failure_arithmetic :
+    let j := leastOrderPrime
+    let b : ℚ := 2^20
+    let t : ℚ := 65535
+    let lo : ℚ := 31415/10000
+    let hi : ℚ := 31416/10000
+    let m₂ : ℚ := 1229/2
+    let m₄ : ℚ := 1229*7359/8
+    let m₆ : ℚ := 1229*90074545/32
+    let d : ℚ := 26357323/1000
+    let high := fun (a : ℚ) => j/2*((1405565-a*d)/(1229*58818))^2
+    1229/(t-1) < (136944/1000000)^2 ∧
+    4/(lo^2*b)+1/j < (62172/100000000)^2 ∧
+    2*1229*t^2/j^2+2/lo*(136944/1000000)+1229*(62172/100000000) < 85128/100000 ∧
+    1229*(hi/(4*j^2)+2*1228/(lo*b)) < 91632/100000 ∧
+    m₆-m₄^2/m₂ < (37142154/1000)^2 ∧ m₂*m₄ < d^2 ∧ m₆ < 58818^2 ∧
+    1405565 < 1229*(735615/100)/(2*hi) - m₄/m₂*(91632/100000)
+      - (85128/100000)*(37142154/1000) ∧
+    53*d < 1405565 ∧ 59*10^9 < high 53 ∧ 29*10^11 < high 51 ∧ 10^13 < high 49 := by
+  decide +kernel
+
 end GF2Sparse.FailureRanks

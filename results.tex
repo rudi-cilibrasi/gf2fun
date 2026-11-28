@@ -26729,4 +26729,171 @@ selects exactly the same failing roots. To deduce a primitive pentanomial
 by counting, it suffices to bound how many different surviving reciprocal
 pairs satisfy each selected relation. A bound of 22,826 per relation
 would leave at least eight primitive reciprocal pairs.
+\clearpage
+\section{A product of at most 587 conjugates detects failure in degree 1229}
+\label{sec:cubic-587}
+If any of the 639,144 degree-1229 pentanomials surviving the four known
+order tests is nonprimitive, more than 59 billion nonempty subsets of
+at most 587 conjugates of a root have product one. More than 2.9 trillion
+have size at most 588, and more than 10 trillion have size at most 589.
+Thus its smallest failing subset has size in \([11,587]\), improving
+the upper bound 596 in Section~\ref{sec:1229-failure-ranks}.
+These are single products with distinct factors.
+
+Let \(n=1229\), \(M=2^n-1\), and let \(p\) be any prime divisor of the
+remaining cofactor \(C\). Put \(H=\langle2\rangle\bmod p\),
+\(J=8317007399072301058\le p\), and use the uniform expectation on
+all \(j\in\mathbb Z/p\). Let \(\sigma\) be one on the lower half,
+minus one on the upper half, and zero at zero. Put
+\[
+ S(j)=\sum_{h\in H}\sigma(hj),\qquad
+ P(j)=\sum_{h\in H}\sin(2\pi hj/p).
+\]
+For \(j\ne0\), \(S(j)=n-2w(j)\), where \(w(j)\) is the binary weight
+of \(jM/p\) with \(1\le j<p\). Every such word gives product one
+if the root fails the index-\(p\) test. The proof finds a correlation
+between \(S\) and \(P^3\) large enough to force \(|S|>53\) on many
+residues. Negation exchanges the two signs of \(S\).
+
+In the group ring of the additive group modulo \(p\), write
+\(u_x=X^x-X^{-x}\), \(L=\sum_{h\in H}u_h\). Evaluating at
+\(X=\exp(2\pi i j/p)\) gives \(L=2iP\). The coefficient of
+\(X^x\) in \(L^3\) is constant on \(xH\) and changes sign
+on \(-xH\). To enumerate the cube use
+\[
+\begin{aligned}
+ u_x^3 &= u_{3x}-3u_x,\\
+ u_x^2u_y &= u_{y+2x}+u_{y-2x}-2u_y,\\
+ u_xu_yu_z &= u_{x+y+z}-u_{x+y-z}-u_{x-y+z}+u_{x-y-z}.
+\end{aligned}
+\]
+The three lines have multinomial factors \(1,3,6\). For the second
+line set \(x=1\) and let \(y\) run over the other powers of two.
+For the third line take one cyclic rotation of each positive gap
+triple \(a+b+c=n\), with \(x=1,y=2^a,z=2^{a+b}\).
+There are \((n-1)(n-2)/6=251126\) triples up to rotation.
+The rotations have full length on the underlying three-element
+subsets since \(n\) is a prime greater than three.
+
+The following computation works before choosing \(p\). For a term
+\(u_x\), take \(v=x^n\bmod C\) in \([0,C)\) and the key
+\(k=\min(v,C-v)\). Add its coefficient with positive sign when
+\(v=k\), otherwise with negative sign. A zero key contributes nothing
+at any prime divisor, since then \(x=0\bmod p\). Write \(\gamma_k\)
+for the accumulated coefficient, retaining the 997,770 nonzero keys.
+Equality of \(n\)-th powers at \(p\) identifies the exact coset of
+\(H\), since \(H\) consists of all \(n\)-th roots of unity there.
+We next verify that distinct retained keys stay distinct up to sign.
+
+\clearpage
+\subsection*{Certifying the cubic moments and their low harmonics}
+Set \(T=65535\) and \(B=2^{20}\). First include the keys of the
+positive odd integers through 4095 along with the retained cubic
+keys, obtaining 999,676 distinct keys. Take their squares \(r=k^2\)
+modulo \(C\) and form \(F(Y)=\prod_r(Y-r)\). The two products
+\(\prod_r r\) and \(\prod_r F'(r)\) are coprime to \(C\).
+Of the remaining odd harmonics through \(T\), 30,556 have keys
+absent from the cube. For their squared keys \(b\) the cross product
+\(\prod_{b,k}(b-k^2)\) over the retained cubic keys is also coprime
+to \(C\). Section~\ref{sec:signed-collisions} already separates every
+two positive odd harmonics below \(B\), up to sign, at every such \(p\).
+These checks prove that the computed coefficients hold simultaneously
+at all possible missing primes. The three residues and the exact
+harmonic sum are in
+\nolinkurl{data/degree-1229-cubic-frequency-products.json}.
+
+Let \(\gamma(t)\) denote the oriented coefficient of \(X^t\),
+zero when absent. The cube gives
+\[
+ \gamma(1)=-7359,\qquad \sum_k\gamma_k^2=90074545,\qquad
+ G=\sum_{1\le t\le T,\ t\ {\rm odd}}\frac{\gamma(t)}{t}<-7356.15.
+\]
+Writing \(e_m=\mathbb E P^m\), orthogonality of the exponential
+characters gives the exact moments
+\[
+ e_2=n/2,\qquad e_4=-n\gamma(1)/8,\qquad
+ e_6=(n/32)\sum_k\gamma_k^2 .
+\]
+Indeed \(\mathbb E[P^3\sin(2\pi tj/p)]=-\gamma(t)/8\) and the
+two signed orbits of a nonzero key contain \(2n\) frequencies.
+Introduce the truncated sine series
+\[
+ S_T(j)=\frac4\pi\sum_{1\le t\le T,\ t\ {\rm odd}}\frac1t
+                    \sum_{h\in H}\sin(2\pi thj/p).
+\]
+Then \(\mathbb E S_TP=2n/\pi\) and
+\(\mathbb E S_TP^3=-nG/(2\pi)\).
+
+Here are uniform error estimates with \(\|\cdot\|_2\) taken on the
+whole residue grid.
+\[
+\begin{aligned}
+ \|S-S_T\|_2
+   &\le \epsilon=2nT^2/J^2+
+      (2/\pi)\sqrt{n/(T-1)}+n\sqrt{4/(\pi^2B)+1/J},\\
+ \mathbb E[(S-S_T)P]
+   &\ge-\delta=-n\left(\pi/(4J^2)+2(n-1)/(\pi B)\right).
+\end{aligned}
+\]
+For a positive balanced frequency \(t<p/2\), the imaginary part
+of the Fourier coefficient of \(\sigma\) with negative sign equals
+\(c(t)=p^{-1}\cot(\pi t/(2p))\) for odd \(t\), and
+\(-p^{-1}\tan(\pi t/(2p))\) for even \(t\), by
+Section~\ref{sec:1229-failure-ranks}. For odd \(t\le T\),
+\(0\le2/(\pi t)-c(t)\le\pi t/(4p^2)\le t/p^2\).
+The triangle inequality for these errors and their rotations costs
+at most \(2nT^2/J^2\). For \(T<t\le B\) odd, the rotated
+frequency supports, including both signs, are disjoint. Parseval
+and \(|c(t)|\le2/(\pi t)\) give the middle term of \(\epsilon\)
+using \(2\sum_{t>T,\ t\ {\rm odd}}t^{-2}\le1/(T-1)\).
+Beyond the even cutoff \(B\) the corresponding sum is at most
+\(1/B\). Each balanced even coefficient has absolute value at most
+\(1/p\), and the mean is zero. Summing the last residual over all
+\(n\) rotations by the triangle inequality gives the final term.
+
+\clearpage
+\subsection*{Projecting the cubic and counting the short products}
+For the second error bound use \(\mathbb E SP=n\sum_{h\in H}c(h)\)
+with residues \(1\le h<p\). The contribution at \(h=1\) costs at
+most \(\pi/(4p^2)\) against \(2/\pi\). Other odd residues contribute
+positively. For an even residue \(h\in H\), the odd integer \(p-h\)
+exceeds \(B\) by signed frequency separation from \(H\). The magnitude
+of the negative coefficient is at most \(2/(\pi B)\). This proves
+the bound with \(\delta\).
+
+The projection of \(P^3\) onto \(P\) is \(\lambda P\), with
+\(\lambda=e_4/e_2=7359/4\). Its residual has squared norm
+\(e_6-e_4^2/e_2\). Cauchy--Schwarz applied to the two residuals gives
+\[
+\begin{aligned}
+ \mathbb E SP^3 &\ge -nG/(2\pi)-\lambda\delta
+                   -\epsilon\sqrt{e_6-e_4^2/e_2}>1405565,\\
+ \mathbb E|P|^3 &\le\sqrt{e_2e_4}<26357.323,\qquad
+                       \sqrt{e_6}<58818 .
+\end{aligned}
+\]
+The numerical comparisons use \(3.1415<\pi<3.1416\),
+\(\epsilon<0.85128\), \(\delta<0.91632\), and
+\(\sqrt{e_6-e_4^2/e_2}<37142.154\).
+
+For \(a=53,51,49\) the margin \(1405565-a\cdot26357.323\) is
+positive. Below the threshold, \(SP^3\le a|P|^3\). On the remaining
+set use \(|S|\le n\) and Cauchy--Schwarz to obtain
+\[
+ \Pr(|S|>a)\ \ge \left(\frac{1405565-a\cdot26357.323}{1229\cdot58818}\right)^2.
+\]
+Every such residue is nonzero and pairs with its negative. One member
+has odd \(S\ge a+2\), hence \(w\le(n-a-2)/2\). Multiplying the
+probability by \(p/2\ge J/2\) gives the three counts. For the first
+bound alone this also gives more than 48 million light words up to
+cyclic rotation. All these one-sided relations recover the same
+missing prime from \(M/\gcd(M,jM/p)\).
+
+\nolinkurl{scripts/check_1229_cubic_failure.py} compares the signed
+orbit expansion with direct integer convolutions in five small
+fields, reenumerates all degree-1229 coefficients, and can replay
+the three large modular products. \nolinkurl{GF2Sparse/FailureRanks.lean}
+proves the finite threshold and Cauchy--Schwarz inequalities and checks
+the numerical bounds used in the last step.
+
 \end{document}
