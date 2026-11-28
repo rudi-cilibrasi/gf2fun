@@ -1,9 +1,11 @@
 // List every sparse irreducible with no full-degree prime in its root order.
 // The inputs are distinct odd primes p < q with q dividing 2^p-1.
+// In --verify-bases mode, read rows of the form "degree prime interior_taps".
 #include <NTL/GF2XFactoring.h>
 #include <NTL/ZZ.h>
 #include <iostream>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -26,6 +28,43 @@ long read_prime(const std::string& arg) {
     if (end != arg.size() || value < 3 || !is_prime(value))
         throw std::invalid_argument("expected an odd prime");
     return value;
+}
+
+bool verify_base(const std::string& line) {
+    std::istringstream fields(line);
+    long n, q, tap;
+    if (!(fields >> n >> q) || n < 2 || q < 3 || !is_prime(q)) return false;
+    GF2X f;
+    NTL::SetCoeff(f, 0);
+    NTL::SetCoeff(f, n);
+    long previous = 0, count = 0;
+    while (fields >> tap) {
+        if (tap <= previous || tap >= n || ++count > 3) return false;
+        NTL::SetCoeff(f, tap);
+        previous = tap;
+    }
+    if (!fields.eof() || (count != 1 && count != 3)) return false;
+    const NTL::ZZ order = NTL::power2_ZZ(n)-1;
+    return order % q == 0 && NTL::IterIrredTest(f) &&
+        !NTL::IsOne(NTL::PowerXMod(order/q, NTL::GF2XModulus(f)));
+}
+
+int verify_bases() {
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(std::cin, line)) lines.push_back(line);
+    if (lines.empty()) throw std::invalid_argument("expected at least one base polynomial");
+    long failures = 0;
+    #pragma omp parallel for schedule(dynamic) reduction(+:failures)
+    for (size_t i = 0; i < lines.size(); ++i) {
+        if (!verify_base(lines[i])) {
+            ++failures;
+            #pragma omp critical
+            std::cerr << "failed base: " << lines[i] << '\n';
+        }
+    }
+    std::cout << lines.size() << " base checks, " << failures << " failures\n";
+    return failures != 0;
 }
 
 struct Census {
@@ -84,6 +123,7 @@ Census enumerate(long p, long q) {
 
 int main(int argc, char** argv) {
     try {
+        if (argc == 2 && std::string(argv[1]) == "--verify-bases") return verify_bases();
         if (argc != 3) throw std::invalid_argument("usage: check_semiprime_order_exceptions p q");
         const long p = read_prime(argv[1]), q = read_prime(argv[2]);
         if (p >= q || p > std::numeric_limits<long>::max()/q || NTL::PowerMod(2L, p, q) != 1)

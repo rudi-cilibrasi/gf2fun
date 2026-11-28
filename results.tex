@@ -23725,4 +23725,125 @@ have root order \(2047=23\cdot89\). The last has order 89.
 The verifier \nolinkurl{scripts/check_semiprime_order_exceptions.cpp}
 lists every exceptional tap set.
 
+\clearpage
+\section{Primes connecting the factors of a squarefree degree}
+\label{sec:order-prime-partitions}
+Let \(n\) be a product of at least two distinct odd primes and
+\(R\) the order of a root of a degree-\(n\) irreducible binary
+trinomial or pentanomial. Form a graph on the primes dividing \(n\).
+Join two vertices if they both divide \(\ord_\ell(2)\) for some
+\emph{prime} \(\ell\mid R\).
+Write \(n=mq\) with \(q\) its largest prime, and \(M_j=2^j-1\).
+The graph is connected for every such polynomial whenever
+\[
+         \gcd(n,M_n)=1\quad\text{and}\quad
+         \bigl(n\le10^6\ \text{or}\ n>(m+1)^3\bigr).
+\]
+Thus some prime of \(R\) has binary multiplicative degree divisible
+by \(q\) and another prime factor of \(n\). For three prime factors
+there is either a prime of binary degree \(n\), or there are primes
+of at least two distinct degrees formed by pairs of the three factors.
+
+Indeed, if \(\ell^a\) exactly divides \(R\), then \(\ord_{\ell^a}(2)\)
+divides \(n\) and is \(\ord_\ell(2)\) times a power of \(\ell\).
+Since \(\ell\nmid n\), the two orders coincide. A disconnected partition
+would give \(n=st\) with \(s,t>1\) coprime, and put each \(\ell^a\)
+in \(M_s\) or \(M_t\). The cyclic multiplicative group then puts the
+root in the product of these two proper subfields. In degrees through
+one million Section~\ref{sec:subfield-square-census} excludes this.
+
+For the second condition, the exponent gcd \(g\) divides \(n\) and
+is coprime to \(R\). Raising the root to \(g\) preserves its order
+and its field degree. It satisfies the polynomial obtained by dividing
+all exponents by \(g\), of degree \(n/g\), so \(g=1\).
+Choose the side \(s\) omitting \(q\). Then \(s\le m\), and the order
+of the degree-\(s\) component divides \(M_n\) and is coprime to \(s\).
+Theorem~\ref{thm:subfield-square} would give
+\(n\le(s+1)^3\le(m+1)^3\).
+
+For example take \(n=10007\cdot10009\cdot(2^{61}-1)\).
+Both conditions on the arithmetic of the unbounded case hold.
+Some root-order prime has binary degree at least \(10007(2^{61}-1)\).
+This degree is odd and divides the prime minus one, so the prime
+is at least \(46149141986402870735315\).
+
+\paragraph{When a prime can be isolated.}
+If \(r\mid\gcd(n,M_n)\) is prime, then \(r\mid M_{n/r}\) by Fermat's
+theorem. Write \(d=n/r\). Suppose an irreducible sparse base \(G\)
+of degree \(d\) has a root \(y\) with \(y^{M_d/r}\ne1\).
+Then \(G(X^r)\) is irreducible by Theorem~\ref{thm:dilation}, has
+the same weight, and has root order \(r\,\ord(y)\). All its order
+primes divide \(M_d\), hence all their binary degrees divide \(d\).
+The vertex \(r\) is isolated. In particular a primitive sparse
+base always suffices. For \(n=105\), for example, the primitive
+base \(X^{15}+X+1\) gives \(X^{105}+X^7+1\) of order \(229369\).
+
+\clearpage
+\section{Connected order primes in almost every product of a fixed number of primes}
+\label{sec:order-prime-partition-density}
+Fix \(k\ge2\). Among the products of \(k\) distinct odd primes, a set
+of relative density one has connected order-prime graph for every
+irreducible binary trinomial or pentanomial. The number of degrees
+through \(x\) outside the guarantee is
+\[
+             O_k\!\left(\frac{x(\log\log x)^{k-2}}{\log x}\right).
+\]
+For \(k=2\) connectivity means a prime of full degree. For larger
+\(k\) the conclusion requires a prime crossing every partition,
+possibly a different prime for different partitions.
+
+Call a single odd prime good. Recursively call \(n=mq\) good when
+\(m\) is good, \(q\) is larger than all prime factors of \(m\),
+\(q\nmid M_m\), and \(mq>(m+1)^3\).
+Good products satisfy \(\gcd(n,M_n)=1\). Indeed \(q\mid M_{mq}\)
+is equivalent to \(q\mid M_m\). For a prime \(r\mid m\), the
+order \(\ord_r(2)\le r-1<q\), so it divides \(mq\) only if it
+divides \(m\). The claim now follows by induction, starting from
+\(2^r-1\equiv1\bmod r\) for primes \(r\). Good products with at
+least two factors satisfy the preceding connectivity criterion.
+
+To count the rest, use the elementary prime-counting estimates of
+Section~\ref{sec:semiprime-full-degree-density}. For \(m\le x^{1/4}\)
+the conditions \(q\mid M_m\) or \(mq\le(m+1)^3\) give \(O(m^2)\)
+possibilities per \(m\), thus \(O(x^{3/4})\) in total.
+For bad prefixes \(m\le x^{1/4}\), the number of extensions is at
+most \(O(x/\log x)\) times their reciprocal sum.
+For \(k=2\) there are no bad prefixes. For \(k\ge3\) partial
+summation of the inductive count for \(k-1\) bounds this sum by
+\(O_k((\log\log x)^{k-2})\).
+
+If \(m>x^{1/4}\), write \(m=vp\) with \(p\) its largest prime.
+Then \(p>x^{1/(4(k-1))}\). For each eligible \(v,p\) the count
+of \(q\ge p\) is \(O_k(x/(vp\log x))\). The reciprocal sum
+of primes \(p\) in this range is \(O_k(1)\), and the reciprocal
+sum for products \(v\) of \(k-2\) primes is
+\(O_k((\log\log x)^{k-2})\). This proves the upper bound.
+For the lower bound on all products, take \(k-1\) distinct odd primes
+at most \(x^{1/(4k)}\) with product \(m\), and count primes \(q\)
+between \(x/(2m)\) and \(x/m\). Their contribution is
+\(\gg_k x(\log\log x)^{k-1}/\log x\), since the reciprocal sum
+over distinct prefixes has order \((\log\log x)^{k-1}\).
+
+\paragraph{Finite classification.}
+Through 70000, precisely 20201 of the 21436 odd squarefree composite
+degrees force connectivity for every sparse irreducible. In the
+remaining 1235 degrees an explicit sparse dilation isolates a prime.
+The exact arithmetic criterion in this range is \(\gcd(n,M_n)=1\).
+The table also counts degrees with the sufficient coprimality
+condition through one million.
+\[
+\begin{array}{c|rrrrr}
+ \text{number of distinct primes}&2&3&4&5&6\\\hline
+ \text{odd squarefree degrees through }10^6&168330&120807&34334&3269&48\\
+ \gcd(n,M_n)=1&168293&113833&25750&1278&1
+\end{array}
+\]
+The witness archive includes Seroussi bases, previously certified
+sparse polynomials, and further bases found by increasing the
+largest interior exponent. NTL checks all 1235 witnesses from 1093
+distinct bases for irreducibility and at the indicated prime index.
+See \nolinkurl{scripts/check_order_prime_partitions.py}.
+Lean proves the prime-index dilation criterion and the containment of
+all root-order primes in \nolinkurl{GF2Sparse/OrderPrimePartitions.lean}.
+
 \end{document}

@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **For almost every product of a fixed number of distinct odd primes, every sparse irreducible root order has a prime connecting any chosen partition of the degree factors.** For a partition $n=st$ with $s,t>1$, this prime divides neither $2^s-1$ nor $2^t-1$. Through 70,000 the property holds in exactly 20,201 of the 21,436 odd squarefree composite degrees. The other 1,235 have explicit sparse counterexamples to this order property. [Proof and exact counts](results.pdf#page=335) · [Witnesses](data/squarefree-order-prime-exceptions.csv) · [Lean dilation criterion](GF2Sparse/OrderPrimePartitions.lean)
+
 - **For a density-one set of semiprime degrees $n$, every sparse irreducible root has a prime divisor $\ell$ of its order with $\operatorname{ord}_{\ell}(2)=n$.** Among the 14,424,896 degrees $pq\le10^8$ with distinct odd primes $p<q$, precisely 221 allow an exception. They are exactly the pairs with $q\mid2^p-1$, and each has an explicit irreducible trinomial or pentanomial demonstrating the exception. [Density proof and exact count](results.pdf#page=333) · [221 witnesses](data/semiprime-full-degree-prime-exceptions.csv) · [Verifier](scripts/check_semiprime_order_primes.py)
 
 - **Across every degree $3q$ and $5q$ with $q$ prime and larger than the first factor, exactly four reciprocal pairs miss a full-degree prime in the root order.** One pair in degree 21 has order 49. Three pairs in degree 155 have order 961. In degree 253 all 23 exceptions have order 47,081. [Classification and proof](results.pdf#page=334) · [Exhaustive verifier](scripts/check_semiprime_order_exceptions.cpp)
@@ -1015,6 +1017,12 @@ c++ -O3 -std=c++17 -fopenmp scripts/check_semiprime_order_exceptions.cpp -lntl -
 /tmp/gf2-order-exceptions 3 7
 /tmp/gf2-order-exceptions 5 31
 /tmp/gf2-order-exceptions 11 23
+~~~
+
+The same binary verifies the 1,235 sparse witnesses through 70,000. The Python driver also computes the order-prime graph counts through one million.
+
+~~~sh
+python3 scripts/check_order_prime_partitions.py --ntl /tmp/gf2-order-exceptions
 ~~~
 
 To reproduce the order projections and subfield certificates, run
