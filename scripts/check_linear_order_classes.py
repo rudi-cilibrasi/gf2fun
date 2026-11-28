@@ -1,4 +1,4 @@
-"""Classify binary trinomials and pentanomials of root order at most 16 times their degree."""
+"""Classify sparse binary polynomials through the sharp two-bit root-order threshold."""
 
 import argparse
 from itertools import combinations
@@ -21,6 +21,12 @@ BASES = {
     73: (9, [(1,), (1, 2, 4), (1, 3, 6), (2, 5, 6)]), 85: (8, [(1, 3, 7)]),
     89: (11, [(1, 6, 7)]), 91: (12, [(1, 9, 10)]), 93: (10, [(1, 3, 8), (2, 4, 5)]),
     129: (14, [(5, 7, 9)]), 219: (18, [(1, 2, 10)]),
+}
+
+# The normalized bases with 16 < r/n <= 127/7.
+BOUNDARY_BASES = {
+    127: (7, [(1,), (3,), (1, 2, 3), (1, 2, 5), (1, 3, 5), (1, 3, 6), (2, 3, 4)]),
+    195: (12, [(2, 4, 5)]), 257: (16, [(1, 8, 15), (3, 8, 13)]),
 }
 
 
@@ -53,16 +59,17 @@ def covers_unit_cosets(n, r, count):
     return False
 
 
-def candidate_orders():
-    # For a normalized support, r <= 16*n and 5*n^4 <= 16*r^3 give this cutoff.
-    bound = 16**5 // 5
+def candidate_orders(boundary=False):
+    # For a normalized support, den*r <= num*n and 5*n^4 <= 16*r^3 bound r.
+    num, den = (127, 7) if boundary else (16, 1)
+    bound = 16*num**4 // (5*den**4)
     degrees = [0]*(bound+1)
     degrees[1] = 1
     cases = []
     normalized = 0
     for r in range(3, bound+1, 2):
         n = degrees[r] = binary_degree(r)
-        if r > 16*n or 5*n**4 > 16*r**3:
+        if den*r > num*n or (boundary and r <= 16*n) or 5*n**4 > 16*r**3:
             continue
         if any(n == p*degrees[r//p] for p in prime_divisors(r)):
             continue
@@ -77,7 +84,7 @@ def candidate_orders():
         elif covers_unit_cosets(n, r, count):
             continue
         cases.append((n, r))
-    if normalized != 4760 or len(cases) != 206:
+    if (normalized, len(cases)) != ((2895, 55) if boundary else (4760, 206)):
         raise ArithmeticError(f"unexpected order sieve counts: {normalized}, {len(cases)}")
     return cases
 
@@ -104,9 +111,9 @@ def flint_census(cases):
     return found
 
 
-def verified_bases():
+def verified_bases(bases):
     found = {}
-    for r, (n, representatives) in BASES.items():
+    for r, (n, representatives) in bases.items():
         taps = set()
         for row in representatives:
             reverse = reflection(n, row)
@@ -164,9 +171,9 @@ def check_unit_records(limit=255):
     print(f"Checked unit traces on all {checked} Frobenius orbits of odd orders through {limit}.")
 
 
-def members(n):
+def members(n, bases=BASES):
     """Yield (root order, canonical taps) in a given degree without factoring that degree."""
-    for r, (m, rows) in BASES.items():
+    for r, (m, rows) in bases.items():
         scale, remainder = divmod(n, m)
         if remainder or not scale:
             continue
@@ -180,14 +187,18 @@ def members(n):
                 yield r*scale, tuple(scale*t for t in row)
 
 
-def check_maxima():
-    degree_lcm = lcm(*(m for m, _ in BASES.values()))
+def check_maxima(boundary):
+    # For the sharp open interval, omit precisely the normalized order-127 row.
+    bases = BASES
+    if boundary:
+        bases = BASES | {r: v for r, v in BOUNDARY_BASES.items() if r != 127}
+    degree_lcm = lcm(*(m for m, _ in bases.values()))
     maxima = [0]*4
     subgroup_maxima = [0]*2
     for n in range(2, degree_lcm+1):
         if degree_lcm % n:
             continue
-        rows = list(members(n))
+        rows = list(members(n, bases))
         penta = [(r, taps) for r, taps in rows if len(taps) == 3]
         def oriented(group):
             return sum(1 + (taps != reflection(n, taps)) for _, taps in group)
@@ -197,12 +208,20 @@ def check_maxima():
         for size in range(1, len(orders)+1):
             for selected in combinations(orders, size):
                 h = lcm(*selected)
-                if h <= 16*n:
+                fits = 7*h < 127*n if boundary else h <= 16*n
+                if fits:
                     group = [(r, taps) for r, taps in penta if h % r == 0]
                     subgroup_maxima = list(map(max, subgroup_maxima, (len(group), oriented(group))))
-    if degree_lcm != 27720 or maxima != [4, 7, 5, 9] or subgroup_maxima != [3, 6]:
+    if (degree_lcm != (55440 if boundary else 27720) or maxima != [4, 7, 5, 9]
+            or subgroup_maxima != [3, 6]):
         raise ArithmeticError(f"incorrect maxima: {maxima}, {subgroup_maxima}")
     print("At most four pentanomial reciprocal classes per degree, and at most three in one subgroup.")
+    if boundary:
+        for n in (7, 7*127):
+            endpoint = [(r, t) for r, t in members(n, BOUNDARY_BASES) if len(t) == 3 and 7*r == 127*n]
+            if len(endpoint) != 5 or any(r != 127*(n//7) for r, _ in endpoint):
+                raise ArithmeticError("expected five pentanomial classes in a single endpoint subgroup")
+        print("Five reciprocal classes have order exactly 127n/7 at n = 7 times every power of 127.")
 
 
 def check_prime_indices():
@@ -228,15 +247,20 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--degree", type=int, help="decode the low-order classes in one degree")
     parser.add_argument("--ntl", metavar="CENSUS", help="use the NTL cyclotomic factor census")
+    parser.add_argument("--sharp", action="store_true", help="include the classifications through 127n/7")
     args = parser.parse_args()
     if args.degree is not None:
         if args.degree < 2:
             parser.error("the classification starts at degree two")
-        for r, taps in sorted(members(args.degree)):
+        for r, taps in sorted(members(args.degree, BASES | BOUNDARY_BASES if args.sharp else BASES)):
             print(f"order {r}, interior exponents {taps}")
     else:
         cases = candidate_orders()
-        supports = verified_bases()
+        bases = BASES
+        if args.sharp:
+            cases += candidate_orders(boundary=True)
+            bases = BASES | BOUNDARY_BASES
+        supports = verified_bases(bases)
         if args.ntl:
             expected = {key: (sum(len(t) == 1 for t in rows), sum(len(t) == 3 for t in rows))
                         for key, rows in supports.items()}
@@ -244,7 +268,8 @@ if __name__ == "__main__":
                 raise ArithmeticError("the NTL counts differ from the verified supports")
         elif flint_census(cases) != supports:
             raise ArithmeticError("the FLINT sparse factors differ from the table")
-        print("206 cyclotomic orders give 46 normalized sparse polynomials in 26 reciprocal classes.")
+        print(f"{len(cases)} cyclotomic orders give {sum(map(len, supports.values()))} normalized "
+              f"sparse polynomials in {sum(len(rows) for _, rows in bases.values())} reciprocal classes.")
         check_unit_records()
-        check_maxima()
+        check_maxima(args.sharp)
         check_prime_indices()
