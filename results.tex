@@ -23667,4 +23667,62 @@ The table and verifier are
 \nolinkurl{scripts/check_semiprime_order_primes.py}. They verify all
 221 exceptional degrees with 187 distinct sparse base polynomials.
 
+\clearpage
+\section{Exactly which sparse polynomials miss a full-degree prime in degrees 21, 155 and 253}
+\label{sec:semiprime-individual-exceptions}
+Let \(p=3\) or \(5\), and let \(q>p\) be any prime. Every sparse
+irreducible of degree \(pq\) has a root-order prime of binary
+multiplicative degree \(pq\), with exactly four exceptions up to
+reciprocation across both infinite families. They are
+\[
+\begin{array}{c|c|l|r}
+pq & \text{substitution} & \text{base interior exponents} & \ord(z)\\\hline
+21 & X^7 & (1) & 49\\
+155 & X^{31} & (2),\ (1,2,3),\ (1,2,4) & 961
+\end{array}
+\]
+In particular, exponent gcd one forces a full-degree prime in every
+one of these degrees. At \(n=253\) there are exactly 23 exceptional
+reciprocal pairs. Each is \(G(X^{23})\) for a primitive trinomial
+or pentanomial of degree eleven, and each has root order 47081.
+
+For the proof, let \(M_d=2^d-1\). Section~\ref{sec:subfield-square-census}
+leaves only \(q\mid M_p\) in the first two families, giving the pairs
+\((3,7)\) and \((5,31)\). More generally suppose \(q\mid M_p\).
+If the order \(R\) of a degree-\(pq\) element has no prime of binary
+degree \(pq\), every prime of \(R\) divides \(M_pM_q\).
+The two factors are coprime. For \(\ell\mid M_p\), lifting gives
+\(v_\ell(M_{pq})=v_\ell(M_p)+v_\ell(q)\). For \(\ell\mid M_q\)
+the valuation stays fixed, as \(p\nmid M_q\) by \(\ord_p(2)<q\).
+Consequently the absence of a full-degree prime is equivalent to
+\[
+        R\mid qM_pM_q
+        \quad\Longleftrightarrow\quad
+        (z^{qM_p})^{2^q}=z^{qM_p}.
+\]
+This test needs only \(q\) squarings after the initial power.
+
+\[
+\begin{array}{r|r|r|r|r}
+n&\text{trinomial pairs}&\text{pentanomial pairs}&
+\text{exceptional pairs}&\text{of exponent gcd one}\\\hline
+21 &10&570&1&0\\
+155&77&298452&3&0\\
+253&126&1317750&23&0
+\end{array}
+\]
+The NTL verifier tests the displayed identity modulo every trinomial
+and pentanomial, then checks irreducibility of each survivor.
+It visits the lexicographically first tap list in each reciprocal
+pair and checks both support totals against the binomial counts.
+A separate FLINT enumeration in degree 155 first tests irreducibility
+and then powers the residue of \(X\) directly by \(31^2(2^{31}-1)\).
+It finds the same three pairs among 5806 irreducible pairs.
+
+Theorem~\ref{thm:dilation} gives the orders from the small bases.
+In degree eleven, 23 of the 24 sparse irreducible reciprocal pairs
+have root order \(2047=23\cdot89\). The last has order 89.
+The verifier \nolinkurl{scripts/check_semiprime_order_exceptions.cpp}
+lists every exceptional tap set.
+
 \end{document}
