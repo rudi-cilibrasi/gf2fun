@@ -27302,4 +27302,90 @@ The offline verifier is \nolinkurl{scripts/check_48387_order.py}.
 The Lean module \nolinkurl{GF2Sparse/ResiduePrime.lean} proves the
 two-range primality criterion and the discriminant identities.
 
+\clearpage
+\section{Which degree-1229 failures must differ in a single tap?}
+\label{sec:1229-tap-pencils}
+Among the 319572 reciprocal classes passing the four known order tests,
+call two classes adjacent when representatives can be chosen to differ
+in just one of their three interior exponents. The sum of those two
+polynomials is then a binomial. There are 1496102 unordered adjacent
+pairs.
+
+\begin{theorem}
+If degree 1229 has no primitive pentanomial, at least 52 of an explicit
+list of 3316 adjacent pairs must fail a common prime-index test.
+If at least one member of each listed pair passes the order test at
+each remaining prime, at least 51 distinct reciprocal classes are primitive.
+Both numbers are sharp for an arbitrary assignment of fourteen labels
+to the surviving supports.
+\end{theorem}
+
+Fix two taps \(a,b\). The associated family consists of all surviving
+classes with a representative containing \(a,b\).
+Use the lexicographically smaller of \((a,b)\) and
+\((1229-b,1229-a)\) as the key. The largest family has 19 members.
+Each has a representative
+\[
+              X^{1229}+X^{483}+X^{263}+X^c+1,\qquad
+\begin{aligned}[t]
+c\in\{&299,334,359,520,564,570,641,733,753,769,\\
+      &792,877,916,919,985,1077,1089,1196,1216\}.
+\end{aligned}
+\]
+If a given remaining prime excludes at most one member, the two fixed
+taps and the prime specify that member without a further index.
+If this holds for every remaining prime, at least five of the 19
+are primitive. Equivalently it suffices that for every pair of
+members the least common multiple of the two root orders is
+\(2^{1229}-1\). The root orders in this family are open.
+
+Over all keys exactly 28 families have size greater than fourteen.
+Their sizes and multiplicities are
+\[
+\begin{array}{c|rrrrr}
+\text{size}&15&16&17&18&19\\ \hline
+\text{number of families}&15&6&4&2&1
+\end{array}
+\]
+They contain 443 distinct reciprocal classes. Only the class with
+taps \((284,630,914)\) occurs twice. Thus no unordered pair occurs
+twice, and the families supply exactly \(\sum_T\binom{|T|}{2}=3316\)
+pairs. If all members are imprimitive, label each by its least
+failing prime. There are at most fourteen labels by
+Section~\ref{sec:1229-fourteen}. In a family \(T\), at least
+\(|T|-14\) unordered pairs have equal labels, because a label
+used \(k\ge1\) times gives \(\binom{k}{2}\ge k-1\) pairs.
+Summing gives 52. If there are no common failures in these pairs,
+at least \(|T|-14\) members in each \(T\) are primitive. Only one
+vertex can be counted twice, so at least 51 are primitive.
+
+\clearpage
+\paragraph{Sharpness on the entire support census.}
+Form the graph with the 319572 classes as vertices and the 1496102
+adjacencies as edges. The verifier constructs a fourteen-coloring
+with exactly 52 monochromatic edges. It also constructs a set of
+51 vertices meeting every one of those edges. Removing fewer than
+51 vertices cannot give a properly fourteen-colorable graph, by the
+same family count. These statements concern possible assignments of
+labels. Whether the prime-index failures realize an assignment with
+any of the 3316 collisions is a field-order question.
+
+To construct the coloring, first reserve the 443 vertices in the large
+families. Give globally distinct colors to their shared vertex and
+the endpoints of edges between reserved vertices that are in no common
+large family. Within each large family use all fourteen colors, and
+give its surplus vertices distinct second copies. In both families
+of the shared vertex, double its color first. The 52 resulting pairs
+can be covered by that vertex and 50 others.
+
+To extend this assignment, keep the reserved vertices in the graph.
+Remove any other vertex having at most thirteen remaining neighbors.
+This deletes every unreserved vertex in the census. Inserting the
+vertices in reverse order always leaves a color unused by the neighbors
+already present. The verifier finally compares the colors on every
+edge and checks the 51-vertex cover. The standard-library calculation
+and optional field replay are in
+\nolinkurl{scripts/check_1229_tap_pencils.py}. The field replay verifies
+irreducibility and all four known tests for each of the 443 vertices.
+
 \end{document}
