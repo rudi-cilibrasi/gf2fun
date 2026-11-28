@@ -279,4 +279,19 @@ theorem thirty_one_power_divides_mersenne_iff (b n : ℕ) :
   simpa only [show (2:ℕ)^5-1 = 31 by decide, padicValNat.self (by decide : 1 < 31),
     Nat.add_comm 1 b] using h
 
+/-- At a Mersenne prime, each successive prime power multiplies the binary degree by p. -/
+theorem mersenne_prime_power_divides_iff {t p : ℕ} [ht : Fact t.Prime] [hp : Fact p.Prime]
+    (hM : 2^t-1 = p) (b n : ℕ) : p^(b+1) ∣ 2^n-1 ↔ t*p^b ∣ n := by
+  have hmin : 4 ≤ 2^t := Nat.pow_le_pow_right (by decide : 0 < 2) ht.out.two_le
+  have hodd : Odd p := hp.out.odd_of_ne_two (by omega)
+  have hz : ((2^t-1 : ℕ) : ZMod p) = 0 := by rw [hM]; exact ZMod.natCast_self p
+  rw [Nat.cast_sub (Nat.two_pow_pos t), Nat.cast_pow, Nat.cast_ofNat, Nat.cast_one,
+    sub_eq_zero] at hz
+  have hne : (2 : ZMod p) ≠ 1 := by
+    intro h
+    have h' : (1 : ZMod p) + 1 = 0 + 1 := by simpa only [one_add_one_eq_two, zero_add] using h
+    exact one_ne_zero (add_right_cancel h')
+  have h := binary_prime_power_lift hodd ht.out.pos (orderOf_eq_prime hz hne) b n
+  simpa only [hM, padicValNat.self hp.out.one_lt, Nat.add_comm 1 b] using h
+
 end GF2Sparse.SubfieldProducts

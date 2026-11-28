@@ -22571,4 +22571,162 @@ half this fraction as a lower bound for the relative density.
 \nolinkurl{scripts/check_trinomial_density.py} with the option
 \texttt{--prime-powers} reproduces the fraction using integer arithmetic.
 
+\clearpage
+\section{Seven positions in every degree \texorpdfstring{\(7q^b\)}{7q^b}}
+\label{sec:seven-all-powers}
+\begin{theorem}
+Let \(q>7\) be prime, \(b\ge1\) and \(n=7q^b\). Suppose an irreducible
+binary pentanomial of degree \(n\) has three exponents among seven
+equally spaced integer positions. The order of each root is divisible
+by a prime power \(h\) with \(\ord_h(2)=n\). For \(q\ne127\) one can
+take \(h\) prime.
+\end{theorem}
+Thus in this family, whenever \(P=\Phi_n(2)\) is prime, primitivity is
+equivalent to primitivity of the two norms in degrees \(n/7\) and
+\(n/q\). Indeed \(2^n-1=P\operatorname{lcm}(2^{n/7}-1,2^{n/q}-1)\).
+The theorem forces the full \(P\)-part of the group order. The norms
+test the prime factors in the two smaller field orders as in
+Section~\ref{sec:seven-relative-witnesses}.
+
+The exception to the prime conclusion is sharp. Direct reduction gives
+\(X^{127}=1\) modulo \(F=X^7+X^3+X^2+X+1\). Since \(F(1)=1\) and
+127 is prime, every root has order 127. Each root of
+\(F(X^{127^b})\) therefore has order \(127^{b+1}\). Its binary degree
+is \(7\cdot127^b\), the degree of the polynomial, which proves
+irreducibility. Lean verifies the general lifting equivalence
+\(P^{b+1}\mid2^j-1\iff tP^b\mid j\) for primes \(t,P=2^t-1\) in
+\nolinkurl{GF2Sparse/ScalarOrderBound.lean}.
+
+\paragraph{A bound from small Frobenius powers.}
+Let \(\zeta\) have prime order \(\ell\) over a finite binary field \(F\),
+and put \(d=[F(\zeta):F]\), \(H=\langle2\rangle\bmod\ell\),
+\(z=|H|\), \(k=(\ell-1)/z\). For coprime positive odd integers
+\(a>b\) prime to \(\ell\), assign cost \(ab\) when \(a/b\in H\) and
+cost \(2ab\) when \(-a/b\in H\). Let \(C\) be the cost of any such
+choice. If \(0<i<j<\ell\), \(\gcd(i,j)=1\) and \(d>jC\), the powers
+\(1,\zeta^i,\zeta^j,\zeta^c\) are independent over \(F\) for every
+fourth distinct index \(c\). Any three distinct powers are independent if \(d>C\).
+
+To prove this, first consider a relation
+\(\zeta^c=A(\zeta)\) supported on two powers. Divide by one of them
+and use their ratio as the primitive root to normalize the support of
+\(A\) to \(\{0,1\}\). For four columns, the first three are independent
+since \(j<d\), so we can solve for the fourth. A one-term expression
+would put a nonidentity \(\ell\)-th root in \(F\), contrary to \(d>1\).
+The argument thus reduces to a polynomial \(A\) of width at most \(j\)
+(width one for three columns), constant term nonzero, and with support
+differences of gcd one.
+
+Set \(\xi=\zeta^{1/b}\) in the order-\(\ell\) group, and \(Y=\xi^c\).
+Choose \(v\) with \(2^v=\pm a/b\bmod\ell\) and apply the same binary
+Frobenius to the coefficients of \(A\), giving \(B\) with identical
+support. Then \(Y^b=A(\xi^b)\) and
+\(Y^{\pm a}=B(\xi^{\pm a})\). With positive sign,
+\(A(X^b)^a=B(X^a)^b\) at \(X=\xi\). Both sides have degree at most \(jab<d\), so this is a
+polynomial identity. Replacing \(X\) by \(\omega X\) for a primitive
+\(a\)-th root of unity shows that \(A(\omega^b X^b)/A(X^b)\) has
+\(a\)-th power one. It is constant over an algebraic closure of \(F\).
+Comparing coefficients shows that \(a\) divides every support
+difference, contradicting \(a>1\). With negative sign the identity at
+\(\xi\) is \(A(X^b)^aB(X^{-a})^b=1\). Clearing negative exponents
+gives degree at most \(2jab<d\), so the identity holds formally.
+The units of the Laurent polynomial ring are monomials, a contradiction.
+
+\paragraph{Reduction to five lengths.}
+For odd \(z>1\) the quotient by \(\pm H\) has order \(k/2\).
+Among \(1,3,\ldots,k+1\) two represent the same class. Dividing out
+their gcd gives a signed ratio of cost at most \(2(k^2-1)\).
+For any odd primes \(p<q\), Section~\ref{sec:relative-fourier-minors}
+reduces a split in degree \(pq^b\) to a nonzero relation over
+\(F=\mathbb F_{2^{p q^{b-1}}}\) with \(\ell=kq^b+1\),
+\(\ord_\ell(2)=q^b\), \(2\le k\le p-1\) even, and \(d=q\).
+A four-column relation retains the normalized triple \(0,i,j\) with
+\(j\le p-1\). Relations with fewer columns are covered by the
+three-power bound. In particular the same order conclusions as in
+Section~\ref{sec:periodic-relative-exclusion} hold for three of
+\(p\) equally spaced positions whenever
+\[
+                    q>2(p-1)((p-1)^2-1),\qquad b\ge1 .
+\]
+
+Now take \(p=7\). For \(b=1\) Section~\ref{sec:three-position-bound}
+already excludes a split. For \(b\ge2\) it suffices to check
+\(q\le12(k^2-1)\) and \(\ell\le(6k+1)^9\) by
+Section~\ref{sec:four-unrestricted-columns}. For \(k=2\) that section
+gives \(\ell\le24^2\). For \(k=4\), \(\ell\equiv5\bmod8\) excludes
+odd binary order. Enumerating the two remaining multipliers, testing
+primality and order, then minimizing the cost through \(2(k^2-1)\)
+leaves exactly the five rows below. Each has \(k=6\) and \(q>C\),
+so only four columns with \(q\le jC\) require a test.
+\[
+\begin{array}{r|r|r|r|l}
+q&b&\ell&C&\text{fourth columns tested or inverse test}\\\hline
+11&2&727&6&4344\\
+11&8&1286153287&10&\text{inverse test}\\
+31&4&5541127&6&5541124\\
+47&4&29278087&15&117112336\\
+79&2&37447&15&37444
+\end{array}
+\]
+
+\paragraph{Certifying a determinant by binary traces.}
+For any primitive \(\ell\)-th root \(\xi\) let
+\(t_h=\operatorname{Tr}_{\mathbb F_{2^z}/\mathbb F_2}(\xi^h)\),
+indexed by the six cosets \(hH\). Their sum is one because it sums
+every nonidentity \(\ell\)-th root once. The trace at exponent zero
+is also one since \(z\) is odd. For a binary determinant \(D(T)\),
+each trace of \(\xi^v D(\xi)\) is therefore a known linear form in
+six bits. If the forms for successive \(v=0,1,\ldots\) exclude
+every odd-weight assignment when set to zero, then \(D\) is nonzero
+at every primitive \(\ell\)-th root.
+
+Set \(u=2^{q^{b-1}}\bmod\ell\). Its powers are the order-\(q\)
+subgroup giving the conjugates over \(F\). Use the determinant
+\(D(T)=\det(T^{u^r e})\) with \(0\le r<4\) and
+\(e\in\{0,i,j,c\}\). For each of the four explicit counts in the table,
+the verifier tries every remaining coprime \((i,j)\) up to reflection
+and every \(c\) distinct from the triple. The respective maximum
+numbers of trace shifts are 15, 30, 33 and 22. Each determinant is
+thus nonzero, so a relation over \(F\) is impossible.
+
+\paragraph{The length \(1286153287\).}
+Suppose the four powers are dependent both at \(\xi\) and at
+\(\xi^{-1}\). Then \(\xi^c=A(\xi)\) and \(\xi^{-c}=B(\xi^{-1})\)
+with supports in \(\{0,i,j\}\). Neither polynomial can be a monomial.
+The Laurent polynomial \(A(X)B(X^{-1})-1\) vanishes at \(\xi\).
+For \(j\le5\) its width is at most \(10<q=11\), giving a formal
+identity. For \(j=6\) we have \(i=1\) or 5, and its exponents after
+a shift belong to \(\{0,1,5,6,7,11,12\}\). The seven-column determinant
+on rows \(u^r\), \(0\le r<7\), has 5040 distinct terms. Its first
+five trace shifts exclude all odd-weight assignments, proving
+independence and again giving a formal identity. In either case
+the Laurent units contradict the supports of \(A,B\).
+
+Consequently dependence at \(\xi\) implies independence at
+\(\xi^{-1}\). The Moore rank criterion then supplies a four-row
+binary determinant \(D\) vanishing at \(\xi\) and nonzero at
+\(\xi^{-1}\). The matrix of all relative conjugates has rank equal to
+the dimension over \(F\) of the span of the four field elements.
+
+Let \(Z\) be the zero classes of \(D\) in
+\(G=\mathbb F_\ell^\times/H\), cyclic of order six. We have
+\(H\in Z\), \(-H\notin Z\). Every nonsquare class generates a subgroup
+containing the involution \(-H\), so none stabilizes \(Z\).
+Fix a nonsquare class \(s\). For each of the three square classes \(t\)
+there is \(w\in Z\) with \(ws/t\notin Z\).
+Thus \(D(T^{w/t})\) vanishes at class \(t\) and is nonzero at class
+\(s\), using any representative of \(w/t\). The product of the three
+such polynomials modulo \(T^\ell-1\) is a nonzero binary word that
+vanishes at every square class. Its weight is at most \(24^3\).
+The binary quadratic-residue code has minimum distance at least
+\(\sqrt\ell\), and \(\ell>24^6\), a contradiction.
+This uses the full minimum-distance bound of van Lint and MacWilliams,
+\href{https://pure.tue.nl/ws/files/2414072/593491.pdf}{Theorem~2(i)}.
+
+This excludes the product of the two maximal proper subfields in
+every case. Section~\ref{sec:periodic-relative-exclusion} gives the
+prime-power conclusion and allows a full-degree prime whenever
+\(q\nmid 2^7-1\). The finite enumeration and all trace certificates
+are reproduced by \nolinkurl{scripts/check_seven_position_orders.py}.
+
 \end{document}
