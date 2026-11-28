@@ -226,6 +226,8 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 The large-degree table gives candidate pentanomials, the complete proposed factor list for each field order, and identifiers for the external primality certificates. NTL tested irreducibility and each listed factor-index power during the search. To check one row independently, choose a degree and run the command below. It verifies the integer certificates with PARI/GP and the polynomial powers with FLINT. The cache retains a downloaded chain after it passes verification. To check just the factor product and polynomial powers, use `--powers-only`. [Large-degree table](data/mers-project-large-orders.json) · [Verifier](scripts/check_mers_project_orders.py)
 
+In degrees 25,243, 25,933, 28,381, 28,771, 32,531 and 35,339, every trinomial is reducible. A primitive witness of weight at most five in any of these degrees must therefore have five terms. The proof uses Swan's theorem and explicit divisors of degree at most eight before substitution. [Proof](results.pdf#page=310)
+
 ```bash
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py \
   --table data/mers-project-large-orders.json --degree 17698 --fetch-to /tmp/gf2fun-prime-proofs

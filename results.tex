@@ -22208,4 +22208,33 @@ group powers and each prime-index power. The external chains are
 identified in \nolinkurl{data/mers-project-large-orders.json}
 by their FactorDB certificate numbers.
 
+\clearpage
+\paragraph{Six higher degrees with no irreducible trinomial.}
+Every binary trinomial in each of the degrees
+\[
+25243,\quad 25933,\quad 28381,\quad 28771,\quad 32531,\quad 35339
+\]
+is reducible. This conclusion uses only small polynomial divisions and
+Swan's parity criterion. All six degrees are three or five modulo eight,
+so the even interior exponent of an irreducible representative would have
+to divide \(2n\). Five of the degrees are prime, leaving only exponent two.
+For \(n=25243,25933,28381,28771\), the residue \(n\equiv1\pmod3\)
+gives the divisor \(X^2+X+1\) of \(X^n+X^2+1\). The corresponding
+divisors for the last two degrees are
+\[
+\begin{array}{r|l}
+32531 & X^7+X^6+X^5+X^4+X^2+X+1\\
+35339 & X^3+X^2+1.
+\end{array}
+\]
+In the first quotient \(X^{127}=1\) and \(X^{19}=X^2+1\).
+In the second \(X^7=1\) and \(X^3=X^2+1\).
+
+In the composite degree \(28381=101\cdot281\), the remaining even
+exponents are 202 and 562. For exponent 202, substitute \(X^{101}\)
+for \(Y\) in \(Y^{281}+Y^2+1\), which has the divisor
+\(Y^8+Y^7+Y^5+Y^3+1\). For exponent 562, substitute \(X^{281}\)
+in \(Y^{101}+Y^2+1\), which has the divisor \(Y^3+Y^2+1\).
+This exhausts all reciprocal classes in the six degrees.
+
 \end{document}
