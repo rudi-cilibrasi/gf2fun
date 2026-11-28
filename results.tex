@@ -25123,7 +25123,7 @@ This probability uses uniform sampling in the cyclic cofactor group.
 The observed pentanomial supports have their own distribution.
 
 \clearpage
-\section{Order tests in degree 41681 and the trinomials in degree 53381}
+\section{Primitive trinomials in degree 41681 and the pentanomial in degree 53381}
 \label{sec:mers-project-additional-orders}
 In degree \(41681\) exactly seven trinomials are irreducible up to
 reciprocity. Their lower taps are
@@ -25141,13 +25141,14 @@ of \(M=2^{41681}-1\). The three smaller factors are the proven primes
     1052945423,\qquad 16647332713153,\qquad
     2853686272534246492102086015457.
 \]
-Write \(L\) for the quotient by their product. It has 12495 decimal
-digits. The archived \href{https://factordb.com/cert/1100000000776586446}
-{PRIMO certificate for \(L\)} has 1398 records. If \(L\) is prime,
-the four index tests exhaust all prime divisors of \(M\), every one
-of these eight polynomials is primitive, and the minimum weight
-is three. The field calculations and the three smaller prime proofs
-are complete. The large integer proof can be replayed offline from
+The quotient \(L\) is a prime with 12495 decimal digits.
+PARI verified the archived
+\href{https://factordb.com/cert/1100000000776586446}{1398-record
+PRIMO certificate for \(L\)} through its terminal prime.
+The four index tests exhaust all prime divisors of \(M\), so every
+one of these eight polynomials is primitive. The seven lower taps
+give exactly fourteen primitive trinomials counting reciprocals,
+and the minimum primitive weight is three. The proof replays offline from
 \nolinkurl{data/mers-project-primality/1100000000776586446.cert.gz}.
 
 \nolinkurl{data/mers-project-extension-orders.json} gives the factorization,
@@ -25156,7 +25157,9 @@ all eight supports and the certificate identifier. The verifier
 the full and four index powers on each support. NTL independently
 checked the pentanomial. The table
 \nolinkurl{data/mers-project-trinomial-census-supplement.csv} lists
-all irreducible trinomials in both degrees.
+all irreducible trinomials in both degrees. Together with the original
+83 degrees, the extended census covers 577649 reciprocal classes in
+85 degrees. Of its 143 irreducible pairs, 135 are primitive.
 
 In degree \(53381\) every trinomial is reducible. This degree is
 prime and congruent to five modulo eight. Swan's theorem leaves only
