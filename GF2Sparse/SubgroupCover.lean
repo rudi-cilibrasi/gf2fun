@@ -134,4 +134,53 @@ theorem card_polynomial_failures {I P : Type*} [Fintype P] {d : ℕ}
     _ ≤ ∑ _p : P, d := Finset.sum_le_sum fun p _ => hcard p
     _ = Fintype.card P * d := by simp
 
+
+/-- The tangent to twice the pair count at consecutive integer class sizes. -/
+private theorem pair_count_tangent (x q : ℤ) :
+    2*q*x-q*(q+1) ≤ x*(x-1) := by
+  rcases le_or_gt x q with h | h
+  · nlinarith [mul_nonneg (show 0 ≤ q-x by omega) (show 0 ≤ q+1-x by omega)]
+  · nlinarith [mul_nonneg (show 0 ≤ x-q by omega) (show 0 ≤ x-q-1 by omega)]
+
+private theorem fourteen_pair_tangents (size : Fin 14 → ℤ) (q : ℤ) :
+    2*q*(∑ i, size i)-q*(14*(q+1)) ≤ ∑ i, size i*(size i-1) := by
+  have h := Finset.sum_le_sum (s := (Finset.univ : Finset (Fin 14)))
+    (fun i _ => pair_count_tangent (size i) q)
+  simpa only [Finset.sum_sub_distrib, ← Finset.mul_sum, Finset.sum_const,
+    Finset.card_univ, Fintype.card_fin, nsmul_eq_mul, Nat.cast_ofNat] using h
+
+/-- A cover of all survivors forces the stated number of same-label pairs,
+even after allowing every shared-tap pair counted by the census. -/
+theorem degree1229_joint_cover (size : Fin 14 → ℤ) (total : ∑ i, size i = 319572) :
+    2*(2877863093+769343665) ≤ ∑ i, size i*(size i-1) := by
+  have h := fourteen_pair_tangents size 22826
+  rw [total] at h
+  norm_num at h ⊢
+  exact h
+
+/-- A 31-bit code for disjoint common failures leaves at least 33,784 primitive pairs. -/
+theorem degree1229_joint_code (size : Fin 14 → ℤ)
+    (code : ∑ i, size i*(size i-1) ≤ 2*(2^31+769343665)) :
+    33784 ≤ 319572-∑ i, size i := by
+  have h := fourteen_pair_tangents size 20413
+  norm_num at h code
+  omega
+
+/-- A disjoint family uses at most 614 folded labels and 307 of the two active residues. -/
+theorem degree1229_tap_packing_bound {mixed doubleActive triples : ℕ}
+    (cover : mixed ≤ 39) (allTaps : 2*(mixed+doubleActive)+3*triples ≤ 614)
+    (active : mixed+2*doubleActive+triples ≤ 307) :
+    mixed+doubleActive+triples ≤ 240 := by omega
+
+/-- If every member of the explicit disjoint packing fails, eighteen share a failing test. -/
+theorem degree1229_packing_cover (hit : Fin 240 → Fin 14) :
+    ∃ p, 18 ≤ (Finset.univ.filter (fun i => hit i = p)).card :=
+  large_failure_class (limit := 17) hit (by decide)
+
+/-- A four-bit conditional code on the disjoint packing leaves sixteen primitive members. -/
+theorem degree1229_four_bit_packing (bad : Fin 14 → Finset (Fin 240))
+    (code : ∀ p, ↥(bad p) ↪ Fin 16) :
+    16 ≤ (Finset.univ \ Finset.univ.biUnion bad).card := by
+  simpa using outside_card_of_failure_codes bad (fun _ => 16) code
+
 end GF2Sparse.SubgroupCover

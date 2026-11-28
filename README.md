@@ -4,6 +4,8 @@ Does every positive degree $n$ have a primitive polynomial over $\mathbb F_2$ wi
 
 **Degree 1229 is the first gap in this repository.** Every positive degree through 1228 has a verified witness. In degree 1229 all trinomials are reducible, and 639,144 of the 639,166 irreducible pentanomials pass the four known prime-index tests. The remaining cofactor has at most 14 prime factors. A counterexample would require one of them to exclude at least 22,827 surviving reciprocal pairs. Every surviving root has order exceeding $2^{349}$. A 14-bit index for the pairs failing each remaining prime would prove at least 90,196 primitive pairs. The required bound on these failure classes is open. [Census](data/degree-1229-pentanomial-census.csv) · [Divisor bound and coding argument](results.pdf#page=387)
 
+**A 31-bit joint code would prove at least 33,784 primitive degree-1229 reciprocal pairs.** Count a polynomial and its reciprocal once. The code describes two distinct survivors whose taps are disjoint up to reflection and whose roots fail at least one common prime. A counterexample would require at least 2,877,863,093 such objects. There is also an explicit collection of 240 survivors with mutually disjoint taps, the largest possible. A counterexample would force 18 members of this collection to fail at one prime. [Counting proof](results.pdf#page=397) · [240 supports](data/degree-1229-disjoint-tap-packing.json) · [Census verifier](scripts/check_1229_joint_codes.py)
+
 **More than $2^{655}$ primitive polynomials in degree 1229 have at most 301 terms.** More than $2^{654}$ can have their first 516 interior coefficients zero. At 303 terms the corresponding counts exceed $2^{658}$ and $2^{657}$. The proof bounds the error by counting short descriptions of the additive characters that contribute to it. [301-term proof](results.pdf#page=389) · [303-term count](results.pdf#page=388) · [Exact calculation for both bounds](scripts/check_1229_signed_weight.py) · [Lean arithmetic](GF2Sparse/SignedWeight1229.lean)
 
 **A nonprimitive degree-1229 survivor must have equal products of at most 206 conjugates on each side.** More than 2.6 quadrillion unordered pairs would give those equalities. The relations depend only on the missed prime, so a counterexample would force at least 22,827 surviving reciprocal pairs to share them. [Proof](results.pdf#page=391) · [Frequency certificate and checker](scripts/check_1229_collision_ranks.py)
@@ -681,6 +683,7 @@ The upper bound on the first failing rank comes from counting the ones in binary
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_failure_ranks.py --all
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_collision_ranks.py --frequencies
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_cubic_failure.py --frequencies
+uv run --no-project --with python-flint==0.9.0 python scripts/check_1229_joint_codes.py --field
 ~~~
 
 The checker verifies the frequency exclusions modulo each cofactor and evaluates the bounds in rational arithmetic. [Frequency products](data/exterior-failure-frequency-products.json) · [Lean moment and counting bounds](GF2Sparse/FailureRanks.lean)
