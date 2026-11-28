@@ -27213,4 +27213,93 @@ Negating \(d\) gives the reciprocal polynomial of the same weight.
 The table \nolinkurl{data/degree-1229-small-subgroup-weights.csv}
 also records both minima.
 
+\clearpage
+\section{A cubic primality certificate for the field order in degree 48387}
+\label{sec:48387-order}
+Put \(x=2^{127}\), \(y=2^{16129}\), and
+\[
+             P=\frac{y^2+y+1}{x^2+x+1}=\Phi_{48387}(2).
+\]
+This 9635-digit integer is prime. We give an independent proof using one
+cubic with integer coefficients, one modular base, and primality
+certificates for integers of at most 1275 digits. The factorization
+\[
+                 2^{48387}-1=(y-1)(x^2+x+1)P
+\]
+then gives eleven distinct prime divisors. The five primes of \(y-1\)
+were certified in Section~\ref{sec:composite-order-witnesses};
+the five primes of \(x^2+x+1\) have 1, 4, 5, 6 and 63 decimal digits.
+The verifier checks both products and every prime. The preceding
+primality record for \(P\) is available from
+\href{https://factordb.com/cert/1100000000763193892}{FactorDB}.
+
+To obtain a factored part \(F\) of \(P-1\), use
+\[
+              (x^2+x+1)(P-1)=(y-x)(y+x+1),
+              \qquad y-x=2^{127}(2^{16002}-1).
+\]
+The certificate lists fifty distinct primes with their powers in
+\(F\), starting with \(2^{127}\). They give a 10452-bit divisor of
+\(P-1\), just below its cube root. For the largest prime the verifier
+uses the archived \href{https://factordb.com/cert/1100000007203508537}
+{1275-digit PRIMO child certificate}; FLINT proves the other 49 primes.
+Direct modular powers give
+\[
+  13^{P-1}=1\bmod P,\qquad
+  \gcd(13^{(P-1)/\ell}-1,P)=1\quad\hbox{for every prime }\ell\mid F .
+\]
+Consequently \(F\) divides the order of 13 modulo every prime divisor
+of \(P\). In particular all such divisors are one modulo \(F\).
+
+\paragraph{Ruling out both factor ranges.}
+If \(P\) were composite, its least prime divisor and the complementary
+factor would both be one modulo \(F\), since \(P\equiv1\bmod F\).
+Write \(P=(1+Fa)(1+Fb)\) with \(1\le a\le b\).
+If \(b>F\) then \(a\le B=\lfloor P/F^3\rfloor\), a 651-bit bound.
+The supplied cubic \(h(T)=\sum_{j=0}^3h_jT^j\) satisfies
+\[
+    h(-F^{-1})=0\bmod P,\qquad
+    \sum_j |h_j| B^j < 2^{8269} < F,\qquad
+    h(T)=1+T^2+T^3\bmod 2 .
+\]
+Modulo \(1+Fa\) we have \(a=-F^{-1}\), so \(1+Fa\) divides \(h(a)\).
+The bound on \(|h(a)|\) would force \(h(a)=0\), but \(h\) is odd at
+every integer.
+
+If \(b\le F\), then \(s=a+b\) lies in \([2,2F]\). Setting
+\(H=(P-1)/F\) gives \(s\equiv H\bmod F\) and \(ab=(H-s)/F\).
+For both possible values of \(s\), the integer
+\(s^2-4(H-s)/F\) is two modulo five. This contradicts its required
+value \((a-b)^2\). The two cases prove primality.
+
+\clearpage
+\paragraph{Finding and replaying the certificate.}
+For \(r=-F^{-1}\bmod P\), reduce the integer lattice with basis
+\[
+  (P,0,0,0),\quad (-(r\bmod P),B,0,0),\quad
+  (-(r^2\bmod P),0,B^2,0),\quad (-(r^3\bmod P),0,0,B^3).
+\]
+Every row gives scaled coefficients of a cubic vanishing at \(r\)
+modulo \(P\). LLL reduction supplied one short row whose cubic has
+no zero modulo two. The verifier reads the four integer coefficients
+and checks their congruence, size and parity directly. This uses the
+small-polynomial argument of
+\href{https://cr.yp.to/bib/2001/coppersmith.pdf}{D.~Coppersmith,
+\emph{Finding small solutions to small degree polynomials}}.
+
+Every trinomial in degree 48387 is reducible. Indeed
+\(\gcd(48387,2^{48387}-1)=1\). If an irreducible \(f\) in this degree
+had all exponents divisible by a prime \(q\), then \(f=G(X^q)\) with
+\(G\) irreducible of degree \(48387/q\). The \(q\)-th power map
+permutes this smaller field, giving \(f\) a root there. Thus a
+trinomial would have coprime exponents. Since \(48387\equiv3\bmod8\),
+Swan's theorem leaves only \(X^{48387}+X^2+1\) and its reciprocal.
+The cubic \(X^3+X^2+1\) divides the former because \(48387\equiv3\bmod7\).
+
+The cubic coefficients and predecessor factorization are in
+\nolinkurl{data/degree-48387-order-prime.json}.
+The offline verifier is \nolinkurl{scripts/check_48387_order.py}.
+The Lean module \nolinkurl{GF2Sparse/ResiduePrime.lean} proves the
+two-range primality criterion and the discriminant identities.
+
 \end{document}

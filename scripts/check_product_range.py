@@ -27,11 +27,13 @@ def search(row, least_span=False):
     return n, u, v
 
 
-def prime_index_powers(x, order, primes, modulus):
+def prime_index_powers(x, order, primes, modulus, *, power_mod=None):
     """Yield x^(order/p) for each distinct prime, sharing powers across a product tree."""
     if not primes:
         return
-    pending = [(primes, x.pow_mod(order // prod(primes), modulus))]
+    if power_mod is None:
+        power_mod = type(x).pow_mod
+    pending = [(primes, power_mod(x, order // prod(primes), modulus))]
     while pending:
         group, value = pending.pop()
         if len(group) == 1:
@@ -44,8 +46,8 @@ def prime_index_powers(x, order, primes, modulus):
         left, right = group[:middle], group[middle:]
         # The current exponent is order / prod(group). Remove the sibling's
         # factors from its denominator to get the exponent for each child.
-        pending.append((right, value.pow_mod(prod(left), modulus)))
-        pending.append((left, value.pow_mod(prod(right), modulus)))
+        pending.append((right, power_mod(value, prod(left), modulus)))
+        pending.append((left, power_mod(value, prod(right), modulus)))
 
 
 def verify(n, u, v, factors, symmetric=False):
