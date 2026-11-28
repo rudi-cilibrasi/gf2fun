@@ -4,6 +4,7 @@ import GF2Sparse.AdditiveOrbit
 import GF2Sparse.AffineTapSpan
 import GF2Sparse.ConjugateProducts
 import GF2Sparse.Coverage
+import GF2Sparse.CubicComponents
 import GF2Sparse.CubicImage
 import GF2Sparse.CubedExamples
 import GF2Sparse.CyclicWeight

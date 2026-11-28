@@ -23848,4 +23848,208 @@ See \nolinkurl{scripts/check_order_prime_partitions.py}.
 Lean proves the prime-index dilation criterion and the containment of
 all root-order primes in \nolinkurl{GF2Sparse/OrderPrimePartitions.lean}.
 
+\clearpage
+\section{Sparse irreducibles in two cubic compositions}
+\label{sec:sparse-cubic-components}
+\begin{theorem}
+For \(h=X^3+X\) or \(h=X^3+X^2\), the table lists every binary
+irreducible \(f=G(h)\) with at most five terms. All four are primitive.
+The support column omits the constant term.
+\[
+\begin{array}{c|l|l|r}
+h&G&\text{positive exponents of }f&\text{root order}\\\hline
+X^3+X&Y+1&1,3&7\\
+     &Y^3+Y+1&1,5,7,9&511\\
+X^3+X^2&Y+1&2,3&7\\
+       &Y^4+Y^3+1&6,7,9,12&4095
+\end{array}
+\]
+\end{theorem}
+
+Let \(m=\deg G\), \(n=3m\), and let \(z\) be a root of \(f\).
+Then \(y=h(z)\) has degree \(m\). A smaller degree would give
+\([\F(z):\F]<3m\), since \(z\) satisfies a cubic over \(\F(y)\).
+Write \(q=2^m\). The cubic \(T^3+T+y\) is the minimal polynomial of \(z\) or
+\(z+1\) over \(\mathbb F_q\) according to the choice of \(h\). Let \(a+a^{-1}=y\). If \(T^2+yT+1\) splits over \(\mathbb F_q\),
+then \(a\) belongs to the group of order \(q-1\). Otherwise it belongs
+to the norm-one group of order \(q+1\). If cubing were bijective on
+that group, a cube root \(b\) of \(a\) there would give a cubic root
+\(b+b^{-1}\in\mathbb F_q\), since
+\((b+b^{-1})^3+(b+b^{-1})=a+a^{-1}\).
+Thus splitting is necessary for even \(m\) and nonsplitting for odd \(m\).
+The quadratic splits exactly when \(\operatorname{Tr}(1/y)=0\), by the
+Artin--Schreier equation with right side \(1/y^2\). Since \(G(0)=1\),
+the coefficient of \(Y\) in \(G\) equals the trace of \(1/y\).
+Writing \(h=X^3+X^l\), the coefficient of \(X^l\) in \(f\) must
+therefore be \(n\bmod2\), and all smaller positive coefficients vanish.
+
+\paragraph{A finite calculation for arbitrary exponents.}
+Put \(D=t^2+t+1\) and \((U,V)=(1/D,(1+t^2)/D)\).
+The identity \(U^2+UV+V^2=1\) implies \(U^3+U=V^3+V\).
+For \(l=1\) take \((u,v)=(U,V)\), and for \(l=2\) take
+\((u,v)=(1+U,1+V)\). In either case \(h(u)=h(v)\). Thus the
+distinct positive exponents \(e_1<\cdots<e_s=n\) of any candidate satisfy
+\[
+             \sum_{i=1}^s(u^{e_i}+v^{e_i})=0
+             \quad\text{in }\F(t),\qquad s=2\text{ or }4.
+\]
+At least one exponent is odd, since \(f\) is irreducible of degree at
+least three. The trace condition gives \(e_1=l\) for odd \(n\) and
+\(e_1>l\) for even \(n\).
+
+\clearpage
+Read the binary digits of the \(e_i\) in parallel, starting at the units
+place. A row is a linear equation in the \(2s\) remaining powers,
+with coefficients of degree at most one in \(t\). The initial row consists
+of ones. Given a column with base \(w\), write its exponent as
+\(2b+\delta\) and multiply the equation by \(D\). Its coefficient is now
+multiplied by \(D\) if \(\delta=0\) and by the numerator of \(w\) if
+\(\delta=1\), leaving the square \((w^b)^2\).
+Each new coefficient has degree at most three and decomposes uniquely as
+\(A(t)^2+tB(t)^2\) with \(A,B\) of degree at most one. The equation
+is equivalent to the two rows formed by \(A\) and \(B\), since
+\(1,t\) are independent over \(\F(t^2)\).
+Binary row reduction preserves their common solutions. A row with only
+one nonzero coefficient has none, as the powers are nonzero. When all
+remaining exponents vanish, each row must have coefficient sum zero.
+
+The state records the reduced row basis and the comparisons of adjacent
+exponents in the processed bits. The most recent differing bit decides
+each comparison. It also records the degree parity, the first exponent
+capped at \(l+1\), and the current binary place capped at four.
+These data suffice to apply the trace condition. The final digit has
+the leading bit of \(e_s\) set, giving each tuple a unique encoding.
+The verifier constructs all reachable states and follows edges backward
+from valid terminations. The part that can terminate has no cycles.
+Enumerating its paths gives the following complete list before factoring.
+\[
+\begin{array}{r|r|r|r|l}
+l&s&\text{reachable}&\text{can finish}&(e_1,\ldots,e_s)\\\hline
+1&2&18&2&(1,3)\\
+1&4&7188&6&(1,5,7,9),\ (1,9,13,15)\\
+2&2&22&2&(2,3)\\
+2&4&6477&6&(4,7,9,12),\ (6,7,9,12)
+\end{array}
+\]
+The two extra supports have outer polynomials
+\(Y^5+Y^3+Y+1\) for \(l=1\) and \(Y^4+Y^3+Y^2+1\) for \(l=2\).
+Both have the factor \(Y+1\). Direct composition and field powers
+give the four entries of the theorem. The graph construction and field
+checks are in \nolinkurl{scripts/check_cubic_components.py}.
+For a general primitive composition with zero inner constant term, the
+relative norm of its root generates the outer multiplicative group.
+Lean proves this implication in \nolinkurl{GF2Sparse/CubicComponents.lean}.
+
+\clearpage
+\section{The exponent gcd of a translated primitive polynomial}
+\label{sec:translated-dilation-classification}
+\begin{theorem}
+Let \(f\) be binary primitive of degree \(n>1\) and weight at most five.
+The gcd \(d\) of the positive exponents of \(f(X+1)\) belongs to
+\(\{1,3,5\}\). If \(d>1\), then
+\[
+ P_{j,k}=1+(X+X^{2^k})(1+X^{2^j}),\qquad f=P_{j,k}.
+\]
+All possible parameters are listed below, with \(s\ge1\).
+\[
+\begin{array}{r|r|r|l|l}
+j&k&d&n&f(X+1)\\\hline
+1&2s&3&2^{2s}+2&1+X^3+X^n\\
+2&4s&5&2^{4s}+4&1+X^5+X^n\\
+2s+1&2&3&2^{2s+1}+4&1+X^{n-3}+X^n
+\end{array}
+\]
+In each row primitivity requires the trinomial \(1+Y+Y^{n/d}\)
+to be primitive. Furthermore \(n/d\) in the first two rows,
+and \(n/d-1\) in the third, must be coprime to \(2^{n/d}-1\).
+\end{theorem}
+
+The translated polynomial is irreducible, so \(d\) is odd. Suppose
+\(d>1\). Represent an exponent by the set of its binary places.
+For each nonempty set \(I\), its coefficient after translation is the
+parity of the number of original terms whose sets contain \(I\).
+Take an inclusion-maximal nonconstant term \(E\) of \(f\). From each
+other nonconstant term choose one bit of \(E\) missing there. Only
+\(E\) contains the chosen set, and the same holds for every intermediate
+set up to \(E\). All their exponents must be divisible by \(d\).
+Two differing by a single bit cannot both be divisible by \(d\).
+Thus \(E\) has at most three bits. If it has three, each of its three
+two-bit subsets has exponent nonzero modulo \(d\). Each needs another
+containing term, and one term cannot cover two of the pairs. For any
+singleton in \(E\), the containing terms are precisely \(E\) and the two
+companions for the pairs through that singleton. Its translated coefficient is one,
+a contradiction. Every term therefore has at most two bits.
+
+Use the active powers of two as graph vertices. A two-bit term is an
+edge. Its endpoints have residues \(r,-r\pmod d\), so the graph is
+bipartite. A vertex occurs as a singleton term of \(f\) exactly when
+its degree is odd. There are two or four nonconstant terms, counted
+as edges plus odd vertices. Two edges must form a path of length two.
+Four edges must form a four-cycle with no singletons. In the cycle case
+every positive exponent of \(f\) itself is divisible by \(d\), which
+excludes primitivity by the dilation bound
+\(\ord(z)\le d(2^{n/d}-1)<2^n-1\).
+
+\clearpage
+For the path let \(a,c\) be its ends and \(b\) its middle, so that
+\[
+ f=1+(X^a+X^c)(1+X^b),\qquad f(X+1)=1+X^{a+b}+X^{b+c}.
+\]
+One vertex equals one, since otherwise \(f\) is a square.
+If \(b=1\) then \(n\) is odd and any prime \(p\mid d\) divides
+\(1+a\), so \(\ord_p(2)\) is even. But irreducibility of a
+degree-\(d\) dilation requires \(p\mid2^{n/d}-1\). Otherwise every
+element of the outer field has a \(p\)-th root and the binomial over
+that field factors. This contradicts odd \(n\). Hence we can take
+\(a=1,\ b=2^j,\ c=2^k\) with \(j,k>0\) distinct. Now
+\[
+ d=\gcd(2^j+1,2^k-1)=
+ \begin{cases}2^g+1&k/g\text{ even},\\1&k/g\text{ odd},\end{cases}
+ \qquad g=\gcd(j,k).
+\]
+Indeed, \(d\mid2^{\gcd(2j,k)}-1\) and \(\gcd(d,2^g-1)=1\).
+For even \(k/g\), \(j/g\) is odd and \(2^g+1\) divides both inputs.
+Swan's theorem excludes an irreducible binary trinomial of degree
+divisible by eight, so \(\min(j,k)\le2\). The parameter table follows.
+
+For the norm condition put \(m=n/d\) and let \(w=1+z\) for a root
+\(z\) of \(f\). Over the degree-\(m\) field, the minimal polynomial
+of \(w\) is \(T^d+w^d\), so \(\operatorname{Norm}(z)=1+w^d\).
+Take \(y=w^d\) in the first two rows and \(y=w^{-d}\) in the last.
+In all cases \(y^m=y+1\). The norm is \(y^m\) in the first two rows
+and \(y^{m-1}\) in the last. A power of \(y\) generates the base group
+exactly when \(y\) generates it and the exponent is coprime to its size.
+
+\paragraph{Consequences for cubic substitutions.}
+Every monic binary cubic, after absorbing its constant into the outer
+polynomial, is one of \(X^3,\ X^3+X,\ X^3+X^2,\ (X+1)^3\).
+The first is excluded by the dilation bound. Section~\ref{sec:sparse-cubic-components}
+settles the middle two. Only the two \(d=3\) rows above can supply
+primitive examples for the last. Through degree 4097 the complete list
+of primitive sparse polynomials with a cubic right component consists of
+the four in Section~\ref{sec:sparse-cubic-components} and \(P_{1,2},P_{1,6}\)
+of degrees 6 and 66. In degree 4098 the only possible cubic-component
+witness is the one in Section~\ref{sec:elliptic-cubic-norm}.
+
+Among the three dyadic path families, the following candidates through
+degree 4097 are irreducible. Their root orders settle primitivity.
+\[
+\begin{array}{r|r|r|r|r}
+ n&d&\ord(z)&[\mathbb F_{2^n}^\times:\langle z\rangle]&\ord(1+z)\\\hline
+ 6&3&63&1&9\\
+ 12&3&455&9&45\\
+ 18&3&87381&3&189\\
+ 20&5&1048575&1&75\\
+ 66&3&2^{66}-1&1&12582909
+\end{array}
+\]
+The same verifier tests each candidate for irreducibility and checks
+both orders. Up to degree \(2^{18}+1=262145\), the sole additional
+candidate is the irreducible \(P_{1,12}\) of degree 4098. In degrees
+4100, 32772 and 65538 the norm exponent has a common factor with the
+base group order. In degrees 8196, 16386, 65540 and 131076 the required
+base trinomial has a proper factor with binary mask \(\mathtt{7},\mathtt{7},
+\mathtt{1162300f},\mathtt{d}\) in hexadecimal, respectively.
+Lean verifies the translation identities and the seven full-order examples.
+
 \end{document}
