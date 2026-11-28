@@ -10,6 +10,12 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **For a density-one set of semiprime degrees $n$, every sparse irreducible root has a prime divisor $\ell$ of its order with $\operatorname{ord}_{\ell}(2)=n$.** Among the 14,424,896 degrees $pq\le10^8$ with distinct odd primes $p<q$, precisely 221 allow an exception. They are exactly the pairs with $q\mid2^p-1$, and each has an explicit irreducible trinomial or pentanomial demonstrating the exception. [Density proof and exact count](results.pdf#page=333) · [221 witnesses](data/semiprime-full-degree-prime-exceptions.csv) · [Verifier](scripts/check_semiprime_order_primes.py)
+
+- **No sparse irreducible of odd degree can have a root from two proper subfields of coprime degrees if the smaller degree is at most 1,000.** This covers every odd degree through one million. For distinct odd primes $p<q$, the root order in degree $pq$ contains a prime power of binary multiplicative degree $pq$ whenever $p\le10{,}000$ or $pq>(p+1)^3$. The second condition has no upper bound on $p$. One example has degree 1,002,402,160,679, where a prime divisor of full binary degree is forced. [Degree bound](results.pdf#page=329) · [Finite cases and example](results.pdf#page=331) · [Lean square identity](GF2Sparse/SubfieldSquare.lean)
+
+- **The 31st power of a sparse irreducible root has degree $n/\gcd(31,g)$ outside two explicit families.** The exceptions are the degree-five irreducibles and four degree-ten pentanomials with $X$ replaced by $X^{3^i}$. In each exception the degree falls to $n/5$. [Proof and polynomials](results.pdf#page=332) · [Verifier](scripts/check_subfield_square.py)
+
 - **The seventh power of a sparse irreducible root has degree $n/\gcd(7,g)$, with two exceptions up to reciprocation.** Here $g$ is the gcd of the polynomial's exponents. The exceptions have degrees 3 and 6 and root orders 7 and 21. As a consequence, for every prime $q>3$ and every sparse irreducible of degree $3q$, its root order contains a prime that first divides $2^d-1$ at $d=3q$. The two exceptions to this prime-divisor conclusion are $X^{21}+X^7+1$ and its reciprocal, both of root order 49. [Proof and trace calculation](results.pdf#page=327) · [Verifier](scripts/check_seventh_power_degree.py) · [Lean trace identities](GF2Sparse/SeventhPowerDegree.lean)
 
 - **In degree 7 and every prime degree $n\ge13$, the eight powers $z^{\pm1},z^{\pm3},z^{\pm5},z^{\pm7}$ of any sparse irreducible root have distinct degree-$n$ minimal polynomials.** In all odd degrees greater than one, only four families have any collision. Their normalized degrees are 3, 5, 9 and 11. Among the first six powers the only exceptions are the two irreducible cubics with $X$ replaced by $X^{7^i}$. For example, $3\equiv5\cdot2^{5309}$ modulo 3,118,439 rules out that root order in degree 6,067. [Odd-degree theorem and exhaustive calculation](results.pdf#page=324) · [Signed exceptions](data/sparse-power-orbit-exceptions.csv) · [Independent prime-degree argument](results.pdf#page=323)
@@ -988,6 +994,16 @@ The same executable checks the seventh-power degree theorem. The Python verifier
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_seventh_power_degree.py --solver /tmp/gf2-power-orbit-collisions
+~~~
+
+To reproduce the subfield bound's finite cases, compile the NTL product test. The verifier checks all 88 partner cases in both parities, the square identities, and the exceptions to the 31st-power theorem. The first two commands below independently reconstruct the scalar orders used in the proof.
+
+~~~sh
+python3 scripts/check_coprime_scalar_orders.py --limit 1000
+python3 scripts/check_scalar_order_bound.py --limit 10000
+c++ -std=c++17 -O3 -fopenmp scripts/check_scalar_pair_products.cpp -lntl -lgmp -o /tmp/gf2-scalar-products
+uv run --no-project --with python-flint==0.9.0 python scripts/check_subfield_square.py --products /tmp/gf2-scalar-products --through 64
+uv run --no-project --with python-flint==0.9.0 python scripts/check_semiprime_order_primes.py
 ~~~
 
 To reproduce the order projections and subfield certificates, run

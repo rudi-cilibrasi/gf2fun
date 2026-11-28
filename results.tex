@@ -23399,4 +23399,272 @@ See \nolinkurl{scripts/check_seventh_power_degree.py}. The Lean
 module \nolinkurl{GF2Sparse/SeventhPowerDegree.lean} proves the
 full-drop substitution criterion and the two cubic trace identities.
 
+\clearpage
+\section{An upper bound on both degrees in a product of two subfields}
+\label{sec:subfield-square}
+\begin{theorem}\label{thm:subfield-square}
+Let \(s,t>1\) be coprime. Let \(\alpha,\beta\) have binary degrees
+\(s,t\) respectively, put \(A=\ord(\alpha)\), and assume
+\(\gcd(s,2A)=1\). If the minimal polynomial \(f\) of \(\alpha\beta\)
+has exponent gcd one and weight \(w\le5\), then
+\[
+                             st\le(s+1)^{w-2}.
+\]
+In particular, if \(p<q\) are odd primes and \(pq>(p+1)^3\), no
+irreducible binary trinomial or pentanomial of degree \(pq\) has a
+root in the product of its two proper subfields, for any exponent gcd.
+\end{theorem}
+
+\begin{proof}
+Work over \(k=\overline{\F}\). The multiplicative groups in the two
+subfields have coprime orders, so the conjugates of \(\alpha\beta\)
+are all \(st\) products of one conjugate of each component. Put
+\(U=\{\alpha^{-2^j}:0\le j<s\}\), and let \(B\) be the minimal
+polynomial of \(\beta\). Comparing roots and constant terms gives
+\(f(T)=\prod_{u\in U} B(uT)\). The following polynomial is a square:
+\[
+                     H(T)=f(T)\prod_{u\in U} f(uT).
+\]
+Indeed the double product of \(B(uvT)\) has two equal factors for
+each unordered pair \(u\ne v\). Its diagonal product equals \(f(T)\)
+because squaring permutes \(U\). The additional \(f(T)\) completes the
+square. The argument uses \(s+1\) translates regardless of \(A\).
+
+\paragraph{Lifting the square.}
+Write \(0=e_0<\cdots<e_{w-1}=st\) for the exponents. Send the standard
+vectors of \(\mathbb Z^{w-1}\) to the positive \(e_i\) under a map
+\(E\), and label the constant term by zero. In the formal product
+for \(H\), quotient the label lattice by the saturation of the
+differences of labels with equal \(E\)-value. Denote this quotient
+by \(\Gamma\). The map \(E\) descends to it and distinguishes the
+remaining distinct product labels. Write \(F\in k[\Gamma]\) for the
+lift of \(f\). For \(u\in\mu_A\), let \(\tau_u X^v=u^{E(v)}X^v\).
+The lift \(\widehat H=F\prod_{u\in U}\tau_u F\) has no surviving
+monomial of odd \(E\)-value, since its specialization \(H\) is a
+square. The derivation \(D X^v=E(v)X^v\) thus kills \(\widehat H\).
+
+The least and greatest \(E\)-faces of \(F\) each consist of one term,
+since its support specializes to distinct exponents. The face of a
+product is the product of the faces, so the same property holds for
+each Laurent factor. Every nonunit factor has positive \(E\)-width:
+a factor of width zero would be its own monomial least face.
+Normalize each factor by shifting its unique least term to \(1\).
+Every absolute factor \(P\) of \(F\) specializes to a nonconstant
+polynomial \(P(T)\) of constant term one dividing the squarefree
+\(f(T)\). The factors therefore occur simply, and coefficient
+Frobenius acts transitively on them. Indeed, products over separate
+orbits would specialize to a factorization over \(\F\).
+Also \(P\nmid DP\), since specialization would imply
+\(P(T)\mid T P'(T)\). The same applies to every translate.
+As \(D\widehat H=0\), every absolute factor of \(\widehat H\) has
+even multiplicity, by differentiating its factorization in the
+Laurent polynomial ring.
+
+\clearpage
+\paragraph{An interior term on every edge.}
+The stabilizer of a normalized absolute factor under \(\mu_A\) is
+trivial. Frobenius permutes the factors transitively and preserves
+each subgroup of the cyclic group \(\mu_A\). A common nontrivial
+stabilizer would fix their product \(F\), forcing its order to
+divide every \(e_i\). The \(\mu_A\)-orbits meeting the factors of
+\(F\) each contain the same number \(b\) of its factors, again by
+Frobenius transitivity. If \(b=1\), the \(s+1\) distinct translations
+in \(\widehat H\) give multiplicity one on each of their factors
+in that orbit. This contradicts even multiplicity. Hence \(b>1\).
+
+Within one such orbit the \(b\) factors specialize to scalar
+translates of a single polynomial. They contribute multiples of
+\(b\) to the root count in each coset of \(\mu_A\), with multiplicity.
+In the specialization \(f\), every occupied coset contains exactly
+\(s\) roots: the conjugates of \(\beta\) have distinct \(A\)-th
+powers since their order is coprime to \(A\). Thus \(b\mid s\) and
+\(\gcd(b,2A)=1\).
+
+Suppose the Newton polytope of \(F\) has dimension at least two.
+Expose any edge by a linear functional. Each factor face is a point
+or a segment parallel to that edge, by addition of Newton polytopes.
+After removing monomial factors, use one Laurent variable \(Y\) in
+its primitive lattice direction. The \(b\) factor faces arising from
+an orbit are translates \(Y\mapsto uY\) with \(u\in\mu_A\), up to
+nonzero constants. The root count of the entire edge polynomial
+in each \(\mu_A\)-coset is again divisible by \(b\). But a binomial
+\(Y^{2^v d}-c\), with \(d\) odd and \(c\ne0\), has exactly
+\(2^v\gcd(A,d)\) roots with multiplicity in any occupied coset.
+This is coprime to \(b\). Hence every edge has a supported exponent
+in its relative interior. At least three vertices and three edges
+would require at least six terms. The polytope spans \(\Gamma\)
+because its support differences generate \(\Gamma\), so
+\(\operatorname{rank}\Gamma=1\).
+
+Choose \(w-2\) independent differences of equal-value product labels.
+The vector of their maximal minors is a nonzero integer multiple of
+the primitive exponent vector. Every label lies in
+\((s+1)\operatorname{conv}(0,u_1,\ldots,u_{w-1})\) for the standard
+basis \(u_i\). As in Theorem~\ref{thm:sparse-power-conjugacy},
+multilinearity and the unit minors of the rows \(u_i-u_j\)
+bound each maximal minor by \((s+1)^{w-2}\). The last coordinate of
+the exponent vector is \(st\), proving the inequality.
+
+For the prime pair, write the sparse polynomial as \(F_0(X^g)\).
+Both components of its root raised to \(g\) are nonidentity. If
+\(\alpha^g=1\), for example, the original polynomial would vanish
+at \(\beta\) in a proper subfield. The two component degrees after
+powering are therefore still \(p,q\), and their product has degree
+\(pq\). It is a root of \(F_0\) of degree \(pq/g\), forcing \(g=1\).
+Finally \(A\mid2^p-1\) is coprime to \(p\), since
+\(2^p-1\equiv1\bmod p\). Apply the theorem with \(s=p\).
+\end{proof}
+
+\clearpage
+\section{Subfield exclusions in every odd degree up to one million}
+\label{sec:subfield-square-census}
+No sparse irreducible root of odd degree splits across two proper
+subfields of coprime degrees if the smaller degree is at most 1000.
+The larger degree is unrestricted. This includes every coprime
+partition of every odd degree through \(10^6\).
+
+For the proof, removing the exponent gcd as in
+Section~\ref{sec:odd-scalar-descent} gives a normalized split with
+both components of degree greater than one. Their degrees divide
+those of the original components. Section~\ref{sec:scalar-all-parities}
+places the rank-two side on the smaller degree \(s\).
+The exact order census of Section~\ref{sec:scalar-composite-census}
+leaves only \((s,A)=(3,7),(5,31),(9,73)\) in odd degree.
+In all three cases \(\gcd(s,2A)=1\). Theorem~\ref{thm:subfield-square}
+bounds the normalized degree by \(64,216,1000\), respectively.
+Impose \(3A\le st\), \(9s\le4t\), \(\gcd(s,t)=1\) and \(t>s\).
+For each remaining case the scalar-pair product test of
+Section~\ref{sec:scalar-product-test} gives zero split supports.
+The table includes even partners as well, for later use.
+\[
+\begin{array}{r|r|r|rr|rr}
+s&A&\max st&\text{odd }t&\text{supports}&
+                  \text{even }t&\text{supports}\\\hline
+3&7&64&5&4072&5&4376\\
+5&31&216&11&23328&9&12276\\
+9&73&1000&29&128232&29&85426
+\end{array}
+\]
+Only 155632 supports across 45 odd partner cases are needed for the
+unrestricted odd-degree conclusion. The verifier recomputes the
+products, independently counts their possible supports, and compares
+each odd-partner row to the earlier archive.
+
+For distinct odd primes \(p<q\), every degree-\(pq\) irreducible
+trinomial or pentanomial has a root-order prime power of binary
+multiplicative degree \(pq\) whenever
+\[
+                     p\le10000\qquad\text{or}\qquad pq>(p+1)^3 .
+\]
+The first condition uses the preceding exclusions and the prime
+scalar census of Section~\ref{sec:scalar-independent-bound}, which
+leaves only \(p=3,5\) through 10000. The second condition has no
+upper limit on either prime. In both cases, if every prime power
+in the root order had smaller degree, the root would lie in the
+product of the two proper subfields. One can take the divisor prime
+whenever \(\ord_q(2)\ne p\), by the prime-power lifting argument of
+Corollary~\ref{cor:trinomial-full-order-component}. For example,
+\(p=10007\) and \(q=100170097\) give the degree \(1002402160679\).
+Here \(q\equiv27\bmod p\), so \(p\nmid q-1\).
+When \(\Phi_{pq}(2)\) is prime and has binary degree \(pq\), these
+exclusions force it into the root order. Primitivity then reduces to
+carrying the full prime powers of the two subfield orders.
+
+\clearpage
+\section{The exact field degree after raising a sparse root to the thirty-first power}
+\label{sec:thirty-first-power-degree}
+Let \(z\) be a root of an irreducible binary trinomial or pentanomial
+of degree \(n>1\) and exponent gcd \(g\). Then \(\deg_{\F}(z^{31})\)
+is \(n/\gcd(31,g)\), except in the following cases up to reciprocation.
+In the table the degree of the 31st power is \(n/5\).
+\[
+\begin{array}{r|l|l|l}
+\text{base degree}&\text{base interior exponents}&
+      \text{substitution}&\ord(z)\\\hline
+5 &(2),\ (1,2,3),\ (1,2,4)& X&31\\
+10&(1,3,8),\ (2,4,5)& X^{3^i},\quad i\ge0&93\cdot3^i
+\end{array}
+\]
+Indeed, the degree-drop argument of Section~\ref{sec:seventh-power-degree}
+applies with 31 in place of seven. If \(31\mid g\), the degree is
+\(n/31\). For \(31\nmid g\) a drop requires \(z=\alpha\beta\) with
+\(\alpha\) of order 31, \(\beta\) in a field of degree coprime to five,
+and \(\F(\beta)=\F(z^{31})\). After taking \(g\)-th powers the scalar
+still has degree five. If the degree \(t\) of \(\beta^g\) exceeds
+five, the normalized polynomial now has its smaller component in
+degree five. The 20 partner cases in the middle row of the previous
+table exclude this split in both parities. Thus \(t=1,2,3,4\).
+Check all normalized trinomials and pentanomials of degrees
+\(5,10,15,20\) by the power \(31(2^t-1)\). The only survivors are
+the displayed base polynomials and their reciprocals.
+
+Every prime dividing \(g\) divides the base root order, giving \(g=1\)
+in the first row and \(g=3^i\) in the second under \(31\nmid g\).
+Conversely, every root of a displayed dilation in the second row has
+order \(31\cdot3^{i+1}\). Since \(\ord_{31}(2)=5\) and
+\(\ord_{3^{i+1}}(2)=2\cdot3^i\), its degree is \(10\cdot3^i\),
+proving irreducibility. Raising to the 31st power leaves exactly
+the factor \(3^{i+1}\) in its order.
+
+\nolinkurl{scripts/check_subfield_square.py} reproduces the two
+partner censuses, the small 31st-power exceptions and orders,
+and the finite-field square identities at scalar orders 7, 31
+and 73. The Lean module \nolinkurl{GF2Sparse/SubfieldSquare.lean}
+proves the pairing of diagonal and off-diagonal factors and the
+resulting square identity in any commutative monoid.
+
+\clearpage
+\section{A prime of full binary degree for almost every semiprime degree}
+\label{sec:semiprime-full-degree-density}
+For a set of relative density one among semiprime degrees \(n\), the
+root order of every irreducible binary trinomial or pentanomial of
+degree \(n\) contains a prime \(\ell\) with \(\ord_\ell(2)=n\).
+The number of semiprime degrees up to \(x\) outside the guarantee
+is \(O(x/\log x)\).
+
+Indeed take \(Y=x^{1/4}\) and write \(n=pq\) with odd primes \(p<q\).
+For \(p\le Y\), Theorem~\ref{thm:subfield-square} forces a prime
+except possibly if \(q\le(p+1)^3/p\) or \(q\mid2^p-1\).
+The first condition allows \(O(Y^3)\) pairs, by summing \(8p^2\)
+over the integers through \(Y\). The second allows \(O(Y^2)\),
+since \(2^p-1\) has fewer than \(p\) distinct prime divisors.
+For \(Y<p\le\sqrt x\), the number of all pairs is at most
+\[
+       \sum_{Y<p\le\sqrt x}\pi(x/p)
+       \ll\frac{x}{\log x}\sum_{Y<p\le\sqrt x}\frac1p
+       \ll\frac{x}{\log x}.
+\]
+Partial summation gives the last bound from \(\pi(u)\ll u/\log u\).
+Even semiprimes and prime squares contribute \(O(x/\log x)\) in
+total. On the other hand, summing \(\pi(x/p)-\pi(p)\) over odd
+primes \(p\le Y\) gives \(\gg (x/\log x)\log\log x\) semiprimes.
+Here \(\sum_{p\le Y}1/p\gg\log\log Y\) follows by partial summation
+from the lower prime-counting bound. These estimates use only the
+upper and lower constant bounds in the
+\href{https://dlmf.nist.gov/27.2.E3}{prime number theorem}.
+
+\paragraph{The exact exceptions through one hundred million.}
+Among the 14424896 degrees \(pq\le10^8\) with distinct odd primes
+\(p<q\), precisely 14424675 force a prime of full binary degree in
+every sparse irreducible root order. The other 221 all have explicit
+sparse irreducibles whose root-order primes divide \(2^p-1\).
+Thus in this range the exact criterion is \(q\nmid2^p-1\).
+
+For the count, \(p\le10000\), so Section~\ref{sec:subfield-square-census}
+always supplies a full-degree prime power. List the possible exceptions
+by \(q\equiv1\bmod 2p\) and \(2^p\equiv1\bmod q\).
+For every listed pair, take an irreducible sparse degree-\(p\) base
+\(G\) from \href{https://shiftleft.com/mirrors/www.hpl.hp.com/techreports/98/HPL-98-135.pdf}
+{Seroussi's table}. Its root \(y\) passes the test
+\(y^{(2^p-1)/q}\ne1\). Theorem~\ref{thm:dilation} makes \(G(X^q)\)
+irreducible of degree \(pq\). Its root order is \(q\,\ord(y)\), so all
+of its order primes have binary degree \(p\).
+For example the same base \(X^{1229}+X^{15}+X^6+X^2+1\) proves the
+exceptions in degrees 45314459 and 57397987 using \(q=36871,46703\).
+The calculation tests just the indicated prime part of its root order.
+The table and verifier are
+\nolinkurl{data/semiprime-full-degree-prime-exceptions.csv} and
+\nolinkurl{scripts/check_semiprime_order_primes.py}. They verify all
+221 exceptional degrees with 187 distinct sparse base polynomials.
+
 \end{document}
