@@ -16,9 +16,9 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 - **A primitive pentanomial in degree 33,511 is $X^{33511}+X^{32291}+X^{2440}+X^{1220}+1$.** Its root has order $2^{33511}-1$. We verified all 27 prime-index powers and the primality of every factor, including a 9,124-digit prime. The two primitive trinomials up to reciprocity have taps 1,318 and 1,920. All integer certificates are stored in the repository. [Proof](results.pdf#page=310) · [Order factorization](data/mers-project-large-orders.json) · [Primality certificates](data/mers-project-primality)
 
-- **The census gives the minimum primitive weight in 69 degrees from 3,537 through 33,511.** Thirty-five admit primitive trinomials and the other 34 require pentanomials. In degree 17,683 a primitive pentanomial has interior exponents 2,170, 4,340 and 15,513. In degree 17,698 both $X^{17698}+X^{511}+1$ and the pentanomial with interior exponents 783, 1,566 and 16,915 are primitive. [First 63 witnesses](data/mers-project-sparse-orders.json) · [Larger witnesses and further candidates](data/mers-project-large-orders.json) · [Proof](results.pdf#page=307)
+- **The census gives the minimum primitive weight in 70 degrees from 3,537 through 33,511.** Thirty-six admit primitive trinomials and the other 34 require pentanomials. In degree 17,683 a primitive pentanomial has interior exponents 2,170, 4,340 and 15,513. In degree 17,698 both $X^{17698}+X^{511}+1$ and the pentanomial with interior exponents 783, 1,566 and 16,915 are primitive. [First 63 witnesses](data/mers-project-sparse-orders.json) · [Larger witnesses and further candidates](data/mers-project-large-orders.json) · [Proof](results.pdf#page=307)
 
-- **Of 318,659 trinomial reciprocal classes in these 69 degrees, 112 are irreducible and 104 are primitive.** In degree 4,809 the only irreducible taps are 91 and 931. Their roots have order $7(2^{687}-1)$. A primitive pentanomial has interior exponents 746, 1,119 and 3,690. [Complete tap lists](data/mers-project-trinomial-census.csv) · [Six smaller-degree exceptions](results.pdf#page=308) · [Two degree-33,511 exceptions](results.pdf#page=313)
+- **Of 329,102 trinomial reciprocal classes in these 70 degrees, 115 are irreducible and 107 are primitive.** In degree 4,809 the only irreducible taps are 91 and 931. Their roots have order $7(2^{687}-1)$. A primitive pentanomial has interior exponents 746, 1,119 and 3,690. [Complete tap lists](data/mers-project-trinomial-census.csv) · [Six smaller-degree exceptions](results.pdf#page=308) · [Two degree-33,511 exceptions](results.pdf#page=313)
 
 - **In degrees 1,331, 3,993 and 6,655, 21 pentanomial pairs have root index one or greater than 182,931,247,071,233.** Three examples have interior exponents $(1,2,289)$, $(1,2,83)$ and $(1,2,1719)$, respectively. The first two primitivity checks reduce to the same 250-digit composite order in degree 1,331. The third also has a 1,427-digit composite to resolve. All 665 trinomial pairs in degree 1,331 are reducible, so a witness there requires five terms. [Order bounds and remaining tests](results.pdf#page=306) · [Polynomials and factors](data/degree-1331-order-projections.json) · [Verifier](scripts/check_1331_order_projections.py)
 
@@ -230,13 +230,13 @@ The equivalent Ore target asks for a constant-one irreducible of degree $2^s-1$ 
 
 ## Contributing
 
-The large-degree table contains 20 pentanomials through degree 41,521. NTL and FLINT independently verified all 108 factor-index powers. The full proofs for degrees 17,683, 17,698, 19,121, 20,521, 22,327 and 33,511 can be replayed offline. The degree-22,327 row uses the 6,616-digit prime already verified in the subfield calculation. For each of the other 14 degrees, the primality of every smaller factor has been checked. One large integer primality certificate remains to be verified in each degree. The smallest is the 6,229-digit factor for degree 20,887. The largest is the 12,459-digit factor for degree 41,521. [Large-degree table](data/mers-project-large-orders.json) · [Verifier](scripts/check_mers_project_orders.py)
+The large-degree table contains 20 pentanomials through degree 41,521. NTL and FLINT independently verified all 108 factor-index powers. The full proofs for degrees 17,683, 17,698, 19,121, 20,521, 20,887, 22,327 and 33,511 can be replayed offline. The degree-22,327 row uses the 6,616-digit prime already verified in the subfield calculation. For each of the other 13 degrees, the primality of every smaller factor has been checked. One large integer primality certificate remains to be verified in each degree. The smallest is the 6,622-digit factor for degree 22,193. The largest is the 12,459-digit factor for degree 41,521. [Large-degree table](data/mers-project-large-orders.json) · [Verifier](scripts/check_mers_project_orders.py)
 
 Choose a degree and run the command below for the full check. It verifies the integer certificates with PARI/GP and the polynomial powers with FLINT, then reports the root order. The cache retains each downloaded chain after it passes verification. Add `--defer-largest` to reproduce the polynomial checks and all smaller prime proofs offline. Use `--powers-only` for just the factor product and polynomial powers.
 
 ```bash
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py \
-  --table data/mers-project-large-orders.json --degree 20887 --fetch-to /tmp/gf2fun-prime-proofs
+  --table data/mers-project-large-orders.json --degree 22193 --fetch-to /tmp/gf2fun-prime-proofs
 ```
 
 In degrees 25,243, 25,933, 28,381, 28,771, 32,531 and 35,339, every trinomial is reducible. A primitive witness of weight at most five in any of these degrees must therefore have five terms. The proof uses Swan's theorem and explicit divisors of degree at most eight before substitution. [Proof](results.pdf#page=310)
@@ -725,7 +725,7 @@ To replay the Mers Project witnesses, install PARI/GP and run the command below.
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py
 ```
 
-To repeat the trinomial enumeration and verify the exact orders of the eight exceptions, compile the NTL backend and pass its path to the verifier. Add `--degree 3537` to select the degree with four primitive pairs and one pair of index seven. For the six larger census rows, use `--table data/mers-project-large-orders.json` and select one or more of `17683`, `17698`, `19121`, `20521`, `22327` and `33511` with `--degree`. [Trinomial census](data/mers-project-trinomial-census.csv)
+To repeat the trinomial enumeration and verify the exact orders of the eight exceptions, compile the NTL backend and pass its path to the verifier. Add `--degree 3537` to select the degree with four primitive pairs and one pair of index seven. For the seven larger census rows, use `--table data/mers-project-large-orders.json` and select one or more of `17683`, `17698`, `19121`, `20521`, `20887`, `22327` and `33511` with `--degree`. [Trinomial census](data/mers-project-trinomial-census.csv)
 
 ```bash
 c++ -std=c++17 -O3 scripts/prime_degree_trinomials.cpp -lntl -lgmp -o /tmp/gf2fun-trinomials
