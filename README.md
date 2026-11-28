@@ -324,7 +324,7 @@ uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project
   --table data/mers-project-extension-orders.json --degree 41681 --degree 53381
 ~~~
 
-Degree 42,991 has minimum primitive weight three. The trinomials with taps 5,856, 7,942 and 18,886 and the pentanomial with interior taps $(7480,14960,35511)$ all have order $2^{42991}-1$. PARI verified the archived chain for the 11,943-digit prime. In degree 44,431 the pentanomial with taps $(6565,13130,37866)$ passes all nine prime-index powers in both libraries. Its eight smaller factors are proved prime and the 13,231-digit certificate replay is in progress. [Proof](results.pdf#page=413) · [Witnesses and factors](data/complementary-order-witnesses.json) · [Degree-42,991 certificate](https://factordb.com/cert/1100000000028276765) · [Degree-44,431 certificate](https://factordb.com/cert/1100000000848838566)
+Degrees 42,991 and 44,431 both have minimum primitive weight three. Up to reciprocation, every irreducible trinomial in these degrees is primitive. The taps are 5,856, 7,942 and 18,886 in degree 42,991, and 8,848 and 14,400 in degree 44,431. The pentanomials with taps $(7480,14960,35511)$ and $(6565,13130,37866)$ are primitive as well. NTL and FLINT agree on all seven witnesses. PARI checked the archived chains for the 11,943-digit and 13,231-digit order primes. [Degree-42,991 proof](results.pdf#page=413) · [Degree-44,431 proof](results.pdf#page=416) · [Witnesses and factors](data/complementary-order-witnesses.json) · [Complete trinomial census](data/mers-project-trinomial-census.csv)
 
 ~~~bash
 uv run --no-project --with python-flint==0.9.0 python scripts/check_mers_project_orders.py \

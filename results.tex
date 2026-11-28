@@ -27728,7 +27728,7 @@ The remaining primalities were checked with FLINT.
 
 NTL checked irreducibility of all four polynomials and verified
 $X^{(2^{42991}-1)/p}\ne1$ in each quotient for each of the six
-primes $p$. FLINT independently checked the pentanomial powers. Thus every prime occurs in the root order with its
+primes $p$. FLINT independently checked all four sets of powers. Thus every prime occurs in the root order with its
 full multiplicity. The factorization and field powers replay with
 \nolinkurl{scripts/check_mers_project_orders.py}, using the table above
 and \texttt{--degree 42991}.
@@ -27852,5 +27852,40 @@ The rank and twelve-order checks are in
 \nolinkurl{scripts/cyclotomic_weight_census.cpp} for the full factor census.
 Lean checks the degree-bound arithmetic and the orders of the dilations
 in \nolinkurl{GF2Sparse/CircuitOrderBounds.lean}.
+
+
+\clearpage
+\section{Every irreducible trinomial in degree 44431 is primitive}
+\label{sec:complementary-44431}
+The irreducible trinomials of degree $44431=157\cdot283$ are exactly
+$X^{44431}+X^{8848}+1$, $X^{44431}+X^{14400}+1$ and their reciprocals.
+They all have order $2^{44431}-1$, as does
+$X^{44431}+X^{37866}+X^{13130}+X^{6565}+1$.
+The latter provides a five-term witness, while either trinomial attains
+the minimum primitive weight three.
+
+The nine distinct prime factors of $2^{44431}-1$ have
+$4,9,11,11,12,13,16,71,13231$ decimal digits. Their product is exact.
+The 744-record PRIMO certificate with identifier 1100000000848838566
+was verified for the largest factor, and FLINT proved the other eight.
+NTL checked irreducibility, and both NTL and FLINT checked all nine
+prime-index powers in each of the three quotients. All data for the
+two degrees are in \nolinkurl{data/complementary-order-witnesses.json}.
+
+\paragraph{Sieve for the complete trinomial census.}
+For each degree $2\le d\le21$ work in $\mathbb F_{2^d}$ with a generator
+$a$ and tables for powers and logarithms. Put $Q=2^d-1$.
+For each nonzero exponent $h\bmod Q$ up to doubling, a tap $k$ gives a
+proper factor of $X^n+X^k+1$ if its evaluation at $a^h$ vanishes.
+If $1+a^{hn}$ is nonzero with logarithm $v$, the excluded taps satisfy
+$hk\equiv v\pmod Q$. The linear congruence has solutions precisely when
+$\gcd(h,Q)\mid v$. A root at $a^h$ certifies reducibility since $d<n$.
+The element $1$ never gives zero. For $n=42991,44431$ the sieve leaves
+respectively 1854 of 21495 and 1806 of 22215 reciprocal representatives.
+NTL tests on the survivors give exactly the three and two taps stated.
+The \texttt{--sieve} option in
+\nolinkurl{scripts/prime_degree_trinomials.cpp} reproduces the full
+census. Its output is also checked against the unsieved search on small
+degrees.
 
 \end{document}
