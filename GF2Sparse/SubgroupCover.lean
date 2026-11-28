@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Prod
@@ -59,5 +60,35 @@ theorem degree1229_common_failure (hit : Fin 319572 → Fin 15) :
     (s := Finset.univ) (t := Finset.univ) (f := hit) (n := 21304)
     (fun _ _ => Finset.mem_univ _) (by simp)
   exact ⟨p, hp⟩
+
+/-- A failed parameter can be encoded by a test and a root of its polynomial.
+The test fields may differ. Each parameter map must be injective on the given set. -/
+theorem card_polynomial_failures {I P : Type*} [Fintype P] {d : ℕ}
+    (s : Finset I) (F : P → Type*) [∀ p, Field (F p)]
+    (param : ∀ p, I → F p) (poly : ∀ p, Polynomial (F p))
+    (inj : ∀ p, Set.InjOn (param p) (s : Set I))
+    (nonzero : ∀ p, poly p ≠ 0) (deg : ∀ p, (poly p).natDegree ≤ d)
+    (fails : ∀ i ∈ s, ∃ p, (poly p).eval (param p i) = 0) :
+    s.card ≤ Fintype.card P * d := by
+  classical
+  let fiber (p : P) := s.filter fun i => (poly p).eval (param p i) = 0
+  have hsub : s ⊆ Finset.univ.biUnion fiber := by
+    intro i hi
+    obtain ⟨p, hp⟩ := fails i hi
+    exact Finset.mem_biUnion.mpr ⟨p, Finset.mem_univ _, Finset.mem_filter.mpr ⟨hi, hp⟩⟩
+  have hcard (p : P) : (fiber p).card ≤ d := by
+    by_contra! lt
+    apply nonzero p
+    apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero (poly p)
+      (f := fun i : fiber p => param p i.val)
+    · intro i j equal
+      exact Subtype.ext (inj p (Finset.mem_filter.mp i.prop).1 (Finset.mem_filter.mp j.prop).1 equal)
+    · exact fun i => (Finset.mem_filter.mp i.prop).2
+    · simpa using lt_of_le_of_lt (deg p) lt
+  calc
+    s.card ≤ (Finset.univ.biUnion fiber).card := Finset.card_le_card hsub
+    _ ≤ ∑ p ∈ Finset.univ, (fiber p).card := Finset.card_biUnion_le
+    _ ≤ ∑ _p : P, d := Finset.sum_le_sum fun p _ => hcard p
+    _ = Fintype.card P * d := by simp
 
 end GF2Sparse.SubgroupCover
