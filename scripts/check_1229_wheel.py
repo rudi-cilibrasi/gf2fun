@@ -8,7 +8,7 @@ from pathlib import Path
 from flint import fmpz, fmpz_mod_poly_ctx
 
 from batch_degree_1229 import PUBLISHED_BOUND, extend_samples
-from check_degree_1229 import COFACTOR, KNOWN, N
+from check_degree_1229 import COFACTOR, KNOWN, N, PRIMES
 
 
 WHEEL = 4*3*5*7*11
@@ -121,7 +121,11 @@ if __name__ == "__main__":
             verify_published()
             verify_extension()
         bound = verify_continuation()
-        print(f"Every cofactor prime exceeds {bound}. Root order exceeds 2^{(KNOWN*bound).bit_length()-1}.")
+        all_orders = (KNOWN//PRIMES[1]*bound).bit_length()-1
+        passing_orders = (KNOWN*bound).bit_length()-1
+        print(f"Every cofactor prime exceeds {bound}. All 639166 irreducible pentanomial "
+              f"root orders exceed 2^{all_orders}, and the 639144 passing all four known "
+              f"tests have order exceeding 2^{passing_orders}.")
     else:
         residue = wheel_product(args.start, args.doublings, args.method)
         end = args.start+interval_length(args.doublings)
