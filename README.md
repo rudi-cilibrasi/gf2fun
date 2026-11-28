@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **An explicit 1,221-bit trace record in degree 1229 has exactly two irreducible representatives.** Both are pentanomials. One fails the 36,871 order test, leaving only the polynomial with interior taps $(136,138,604)$ as a possible primitive representative. A second, 1,219-bit record also has just two irreducibles, and both fail known tests. A modular inverse lists all monic candidates for any record with one known irreducible representative. [Proof and explicit records](results.pdf#page=360) · [Decoder and exhaustive checks](scripts/check_trace_fibres.py)
+
 - **In degree 1229 more than 97% of all 1,200-bit power-trace records each occur for over 100,000 primitive polynomials.** All six binary projective images of each root are primitive. Among 1,180-bit records, fewer than one in 524,288 can have at most $2^{37}$ representatives. Given the trace locations, every such exception has a 1,161-bit rank. The proof works in large degrees for almost all records of up to $n-(2+\varepsilon)\log_2 n$ bits. A degree-1229 pentanomial's three taps take only 29 bits to specify, so its record can still lie in the exceptional set. [Proof and incompressibility argument](results.pdf#page=357) · [Verifier](scripts/check_trace_incompressibility.py)
 
 - **In degree 1229 every prescription of 598 bits of initial power-trace data is realized by more than $2^{618}$ primitive polynomials.** The traces can be prescribed at any binary closed points, including zero and infinity. For every counted root $r$, both $1+r$ and $r/(1+r)$ are primitive too. Yet two pentanomials agree on the first 1,364 inverse and 1,058 positive power traces despite differing at the 36,871 order test. In all sufficiently large degrees the theorem permits nearly half the degree in prescribed bits. [Proof](results.pdf#page=353) · [Sharp sparse comparisons](results.pdf#page=356) · [Verifier](scripts/check_prescribed_root_traces.py)
@@ -1068,6 +1070,12 @@ The 1,180-bit and 1,200-bit exceptional fractions and a complete two-ended trace
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_trace_incompressibility.py
+~~~
+
+To list the two degree-1229 pairs and check all 256 and 1,024 polynomials in the shorter records, run
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 python scripts/check_trace_fibres.py
 ~~~
 
 To replay the elliptic function counts in degrees 262,146 and $2^{84}+2$, run

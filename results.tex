@@ -24967,4 +24967,112 @@ an additional \(o(1)\) fraction of records can lose more than
 \(\gg q/(mT^3)\) roots passing all six tests. This proves
 Theorem~\ref{thm:typical-trace-record}.
 
+\clearpage
+\section{Listing all polynomials with a given trace record}
+\label{sec:trace-fibres}
+Let \(f\) be a monic binary irreducible of degree \(n>1\).
+Record its initial local traces at a divisor
+\(D(X)=\prod_P P^{e_P}\) coprime to \(f\), and at infinity with
+multiplicity \(e\). These are \(g=\deg D+e\) bits in the convention
+of Section~\ref{sec:prescribed-root-traces}. We can recover the
+entire list of potential matches using polynomial arithmetic modulo \(f\).
+
+\begin{theorem}\label{thm:trace-fibre}
+If \(g<n\), every monic degree-\(n\) irreducible with the record of
+\(f\) occurs on the following list of \(2^{n-g}\) distinct polynomials:
+\[
+   h_T=f+\operatorname{rem}_f\bigl(D^2 T^2 (f')^{-1}\bigr),
+             \qquad T\in\mathbb F_2[X],\quad \deg T<n-g ,
+\]
+including \(T=0\). The inverse is taken modulo \(f\). Removing the
+reducible polynomials and those with a pole at a selected point gives
+exactly the irreducible matches. If \(g\ge n\), the only match is \(f\).
+\end{theorem}
+\begin{proof}
+Write \(f=A^2+XB^2\) and \(h=C^2+XE^2\), and set \(W_f(h)=AE+BC\).
+This map is binary linear in \(h\) and \(W_f(f)=0\). Its output has
+degree less than \(n\) for \(\deg h\le n\). The identity
+\[
+                 W_f(h)^2=f'h+fh'
+\]
+shows that \(W_f(h)=0\) implies \(f\mid h\), since \(\gcd(f,f')=1\).
+Hence \(h\mapsto W_f(h)\) is injective on polynomials of degree
+less than \(n\). Domain and codomain have dimension \(n\), so it is
+bijective there, as well as on the translate by \(f\) consisting of
+monic degree-\(n\) polynomials. Reducing the identity modulo \(f\)
+gives its inverse on this translate, namely
+\(W\mapsto f+\operatorname{rem}_f(W^2(f')^{-1})\).
+
+Away from poles, equality at the selected finite points means
+\(D\mid W_f(h)\) by the logarithmic derivative identity of
+Section~\ref{sec:prescribed-root-traces}. Equality at infinity means
+\(\deg W_f(h)< n-e\), allowing zero. The permitted determinants are
+exactly \(DT\) in the theorem. If \(g\ge n\) only zero satisfies
+both conditions.
+\end{proof}
+
+In particular any distinct pair \(f,h\) of degree-\(n\) irreducibles
+has a shared record of exactly \(n-1\) bits that identifies the pair.
+Take \(D=W_f(h)\) and \(e=n-1-\deg D\). Every factor of \(D\) has
+degree below \(n\), so both records are defined. The two possible
+parameters are zero and one. The locations here depend on the pair.
+For any fixed choice giving a realized record, the theorem supplies
+a conditional code of at most \(\max(0,n-g)\) bits for a matching
+polynomial once one irreducible representative is given.
+
+\clearpage
+\subsection*{Two complete 1228-bit records for degree 1229}
+For the pair with taps \((162,170,604)\) and \((136,138,604)\) of
+Section~\ref{sec:prescribed-root-traces}, use
+\[
+          D=X^{682}(X^{17}+X^{13}+X+1),\qquad e=529 .
+\]
+The factor of degree seventeen is squarefree with irreducible factors
+of degrees one, three and thirteen. In addition to the 682 initial odd
+inverse moments and the 529 initial odd positive moments, record the
+first moment at each of those three points. Together these give 1228
+bits. The two pentanomials agree on every bit. Substitution of
+\(T=0,1\) in Theorem~\ref{thm:trace-fibre} recovers precisely those
+two polynomials among all monic degree-1229 polynomials satisfying the
+determinant conditions. The first fails the index-36871 test. The second
+passes all four known prime tests. Consequently the record has a
+primitive representative if and only if the pentanomial with taps
+\((136,138,604)\) is primitive. Its exact order remains open.
+
+There are also such records on which every irreducible representative
+is imprimitive. Take first the pentanomial with taps \((34,36,152)\)
+and then the one with taps \((625,1059,1067)\). Their determinant is
+\[
+ \begin{split}
+    D&=X^{312}R,\\
+    R&=(1+X^{17}+X^{18}+X^{76})
+          (1+X^{217}+X^{221}+X^{302})+X^{302}.
+ \end{split}
+\]
+Here \(\deg D=690\), so take \(e=538\). Both polynomials are irreducible.
+Their roots fail the index-46703 and index-36871 tests, respectively.
+They are the entire two-element list for this record. This exhibits a
+realizable 1228-bit assignment arising from two different sparse supports
+with no primitive representative.
+
+Both examples persist after removing some of the trace conditions.
+In the first, keep the same finite divisor and use only \(e=522\).
+Its 1221 bits leave 256 monic possibilities, of which exactly the
+original two are irreducible. In the second, use \(D=X^{311}R\)
+and \(e=530\). Its 1219 bits leave 1024 possibilities, again with
+exactly the original two irreducibles. Thus this shorter realizable
+record also has no primitive representative. For each list, NTL
+checked irreducibility directly. An independent FLINT calculation
+removes small polynomial divisors and tests \(X^{2^{1229}}=X\)
+modulo each remaining candidate. Since 1229 is prime, the possible
+factor degrees in this last identity are one and 1229, and the small
+divisor sieve has already excluded the linear factors.
+
+\nolinkurl{scripts/check_trace_fibres.py} lists both pairs from the
+modular inverse, checks the logarithmic derivatives and tests all four
+known primes. It compares the decoder with exhaustive enumeration for
+every irreducible in degrees five, six and seven, including more than
+\(n\) prescribed bits. \nolinkurl{GF2Sparse/OddCoefficientBounds.lean}
+checks the determinant identity and the inverse formula at a root.
+
 \end{document}
