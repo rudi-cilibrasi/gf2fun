@@ -10,6 +10,10 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **Every degree $1229q^a$ has the same 639,156 exceptional pentanomials for $q=36{,}871$, or 639,154 for $q=46{,}703$, after scaling the taps by $q^a$ from the base degree.** These are exactly the irreducible pentanomials whose root order has no prime $\ell$ with $1229q\mid\operatorname{ord}_\ell(2)$. Their index takes 20 bits given $q,a$, even in degree 2,680,658,186,861, where indexing unrestricted three-tap supports takes 122 bits. [Proof and decoder](results.pdf#page=369) · [Lean proof of the all-level order test](GF2Sparse/OrderPrimePartitions.lean)
+
+- **For an irreducible trinomial $X^n+X^k+1$ of degree $n=p^i q^j$ with distinct odd primes $p<q$ and $i,j\ge1$, the root order contains a prime of binary degree $n$ exactly when $q$ does not divide $k$.** Both prime powers are unrestricted. The corresponding pentanomial classification outside the two maximal subfields includes all $p\ge53$. [Trinomial theorem](results.pdf#page=372) · [Pentanomial theorem](results.pdf#page=373) · [Verifier](scripts/check_kummer_sparse_orders.py)
+
 - **In degree $pq$ with distinct odd primes $p<q$ and $p\le10{,}000$ or $pq>(p+1)^3$, a sparse irreducible misses a full-degree prime in its root order exactly when it is $G(X^q)$.** A full-degree prime $\ell$ satisfies $\operatorname{ord}_{\ell}(2)=pq$. In degrees 45,314,459 and 57,397,987 there are exactly 639,156 and 639,154 exceptional pentanomials. Each has a 20-bit index among the exceptions given the degree, compared with 74 or 75 bits for unrestricted three-tap supports. [Theorem and proof](results.pdf#page=364) · [Exact counts and incompressibility argument](results.pdf#page=367) · [Verifier](scripts/check_kummer_sparse_orders.py)
 
 - **An explicit 1,221-bit trace record in degree 1229 has exactly two irreducible representatives.** Both are pentanomials. One fails the 36,871 order test, leaving only the polynomial with interior taps $(136,138,604)$ as a possible primitive representative. A second, 1,219-bit record also has just two irreducibles, and both fail known tests. A modular inverse lists all monic candidates for any record with one known irreducible representative. [Proof and explicit records](results.pdf#page=360) · [Decoder and exhaustive checks](scripts/check_trace_fibres.py)
@@ -1055,7 +1059,7 @@ c++ -O3 -std=c++17 -fopenmp scripts/check_semiprime_order_exceptions.cpp -lntl -
 /tmp/gf2-order-exceptions 11 23
 ~~~
 
-The five-row determinant calculation proves the substitution criterion for every prime $q\ge37$. The same command checks the six exceptional semiprime degrees through 1,280 and the two counts from the degree-1,229 census. The NTL enumerator above accepts `7 127` to recover the seven degree-889 pairs by direct enumeration.
+The five-row determinant calculation proves the substitution criterion for every prime $q\ge37$. The same command checks the six exceptional semiprime degrees through 1,280, the two towers from the degree-1,229 census, all 30 exceptional reciprocal pairs at levels 5,819 and 112,903, and the trinomial tap rule through 384. The NTL enumerator above accepts `7 127` to recover the seven degree-889 pairs by direct enumeration.
 
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_kummer_sparse_orders.py
