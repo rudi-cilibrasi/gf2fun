@@ -10,6 +10,8 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 ## Results
 
+- **In every degree $n=7q^b$ with $q>7$ prime and $b\ge1$, three exponents among seven equally spaced positions force a full-degree prime power in the root order of an irreducible pentanomial.** This means that $h$ divides the root order and $n$ is the first positive integer with $2^n\equiv1\pmod h$. One can take $h$ prime unless $q=127$. When $\Phi_n(2)$ is prime, checking the two norms in degrees $n/7$ and $n/q$ settles primitivity. [Proof and sharp example](results.pdf#page=316) · [Finite verifier](scripts/check_seven_position_orders.py)
+
 - **More than 35.756% of degrees admit no primitive trinomial.** Even irreducible trinomials are impossible in more than 34.101% of all degrees and 47.742% of prime degrees, measured by lower asymptotic density. A five-term witness is necessary wherever a primitive trinomial is impossible. For more than 30.219% of primes $p$, every degree $p,p^3,p^5,\ldots$ has no irreducible trinomial. [Density proof](results.pdf#page=311) · [All odd powers of one prime](results.pdf#page=315) · [Density verifier](scripts/check_trinomial_density.py) · [Lean proof for dilations](GF2Sparse/Dilation.lean)
 
 - **In degrees 28,759 and 28,771, every irreducible polynomial with fewer than 14,105 terms has a prime greater than $2^{44}$ in its root order.** Both thresholds are exact. Four polynomials attain 14,105 terms in the first degree and two in the second while their roots have only smaller order primes. [Proof](results.pdf#page=314) · [Weight distributions](data/cyclotomic-weight-spectra.json) · [Verifier](scripts/check_cyclotomic_weights.py)
@@ -958,6 +960,7 @@ To reproduce the order projections and subfield certificates, run
 ~~~sh
 uv run --no-project --with python-flint==0.9.0 python scripts/check_1331_order_projections.py --gp gp
 uv run --no-project --with python-flint==0.9.0 python scripts/check_relative_fourier_minors.py
+uv run --no-project --with python-flint==0.9.0 python scripts/check_seven_position_orders.py
 uv run --no-project --with python-flint==0.9.0 python scripts/check_trinomial_subfield_pairs.py
 lake build GF2Sparse
 ~~~
