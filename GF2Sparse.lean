@@ -3,6 +3,7 @@ import GF2Sparse.BinomialTail
 import GF2Sparse.AdditiveOrbit
 import GF2Sparse.AffineTapSpan
 import GF2Sparse.ConjugateProducts
+import GF2Sparse.CircuitOrderBounds
 import GF2Sparse.Coverage
 import GF2Sparse.CubicComponents
 import GF2Sparse.CubicImage
