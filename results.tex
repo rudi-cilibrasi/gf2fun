@@ -22264,18 +22264,19 @@ Sections~\ref{sec:semiprime-norm-witnesses} and~\ref{sec:scalar-pair-census}.
 The certificates for degrees 19121, 20521, 20887, 22193 and 35339 appear with
 the combined census in Section~\ref{sec:three-mers-trinomial-censuses}.
 
-\paragraph{The remaining candidate in degree 35737.}
-For the pentanomial with taps \(6883,14427,21310\) in
-\nolinkurl{data/mers-project-large-orders.json}, write
-\(2^{35737}-1=AP\), where \(P\) is the largest listed factor.
-Here \(\gcd(A,P)=1\) and the complete prime factorization of \(A\)
-is verified. NTL tested irreducibility and all eight factor-index
-powers. FLINT independently verified the full group power and the same
-eight powers. For \(r=X\bmod f\) and each prime \(p\mid A\), the test
-\(r^{(2^{35737}-1)/p}\ne1\) forces the full power of \(p\) in the
-group order to divide \(\ord(r)\). The test \(r^A\ne1\) then gives
-\(\ord(r)=Ad\) for a divisor \(d>1\) of \(P\). A primality proof for
-the 9927-digit integer \(P\) would establish full order.
+\paragraph{Minimum primitive weight in degree 35737.}
+The polynomial \(X^{35737}+X^{21310}+X^{14427}+X^{6883}+1\) is primitive.
+The eight distinct factors in \nolinkurl{data/mers-project-large-orders.json}
+multiply to \(2^{35737}-1\). PARI/GP verified the
+\href{https://factordb.com/cert/1100000000027309418}{945-step PRIMO
+certificate for the 9927-digit prime} and the
+\href{https://factordb.com/cert/1100000001440761806}{84-step certificate
+for the 702-digit prime}. FLINT proved the six smaller primes.
+NTL checked irreducibility and all eight prime-index powers. FLINT
+independently checked the full power and each prime-index power.
+The exhaustive trinomial enumeration in
+Section~\ref{sec:complete-mers-trinomial-supports} gives no irreducible
+pair among the 17868 possible taps. The minimum primitive weight is five.
 
 \clearpage
 \section{How often a five-term witness is necessary}
@@ -22464,9 +22465,8 @@ The degree-26903 pentanomial with taps \(1253,2506,25650\) and the trinomial wit
 
 In degree 29473 the five listed trinomials and the pentanomial with taps \(5476,10952,23997\) pass all three prime-index tests. PARI/GP verified the \href{https://factordb.com/cert/1100000000013065391}{981-step certificate for the 8835-digit prime}.
 
-Among the 82 degrees in the combined Mers Project census with certified
-minima, 42 admit primitive trinomials and 40 require five terms. These
-512251 reciprocal classes contain 136 irreducible and 128 primitive pairs.
+Among all 83 selected Mers Project degrees, 42 admit primitive trinomials
+and 41 require five terms. The 530119 reciprocal classes contain 136 irreducible and 128 primitive pairs.
 The other six imprimitive orders are given in Section~\ref{sec:mers-project-orders}.
 
 \clearpage
@@ -24077,7 +24077,7 @@ in either of those degrees must have five terms.
 
 The four degree-41521 trinomials pass all four prime-index powers.
 The integer proof in Section~\ref{sec:minimum-weight-41521} completes
-their order certificates. The 82 degrees with certified minimum weights
+their order certificates. All 83 degrees with their complete trinomial lists
 are in \nolinkurl{data/mers-project-trinomial-census.csv}. The empty list for
 degree 35737 is in \nolinkurl{data/mers-project-trinomial-census-supplement.csv}.
 The \texttt{--irreducible-only} mode of
