@@ -65,20 +65,46 @@ private theorem binPow_eq_pow {M : Type*} [Monoid M] (e : ℕ) (a : M) :
   | zero => simp [npowBinRec_zero]
   | succ e ih => rw [npowBinRec_succ, ih, pow_succ]
 
-theorem integer_order : orderOf (2 : ZMod (2^84+3)) = 2^84+2 := by
-  let a : ZMod (2^84+3) := 2
-  have product : (factors.map Subtype.val).prod = 2^84+2 := by decide +kernel
-  have powers : (factors.map Subtype.val).all (fun q =>
-      npowBinRec ((2^84+2)/q) a != 1) = true := by decide +kernel
-  apply orderOf_eq_of_pow_and_pow_div_prime (by decide)
-  · exact (binPow_eq_pow (2^84+2) a).symm.trans
-      (by decide +kernel : npowBinRec (2^84+2) a = 1)
+private theorem order_from_powers {p n : ℕ} (a : ZMod p) (hn : 0 < n) (ps : List ProvenPrime)
+    (hprod : (ps.map Subtype.val).prod = n) (hfull : npowBinRec n a = 1)
+    (htests : (ps.map Subtype.val).all (fun q => npowBinRec (n/q) a != 1) = true) :
+    orderOf a = n := by
+  apply orderOf_eq_of_pow_and_pow_div_prime (by omega)
+  · exact (binPow_eq_pow n a).symm.trans hfull
   · intro q hq hdvd
-    have hprime : ∀ t ∈ factors.map Subtype.val, Prime t := by
+    have hprime : ∀ t ∈ ps.map Subtype.val, Prime t := by
       intro t ht
-      obtain ⟨p, _, rfl⟩ := List.mem_map.1 ht
-      exact p.property.prime
-    have hm := mem_list_primes_of_dvd_prod hq.prime hprime (product ▸ hdvd)
-    simpa only [binPow_eq_pow, bne_iff_ne] using List.all_eq_true.1 powers q hm
+      obtain ⟨c, _, rfl⟩ := List.mem_map.1 ht
+      exact c.property.prime
+    have hm := mem_list_primes_of_dvd_prod hq.prime hprime (hprod ▸ hdvd)
+    simpa only [binPow_eq_pow, bne_iff_ne] using List.all_eq_true.1 htests q hm
+
+theorem integer_order : orderOf (2 : ZMod (2^84+3)) = 2^84+2 :=
+  order_from_powers 2 (by decide) factors (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+private def factors262146 : List ProvenPrime :=
+  [p2, p3, lucasPrime 43691 6
+    [p2, p5, ⟨17, by norm_num1⟩, ⟨257, by norm_num1⟩] (by decide +kernel)]
+
+theorem elliptic_prime_262147 : Nat.Prime 262147 :=
+  (lucasPrime 262147 2 factors262146 (by decide +kernel)).property
+
+theorem integer_order_262147 : orderOf (2 : ZMod 262147) = 262146 :=
+  order_from_powers 2 (by decide) factors262146 (by decide +kernel)
+    (by decide +kernel) (by decide +kernel)
+
+/-- Cross multiplication costs at most the positive height of the first
+exponent vector and the negative height of the second. -/
+theorem quotient_height_bound (x y : Fin 5 → ℤ) :
+    ∑ i, max (x i - y i) 0 ≤ (∑ i, max (x i) 0) + ∑ i, max (-y i) 0 := by
+  rw [← Finset.sum_add_distrib]
+  apply Finset.sum_le_sum
+  intro i _
+  have hx := le_max_left (x i) 0
+  have hy := le_max_left (-y i) 0
+  have hx0 := le_max_right (x i) 0
+  have hy0 := le_max_right (-y i) 0
+  exact max_le (by omega) (by omega)
 
 end GF2Sparse.EllipticPentanomial
