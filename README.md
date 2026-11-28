@@ -12,7 +12,7 @@ The [research note](results.pdf) gives the proofs, examples, and references. Its
 
 - **Degree 41,681 has exactly fourteen primitive trinomials, forming seven reciprocal pairs.** The smallest tap is 3,429. The pentanomial with interior taps 5,535, 11,070 and 36,146 also has full order $2^{41681}-1$. With degrees 41,681 and 53,381 included, the 85-degree trinomial census covers 577,649 reciprocal classes, of which 143 are irreducible and 135 primitive. [Primitive taps](data/mers-project-trinomial-census.csv) · [Factorization and certificate replay](results.pdf#page=363)
 
-- **Every degree $1229q^a$ has the same 639,156 exceptional pentanomials for $q=36{,}871$, or 639,154 for $q=46{,}703$, after scaling the taps by $q^a$ from the base degree.** These are exactly the irreducible pentanomials whose root order has no prime $\ell$ with $1229q\mid\operatorname{ord}_\ell(2)$. Their index takes 20 bits given $q,a$, even in degree 2,680,658,186,861, where indexing unrestricted three-tap supports takes 122 bits. [Proof and decoder](results.pdf#page=369) · [Lean proof of the all-level order test](GF2Sparse/OrderPrimePartitions.lean)
+- **A 20-bit index describes every exceptional pentanomial in degree $1229m$ for any product $m>1$ of the four known primes, with arbitrary powers.** Here exceptional means that no prime in the root order has binary degree divisible by both 1229 and a prime of $m$. At $m=36{,}871\cdot46{,}703$ there are exactly 639,144 exceptions. Multiplying their three base taps by $m$ decodes them. The same count holds for the product of all four known primes, where an unrestricted tap rank takes 888 bits. Taking $m=2^{1229}-1$ makes the exceptional set correspond exactly to the primitive degree-1229 pentanomials, whose number remains open. [Proof and decoder](results.pdf#page=375) · [Lean base tests](GF2Sparse/OrderPrimePartitions.lean) · [Finite verifier](scripts/check_multiprime_supports.py)
 
 - **For an irreducible trinomial $X^n+X^k+1$ of degree $n=p^i q^j$ with distinct odd primes $p<q$ and $i,j\ge1$, the root order contains a prime of binary degree $n$ exactly when $q$ does not divide $k$.** Both prime powers are unrestricted. The corresponding pentanomial classification outside the two maximal subfields includes all $p\ge53$. [Trinomial theorem](results.pdf#page=372) · [Pentanomial theorem](results.pdf#page=373) · [Verifier](scripts/check_kummer_sparse_orders.py)
 
@@ -1059,6 +1059,12 @@ c++ -O3 -std=c++17 -fopenmp scripts/check_semiprime_order_exceptions.cpp -lntl -
 /tmp/gf2-order-exceptions 3 7
 /tmp/gf2-order-exceptions 5 31
 /tmp/gf2-order-exceptions 11 23
+~~~
+
+The simultaneous substitution theorem has an independent check in degrees 22,517 and 517,891. The same verifier recomputes the 20-bit counts for every nonempty subset of the four known degree-1229 primes.
+
+~~~sh
+uv run --no-project --with python-flint==0.9.0 --with sympy python scripts/check_multiprime_supports.py
 ~~~
 
 The five-row determinant calculation proves the substitution criterion for every prime $q\ge37$. The same command checks the six exceptional semiprime degrees through 1,280, the two towers from the degree-1,229 census, all 30 exceptional reciprocal pairs at levels 5,819 and 112,903, and the trinomial tap rule through 384. The NTL enumerator above accepts `7 127` to recover the seven degree-889 pairs by direct enumeration.
