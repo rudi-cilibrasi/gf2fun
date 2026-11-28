@@ -52,7 +52,8 @@
     ],
     "primo_certificates": {
       "4": "1100000000710088779"
-    }
+    },
+    "primitive_trinomial_tap": 2493
   },
   "20521": {
     "taps": [
@@ -68,7 +69,8 @@
     ],
     "primo_certificates": {
       "3": "1100000001055837715"
-    }
+    },
+    "primitive_trinomial_tap": 1185
   },
   "20887": {
     "taps": [
@@ -287,6 +289,11 @@
     ],
     "primo_certificates": {
       "27": "1100000000852568581"
+    },
+    "primitive_trinomial_tap": 1318,
+    "trinomial_indices_in_dilation_bound": {
+      "1927": 1,
+      "13959": 1
     }
   },
   "35339": {
