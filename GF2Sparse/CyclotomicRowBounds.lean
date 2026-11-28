@@ -35,4 +35,14 @@ theorem cumulative_residue_count (a : ℕ → ℕ) (b c r : ℕ) (base : a 0 ≤
       _ ≤ (r*b + c*(r+1)^j) + r*(c*(r+1)^j) := Nat.add_le_add_right ih _
       _ = r*b + c*(r+1)^(j+1) := by rw [pow_succ]; ring
 
+/-- Every positive level of the degree-five tower gives the same Frobenius weight
+modulo 31 squared. -/
+theorem five_tower_frobenius_weight (j : ℕ) :
+    (2 : ZMod 961) ^ (31 ^ (j+1)) = 374 := by
+  induction j with
+  | zero => decide
+  | succ j ih =>
+    rw [pow_succ (31 : ℕ) (j+1), pow_mul, ih]
+    decide
+
 end GF2Sparse
