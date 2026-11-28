@@ -53,4 +53,19 @@ theorem degree1229_twelve_odd_projective :
       310 * 19997 * ((2 : ℕ)^1229 - 598) := by
   decide +kernel
 
+/-- The centered trace variance and the complementary prime sieve leave fewer than
+three percent exceptions and over 100,000 polynomials for each remaining record. -/
+theorem degree1229_typical_1200_bits :
+    100 * (9 * 2401^2 * 20000 + 36 * 4 * 2^29) < 3 * 4 * 2^29 * (20000 : ℕ) ∧
+    100000 * 1229 * 5000 < 1249 * (2 : ℕ)^29 := by
+  decide +kernel
+
+/-- With the first two primes in the Fourier sieve, fewer than a fraction
+2⁻¹⁹ of the 1180-bit records can have at most 2³⁷ representatives. -/
+theorem degree1229_typical_1180_bits :
+    2^19 * (64 * 7^2 * 2361^2 * 10^15 + 16 * 25 * 2^49) <
+      (25 : ℕ) * 2^49 * 10^15 ∧
+    2^37 * 1229 * 10000 < 3123 * (2 : ℕ)^49 := by
+  decide +kernel
+
 end GF2Sparse.OddCoefficientBounds
