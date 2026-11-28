@@ -28234,4 +28234,56 @@ Section~\ref{sec:1229-fourteen}. For a root passing the test its
 record cannot descend modulo $M/p$, by the odd-degree assertion.
 The size of a failure class for an unknown $p$ remains open.
 
+\clearpage
+\section{Seven unit traces for 454 sparse supports in degree 1229}
+\label{sec:unit-trace-probes}
+Take one reciprocal representative for each of the 443 survivors in
+the 28 tap families of Section~\ref{sec:1229-tap-pencils}, together
+with the eleven known failures in
+\nolinkurl{data/degree-1229-order-exceptions.csv}. On these 454 supports
+the same seven trace positions reproduce every one of the four known
+prime-index test outcomes. For a fixed prime $p$ the seven comparisons
+are between a root and its image under an explicit unit multiplier.
+
+Write $M=2^{1229}-1$. Each known $p$ occurs once in $M$. Take
+$u_p\equiv-1\bmod p$ and $u_p\equiv1\bmod M/p$.
+If a root $z$ misses $p$, then $z^{u_p}=z$. If it passes, the
+two are not Frobenius conjugates: projecting to order $p$ would require
+$2^h=-1\bmod p$, whereas $2$ has odd order 1229 modulo $p$.
+For the specified supports there is always a distinguishing unit $j$
+among
+\[
+                         13,\quad27,\quad29,\quad31,\quad35,\quad41,\quad47.
+\]
+Thus a pass is equivalent in this sample to
+$\operatorname{Tr}(z^j)\ne\operatorname{Tr}(z^{u_pj})$ for at least
+one of the seven $j$. All seven comparisons agree in each of the eleven
+failures. No six odd positions through 63 suffice to detect every pass
+in this sample.
+
+For each of the $454\cdot4=1816$ tests, form the two words indexed by
+the 32 odd exponents through 63 and record their differences. There
+are 1805 positive tests. A position covers a test if its bits differ.
+The seven positions cover all 1805. In each of the $\binom{32}{6}$
+six-position choices some positive test remains uncovered.
+\nolinkurl{scripts/check_1229_unit_trace_probes.py} verifies
+irreducibility, computes both field traces directly, and checks every
+six-position choice. Independent NTL powering and trace projection
+give the same comparison words.
+
+\paragraph{Factoring from a proposed extra symmetry.}
+Write $M=KC$ as before. For any surviving root $z$ of order $R$,
+$K\mid R$, and $R$ contains a prime divisor of $C$. Given a unit
+$a\bmod M$ outside the Frobenius powers, first find $0\le h<1229$
+with $a\equiv2^h\bmod K$. There is at most one such $h$.
+If none exists, $a$ is ruled out for every survivor. Otherwise compute
+$D=\gcd(C,a-2^h)$. If $D=1$, the same exclusion holds. Indeed a
+trace symmetry would imply $z^a=z^{2^h}$ by
+Section~\ref{sec:unit-trace-conductor}, hence $R\mid a-2^h$.
+If $D>1$, it is a proper divisor of $C$, since $K$ and $C$ are
+coprime and $a\not\equiv2^h\bmod M$.
+Thus a concrete extra symmetry of even one survivor would already
+reveal a cofactor divisor from the multiplier alone. The seven probes
+above settle the tests at the four known primes on the specified sample.
+
 \end{document}
